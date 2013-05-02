@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 rel. 3 sp1 (x64) (http://www.altova.com) by Toby Considine (TC9) -->
+<!-- working materials used to generate examples in WS-Calendar v1.0 CD01 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" 
+           xmlns:ns1="http://docs.oasis-open.org/ns/ws-calendar" 
+           targetNamespace="http://docs.oasis-open.org/ns/ws-calendar" 
+           elementFormDefault="unqualified" 
+           attributeFormDefault="unqualified">
+	<xs:import namespace="urn:ietf:params:xml:ns:icalendar-2.0" 
+             schemaLocation="../exsynchwsdefs/iCalendar.xsd"/>
+
+	<!-- 1 the core elements  -->
+	<xs:element name="ws-calendar">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:group ref="xcal:type-calprops"/>
+				<xs:element ref="ns1:components"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+  
+	<xs:element name="components">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="xcal:vevent"/>
+				<xs:element ref="xcal:vtodo"/>
+				<xs:element ref="xcal:vjournal"/>
+				<xs:element ref="xcal:vfreebusy"/>
+				<xs:element ref="ns1:vtodo"/>
+				<xs:element ref="ns1:x-calendargluon"/>
+				<xs:element ref="x-wscalendar-relation" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+  
+	<!-- 1.1 Interval - just a profiled vtodo  -->
+	<xs:element name="vtodo" type="ns1:type-intervalproperties"/>
+	<xs:complexType name="type-intervalproperties">
+		<xs:sequence>
+			<xs:element name="properties">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="x-wscalendartype" type="ns1:type-wscalendarinterval" default="Interval"/>
+						<xs:element ref="xcal:dtstamp"/>
+						<xs:element ref="xcal:uid"/>
+						<xs:element ref="xcal:description"/>
+						<xs:element ref="xcal:geo"/>
+						<xs:element ref="xcal:last-modified"/>
+						<xs:element ref="xcal:priority"/>
+						<xs:element ref="xcal:summary"/>
+						<xs:group ref="xcal:property-duration"/>
+						<xs:element ref="xcal:related-to"/>
+						<xs:element ref="xcal:dtstart"/>
+						<xs:element name="attach" type="ns1:type-wscalendarattach"/>
+						<xs:element ref="xcal:comment"/>
+						<xs:element ref="xcal:exdate"/>
+						<xs:element name="x-wscalendarrelation" type="ns1:type-temporalrelation"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+  
+	<!-- 1.2 Gluon  -->
+	<xs:element name="x-calendargluon" type="ns1:type-gluonproperties"/>
+	<xs:complexType name="type-gluonproperties">
+		<xs:sequence>
+			<xs:element name="properties">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="x-wscalendartype" type="ns1:type-wscalendargluon" default="CalendarGluon"/>
+						<xs:element ref="xcal:dtstamp"/>
+						<xs:element ref="xcal:uid"/>
+						<xs:element ref="xcal:description"/>
+						<xs:element ref="xcal:geo"/>
+						<xs:element ref="xcal:last-modified"/>
+						<xs:element ref="xcal:summary"/>
+						<xs:element ref="xcal:duration"/>
+						<xs:element ref="xcal:dtstart"/>
+						<xs:element name="attach" type="ns1:type-wscalendarattach"/>
+						<xs:element ref="xcal:comment"/>
+						<xs:element ref="x-wscalendar-relation"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+  
+	<!-- 2 enumerations  -->
+	<xs:simpleType name="type-wscalendarobject">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Interval"/>
+			<xs:enumeration value="CalendarGluon"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- 2.1 hack to force single value Gluon  -->
+	<xs:simpleType name="type-wscalendargluon">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CalendarGluon"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- 2.1 hack to force single value Interval  -->
+	<xs:simpleType name="type-wscalendarinterval">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Interval"/>
+		</xs:restriction>
+	</xs:simpleType>
+  
+	<!-- 3 the core elements  -->
+  
+	<!-- 3.1, 3.2, 3.3 temporal relation types replaced by icalendar link extension -->
+
+	<!-- 4.0 Attachments  -->
+  
+	<!-- 4.1 Performance - now redefined as parameters -->
+	<!-- 4.1 Attachment  -->
+</xs:schema>

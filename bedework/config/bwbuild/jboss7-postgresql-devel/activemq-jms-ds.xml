@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE connection-factories
+    PUBLIC "-//JBoss//DTD JBOSS JCA Config 1.5//EN"
+    "http://www.jboss.org/j2ee/dtd/jboss-ds_1_5.dtd">
+    
+<!-- Bedework:
+  For the quickstart this file is copied out of the configuration
+  directory into the activemq configuration directory.
+
+  DO NOT edit the copy of this file inside activemq. If you want to change the
+  configuration edit a copy inside your bedework configuration directory.
+ -->
+
+<connection-factories>
+   <!-- One just for bedework -->
+   <tx-connection-factory>
+      <jndi-name>jms/BedeworkConnectionFactory</jndi-name>
+      <xa-transaction/>
+      <track-connection-by-tx/>
+      <rar-name>activemq-rar-5.3.0.rar</rar-name>
+      <connection-definition>javax.jms.QueueConnectionFactory</connection-definition>
+
+      <ServerUrl>failover:(${org.bedework.activemq.uri})?timeout=3000</ServerUrl>
+      <!-- 
+      <ServerUrl>failover:(tcp://localhost:61616)?timeout=3000</ServerUrl>
+      -->      
+      <!--
+      <UserName>sa</UserName>
+      <Password></Password>
+      -->
+      <min-pool-size>1</min-pool-size>
+      <max-pool-size>200</max-pool-size>
+      <blocking-timeout-millis>30000</blocking-timeout-millis>
+      <idle-timeout-minutes>3</idle-timeout-minutes>
+   </tx-connection-factory>
+
+   <tx-connection-factory>
+      <jndi-name>activemq/QueueConnectionFactory</jndi-name>
+      <xa-transaction/>
+      <track-connection-by-tx/>
+      <rar-name>activemq-rar-5.3.0.rar</rar-name>
+      <connection-definition>javax.jms.QueueConnectionFactory</connection-definition>
+
+      <ServerUrl>failover:(${org.bedework.activemq.uri})?timeout=3000</ServerUrl>
+      <!--
+      <UserName>sa</UserName>
+      <Password></Password>
+      -->
+      <min-pool-size>1</min-pool-size>
+      <max-pool-size>200</max-pool-size>
+      <blocking-timeout-millis>30000</blocking-timeout-millis>
+      <idle-timeout-minutes>3</idle-timeout-minutes>
+   </tx-connection-factory>
+
+   <tx-connection-factory>
+      <jndi-name>activemq/TopicConnectionFactory</jndi-name>
+      <xa-transaction/>
+      <track-connection-by-tx/>
+      <rar-name>activemq-rar-5.3.0.rar</rar-name>
+      <connection-definition>javax.jms.TopicConnectionFactory</connection-definition>
+
+      <ServerUrl>failover:(${org.bedework.activemq.uri})?timeout=3000</ServerUrl>
+      <!--
+      <UserName>sa</UserName>
+      <Password></Password>
+      -->
+      <min-pool-size>1</min-pool-size>
+      <max-pool-size>200</max-pool-size>
+      <blocking-timeout-millis>30000</blocking-timeout-millis>
+      <idle-timeout-minutes>3</idle-timeout-minutes>
+   </tx-connection-factory>
+
+   <!-- Bedework system events queue -->
+   <mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.queue:name=sysevents">
+      <attribute name="JNDIName">activemq/queue/sysevents</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-rar-5.3.0.rar'</depends>
+      <attribute name="Type">javax.jms.Queue</attribute>
+      <attribute name="Properties">PhysicalName=bedework.sysevents</attribute>
+   </mbean>
+
+   <!-- Bedework system events log queue -->
+   <mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.queue:name=syseventslog">
+      <attribute name="JNDIName">activemq/queue/syseventslog</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-rar-5.3.0.rar'</depends>
+      <attribute name="Type">javax.jms.Queue</attribute>
+      <attribute name="Properties">PhysicalName=bedework.sysevents.logger</attribute>
+   </mbean>
+
+   <!-- Bedework system monitor queue -->
+   <mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.queue:name=monitor">
+      <attribute name="JNDIName">activemq/queue/monitor</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-rar-5.3.0.rar'</depends>
+      <attribute name="Type">javax.jms.Queue</attribute>
+      <attribute name="Properties">PhysicalName=bedework.sysevents.monitor</attribute>
+   </mbean>
+
+   <!-- Bedework index crawler notifications queue -->
+   <mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.queue:name=crawler">
+      <attribute name="JNDIName">activemq/queue/crawler</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-rar-5.3.0.rar'</depends>
+      <attribute name="Type">javax.jms.Queue</attribute>
+      <attribute name="Properties">PhysicalName=bedework.crawler</attribute>
+   </mbean>
+
+   <!-- Bedework inbox processing queue -->
+   <mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.queue:name=schedulerIn">
+      <attribute name="JNDIName">activemq/queue/schedulerIn</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-rar-5.3.0.rar'</depends>
+      <attribute name="Type">javax.jms.Queue</attribute>
+      <attribute name="Properties">PhysicalName=bedework.scheduleIn</attribute>
+   </mbean>
+
+   <!-- Bedework outbox processing queue -->
+   <mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.queue:name=schedulerOut">
+      <attribute name="JNDIName">activemq/queue/schedulerOut</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-rar-5.3.0.rar'</depends>
+      <attribute name="Type">javax.jms.Queue</attribute>
+      <attribute name="Properties">PhysicalName=bedework.scheduleOut</attribute>
+   </mbean>
+
+<!-- A topic example
+   <mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.topic:name=inboundTopic">
+      <attribute name="JNDIName">activemq/topic/inbound</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-rar-5.3.0.rar'</depends>
+      <attribute name="Type">javax.jms.Topic</attribute>
+      <attribute name="Properties">PhysicalName=topic.inbound</attribute>
+   </mbean>
+-->
+</connection-factories>
+

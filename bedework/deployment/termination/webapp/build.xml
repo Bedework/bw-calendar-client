@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     terminations task.
+     =================================================================== -->
+
+<project name="bwdeploy.termination" default="deploy" >
+  <import file="${build.dir}/platforms/${org.bedework.global.deploy.platform}War.xml" />
+
+  <!--<import file="${build.dir}/buildfilters.xml" />-->
+  <buildfilters/>
+
+  <dirname property="this.dir" file="${ant.file}"/>
+
+  <!-- ensure has value -->
+  <property name="propval.app.cal.suite" value="" />
+
+  <target name="init">
+  </target>
+
+  <target name="deploy" depends="init,build.configured" >
+    <if>
+      <isset property="org.bedework.common.resources" />
+      <then>
+        <!-- Deploy common resources -->
+        <ant antfile="${org.bedework.common.resources}/build.xml"
+             inheritrefs="true" target="deploy" />
+      </then>
+    </if>
+    
+    <if>
+      <isset property="org.bedework.global.build.ear" />
+      <then>
+        <!-- Platform specific -->
+        <antcall target="deployEar" inheritRefs="true" />
+      </then>
+    </if>
+  </target>
+
+  <target name="build.configured" depends="init" >
+  </target>
+</project>

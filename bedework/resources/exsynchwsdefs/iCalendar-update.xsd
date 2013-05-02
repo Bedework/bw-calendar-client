@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Update operation for icalendar.
+    This schema makes no assumptions about the service which provides access to
+    calendar entities. It is up to including services to specify how to target the
+    actual entity to be modified.
+    
+    This schema addresses the actual updates to the entity.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xcup="urn:ietf:params:xml:ns:icalendar-upd-1.0" 
+           xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" 
+           targetNamespace="urn:ietf:params:xml:ns:icalendar-upd-1.0" 
+           elementFormDefault="qualified">
+
+  <!-- ====================================================================  
+       We use a number of icalendar elements
+       ====================================================================  -->
+       
+  <xs:import schemaLocation="iCalendar.xsd" 
+             namespace="urn:ietf:params:xml:ns:icalendar-2.0" />
+
+  <xs:complexType name="updates-type">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        List of updates to a calendar entity.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="update" type="xcup:update-type" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="updates" type="xcup:updates-type" />
+
+  <!-- An update has 2 parts: a select xs:element which determines what part of the 
+       entity is affected by the change and the actual change -->
+  <xs:complexType name="update-type" >
+    <xs:sequence>
+      <xs:element name="select" type="xcup:select-type" />
+      <xs:choice>
+        <xs:element ref="xcup:create"/>
+        <xs:element ref="xcup:replace"/>
+        <xs:element ref="xcup:delete"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- This type selects the part of the entity to be acted on. 
+       For the moment this is simply an xpath expression
+  -->  
+  <xs:simpleType name="select-type">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <!-- ============================= create ===============================
+       Create will add a new child element of the current selected node.
+       If the node is a multi-valued property, e.g. categories, then the
+       created child must be a new value.
+       
+       If the current node is a component or icalendar, then the new node may
+       be a new property and values or a new component, e.g. an alarm for an
+       event.
+   -->
+  <xs:complexType name="create-type" >
+    <xs:sequence>
+      <xs:choice>
+        <!-- Add values to current property -->
+        <xs:element name="values" type="xcup:array-of-values"/>
+        
+        <!-- Add parameters to current property -->
+        <xs:element name="parameters" type="xcal:ArrayOfParameters"/>
+        
+        <!-- Add properties to current component or icalendar -->
+        <xs:element name="properties" type="xcal:ArrayOfProperties"/>
+        
+        <!-- Add components to current component or icalendar -->
+        <xs:element name="components" type="xcal:ArrayOfComponents"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="create" type="xcup:create-type"/>
+
+  <!-- ============================= replace ===============================
+       Replace will replace the current selected node or its value.
+       
+       if a parameter or property is targetted and  if a value or values is 
+       provided we are replacing the value of the property or parameter.
+       
+       If the node is a multi-valued property, e.g. categories, all values will
+       be replaced.
+
+       Otherwise we are replacing the entire parameter, property or component and
+       the replacement must be of the same kind.
+              
+       If the current node is a component or icalendar, then the entire component 
+       must be specified.
+   -->
+  <xs:complexType name="replace-type" >
+    <xs:sequence>
+      <xs:choice>
+        <!-- Add values to current property -->
+        <xs:element name="values" type="xcup:array-of-values"/>
+        
+        <!-- Add parameters to current property -->
+        <xs:element name="parameters" type="xcal:ArrayOfParameters"/>
+        
+        <!-- Add properties to current component or icalendar -->
+        <xs:element name="properties" type="xcal:ArrayOfProperties"/>
+        
+        <!-- Add components to current component or icalendar -->
+        <xs:element name="components" type="xcal:ArrayOfComponents"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="replace" type="xcup:replace-type"/>
+
+  <!-- ============================= delete ===============================
+       Deletion will remove the current selected node or its value.
+   -->
+  <xs:complexType name="delete-type" >
+  </xs:complexType>
+  
+  <xs:element name="delete" type="xcup:delete-type"/>
+
+  <xs:complexType name="array-of-values">
+    <xs:sequence>
+      <xs:element ref="xcup:base-value-type" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="base-value-type" abstract="true" />
+
+  <xs:element name="boolean" type="xcal:booleanType"
+              substitutionGroup="xcup:base-value-type" />
+ 
+  <xs:element name="cal-address" type="xcal:cal-addressType"
+              substitutionGroup="xcup:base-value-type" />
+              
+  <xs:element name="date" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+  
+  <xs:element name="date-time" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+  
+  <xs:element name="duration" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+  
+  <xs:element name="float" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+  
+  <xs:element name="integerType" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+  
+  <xs:element name="period" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+  
+  <xs:element name="recur" type="xcal:recurType"
+              substitutionGroup="xcup:base-value-type"/>
+
+  <xs:element name="text" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+  
+  <xs:element name="time" type="xs:string"
+              substitutionGroup="xcup:base-value-type"/>
+
+  <xs:element name="uri" type="xcal:uriType"
+              substitutionGroup="xcup:base-value-type" />  
+  
+  <xs:element name="utc-offset" type="xcal:utc-offsetType"
+              substitutionGroup="xcup:base-value-type" />  
+</xs:schema>

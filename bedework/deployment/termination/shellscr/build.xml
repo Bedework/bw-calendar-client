@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     shellscr terminations tasks.
+     =================================================================== -->
+
+<project name="bwdeploy.termination" default="deploy" >
+  <target name="init">
+  </target>
+
+  <target name="deploy" depends="init,build.configured" >
+  </target>
+
+  <target name="build.configured" depends="init" >
+  </target>
+</project>

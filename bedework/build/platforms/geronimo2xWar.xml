@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     This file is imported by buildwar.xml and adds the targets
+     which will be invoked by the buildwar targets.
+        addLibs: add libraries for this platform
+        doPlatform - misc stuff
+        deployWar: deploy the war to the server
+        deployEar: deploy the ear to the server 
+     =================================================================== -->
+
+<project name="bedework.platformWar" default="doPlatform" >
+  <target name="doPlatform" >
+    <!-- ===============================================================
+         We create an updated geronimo-web.xml file and a ear
+         =============================================================== -->
+
+    <copy todir="${app.dest.webinf}"
+          file="${app.sou.dir}/war/WEB-INF/geronimo-web.xml">
+      <filterset refid="property.filters" />
+    </copy>
+
+    <if>
+      <isset property="propval.app.virtual.host" />
+      <then>
+        <foreach list="${propval.app.virtual.host}"
+                 target="setVirtualHost"
+                 param="org.bedework.virtual.host.name"
+                 inheritall="true"
+                 inheritrefs="true"
+                 trim="true" />
+      </then>
+    </if>
+  </target>
+  
+  <target name="setVirtualHost">
+    <replace file="${app.dest.webinf}/jboss-web.xml">
+      <replacetoken><![CDATA[<!-- Virtual host -->]]></replacetoken>
+      <replacevalue><![CDATA[<!-- Virtual host -->
+        <host>@VIRTUAL-HOST@</host>
+      ]]>
+      </replacevalue>
+    </replace>
+    <replace file="${app.dest.webinf}/jboss-web.xml">
+      <replacefilter token="@VIRTUAL-HOST@" value="${org.bedework.virtual.host.name}"/>
+    </replace>
+  </target>
+  
+  <!-- ================================================================
+       Add libraries
+       ================================================================ -->
+
+  <target name="addLibs">
+    <if>
+      <not>
+        <isset property="org.bedework.global.build.ear" />
+      </not>
+      <then>
+        <!-- Library in war file -->
+        <property name="app.dest.lib"
+                  location="${app.dest.webinf}/lib" />
+      </then>
+      <else>
+        <!-- Preserve extra jars for later -->
+        <copy todir="${org.bedework.temp.ear.extrajars.dir}" >
+          <fileset dir="${org.bedework.temp.extrajars.dir}" />
+        </copy>
+      </else>
+    </if>
+  </target>
+  
+  <!-- ================================================================
+       Deploy war
+       ================================================================ -->
+
+  <target name="deployWar">
+    <if>
+      <not>
+        <isset property="org.bedework.global.build.ear" />
+      </not>
+      <then>
+        <infoMsg message="* =========== Deploying standalone app ${app.war.file} into ${org.bedework.appserver.dir}/${propval.app.deploy.dir}" />
+
+        <!-- copy the war file. -->
+        <copy todir="${org.bedework.appserver.dir}/${propval.app.deploy.dir}" file="${app.war.file}"
+              overwrite="yes" />
+
+        <!-- Delete expanded version -->
+        <delete dir="${org.bedework.appserver.dir}/${propval.app.deploy.dir}/${propval.app.war.name}" />
+      </then>
+    </if>
+  </target>
+    
+  <!-- ================================================================
+       Deploy ear
+       ================================================================ -->
+
+  <target name="deployEar">
+    <if>
+      <equals arg1="${org.bedework.global.ear.zipped}"
+              arg2="yes" />
+      <then>
+        <property name="org.bedework.ear.dir"
+                  location="${org.bedework.temp.dir}/${org.bedework.ear.name}" />
+        <property name="org.bedework.ear.file"
+                  location="${org.bedework.temp.dir}/${org.bedework.ear.name}.ear" />
+      </then>
+      <else>
+        <property name="org.bedework.ear.dir"
+                  location="${org.bedework.temp.dir}/${org.bedework.ear.name}.ear" />
+      </else>
+    </if>
+
+    <delete dir="${org.bedework.ear.dir}" />
+    <mkdir dir="${org.bedework.ear.dir}" />
+
+    <property name="org.bedework.ear.properties.jar"
+              value="${org.bedework.ear.dir}/bw-ear-properties.jar"/>
+
+    <!-- Common library in ear file -->
+    <property name="app.dest.lib"
+              location="${org.bedework.ear.dir}" />
+    
+    <!-- Add any extra jars -->
+    <copy todir="${org.bedework.temp.ear.extrajars.dir}" >
+      <fileset dir="${org.bedework.temp.extrajars.dir}" />
+    </copy>
+
+    <!-- And the extra jars we preserved -->
+    <copy todir="${app.dest.lib}" >
+      <fileset dir="${org.bedework.temp.ear.extrajars.dir}" />
+    </copy>
+
+    <infoMsg message="* =========== Building ear file ${org.bedework.ear.dir} for geronimo deployment" />
+
+    <property name="org.bedework.ear.properties.jar"
+              value="${org.bedework.temp.dir}/bw-ear-properties.jar"/>
+
+    <jar jarfile="${org.bedework.ear.properties.jar}">
+      <fileset dir="${org.bedework.ear.properties.dir}"/>
+    </jar>
+        
+    <installJar dir="${build.dir}/platforms/ear-properties" 
+                name="${org.bedework.ear.properties.jar}"/>
+
+    <debugMsg message="outFile=${org.bedework.ear.dir}/META-INF/application.xml
+                        warDir=${org.bedework.temp.dir}/wars
+                        contexts=${org.bedework.global.context.roots}" />
+
+  	<mkdir dir="${org.bedework.ear.dir}/META-INF" />
+  	
+    <applicationXml displayName="Bedework calendar suite"
+                    outFile="${org.bedework.ear.dir}/META-INF/application.xml"
+                    warDir="${org.bedework.temp.dir}/wars"
+                    contexts="${org.bedework.global.context.roots}">
+      <fileset dir="${org.bedework.ear.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </applicationXml>
+      
+        <!--
+    <replace file="${org.bedework.ear.dir}/META-INF/jboss-app.xml"
+             token="@EAR_NAME@" 
+             value="${app.ear.file.name}"/> -->
+
+    <if>
+      <and>
+        <isset property="ear.meta.dir" />
+        <available file="${ear.meta.dir}" type="dir" />
+      </and>
+      <then>
+        <copy todir="${org.bedework.ear.dir}/META-INF">
+          <fileset dir="${ear.meta.dir}" />
+          <filterset refid="property.filters" />
+        </copy>
+      </then>
+    </if>
+    
+    <if>
+      <and>
+        <isset property="service.xmdesc.dir" />
+        <available file="${service.xmdesc.dir}" type="dir" />
+        <available file="${org.bedework.appserver.xmldesc.deploy.dir}" type="dir" />
+      </and>
+      <then>
+        <copy todir="${org.bedework.appserver.xmldesc.deploy.dir}"
+              overwrite="true" >
+          <fileset dir="${service.xmdesc.dir}" />
+          <filterset refid="property.filters" />
+        </copy>
+      </then>
+    </if>
+          
+    <manifest file="${org.bedework.ear.dir}/META-INF/MANIFEST.MF" />
+
+    <if>
+      <equals arg1="${org.bedework.global.ear.wars.zipped}"
+              arg2="yes" />
+      <then>
+        <copy toDir="${org.bedework.ear.dir}">
+          <fileset dir="${dist.home}"
+                   includes="*.war" />
+        </copy>
+      </then>
+      <else>
+        <copy toDir="${org.bedework.ear.dir}">
+          <fileset dir="${org.bedework.temp.wars.home}"/>
+        </copy>
+      </else>
+    </if>
+
+    <if>
+      <equals arg1="${org.bedework.global.ear.zipped}"
+              arg2="yes" />
+      <then>
+         <zip destfile="${org.bedework.ear.file}"
+             basedir="${org.bedework.ear.dir}"/>
+      </then>
+    </if>
+
+    <!-- copy the ear - at the moment copy the uncompressed. -->
+
+    <if>
+      <isset property="org.bedework.appserver.deploy.dir" />
+      <then>
+        <delete dir="${org.bedework.appserver.deploy.dir}/${app.ear.file.name}" />
+        <mkdir dir="${org.bedework.appserver.deploy.dir}/${app.ear.file.name}" />
+        <copy todir="${org.bedework.appserver.deploy.dir}/${app.ear.file.name}">
+          <fileset dir="${org.bedework.ear.dir}"/>
+        </copy>
+      </then>
+    </if>
+  </target>
+</project>

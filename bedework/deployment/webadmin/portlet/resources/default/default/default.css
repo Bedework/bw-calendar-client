@@ -1,0 +1,1049 @@
+/*
+   Licensed to Jasig under one or more contributor license
+   agreements. See the NOTICE file distributed with this work
+   for additional information regarding copyright ownership.
+   Jasig licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file
+   except in compliance with the License. You may obtain a
+   copy of the License at:
+  
+   http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on
+   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied. See the License for the
+   specific language governing permissions and limitations
+   under the License.  
+*/
+
+body {
+  background-color: white;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  min-width: 680px;
+}
+#header {
+  color: #eee;
+  background-color : #333;
+  margin: 0em;
+  padding: 0.5em 1em 0.5em 1em;
+}
+#header a {
+  color: #dde;
+  background-color : transparent;
+}
+#header h1 {
+  font-size: 1.4em;
+  margin: 0.5em 0.5em 0 0;
+}
+#header img {
+  float: right;
+  border: 0;
+}
+#messages,
+#errors {
+  font-size: 0.8em;
+  margin: 0;
+  padding: 0.3em 0 0.3em 1em;
+  border-bottom: 1px solid Gray;
+  color: black;
+  background: #ff0 url(../../resources/glassFill-message.gif) repeat-x top;
+}
+#errors {
+  border: 2px solid red;
+}
+#errors li,
+#messages li {
+  list-style: none;
+}
+#messages p,
+#errors p {
+  margin: 0;
+  padding: 2px 0;
+}
+#statusBarTable {
+  margin: 0;
+  color: #eee;
+  /*background-color: #edc;*/
+  background-color: #5c7486;
+  font-size: 0.8em;
+  width: 100%;
+  border-bottom: 1px solid #999;
+}
+#statusBarTable td.rightCell {
+  text-align: right;
+  padding: 0.2em 1em 0.2em 0em;
+  white-space: nowrap;
+}
+#statusBarTable td.leftCell {
+  text-align: left;
+  padding: 0.2em 0em 0.2em 1em;
+  white-space: nowrap;
+}
+#statusBarTable span.status {
+  font-weight: bold;
+}
+#statusBarTable a:link,
+#statusBarTable a:active,
+#statusBarTable a:visited,
+#statusBarTable a:hover {
+  margin-right: 1em;
+  text-decoration : none;
+  color: #eee;
+  background-color: transparent;
+}
+#statusBarTable a:hover {
+  text-decoration: underline;
+}
+#statusBarTable #bwLogoutButton {
+  margin: 0 0 0 4px;
+}
+#bwAdminMenu {
+  margin: 0;
+  padding: 6px 0 4px 0;
+  color: #eee;
+  background-color: #ddd;
+  font-size: 0.9em;
+  border-bottom: 1px solid #999;
+}
+#bwAdminMenu li {
+  display: inline;
+  margin: 0;
+  /*color: #eee;
+  background: #009 url("../../resources/menuBgBlue.gif") repeat-x top;*/
+  color: #777;
+  background-color: #eee;
+  padding-top: 6px;
+  padding-bottom: 4px;
+  padding-left: 1em;
+  padding-right: 1em;
+  border-bottom: 1px solid #999;
+  border-right: 1px solid #999;
+}
+#bwAdminMenu li.selected {
+  color: #333;
+  background: white url("../../resources/menuBgGray.gif") repeat-x top;
+  border-bottom: 1px solid white;
+}
+#bwAdminMenu a:link,
+#bwAdminMenu a:active,
+#bwAdminMenu a:hover,
+#bwAdminMenu a:visited {
+  color: #777;
+  background-color: transparent;
+  text-decoration: none;
+}
+#bwAdminMenu li.selected a:link,
+#bwAdminMenu li.selected a:active,
+#bwAdminMenu li.selected a:hover,
+#bwAdminMenu li.selected a:visited {
+  color: black;
+  background-color: transparent;
+  text-decoration: none;
+}
+#titleBar {
+  font-size: 0.7em;
+  font-weight: bold;
+  letter-spacing: 3px;
+  background-color: #ddd;
+  color: #666;
+  border-top: 1px solid black;
+  border-bottom: 2px solid black;
+  text-align: center;
+}
+#content {
+  margin: 0;
+  padding: 0 1em 1em 1em;
+}
+#content h2 {
+  margin: 0em;
+  padding: 1em 0.2em 0em 0.2em;
+  font-size: 1.3em;
+}
+#content h3 {
+  margin: 0em;
+  padding: 1em 0.2em 0em 0.2em;
+  font-size: 1.1em;
+}
+#content h4 {
+  margin: 0em;
+  padding: 1em 0.2em 0em 0.2em;
+  font-size: 1em;
+}
+#content .menuTitle {
+  margin: 0em;
+  padding: 1em 0.5em 0em 0.2em;
+}
+#content ol li {
+  padding-bottom: 1em;
+}
+th {
+  text-align: left;
+}
+/* mainMenuTable is deprecated */
+#mainMenuTable {
+  margin-top: 0em;
+  margin-bottom: 1em;
+  /*width: 100%;*/
+}
+#mainMenuTable th {
+  padding: 0.2em 0.5em 0.2em 0.5em;
+  color: black;
+  background-color: #ccc;
+  text-align: left;
+}
+#mainMenuTable td {
+  padding: 0em;
+  color: black;
+  background-color: #eee;
+  text-align: center;
+}
+#mainMenuTable a:link,
+#mainMenuTable a:active,
+#mainMenuTable a:visited {
+  display: block;
+  padding: 0.2em 1em 0.2em 1em;
+  text-decoration: none;
+  color: #483D8B;
+  background-color: transparent;
+}
+#mainMenuTable a:hover {
+  display: block;
+  padding: 0.2em 1em 0.2em 1em;
+  text-decoration: none;
+  color: #483D8B;
+  background-color: #ffe;
+}
+#mainMenuTable form {
+  display: inline;
+}
+/* mainMenu = manage events tab icons and links */
+#mainMenu {
+  margin: 2em auto 4em auto;
+}
+#mainMenu td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 1em 0.5em;
+}
+#mainMenu img {
+  text-align: center;
+}
+#mainMenu a:link,
+#mainMenu a:active,
+#mainMenu a:visited,
+#mainMenu a:hover {
+  display: block;
+  padding: 0.2em 1em 0.2em 1em;
+  text-decoration: none;
+  color: #483D8B;
+  background-color: transparent;
+}
+#mainMenuEventSearch {
+
+}
+#searchForm {
+  font-size: 0.8em;
+  margin: 0 0 0 3px;
+}
+#searchForm input {
+  font-size: 0.7em;
+}
+#searchPageForm {
+  display: inline;
+  margin: 0px 0px 1px 0px;
+  padding: 0em;
+  white-space: nowrap;
+  float: right;
+}
+#searchFilter {
+  float: right;
+  font-size: 10pt;
+  font-weight: normal;
+  margin-top: 5px;
+}
+#searchTable {
+  width: 100%;
+  font-size: 0.9em;
+  margin: 0px;
+  padding: 0px;
+  /*border-bottom: 2px solid #aaa;
+  border-left: 2px solid #aaa;
+  border-right: 2px solid #aaa;*/
+}
+#searchTable th {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  text-align: left;
+  background: #e5e5e5;
+  color: #000;
+  font-weight: normal;
+}
+#searchTable td {
+  padding: 4px;
+  vertical-align: top;
+}
+#searchTable tr.fieldNames td {
+  background: #eee;
+  border-bottom: 1px solid #ccc;
+}
+#searchTable td.relevance {
+  white-space: nowrap;
+}
+#searchTable .searchRelevance {
+  background-color: #2c5f89;
+  color: black;
+}
+#calSuiteTitle {
+  border: 1px solid #666;
+  color: black;
+  background-color: #ffe;
+  padding: 0.5em;
+  margin: 1em 0;
+
+}
+.adminMenu {
+}
+ul.adminMenu {
+}
+ul.adminMenu li {
+  padding: 0.25em 0 0 0;
+}
+ul.adminMenu a:link,
+ul.adminMenu a:active,
+ul.adminMenu a:visited {
+  text-decoration: none;
+  color: #483D8B;
+  background-color: transparent;
+}
+ul.adminMenu a:hover {
+  text-decoration: none;
+  color: #483D8B;
+  background-color: #ff3;
+}
+#bwSubmittedEventCommentBlock {
+  font-size: 0.9em;
+  padding: 1em;
+  border: 1px solid #ccc;
+  background-color: #ffe;
+  color: black;
+}
+#bwSubmittedBy {
+  float: right;
+}
+#bwSubmittedEventCommentBlock h4 {
+  display: inline;
+  font-size: 1.1em;
+}
+#bwSubmittedEventCommentBlock table {
+  float: left;
+  margin: 1em 1em 0 0;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+}
+#bwSubmittedEventCommentBlock td {
+  padding: 0 3em 0 1em;
+}
+#bwSubmittedEventCommentBlock th {
+  padding: 0 3em 0 0;
+}
+#bwSubmittedEventCommentBlock p {
+  padding-top: 1em;
+  clear: both;
+}
+#bwSubmittedEventCommentBlock a.toggle {
+  padding-left: 1em;
+  font-size: 0.9em;
+}
+#commonListTable {
+  margin-bottom: 2em;
+}
+#commonListTable th {
+  padding: 0.2em 1em 0.2em 0.5em;
+  background-color : #ccc;
+  color: black;
+  white-space: nowrap;
+}
+#commonListTable td {
+  vertical-align: top;
+  font-size: 0.9em;
+  padding: 0.2em 1em 0.2em 0.5em;
+  color: black;
+  background-color: #eee;
+}
+#commonListTable td.date,
+#commonListTable td.calcat {
+  white-space: nowrap;
+}
+.recurrenceEditLinks {
+  font-style: italic;
+  font-size: 0.9em;
+  margin-top: 0.5em;
+}
+table.eventFormTable {
+  margin: 1em 0;
+}
+table.eventFormTable td {
+  vertical-align: top;
+  font-size: 0.9em;
+}
+table.eventFormTable td.fieldName {
+  width: 7em;
+}
+table.eventFormTable th,
+table.eventFormTable td.fieldName {
+  white-space: nowrap;
+  font-weight: bold;
+  background-color : #eee;
+  color: black;
+  padding: 0.2em;
+  font-size: 0.9em;
+  vertical-align: top;
+}
+table.eventFormTable tr.validationError td.fieldName {
+  color: black;
+  background-color: #ee0 !important;
+}
+table.eventFormTable td.optional {
+  white-space: nowrap;
+  font-style: italic;
+  background-color : #eee;
+  color: black;
+  padding: 0.2em;
+}
+table.eventFormTable td.allField {
+  white-space: nowrap;
+  text-align: right;
+  font-style: italic;
+  background-color : white;
+  color: black;
+  padding: 0.2em;
+}
+.dateFields {
+  display: inline;
+}
+.timeFields {
+  display: inline;
+  margin-left: 1em;
+}
+.fieldInfo {
+  font-size: 0.9em;
+  font-style: italic;
+}
+table.eventFormTable div.fieldInfo {
+  width: 400px;
+  margin-bottom: 0.5em;
+}
+.dateStartEndBox {
+  border: 1px solid #ccb;
+  margin: 4px;
+  padding: 4px;
+  white-space: nowrap;
+}
+.dateStartEndBox strong {
+  display: block;
+}
+table.eventFormTable .startDateLabel {
+  margin-left: 26px;
+}
+table.eventFormTable select.timezones {
+  margin-left: 1em;
+  width: 160px;
+}
+.shown {
+  display: inline;
+}
+.invisible {
+  display: none !important;
+}
+.hidden {
+  visibility: hidden;
+}
+table.eventFormTable div.durationBox {
+  border: 1px solid #ccb;
+  display: inline;
+  margin: 4px;
+  padding: 4px;
+}
+table.eventFormTable .durationSpacerText {
+  font-weight: bold;
+  margin: 0 1em;
+}
+table.params {
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+}
+table.params th {
+  white-space: normal !important;
+  width: 150px;
+  font-weight: normal;
+  padding: 0.5em;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+table.params td {
+  font-weight: bold;
+  padding: 0.5em;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+table.params td input {
+  width: 200px;
+}
+table.params td input.wide {
+  width: 400px;
+}
+table.params .desc {
+  font-weight: normal;
+  font-size: 0.8em;
+  font-style: italic;
+  color: #666;
+  background-color: transparent;
+}
+#confirmButtons {
+  margin: 1em 0 !important;
+}
+#calDescriptionsLink {
+  font-size: 0.8em;
+}
+#flatCalendarDescriptions {
+  font-size: 0.9em;
+  padding: 0.2em;
+}
+#flatCalendarDescriptions td {
+  padding: 0.2em;
+}
+.autoCompleteMatched {
+  color: black;
+  background-color: white;
+}
+.autoCompleteHover {
+  background-color: #3366cc;
+  color: white;
+}
+.autoCompleteNormal {
+  background-color: white;
+  color: black;
+}
+.autoCompleteCell {
+  color: #3366cc;
+}
+.autoCompleteTable {
+  width: 386px;
+  border-collapse: collapse;
+  border-left: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+.autoCompleteTable td {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 0.8em;
+}
+.edit {
+  top: -4px;
+  background: #F8F8F8;
+  border: 1px solid #ccc;
+}
+.highlite {
+  background: #FFF;
+  border: 1px dashed #ccc;
+}
+#clock {
+  position: absolute;
+  top: 160px;
+  margin: auto;
+}
+#startTimeFields img,
+#endTimeFields img {
+  vertical-align: middle;
+}
+#tztable {
+  margin-top: 1em;
+}
+#tztable td {
+  padding: 2px 4px;
+}
+#recurringSwitch {
+  margin: 0;
+}
+#recurrenceInfo {
+  margin: 0;
+  padding: 1em;
+  border: 1px solid #ddd;
+  font-size: 0.9em;
+}
+#rrulesSwitch,
+#rrulesUiSwitch {
+  font-size: 0.8em;
+}
+#rrulesFields {
+  margin: 0;
+  padding: 0;
+}
+#rrulesTable {
+  border: 1px solid #ddd;
+  margin: 0;
+  padding: 0;
+}
+#rrulesTable strong {
+  display: inline;
+}
+#rrulesTable td#recurrenceFrequency {
+  padding: 0.5em 1em;
+  border-right: 1px solid #ddd;
+  white-space: nowrap;
+}
+#rrulesTable td#advancedRrules {
+  padding: 0.5em 1em 0.5em 1em;
+  border-top: 1px solid #ddd;
+}
+#rrulesTable td#recurrenceUntil {
+  width: 100%;
+  padding: 0.5em 0 0 1em;
+}
+.chkBoxListItem {
+  display: block;
+  float: left;
+  width: 3em;
+}
+#rrulesTable br {
+  clear: both;
+}
+#rrulesTable p {
+  margin: 0 0 0.5em 0;
+}
+#rrulesTable p.weekRecurLinks {
+  margin: 1em 0 1em 0;
+}
+#rrulesTable .extraByMonthPosFields {
+  margin: 0 0 1em 2em;
+  padding: 0;
+}
+#rrulesTable #monthRecurFields div,
+#rrulesTable #yearRecurFields div {
+  display: block;
+  margin: 0 0 0.5em 0;
+}
+#rrulesTable #dayMonthCheckBoxList,
+#rrulesTable #monthDaysCheckBoxList,
+#rrulesTable #yearWeeksCheckBoxList,
+#rrulesTable #yearMonthCheckBoxList,
+#rrulesTable #yearMonthDaysCheckBoxList,
+#rrulesTable #yearDaysCheckBoxList {
+  margin: 0.5em 0 0.5em 2em;
+  display: block;
+  clear: both;
+  white-space: nowrap !important;
+}
+#recurrenceDatesButton input {
+  margin: 0;
+  font-size: 0.8em;
+}
+#rdatesFormFields {
+  font-size: 0.9em;
+  padding: 0.5em;
+}
+#rdatesFormFields p {
+  clear: both;
+  margin-top: 1em;
+}
+.rdatesTable {
+  font-size: 0.9em;
+  border: 1px solid #ddd;
+}
+.rdatesTable td {
+  padding: 0.5em 1em;
+}
+.rdatesTable td.trash {
+  text-align: right;
+}
+.rdatesTable td.note {
+  text-align: center;
+  font-size: 0.9em;
+}
+#bwCurrentRdates,
+#bwCurrentExdates,
+#bwCurrentRdatesNone,
+#bwCurrentExdatesNone {
+  float: left;
+  margin: 1em 2em 1em 0;
+}
+#bwCurrentRdates th,
+#bwCurrentRdates td,
+#bwCurrentExdates th,
+#bwCurrentExdates td {
+  text-align: left;
+  padding: 0 0.5em 0 0;
+}
+#bwDialogBox {
+  margin: 1em;
+  background: white;
+  color: black;
+}
+#bwDialogBox h4 {
+  padding: 4px;
+  margin: 0;
+  text-align: center;
+  color: #eee;
+  background: #233979 url(../../resources/glassFill-02.gif) repeat-x bottom;
+  border: 2px solid #233979;
+}
+#bwDialogBox #errors,
+#bwDialogBox #messages {
+  margin: 0;
+}
+#bwDialogBox table {
+  width: 100%;
+  margin: 1em 0;
+}
+#bwDialogBox table th {
+  padding: 2px;
+  text-align: center;
+  color: black;
+  background: #eee;
+}
+#contactEmailAlert {
+  display: none;
+  background: transparent url('../../resources/email.gif') no-repeat top left;
+  /*position: relative;
+  top: -20px;
+  left: 250px;*/
+  float: left;
+  width: 150px;
+  height: 20px;
+}
+#submitTable {
+  position: relative; /* allows for absolute positioning within the table, e.g. #pubishBox */
+  width: 96%; /* less than 100% helps avoid IE weirdness */
+  margin-top: 1em;
+}
+#publishBox {
+  position: absolute;
+  padding: 1em;
+  background-color: #ffa;
+  color: black;
+  border: 1px solid #333;
+  width: 420px;
+  height: 60px;
+}
+#publishBoxCloseButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+}
+#sharingBox {
+  margin: 0;
+  border-top: 1px solid #333;
+  padding: 1em 1em 2em 1em;
+}
+#bwEventTab-Access #sharingBox {
+  border-top: none;
+}
+#sharingBox h3,
+#sharingBox h5 {
+  padding: 0 0 0.5em 0;
+}
+#sharingBox ul {
+  font-size: 0.8em;
+  margin: 0 1em;
+}
+#sharingBox p {
+  font-size: 0.9em;
+}
+#shareForm {
+  margin: 1em 0;
+  padding: 0;
+}
+#shareFormTable td {
+  border: 1px solid #666;
+  padding: 0 0 0.5em 0;
+  vertical-align: top;
+}
+#shareFormTable h5 {
+  background: #e5e5e5;
+  color: black;
+  margin: 0;
+  padding: 4px;
+}
+#shareFormTable #accessRightsToggle {
+  float: right;
+  font-weight: normal;
+  font-size: 0.8em;
+}
+#shareFormTable .whoTypes {
+  margin: 1em;
+}
+#howTable {
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8em;
+  width: 100%;
+}
+#howTable th {
+  color: white;
+  background-color: #999;
+  font-weight: normal;
+}
+#howTable td {
+  white-space: nowrap;
+  border-top: 1px dotted #ccc;
+  border-right: none;
+  border-left: none;
+  border-bottom: none;
+  text-align: center;
+}
+#howTable td.level1 {
+  text-align: left;
+  font-weight: bold;
+}
+#howTable td.level2 {
+  padding-left: 2em;
+  text-align: left;
+  font-weight: bold;
+}
+#howTable td.level3 {
+  padding-left: 4em;
+  text-align: left;
+}
+#howTable td.level4 {
+  padding-left: 6em;
+  text-align: left;
+}
+#howTable td.level5 {
+  padding-left: 8em;
+  text-align: left;
+}
+#howList {
+  margin: 0;
+  padding: 0 0 1em 0;
+}
+#howList ul {
+  margin: 0 0 0 2em;
+  padding: 0 0 0.5em 0;
+}
+#howList li {
+  list-style-type: none;
+  margin-left: 0;
+  font-size: 11px;
+}
+table.common {
+  width: 100%;
+  font-size: 0.9em;
+  margin: 0px;
+  padding: 0px;
+}
+table.common th {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em;
+  background-color: #ddd;
+  color: black;
+  white-space: nowrap;
+}
+table.common th.thin {
+  width: 80px;
+}
+table.common th.commonHeader {
+  vertical-align: middle;
+  background-color: #666;
+  color: #eee;
+  padding: 0.2em 0.5em;
+  text-align: left;
+  font-weight: normal;
+}
+#deleteListTable {
+  margin: 1em 0em 2em 1em;
+}
+#deleteListTable th {
+  text-align: left;
+  padding: 0.2em 1em 0.2em 0.5em;
+}
+#deleteListTable td {
+  vertical-align: top;
+  font-size: 0.9em;
+  padding: 0.2em 1em 0.2em 0.5em;
+}
+#deleteListTable .summary {
+  font-style: italic;
+}
+#calendarTable {
+}
+#calendarTable td,
+#subsTable td {
+  padding: 0 0.5em;
+  vertical-align: top;
+}
+#calendarTable td.cals,
+#subsTable td.cals {
+  border-right: 1px solid #aaa;
+  font-size: 0.9em;
+}
+#calendarTable td.cals {
+  width: 300px;
+}
+
+#calendarTable td.bwCalsForMove {
+  padding-top: 1em;
+  font-size: 0.8em;
+}
+#subsTable td.cals {
+  width: 200px;
+}
+#viewsTable {
+  width: 100%;
+  border: 1px solid #eee;
+}
+#viewsTable td {
+  padding: 0 0.5em;
+  vertical-align: top;
+  font-size: 0.9em;
+}
+#content h3.viewName {
+  color: black;
+  background-color: #eee;
+  font-size: 1.1em;
+  padding: 0.25em;
+  margin: 1em 0 0 0;
+}
+#viewsTable td.subs {
+  border-right: 1px solid #aaa;
+  width: 200px;
+}
+#viewsTable table.subscriptionsListSubs {
+  text-align: right;
+  width: 200px;
+}
+#viewsTable table td.arrows {
+  width: 15px;
+}
+#authUserInputForms {
+  margin: 1em 0;
+}
+#adminGroupFormTable td,
+#adminGroupFormTable th {
+  vertical-align: top;
+}
+#adminGroupFormTable td.fieldName {
+  color: black;
+  background-color: #eee;
+}
+p.note {
+  margin: 0;
+  padding: 0;
+  font-size: 0.8em;
+  font-style: italic;
+}
+#calTreeBlock {
+  font-size: 0.9em;
+  padding: 2em;
+}
+#calendarTree ul {
+  padding-left: 10px;
+  margin-left: 10px;
+}
+#calendarTree li {
+  padding-top: 0.25em;
+  /*font-weight: bold;*/
+}
+#calendarTree li.folder {
+  list-style-image: url(../../resources/catIcon.gif);
+}
+#calendarTree li.calendar {
+  list-style-image: url(../../resources/calIcon-sm.gif);
+}
+#calendarTree a:link,
+#calendarTree a:active,
+#calendarTree a:visited {
+  text-decoration: none;
+}
+#calendarTree a:hover {
+  color: black;
+  background-color: #ff3;
+}
+#calendarTree img.bwPlusMinusIcon {
+  /* the arrangement below is required for cross-browser compatibility;
+     be cautious changing it (works IE7, FF2, Safari 3) */
+  position: relative;
+  top: -2px;
+  margin: 0 25px 0 -35px;
+}
+#filterTable {
+  font-size: 0.9em;
+}
+#filterTable th {
+  vertical-align: top;
+  border: 1px solid #ddd;
+  color: black;
+  background-color: #ddd;
+}
+#filterTable td {
+  vertical-align: top;
+  border: 1px solid #ddd;
+  padding: 0.5em;
+}
+#filterTable .filterdef {
+  white-space: pre;
+  padding: 1em;
+  color: #8B4513;
+  background-color: transparent;
+}
+#statsTable {
+  margin: 1em 0 0 4em;
+  width: 300px;
+}
+#statsTable th {
+  padding: 0.5em;
+  background-color: #eee;
+  color: black;
+}
+#statsTable td.label {
+  text-align: right;
+  padding-right: 2em;
+}
+#logoutButton  {
+  display: inline;
+}
+#logoutButton form {
+  display: inline;
+  margin-right: 0.5em;
+}
+.center {
+  text-align: center;
+}
+.smaller {
+  font-size: 0.8em;
+}
+/* even and odd -- for coloring table rows and the like */
+.even {
+  background-color: #eee;
+  color: black;
+}
+.odd {
+  background-color: transparent;
+  color: black;
+}
+.padTop {
+  padding-top: 1em;
+}
+#footer {
+  clear: both;
+  padding: 1em;
+  margin-top: 2em;
+  border-top: 1px solid #999;
+  font-size: 0.7em;
+  background-color: transparent;
+  color: #999;
+}
+#footer a {
+  color: #999;
+  background-color: inherit;
+}

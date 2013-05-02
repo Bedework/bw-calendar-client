@@ -1,0 +1,2296 @@
+/* ********************************************************************
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License. You may obtain a
+    copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on
+    an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+*/
+package org.bedework.webcommon;
+
+import org.bedework.appcommon.BedeworkDefs;
+import org.bedework.appcommon.CalendarInfo;
+import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.ImageProcessing;
+import org.bedework.appcommon.InOutBoxInfo;
+import org.bedework.appcommon.MyCalendarVO;
+import org.bedework.appcommon.NotificationInfo;
+import org.bedework.appcommon.TimeView;
+import org.bedework.caldav.util.filter.FilterBase;
+import org.bedework.caldav.util.filter.ObjectFilter;
+import org.bedework.caldav.util.filter.OrFilter;
+import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.BwDuration;
+import org.bedework.calfacade.BwEvent;
+import org.bedework.calfacade.BwEventObj;
+import org.bedework.calfacade.BwFilterDef;
+import org.bedework.calfacade.BwLocation;
+import org.bedework.calfacade.BwPreferences;
+import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.BwResource;
+import org.bedework.calfacade.BwResourceContent;
+import org.bedework.calfacade.BwString;
+import org.bedework.calfacade.BwSystem;
+import org.bedework.calfacade.RecurringRetrievalMode;
+import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
+import org.bedework.calfacade.ScheduleResult;
+import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
+import org.bedework.calfacade.SubContext;
+import org.bedework.calfacade.base.BwTimeRange;
+import org.bedework.calfacade.base.CategorisedEntity;
+import org.bedework.calfacade.configs.AdminConfig;
+import org.bedework.calfacade.configs.ConfigCommon;
+import org.bedework.calfacade.configs.WebConfigCommon;
+import org.bedework.calfacade.env.CalOptionsFactory;
+import org.bedework.calfacade.exc.CalFacadeAccessException;
+import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.calfacade.filter.BwCategoryFilter;
+import org.bedework.calfacade.filter.BwCreatorFilter;
+import org.bedework.calfacade.locale.BwLocale;
+import org.bedework.calfacade.svc.BwCalSuite;
+import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.calfacade.util.BwDateTimeUtil;
+import org.bedework.calfacade.util.ChangeTable;
+import org.bedework.calfacade.util.ChangeTableEntry;
+import org.bedework.calsvci.CalSvcFactoryDefault;
+import org.bedework.calsvci.CalSvcI;
+import org.bedework.calsvci.CalSvcIPars;
+import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
+import org.bedework.calsvci.ResourcesI;
+import org.bedework.calsvci.SchedulingI;
+import org.bedework.calsvci.SchedulingI.FbResponses;
+import org.bedework.sysevents.events.HttpEvent;
+import org.bedework.sysevents.events.HttpOutEvent;
+import org.bedework.sysevents.events.SysEventBase.SysCode;
+
+import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
+import edu.rpi.cmt.calendar.ScheduleStates;
+import edu.rpi.cmt.timezones.Timezones;
+import edu.rpi.sss.util.DateTimeUtil;
+import edu.rpi.sss.util.Util;
+import edu.rpi.sss.util.jsp.Request;
+import edu.rpi.sss.util.jsp.UtilAbstractAction;
+import edu.rpi.sss.util.jsp.UtilActionForm;
+import edu.rpi.sss.util.servlets.PresentationState;
+
+import net.fortuna.ical4j.model.Dur;
+
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.upload.FormFile;
+import org.apache.struts.util.MessageResources;
+import org.apache.struts.util.RequestUtils;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/** This abstract action performs common setup actions before the real
+ * action method is called.
+ *
+ * @author  Mike Douglass  douglm@rpi.edu
+ */
+public abstract class BwAbstractAction extends UtilAbstractAction
+                                       implements ForwardDefs {
+  /** Name of the init parameter holding our name */
+  private static final String appNameInitParameter = "rpiappname";
+
+  /*
+   *  (non-Javadoc)
+   * @see edu.rpi.sss.util.jsp.UtilAbstractAction#getId()
+   */
+  @Override
+  public String getId() {
+    return getClass().getName();
+  }
+
+  /** This is the routine which does the work.
+   *
+   * @param request   For request pars and BwSession
+   * @param frm       Action form
+   * @return int      forward index
+   * @throws Throwable
+   */
+  public abstract int doAction(BwRequest request,
+                               BwActionFormBase frm) throws Throwable;
+
+  @Override
+  public String performAction(final Request request,
+                              final MessageResources messages) throws Throwable {
+    HttpServletRequest req = request.getRequest();
+    BwActionFormBase form = (BwActionFormBase)request.getForm();
+    String adminUserId = null;
+
+    setConfig(request, form);
+
+    request.setSessionAttr("org.bedework.logprefix",
+                           form.retrieveConfig().getLogPrefix());
+
+    boolean guestMode = form.retrieveConfig().getGuestMode();
+
+    if (guestMode) {
+      form.assignCurrentUser(null);
+    } else {
+      adminUserId = form.getCurrentAdminUser();
+      if (adminUserId == null) {
+        adminUserId = form.getCurrentUser();
+      }
+    }
+
+    if (getPublicAdmin(form)) {
+      /** We may want to masquerade as a different user
+       */
+
+      String temp = request.getReqPar("adminUserId");
+
+      if (temp != null) {
+        adminUserId = temp;
+      }
+    }
+
+    BwSession s = getState(request, form, messages, adminUserId);
+
+    // We need to have set the current locale before we do this.
+    form.setCalInfo(CalendarInfo.getInstance());
+
+    if (s == null) {
+      /* An error should have been emitted.*/
+      return forwards[forwardError];
+    }
+
+    form.setSession(s);
+    form.setGuest(s.isGuest());
+
+    if (form.getGuest()) {
+      // force public view on - off by default
+      form.setPublicView(true);
+    }
+
+    String appBase = form.getAppBase();
+
+    if (appBase != null) {
+      // Embed in request for pages that cannot access the form (loggedOut)
+      req.setAttribute("org.bedework.action.appbase", appBase);
+    }
+
+    BwRequest bwreq = new BwRequest(request, s, this);
+
+    if (form.getNewSession()) {
+      if (debug) {
+        traceConfig(request);
+      }
+
+      reload(bwreq);
+
+      if (!getPublicAdmin(form)) {
+        String viewType = request.getReqPar("viewType");
+        if (viewType != null) {
+          form.setCurViewPeriod(form.getViewTypeI());
+        } else {
+          form.setViewType(form.fetchSvci().getPrefsHandler().get().getPreferredViewPeriod());
+        }
+
+        // Set to default view or view in request.
+        String viewName = request.getReqPar("viewName");
+
+        if (!setView(viewName, form) && (viewName != null)) {
+          // try default
+          setView(null, form);
+        }
+      }
+    }
+
+    /*if (debug) {
+      BwFilter filter = bwreq.getFilter(debug);
+      if (filter != null) {
+        debugMsg(filter.toString());
+      }
+    }*/
+
+    /* Set up ready for the action - may reset svci */
+
+    int temp = actionSetup(request, form);
+    if (temp != forwardNoAction) {
+      return forwards[temp];
+    }
+
+    CalSvcI svci = form.fetchSvci();
+
+    try{
+      String tzid = svci.getPrefsHandler().get().getDefaultTzid();
+
+      if (tzid != null) {
+        Timezones.setThreadDefaultTzid(tzid);
+      }
+    } catch (Throwable t) {
+    }
+
+    if (!form.getGuest()) {
+      form.assignImageUploadDirectory(svci.getPrefsHandler().get().getDefaultImageDirectory());
+    }
+
+    if (form.getDirInfo() == null) {
+      form.setDirInfo(svci.getDirectories().getDirectoryInfo());
+    }
+
+    if (form.getNewSession()) {
+      // Set the default skin
+      BwPreferences prefs = svci.getPrefsHandler().get();
+
+      PresentationState ps = form.getPresentationState();
+
+      if (ps.getSkinName() == null) {
+        // No skin name supplied - use the default
+        String skinName = prefs.getSkinName();
+
+        ps.setSkinName(skinName);
+        ps.setSkinNameSticky(true);
+      }
+
+      form.setHour24(form.getConfig().getHour24());
+      if (!getPublicAdmin(form) &&
+          !getSubmitApp(form) &&
+          !form.getGuest()) {
+        form.setHour24(prefs.getHour24());
+      }
+
+      form.setEndDateType(BwPreferences.preferredEndTypeDuration);
+      if (!getPublicAdmin(form) && !form.getGuest()) {
+        form.setEndDateType(prefs.getPreferredEndType());
+      }
+    }
+
+    if (form.getSyspars() == null) {
+      form.setSyspars(svci.getSysparsHandler().get());
+    }
+
+    /* see if we got cancelled */
+
+    String reqpar = request.getReqPar("cancelled");
+
+    if (reqpar != null) {
+      /** Set the objects to null so we get new ones.
+       */
+      form.getMsg().emit(ClientMessage.cancelled);
+      return forwards[forwardCancelled];
+    }
+
+    if (!getPublicAdmin(form) && !form.getGuest()) {
+      InOutBoxInfo ib = form.getInBoxInfo();
+      if (ib == null) {
+        ib = new InOutBoxInfo(svci, true);
+        form.setInBoxInfo(ib);
+      } else {
+        ib.refresh(false);
+      }
+
+      InOutBoxInfo ob = form.getOutBoxInfo();
+      if (ob == null) {
+        ob = new InOutBoxInfo(svci, false);
+        form.setOutBoxInfo(ob);
+      } else {
+        ob.refresh(false);
+      }
+
+      NotificationInfo ni = form.getNotificationInfo();
+      if (ni == null) {
+        ni = new NotificationInfo();
+        form.setNotificationInfo(ni);
+      }
+
+      ni.refresh(svci, false);
+    }
+
+    String forward;
+
+    try {
+      if (bwreq.present("viewType")) {
+        gotoDateView(form,
+                     form.getDate(),
+                     form.getViewTypeI());
+      }
+
+      forward = forwards[doAction(bwreq, form)];
+
+      if (!getPublicAdmin(form)) {
+        /* See if we need to refresh */
+        checkRefresh(form);
+      }
+    } catch (CalFacadeAccessException cfae) {
+      form.getErr().emit(ClientError.noAccess);
+      forward = forwards[forwardNoAccess];
+      rollback(svci);
+    } catch (CalFacadeException cfe) {
+      form.getErr().emit(cfe.getMessage(), cfe.getExtra());
+      form.getErr().emit(cfe);
+
+      forward = forwards[forwardError];
+      rollback(svci);
+    } catch (Throwable t) {
+      form.getErr().emit(t);
+      forward = forwards[forwardError];
+      rollback(svci);
+    }
+
+    return forward;
+  }
+
+  protected void rollback(final CalSvcI svci) {
+    try {
+      svci.rollbackTransaction();
+    } catch (Throwable t) {}
+
+    try {
+      svci.endTransaction();
+    } catch (Throwable t) {}
+  }
+
+  /** Called just before action.
+   *
+   * @param request
+   * @param form
+   * @return int foward index
+   * @throws Throwable
+   */
+  public int actionSetup(final Request request,
+                         final BwActionFormBase form) throws Throwable {
+    if (getPublicAdmin(form)) {
+      return AdminUtil.actionSetup(request);
+    }
+
+    // Not public admin.
+
+    WebConfigCommon conf = form.retrieveConfig();
+
+    /*
+    if (form.getNewSession()) {
+      // Try to enable supersuer mode for personal clients.
+      // First time through here for this session. svci is still set up for the
+      // authenticated user. Set access rights.
+      if (form.getCurrentUser().equals("root")) {
+        form.fetchSvci().setSuperUser(true);
+      }
+    }
+    */
+
+    String refreshAction = getRefreshAction(form);
+    Integer refreshInt = getRefreshInt(form);
+
+    if (refreshAction == null) {
+      refreshAction = conf.getRefreshAction();
+    }
+
+    if (refreshAction == null) {
+      refreshAction = form.getActionPath();
+    }
+
+    if (refreshAction != null) {
+      if (refreshInt == null) {
+        refreshInt =  conf.getRefreshInterval();
+      }
+
+      setRefreshInterval(request.getRequest(), request.getResponse(),
+                         refreshInt, refreshAction, form);
+    }
+
+    //if (debug) {
+    //  log.debug("curTimeView=" + form.getCurTimeView());
+    //}
+
+    return forwardNoAction;
+  }
+
+  /** Called to reload lists and reset the session. Can be used to force update
+   * of cached lists etc.
+   *
+   * @param request
+   * @throws Throwable
+   */
+  public void reload(final Request request) throws Throwable {
+    BwActionFormBase form = (BwActionFormBase)request.getForm();
+    CalSvcI svci = form.fetchSvci();
+
+    form.setFilters(svci.getFiltersHandler().getAll());
+  }
+
+  /** Set the config object.
+   *
+   * @param request
+   * @param form
+   * @throws Throwable
+   */
+  public void setConfig(final Request request,
+                        final BwActionFormBase form) throws Throwable {
+    if (form.configSet() && !form.getConfig().getGuestMode()) {
+      return;
+    }
+
+    HttpSession session = request.getRequest().getSession();
+    ServletContext sc = session.getServletContext();
+
+    String appname = sc.getInitParameter("bwappname");
+
+    if ((appname == null) || (appname.length() == 0)) {
+      appname = "unknown-app-name";
+    }
+
+    WebConfigCommon conf = (WebConfigCommon)CalOptionsFactory.getOptions().
+        getAppProperty(appname);
+    if (conf == null) {
+      throw new CalFacadeException("No config available for app " + appname);
+    }
+
+    conf = (WebConfigCommon)conf.clone();
+    form.setConfig(conf); // So we can get an svci object and set defaults
+
+    if (!conf.getGuestMode()) {
+      return;
+    }
+
+    // Public client - do subcontext setup.
+
+    checkSvci(request,
+              null, // user
+              false); // canSwitch
+
+    CalSvcI svc = form.fetchSvci();
+    SubContext sub = null;
+    BwSystem sys = svc.getSysparsHandler().get();
+
+    String path = request.getRequest().getServletPath();
+
+    if (path != null) {
+      String[] pathels = path.split("/");
+
+      // First element null for "/"
+
+      if (pathels.length > 1) {
+        sub = sys.findContext(pathels[1]);
+
+        if (sub != null) {
+          BwCalSuiteWrapper curCs = svc.getCalSuitesHandler().get();
+
+          if ((curCs != null) && (!curCs.getName().equals(sub.getCalSuite()))) {
+            // Discard the current session
+            BwWebUtil.dropState(request.getRequest());
+          }
+
+          svc.setCalSuite(sub.getCalSuite());
+          conf.setCalSuite(sub.getCalSuite());
+          return;
+        }
+      }
+    }
+
+    // No subcontext supplied - use the named default or the one in the config
+
+    Set<SubContext> subcs = sys.getContexts();
+
+    for (SubContext subc: subcs) {
+      if (subc.getDefaultContext()) {
+        svc.setCalSuite(subc.getCalSuite());
+        conf.setCalSuite(subc.getCalSuite());
+        return;
+      }
+    }
+
+    // Just go with default in config
+    svc.setCalSuite(conf.getCalSuite());
+    return;
+  }
+
+  protected void initFields(final BwActionFormBase form) {
+  }
+
+  protected int setEventListPars(final BwRequest request,
+                                      final EventListPars elpars) throws Throwable {
+    BwActionFormBase form = request.getBwForm();
+    CalSvcI svc = form.fetchSvci();
+
+    String startStr = request.getReqPar("start");
+    String endStr = request.getReqPar("end");
+
+    BwSystem sysp = svc.getSysparsHandler().get();
+
+    int days = request.getIntReqPar("days", -32767);
+    if (days < 0) {
+      days = sysp.getDefaultWebCalPeriod();
+    }
+
+    if ((startStr == null) && (endStr == null)) {
+      if (!form.getListAllEvents()) {
+        elpars.setFromDate(todaysDateTime(form));
+
+        // Must have end
+
+        elpars.setToDate(elpars.getFromDate().addDur(new Dur(days, 0, 0, 0)));
+      }
+    } else {
+      int max = 0;
+
+      if (!svc.getSuperUser()) {
+        max = sysp.getMaxWebCalPeriod();
+      }
+
+      BwTimeRange tr = BwDateTimeUtil.getPeriod(request.getReqPar("start"),
+                                              request.getReqPar("end"),
+                                              java.util.Calendar.DATE,
+                                              days,
+                                              java.util.Calendar.DATE,
+                                              max);
+
+      if (tr == null) {
+        form.getErr().emit(ClientError.badRequest, "dates");
+        return forwardNoAction;
+      }
+
+      elpars.setFromDate(tr.getStart());
+      elpars.setToDate(tr.getEnd());
+    }
+
+    int page = request.getIntReqPar("p", -1);
+    elpars.setPaged(page > 0);
+    elpars.setCurPage(page);
+
+    if (elpars.getPaged()) {
+      elpars.setPageSize(svc.getPrefsHandler().get().getPageSize());
+      if (elpars.getPageSize() < 0) {
+        elpars.setPaged(false);
+      }
+    }
+
+    BwCalendar cal = request.getCalendar(false);
+
+    if ((cal == null) && (getPublicAdmin(form))) {
+      BwCalSuite cs = svc.getCalSuitesHandler().get();
+      if (cs != null) {
+        cal = svc.getCalendarsHandler().get(cs.getRootCollectionPath());
+      }
+    }
+
+    if (cal != null) {
+      elpars.setCollection(cal);
+    }
+
+    FilterBase filter = null;
+    BwFilterDef fd = request.getFilterDef();
+
+    if (fd != null) {
+      filter = fd.getFilters();
+    } else {
+      Collection<String> cats = request.getReqPars("cat");
+
+      if (cats != null) {
+        for (String catStr: cats) {
+          BwCategory cat = svc.getCategoriesHandler().find(new BwString(null, catStr),
+                                                           null);
+          if (cat != null) {
+            filter = addor(filter, cat);
+          }
+        }
+      }
+
+      cats = request.getReqPars("catuid");
+
+      if (cats != null) {
+        for (String catStr: cats) {
+          BwCategory cat = svc.getCategoriesHandler().get(catStr);
+          if (cat != null) {
+            filter = addor(filter, cat);
+          }
+        }
+      }
+
+
+      if (!getPublicAdmin(form)) {
+        String creatorHref = request.getReqPar("creator");
+
+        if (creatorHref != null) {
+          BwCreatorFilter crefilter = new BwCreatorFilter(null);
+          crefilter.setEntity(creatorHref);
+
+          FilterBase.addAndChild(filter, crefilter);
+        }
+      }
+    }
+
+    if (getPublicAdmin(form)) {
+      boolean ignoreCreator = false;
+
+      if ((cal != null) &&
+          (cal.getPath().startsWith(form.getUnencodedSubmissionsRoot()))) {
+        ignoreCreator = true;
+      } else if (form.getCurUserSuperUser()) {
+        ignoreCreator = "yes".equals(request.getReqPar("ignoreCreator"));
+      }
+
+      if (!ignoreCreator) {
+        BwCreatorFilter crefilter = new BwCreatorFilter(null);
+        crefilter.setEntity(svc.getPrincipal().getPrincipalRef());
+
+        filter= FilterBase.addAndChild(filter, crefilter);
+      }
+    }
+
+    elpars.setFilter(filter);
+
+    elpars.setFormat(request.getReqPar("format"));
+
+    return forwardSuccess;
+  }
+
+  protected BwDateTime todaysDateTime(final BwActionFormBase form) throws Throwable {
+    return BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
+                                    true,
+                                    false,   // floating
+                                    null);   // tzid
+  }
+
+  protected FilterBase addor(FilterBase filter, final BwCategory cat) {
+    ObjectFilter<BwCategory> f = new BwCategoryFilter(null);
+    f.setEntity(cat);
+    f.setExact(false);
+
+    if (filter == null) {
+      return f;
+    }
+
+    if (!(filter instanceof OrFilter)) {
+      FilterBase orFilter = new OrFilter();
+      orFilter.addChild(filter);
+      filter = orFilter;
+    }
+
+    filter.addChild(f);
+
+    return filter;
+  }
+
+  protected void emitScheduleStatus(final BwActionFormBase form,
+                                    final ScheduleResult sr,
+                                    final boolean errorsOnly) {
+    if (sr.errorCode != null) {
+      form.getErr().emit(sr.errorCode, sr.extraInfo);
+    }
+
+    if (sr.ignored) {
+      form.getMsg().emit(ClientMessage.scheduleIgnored);
+    }
+
+    if (sr.reschedule) {
+      form.getMsg().emit(ClientMessage.scheduleRescheduled);
+    }
+
+    if (sr.update) {
+      form.getMsg().emit(ClientMessage.scheduleUpdated);
+    }
+
+    for (ScheduleRecipientResult srr: sr.recipientResults.values()) {
+      if (srr.getStatus() == ScheduleStates.scheduleDeferred) {
+        form.getMsg().emit(ClientMessage.scheduleDeferred, srr.recipient);
+      } else if (srr.getStatus() == ScheduleStates.scheduleNoAccess) {
+        form.getErr().emit(ClientError.noSchedulingAccess, srr.recipient);
+      } else if (!errorsOnly) {
+        form.getMsg().emit(ClientMessage.scheduleSent, srr.recipient);
+      }
+    }
+  }
+
+  /* Set the view to the given name or the default if null.
+   *
+   * @return false for not found
+   */
+  protected boolean setView(String name,
+                            final BwActionFormBase form) throws CalFacadeException {
+    CalSvcI svci = form.fetchSvci();
+
+    if (name == null) {
+      BwPreferences prefs = svci.getPrefsHandler().get();
+      name = prefs.getPreferredView();
+    }
+
+    if (name == null) {
+      form.getErr().emit(ClientError.noDefaultView);
+      return false;
+    }
+
+    if (!svci.getClientState().setCurrentView(name)) {
+      form.getErr().emit(ClientError.unknownView, name);
+      return false;
+    }
+
+    form.setSelectionType(BedeworkDefs.selectionTypeView);
+    form.refreshIsNeeded();
+    return true;
+  }
+
+  /** Find a principal object given a "user" request parameter.
+   *
+   * @param request     HttpServletRequest for parameters
+   * @param form
+   * @return BwPrincipal     null if not found. Messages emitted
+   * @throws Throwable
+   */
+  protected BwPrincipal findPrincipal(final BwRequest request,
+                                      final BwActionFormBase form) throws Throwable {
+    CalSvcI svci = form.fetchSvci();
+
+    String str = request.getReqPar("user");
+    if (str == null) {
+      form.getErr().emit(ClientError.unknownUser, "null");
+      return null;
+    }
+
+    BwPrincipal p = svci.getUsersHandler().getUser(str);
+    if (p == null) {
+      form.getErr().emit(ClientError.unknownUser, str);
+      return null;
+    }
+
+    return p;
+  }
+
+  protected static class SetEntityCategoriesResult {
+    /** rc */
+    public int rcode = forwardNoAction;
+
+    /** Number of BwCategory created */
+    public int numCreated;
+
+    /** Number of BwCategory added */
+    public int numAdded;
+
+    /** Number of BwCategory removed */
+    public int numRemoved;
+  }
+
+  /** Set the entity categories based on multivalued request parameter "categoryKey".
+   *
+   * <p>We build a list of categories then update the membership of the entity
+   * category collection to correspond.
+   *
+   * @param request
+   * @param extraCats Catgeories to add as a result of other operations
+   * @param changes
+   * @param ent
+   * @return setEventCategoriesResult  with rcode = error forward or
+   *                    forwardNoAction for validated OK or
+   *                    forwardSuccess for calendar changed
+   * @throws Throwable
+   */
+  protected SetEntityCategoriesResult setEntityCategories(final BwRequest request,
+                                                          final Set<BwCategory> extraCats,
+                                                          final CategorisedEntity ent,
+                                                          final ChangeTable changes) throws Throwable {
+    BwActionFormBase form = request.getBwForm();
+
+    // XXX We should use the change table code for this.
+    SetEntityCategoriesResult secr = new SetEntityCategoriesResult();
+
+    /* categories already set in event */
+    Set<BwCategory> evcats = ent.getCategories();
+
+    Set<BwCategory> defCats = form.getDefaultCategories();
+
+    /* Get the uids */
+    Collection<String> strCatUids = request.getReqPars("catUid");
+
+    /* Remove all categories if we don't supply any
+     */
+
+    if (Util.isEmpty(strCatUids) &&
+        Util.isEmpty(extraCats) &&
+        Util.isEmpty(defCats)) {
+      if (!Util.isEmpty(evcats)) {
+        if (changes != null) {
+          ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.CATEGORIES);
+          cte.setRemovedValues(new ArrayList<BwCategory>(evcats));
+        }
+
+        secr.numRemoved = evcats.size();
+        evcats.clear();
+      }
+      secr.rcode = forwardSuccess;
+      return secr;
+    }
+
+    CalSvcI svci = form.fetchSvci();
+    Set<BwCategory> cats = new TreeSet<BwCategory>();
+
+    if (extraCats != null) {
+      cats.addAll(extraCats);
+    }
+
+    if (!Util.isEmpty(defCats)) {
+      cats.addAll(defCats);
+    }
+
+    if (!Util.isEmpty(strCatUids)) {
+      buildList:
+      for (String catUid: strCatUids) {
+        /* If it's in the event add it to the list we're building then move on
+         * to the next requested category.
+         */
+        if (evcats != null) {
+          for (BwCategory evcat: evcats) {
+            if (evcat.getUid().equals(catUid)) {
+              cats.add(evcat);
+              continue buildList;
+            }
+          }
+        }
+
+        BwCategory cat = svci.getCategoriesHandler().get(catUid);
+
+        if (cat != null) {
+          cats.add(cat);
+        }
+      }
+    }
+
+    /* See if the user is adding new categories */
+
+    Collection<String> reqCatKeys = request.getReqPars("categoryKey");
+
+    if (!Util.isEmpty(reqCatKeys)) {
+      Collection<String> catKeys = new ArrayList<String>();
+
+      /* request parameter can be comma delimited list */
+      for (String catkey: reqCatKeys) {
+        String[] parts = catkey.split(",");
+
+        for (String part: parts) {
+          if (part == null) {
+            continue;
+          }
+
+          part = part.trim();
+
+          if (part.length() == 0) {
+            continue;
+          }
+
+          catKeys.add(part);
+        }
+      }
+
+      for (String catkey: catKeys) {
+        // LANG - use current language code?
+        BwString key = new BwString(null, catkey);
+
+        BwCategory cat = svci.getCategoriesHandler().find(key, null);
+        if (cat == null) {
+          cat = BwCategory.makeCategory();
+
+          cat.setOwnerHref(svci.getPrincipal().getPrincipalRef());
+          cat.setWord(key);
+
+          svci.getCategoriesHandler().add(cat);
+          secr.numCreated++;
+        }
+
+        cats.add(cat);
+      }
+    }
+
+    /* cats now contains category objects corresponding to the request parameters
+     *
+     * Now we need to add or remove any in the event but not in our list.
+     */
+
+    /* First make a list to remove - to avoid concurrent update
+     * problems with the iterator
+     */
+
+    ArrayList<BwCategory> toRemove = new ArrayList<BwCategory>();
+
+    if (evcats != null) {
+      for (BwCategory evcat: evcats) {
+        if (cats.contains(evcat)) {
+          cats.remove(evcat);
+          continue;
+        }
+
+        toRemove.add(evcat);
+      }
+    }
+
+    for (BwCategory cat: cats) {
+      ent.addCategory(cat);
+      secr.numAdded++;
+    }
+
+    for (BwCategory cat: toRemove) {
+      if (ent.removeCategory(cat)) {
+        secr.numRemoved++;
+      }
+    }
+
+    if ((changes != null)  &&
+        (secr.numAdded > 0) && (secr.numRemoved > 0)) {
+      ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.CATEGORIES);
+      cte.setRemovedValues(toRemove);
+      cte.setAddedValues(cats);
+    }
+
+    secr.rcode = forwardSuccess;
+
+    if (secr.numCreated > 0) {
+      form.getMsg().emit(ClientMessage.addedCategories, secr.numCreated);
+    }
+
+    return secr;
+  }
+
+  /**
+   * @param form
+   * @param atts
+   * @param st
+   * @param et
+   * @param intunitStr
+   * @param interval
+   * @return int
+   * @throws Throwable
+   */
+  public int doFreeBusy(final BwActionFormBase form,
+                        final Attendees atts,
+                        final String st,
+                        final String et,
+                        final String intunitStr,
+                        final int interval) throws Throwable {
+    CalSvcI svc = form.fetchSvci();
+    SchedulingI sched = svc.getScheduler();
+
+    /*  Start of getting date/time - make a common method? */
+
+    Calendar start;
+    Calendar end;
+
+    if (st == null) {
+      /* Set period and start from the current timeview */
+      TimeView tv = form.getCurTimeView();
+
+      /* Clone calendar so we don't mess up time */
+      start = (Calendar)tv.getFirstDay().clone();
+      end = tv.getLastDay();
+      end.add(Calendar.DATE, 1);
+    } else {
+      start = form.getCalInfo().getFirstDayOfThisWeek(Timezones.getDefaultTz(),
+                                                      DateTimeUtil.fromISODate(st));
+
+      // Set end to 1 week on.
+      end = (Calendar)start.clone();
+      end.add(Calendar.WEEK_OF_YEAR, 1);
+    }
+
+    // Don't allow more than a month
+    Calendar check = Calendar.getInstance(form.getCalInfo().getLocale());
+    check.setTime(start.getTime());
+    check.add(Calendar.DATE, 32);
+
+    if (check.before(end)) {
+      return forwardBadRequest;
+    }
+
+    BwDateTime sdt = BwDateTimeUtil.getDateTime(start.getTime());
+    BwDateTime edt = BwDateTimeUtil.getDateTime(end.getTime());
+
+    /*  End of getting date/time - make a common method? */
+
+    String originator = svc.getDirectories().principalToCaladdr(svc.getPrincipal());
+    BwEvent fbreq = BwEventObj.makeFreeBusyRequest(sdt, edt,
+                                                   null,     // organizer
+                                                   originator,
+                                                   atts.getAttendees(),
+                                                   atts.getRecipients());
+    if (fbreq == null) {
+      return forwardBadRequest;
+    }
+
+    ScheduleResult sr = sched.schedule(new EventInfo(fbreq),
+                                       fbreq.getScheduleMethod(),
+                                       null, null, false);
+    if (debug) {
+      debugMsg(sr.toString());
+    }
+
+    if (sr.recipientResults != null) {
+      for (ScheduleRecipientResult srr: sr.recipientResults.values()) {
+        if (srr.getStatus() !=ScheduleStates.scheduleOk) {
+          form.getMsg().emit(ClientMessage.freebusyUnavailable, srr.recipient);
+        }
+      }
+    }
+
+    BwDuration dur = new BwDuration();
+
+    if (interval <= 0) {
+      form.getErr().emit(ClientError.badInterval, interval);
+      return forwardError;
+    }
+
+    if (intunitStr != null) {
+      if ("minutes".equals(intunitStr)) {
+        dur.setMinutes(interval);
+      } else if ("hours".equals(intunitStr)) {
+        dur.setHours(interval);
+      } else if ("days".equals(intunitStr)) {
+        dur.setDays(interval);
+      } else if ("weeks".equals(intunitStr)) {
+        dur.setWeeks(interval);
+      } else {
+        form.getErr().emit(ClientError.badIntervalUnit, interval);
+        return forwardError;
+      }
+    } else {
+      dur.setHours(interval);
+    }
+
+    FbResponses resps = sched.aggregateFreeBusy(sr, sdt, edt, dur);
+    form.setFbResponses(resps);
+
+    FormattedFreeBusy ffb = new FormattedFreeBusy(resps.getAggregatedResponse(),
+                                                  form.getCalInfo().getLocale());
+
+    form.setFormattedFreeBusy(ffb);
+
+    emitScheduleStatus(form, sr, true);
+
+    return forwardSuccess;
+  }
+
+  /** Method to retrieve an event. An event is identified by the calendar +
+   * guid + recurrence id. We also take the subscription id as a parameter so
+   * we can pass it along in the result for display purposes.
+   *
+   * <p>We cannot just take the calendar from the subscription, because the
+   * calendar has to be the actual collection containing the event. A
+   * subscription may be to higher up the tree (i.e. a folder).
+   *
+   * <p>It may be more appropriate to simply encode a url to the event.
+   *
+   * <p>Request parameters<ul>
+   *      <li>"subid"    subscription id for event. < 0 if there is none
+   *                     e.g. displayed directly from calendar.</li>
+   *      <li>"calPath"  Path of calendar to search.</li>
+   *      <li>"guid" | "eventName"    guid or name of event.</li>
+   *      <li>"recurrenceId"   recurrence-id of event instance - possibly null.</li>
+   * </ul>
+   * <p>If the recurrenceId is null and the event is a recurring event we
+   * should return the master event only,
+   *
+   * @param request   BwRequest for parameters
+   * @param mode
+   * @return EventInfo or null if not found
+   * @throws Throwable
+   */
+  protected EventInfo findEvent(final BwRequest request,
+                                final Rmode mode) throws Throwable {
+    CalSvcI svci = request.getBwForm().fetchSvci();
+    EventInfo ev = null;
+
+    BwCalendar cal = request.getCalendar(true);
+
+    if (cal == null) {
+      return null;
+    }
+
+    String guid = request.getReqPar("guid");
+    String eventName = request.getReqPar("eventName");
+
+    if (guid != null) {
+      if (debug) {
+        debugMsg("Get event by guid");
+      }
+      String rid = request.getReqPar("recurrenceId");
+      // DORECUR is this right?
+      RecurringRetrievalMode rrm = new RecurringRetrievalMode(mode);
+      if (mode == Rmode.overrides) {
+        rid = null;
+      }
+      Collection<EventInfo> evs = svci.getEventsHandler().get(cal.getPath(),
+                                                              guid, rid, rrm,
+                                                              false);
+      if (debug) {
+        debugMsg("Get event by guid found " + evs.size());
+      }
+      if (evs.size() == 1) {
+        ev = evs.iterator().next();
+      } else {
+        // XXX this needs dealing with
+        warn("Multiple result from getEvent");
+      }
+    } else if (eventName != null) {
+      if (debug) {
+        debugMsg("Get event by name");
+      }
+
+      RecurringRetrievalMode rrm =
+        new RecurringRetrievalMode(Rmode.overrides);
+      ev = svci.getEventsHandler().get(cal.getPath(), eventName, rrm);
+    }
+
+    if (ev == null) {
+      request.getForm().getErr().emit(ClientError.unknownEvent, /*eid*/guid);
+      return null;
+    } else if (debug) {
+      debugMsg("Get event found " + ev.getEvent());
+    }
+
+    return ev;
+  }
+
+  protected BwLocation getLocation(final BwActionFormBase form,
+                                   String owner,
+                                   final boolean webSubmit) throws Throwable {
+    CalSvcI svci = form.fetchSvci();
+    BwLocation loc = null;
+
+    if (owner == null) {
+      owner = svci.getPrincipal().getPrincipalRef();
+    }
+
+    if (!webSubmit) {
+      /* Check for user typing a new location into a text area.
+       */
+      String a = Util.checkNull(form.getLocationAddress().getValue());
+      if (a != null) {
+        // explicitly provided location overrides all others
+        loc = BwLocation.makeLocation();
+        BwString addr = new BwString(null, a);
+        loc.setAddress(addr);
+      }
+    }
+
+    /* No new location supplied - try to retrieve by uid
+     */
+    if (loc == null) {
+      if (form.getLocationUid() != null) {
+        loc = svci.getLocationsHandler().get(form.getLocationUid());
+      }
+    }
+
+    if (loc != null) {
+      loc.setLink(Util.checkNull(loc.getLink()));
+
+      EnsureEntityExistsResult<BwLocation> eeerl =
+        svci.getLocationsHandler().ensureExists(loc, owner);
+
+      loc = eeerl.entity;
+
+      if (eeerl.added) {
+        form.getMsg().emit(ClientMessage.addedLocations, 1);
+      }
+    }
+
+    return loc;
+  }
+
+  protected BwCalendar findCalendar(final String url,
+                             final BwActionFormBase form) throws CalFacadeException {
+    if (url == null) {
+      return null;
+    }
+
+    CalSvcI svci = form.fetchSvci();
+
+    return svci.getCalendarsHandler().get(url);
+  }
+
+  /** An image processed to produce a thumbnail and storeable resources
+   *
+   * @author douglm
+   */
+  public static class ProcessedImage {
+    /** true for OK -otherwise an error has been emitted */
+    public boolean OK;
+
+    /** true for a possibly recoverable error - otherwise we rolled back and
+     * should restart */
+    public boolean retry;
+
+    /** The file as uploaded */
+    public BwResource image;
+
+    /** Reduced to a thumbnail */
+    public BwResource thumbnail;
+  }
+
+  /** Create resource entities based on the uploaded file.
+   *
+   * @param form
+   * @param file - uploaded
+   * @return never null.
+   */
+  protected ProcessedImage processImage(final BwRequest request,
+                                        final FormFile file) {
+    BwActionFormBase form = request.getBwForm();
+    ProcessedImage pi = new ProcessedImage();
+    CalSvcI svci = form.fetchSvci();
+
+    try {
+      long maxSize = svci.getUserMaxEntitySize();
+
+      if (file.getFileSize() > maxSize) {
+        form.getErr().emit(ValidationError.tooLarge, file.getFileSize(), maxSize);
+        pi.retry = true;
+        return pi;
+      }
+
+      /* If the user has set a default images directory preference it must exist.
+       * Otherwise we use a system default. For the moment we
+       * try to create a folder called "Images"
+       */
+
+      BwCalendar imageCol = null;
+
+      String imagecolPath = svci.getPrefsHandler().get().getDefaultImageDirectory();
+      if (imagecolPath == null) {
+        BwCalendar home = svci.getCalendarsHandler().getHome();
+
+        String imageColName = "Images";
+
+        for (BwCalendar col: svci.getCalendarsHandler().getChildren(home)) {
+          if (col.getName().equals(imageColName)) {
+            imageCol = col;
+            break;
+          }
+        }
+
+        if (imageCol == null) {
+          imageCol = new BwCalendar();
+
+          imageCol.setSummary(imageColName);
+          imageCol.setName(imageColName);
+          imageCol = svci.getCalendarsHandler().add(imageCol, home.getPath());
+        }
+      } else {
+        imageCol = svci.getCalendarsHandler().get(imagecolPath);
+        if (imageCol == null) {
+          form.getErr().emit(ClientError.missingImageDirectory);
+          return pi;
+        }
+      }
+
+      String fn = file.getFileName();
+
+      /* See if the resource exists already */
+
+      ResourcesI resi = svci.getResourcesHandler();
+      boolean replace = false;
+      boolean replaceThumb = false;
+      BwResourceContent rc;
+      String thumbType = "png";
+
+      pi.image = resi.get(imageCol.getPath() + "/" + fn);
+
+      if (pi.image != null) {
+        if (!request.getBooleanReqPar("replaceImage", false)) {
+          form.getErr().emit(ClientError.duplicateImage);
+          pi.retry = true;
+          return pi;
+        }
+
+        replace = true;
+        resi.getContent(pi.image);
+        rc = pi.image.getContent();
+      } else {
+        pi.image = new BwResource();
+        pi.image.setName(fn);
+
+        rc = new BwResourceContent();
+        pi.image.setContent(rc);
+      }
+
+      byte[] fileData = file.getFileData();
+      byte[] thumbContent;
+
+      try {
+        thumbContent = ImageProcessing.createThumbnail(
+               new ByteArrayInputStream(fileData),
+               thumbType, 80);
+      } catch (Throwable t) {
+        /* Probably an image type we can't process or maybe not an image at all
+         */
+        if (debug) {
+          error(t);
+        }
+
+        form.getErr().emit(ClientError.imageError);
+        pi.retry = true;
+        return pi;
+      }
+
+      rc.setContent(fileData);
+
+      pi.image.setContentLength(fileData.length);
+      pi.image.setContentType(file.getContentType());
+
+      /* Make a thumbnail - first name */
+
+      String thumbFn = makeThumbName(fn, thumbType);
+
+      BwResourceContent thumbRc;
+
+      pi.thumbnail = resi.get(imageCol.getPath() + "/" + thumbFn);
+
+      if (pi.thumbnail != null) {
+        replaceThumb = true;
+        resi.getContent(pi.thumbnail);
+        thumbRc = pi.thumbnail.getContent();
+      } else {
+        pi.thumbnail = new BwResource();
+        pi.thumbnail.setName(thumbFn);
+
+        thumbRc = new BwResourceContent();
+        pi.thumbnail.setContent(thumbRc);
+      }
+
+      pi.thumbnail.setContentType("image/" + thumbType);
+      thumbRc.setContent(thumbContent);
+      pi.thumbnail.setContentLength(thumbContent.length);
+
+      if (!replace) {
+        resi.save(imageCol.getPath(), pi.image);
+      } else {
+        resi.update(pi.image, true);
+      }
+
+      if (!replaceThumb) {
+        resi.save(imageCol.getPath(), pi.thumbnail);
+      } else {
+        resi.update(pi.thumbnail, true);
+      }
+
+      pi.OK = true;
+    } catch (Throwable t) {
+      if (debug) {
+        error(t);
+        form.getErr().emit(t);
+      }
+    }
+
+    return pi;
+  }
+
+  private String makeThumbName(final String imageName,
+                               final String thumbType) {
+    int dotPos = imageName.lastIndexOf('.');
+    String thumbFn;
+
+    if (dotPos < 0) {
+      thumbFn = imageName + "-thumb";
+    } else {
+      thumbFn = imageName.substring(0, dotPos) + "-thumb";
+    }
+
+    return thumbFn + "." + thumbType;
+  }
+
+  /** Is this an admin client?
+   *
+   * @param frm
+   * @return boolean  true for a public events admin client
+   * @throws Throwable
+   */
+  public boolean getPublicAdmin(final BwActionFormBase frm) throws Throwable {
+    return frm.getConfig().getPublicAdmin();
+  }
+
+  /** Is this the public event submissions client?
+   *
+   * @param frm
+   * @return boolean  true for a public events submissions client
+   * @throws Throwable
+   */
+  public boolean getSubmitApp(final BwActionFormBase frm) throws Throwable {
+    String appType = frm.retrieveConfig().getAppType();
+
+    return ConfigCommon.appTypeWebsubmit.equals(appType);
+  }
+
+  /** Get a prefix for the loggers.
+   *
+   * @param request    Request
+   * @return  String    log prefix
+   */
+  protected String getLogPrefix(final Request request) {
+    try {
+      String pfx = (String)request.getSessionAttr("org.bedework.logprefix");
+
+      if (pfx == null) {
+        return "NOT-SET";
+      }
+
+      return pfx;
+    } catch (Throwable t) {
+      error(t);
+      return "LOG-PREFIX-EXCEPTION";
+    }
+  }
+
+  /* We should probably return false for a portlet
+   *  (non-Javadoc)
+   * @see edu.rpi.sss.util.jsp.UtilAbstractAction#logOutCleanup(javax.servlet.http.HttpServletRequest)
+   */
+  @Override
+  protected boolean logOutCleanup(final HttpServletRequest request,
+                                  final UtilActionForm form) {
+    HttpSession hsess = request.getSession();
+    BwCallback cb = (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
+
+    if (cb == null) {
+      if (form.getDebug()) {
+        debugMsg("No cb object for logout");
+      }
+    } else {
+      if (form.getDebug()) {
+        debugMsg("cb object found for logout");
+      }
+      try {
+        cb.out();
+      } catch (Throwable t) {}
+
+      try {
+        ((Callback)cb).closeNow();
+      } catch (Throwable t) {}
+    }
+
+    return true;
+  }
+
+  /** Check for logout request. Overridden so we can close anything we
+   * need to before the session is invalidated.
+   *
+   * @param request    HttpServletRequest
+   * @return null for continue, forwardLoggedOut to end session.
+   * @throws Throwable
+   */
+  protected String checkLogOut(final Request request)
+               throws Throwable {
+    String temp = request.getReqPar(requestLogout);
+    if (temp != null) {
+      HttpSession sess = request.getRequest().getSession(false);
+
+      if (sess != null) {
+        /* I don't think I need this - we didn't come through the svci filter on the
+           way in?
+        UWCalCallback cb = (UWCalCallback)sess.getAttribute(UWCalCallback.cbAttrName);
+
+        try {
+          if (cb != null) {
+            cb.out();
+          }
+        } catch (Throwable t) {
+          getLogger().error("Callback exception: ", t);
+          /* Probably no point in throwing it. We're leaving anyway. * /
+        } finally {
+          if (cb != null) {
+            try {
+              cb.close();
+            } catch (Throwable t) {
+              getLogger().error("Callback exception: ", t);
+              /* Probably no point in throwing it. We're leaving anyway. * /
+            }
+          }
+        }
+        */
+
+        sess.invalidate();
+      }
+      return forwardLoggedOut;
+    }
+
+    return null;
+  }
+
+  /** Callback for filter
+   *
+   */
+  public static class Callback extends BwCallback {
+    private static boolean useConversations = true;
+
+    BwActionFormBase form;
+    Request req;
+    ActionForward errorForward;
+
+    Callback(final BwActionFormBase form, final ActionMapping mapping) {
+      this.form = form;
+      errorForward = mapping.findForward("error");
+      if (errorForward == null) {
+        throw new RuntimeException("Forward \"error\" must be defined in struts-comfig");
+      }
+    }
+
+    /* (non-Javadoc)
+     * @see org.bedework.webcommon.BwCallback#in()
+     */
+    @Override
+    public int in() throws Throwable {
+      synchronized (form) {
+        //System.out.println("cb.in - action path = " + form.getActionPath() +
+        //                   " conv-type = " + req.getConversationType());
+        CalSvcI svci = form.fetchSvci();
+        if (svci != null) {
+          if (form.getInuse()) {
+            // double-clicking on our links eh?
+            if (form.getWaiters() > 10) {
+              return HttpServletResponse.SC_SERVICE_UNAVAILABLE;
+            }
+            form.incWaiters();
+            form.wait();
+          }
+
+          svci.postNotification(new HttpEvent(SysCode.WEB_IN));
+          form.setTimeIn(System.currentTimeMillis());
+
+          form.decWaiters();
+          form.assignInuse(true);
+
+          if (!useConversations ||
+              (req.getConversationType() == Request.conversationTypeUnknown)) {
+            svci.open();
+            svci.beginTransaction();
+          } else {
+            if (svci.isRolledback()) {
+              svci.close();
+            }
+            if (req.getConversationType() == Request.conversationTypeOnly) {
+              /* if a conversation is already started on entry, end it
+                  with no processing of changes. */
+              if (svci.isOpen()) {
+                svci.endTransaction();
+              }
+            }
+
+            if (req.getConversationType() == Request.conversationTypeProcessAndOnly) {
+              if (svci.isOpen()) {
+                svci.flushAll();
+                svci.endTransaction();
+                svci.close();
+              }
+            }
+            svci.open();
+            svci.beginTransaction();
+          }
+        }
+
+        return HttpServletResponse.SC_OK;
+      }
+    }
+
+    /** Called when the response is on its way out.
+     *
+     * @throws Throwable
+     */
+    @Override
+    public void out() throws Throwable {
+      CalSvcI svci = form.fetchSvci();
+      if (svci != null) {
+        long reqTime = System.currentTimeMillis() - form.getTimeIn();
+        svci.postNotification(new HttpOutEvent(SysCode.WEB_OUT, reqTime));
+
+        if (!useConversations ||
+            (req.getConversationType() == Request.conversationTypeUnknown)) {
+          if (req.getActionType() != Request.actionTypeAction) {
+            svci.flushAll();
+          }
+          svci.endTransaction();
+        } else {
+          // Conversations
+          if ((req.getConversationType() == Request.conversationTypeEnd) ||
+              (req.getConversationType() == Request.conversationTypeOnly)) {
+            svci.flushAll();
+            svci.endTransaction();
+          } else {
+            svci.endTransaction();
+          }
+        }
+      }
+    }
+
+    /** Close the session.
+    *
+    * @throws Throwable
+    */
+    @Override
+    public void close() throws Throwable {
+      boolean unlocked = false;
+
+      try {
+        if (!useConversations ||
+            (req.getConversationType() == Request.conversationTypeUnknown)) {
+          if (req.getActionType() != Request.actionTypeAction) {
+            closeNow();
+            unlocked = true;
+          }
+        } else {
+          // Conversations
+          if ((req.getConversationType() == Request.conversationTypeEnd) ||
+              (req.getConversationType() == Request.conversationTypeOnly)) {
+            closeNow();
+            unlocked = true;
+          }
+        }
+      } finally {
+        if (!unlocked) {
+          synchronized (form) {
+            form.assignInuse(false);
+            form.notify();
+          }
+        }
+      }
+    }
+
+    /* (non-Javadoc)
+     * @see org.bedework.webcommon.BwCallback#error(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Throwable)
+     */
+    @Override
+    public void error(final HttpServletRequest hreq,
+                      final HttpServletResponse hresp,
+                      final Throwable t) throws Throwable {
+      form.getErr().emit(t);
+
+      /* Redirect to an error action
+       */
+
+      String forwardPath = errorForward.getPath();
+      String uri = null;
+
+      // paths not starting with / should be passed through without any processing
+      // (ie. they're absolute)
+      if (forwardPath.startsWith("/")) {
+        uri = RequestUtils.forwardURL(hreq, errorForward, null);    // get module relative uri
+      } else {
+        uri = forwardPath;
+      }
+
+      // only prepend context path for relative uri
+      if (uri.startsWith("/")) {
+        uri = hreq.getContextPath() + uri;
+      }
+      try {
+        hresp.sendRedirect(hresp.encodeRedirectURL(uri));
+      } catch (Throwable t1) {
+        // Presumably illegal state
+      }
+    }
+
+    void closeNow() throws Throwable {
+      Throwable t = null;
+
+      try {
+        CalSvcI svci = form.fetchSvci();
+        if (svci != null) {
+          svci.close();
+        }
+      } catch (Throwable t1) {
+        t = t1;
+      } finally {
+        synchronized (form) {
+          form.assignInuse(false);
+          form.notify();
+        }
+      }
+
+      if (t != null) {
+        throw t;
+      }
+
+      /* Try to release storage we won't need because next request will
+       * refresh
+       */
+
+      form.purgeCurTimeView();
+    }
+  }
+
+  /* ********************************************************************
+                             view methods
+     ******************************************************************** */
+
+  /** Set the current date and/or view. The date may be null indicating we
+   * should switch to a new view based on the current date.
+   *
+   * <p>newViewTypeI may be less than 0 indicating we stay with the current
+   * view but switch to a new date.
+   *
+   * @param form         UWCalActionForm
+   * @param date         String yyyymmdd date or null
+   * @param newViewTypeI new view index or -1
+   * @throws Throwable
+   */
+  protected void gotoDateView(final BwActionFormBase form,
+                              final String date,
+                              int newViewTypeI) throws Throwable {
+    /* We get a new view if either the date changed or the view changed.
+     */
+    boolean newView = false;
+
+    if (debug) {
+      debugMsg("ViewTypeI=" + newViewTypeI);
+    }
+
+    MyCalendarVO dt;
+
+    if (newViewTypeI == BedeworkDefs.todayView) {
+      Date jdt = new Date(System.currentTimeMillis());
+      dt = new MyCalendarVO(jdt);
+      newView = true;
+      newViewTypeI = BedeworkDefs.dayView;
+    } else if (date == null) {
+      if (newViewTypeI == BedeworkDefs.dayView) {
+        // selected specific day to display from personal event entry screen.
+
+        Date jdt = BwDateTimeUtil.getDate(form.getViewStartDate().getDateTime());
+        dt = new MyCalendarVO(jdt);
+        newView = true;
+      } else {
+        if (debug) {
+          debugMsg("No date supplied: go with current date");
+        }
+
+        // Just stay here
+        dt = form.getViewMcDate();
+        if (dt == null) {
+          // Just in case
+          dt = new MyCalendarVO(new Date(System.currentTimeMillis()));
+        }
+      }
+    } else {
+      if (debug) {
+        debugMsg("Date=" + date + ": go with that");
+      }
+
+      Date jdt = DateTimeUtil.fromISODate(date);
+      dt = new MyCalendarVO(jdt);
+      if (!checkDateInRange(form, dt.getYear())) {
+        // Set it to today
+        jdt = new Date(System.currentTimeMillis());
+        dt = new MyCalendarVO(jdt);
+      }
+      newView = true;
+    }
+
+    if ((newViewTypeI >= 0) &&
+        (newViewTypeI != form.getCurViewPeriod())) {
+      // Change of view
+      newView = true;
+    }
+
+    if (newView && (newViewTypeI < 0)) {
+      newViewTypeI = form.getCurViewPeriod();
+      if (newViewTypeI < 0) {
+        newViewTypeI = BedeworkDefs.defaultView;
+      }
+    }
+
+    TimeDateComponents viewStart = form.getViewStartDate();
+
+    if (!newView) {
+      /* See if we were given an explicit date as view start date components.
+         If so we'll set a new view of the same period as the current.
+       */
+      int year = viewStart.getYear();
+
+      if (checkDateInRange(form, year)) {
+        String vsdate = viewStart.getDateTime().getDtval().substring(0, 8);
+        if (debug) {
+          debugMsg("vsdate=" + vsdate);
+        }
+
+        if (!(vsdate.equals(form.getCurTimeView().getFirstDayFmt().getDateDigits()))) {
+          newView = true;
+          newViewTypeI = form.getCurViewPeriod();
+          Date jdt = DateTimeUtil.fromISODate(vsdate);
+          dt = new MyCalendarVO(jdt);
+        }
+      }
+    }
+
+    if (newView) {
+      form.setCurViewPeriod(newViewTypeI);
+      form.setViewMcDate(dt);
+      form.refreshIsNeeded();
+    }
+
+    TimeView tv = form.getCurTimeView();
+
+    /** Set first day, month and year
+     */
+
+    Calendar firstDay = tv.getFirstDay();
+
+    viewStart.setDay(firstDay.get(Calendar.DATE));
+    viewStart.setMonth(firstDay.get(Calendar.MONTH) + 1);
+    viewStart.setYear(firstDay.get(Calendar.YEAR));
+
+    //form.getEventStartDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
+    //form.getEventEndDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
+  }
+
+  /** Set the current date for view.
+   *
+   * @param form
+   * @param date         String yyyymmdd date
+   * @throws Throwable
+   */
+  protected void setViewDate(final BwActionFormBase form,
+                             final String date) throws Throwable {
+    Date jdt = DateTimeUtil.fromISODate(date);
+    MyCalendarVO dt = new MyCalendarVO(jdt);
+    if (debug) {
+      debugMsg("calvo dt = " + dt);
+    }
+
+    if (!checkDateInRange(form, dt.getYear())) {
+      // Set it to today
+      jdt = new Date(System.currentTimeMillis());
+      dt = new MyCalendarVO(jdt);
+    }
+    form.setViewMcDate(dt);
+    form.refreshIsNeeded();
+  }
+
+  /* ********************************************************************
+                             private methods
+     ******************************************************************** */
+
+  private boolean checkDateInRange(final BwActionFormBase form,
+                                   final int year) throws Throwable {
+    // XXX make system parameters for allowable start/end year
+    int thisYear = form.getToday().getFormatted().getYear();
+
+    if ((year < (thisYear - 10)) || (year > (thisYear + 10))) {
+      form.getErr().emit(ValidationError.invalidDate, year);
+      return false;
+    }
+
+    return true;
+  }
+
+  /** Get the session state object for a web session. If we've already been
+   * here it's embedded in the current session. Otherwise create a new one.
+   *
+   * <p>We also carry out a number of web related operations.
+   *
+   * @param request       HttpServletRequest Needed to locate session
+   * @param form          Action form
+   * @param messages      MessageResources needed for the resources
+   * @param adminUserId   id we want to administer
+   * @return BwSession null on failure
+   * @throws Throwable
+   */
+  private synchronized BwSession getState(final Request request,
+                                          final BwActionFormBase form,
+                                          final MessageResources messages,
+                                          final String adminUserId) throws Throwable {
+    BwSession s = BwWebUtil.getState(request.getRequest());
+    HttpSession sess = request.getRequest().getSession(false);
+    String appName = getAppName(sess);
+
+    if (s != null) {
+      if (debug) {
+        debugMsg("getState-- obtainedfrom session");
+        debugMsg("getState-- timeout interval = " +
+                 sess.getMaxInactiveInterval());
+      }
+
+      form.assignNewSession(false);
+    } else {
+      if (debug) {
+        debugMsg("getState-- get new object");
+      }
+
+      form.assignNewSession(true);
+
+      s = new BwSessionImpl(form.getCurrentUser(),
+                            suffixRoot(form,
+                                       form.retrieveConfig().getBrowserResourceRoot()),
+                            suffixRoot(form,
+                                       form.retrieveConfig().getAppRoot()),
+                            appName,
+                            form.getPresentationState(), messages,
+                            form.getSchemeHostPort());
+
+      BwWebUtil.setState(request.getRequest(), s);
+
+      String raddr = request.getRemoteAddr();
+      String rhost = request.getRemoteHost();
+      info("===============" + appName + ": New session (" +
+                       s.getSessionNum() + ") from " +
+                       rhost + "(" + raddr + ")");
+
+      if (!getPublicAdmin(form)) {
+        /** Ensure the session timeout interval is longer than our refresh period
+         */
+        //  Should come from db -- int refInt = s.getRefreshInterval();
+        int refInt = 60; // 1 min refresh?
+
+        if (refInt > 0) {
+          int timeout = sess.getMaxInactiveInterval();
+
+          if (timeout <= refInt) {
+            // An extra minute should do it.
+            debugMsg("@+@+@+@+@+ set timeout to " + (refInt + 60));
+            sess.setMaxInactiveInterval(refInt + 60);
+          }
+        }
+      }
+    }
+
+    /** Ensure we have a CalSvcI object
+     */
+    checkSvci(request, adminUserId, false);
+
+    return s;
+  }
+
+  private String suffixRoot(final BwActionFormBase form,
+                            final String val) throws Throwable {
+    StringBuilder sb = new StringBuilder(val);
+
+    /* If we're running as a portlet change the app root to point to a
+     * portlet specific directory.
+     */
+    String portalPlatform = CalOptionsFactory.getOptions().
+                                  getOptStringProperty("portalPlatform");
+    if (isPortlet && (portalPlatform != null)) {
+      sb.append(".");
+      sb.append(portalPlatform);
+    }
+
+    /* If calendar suite is non-null append that. */
+    String calSuite = form.retrieveConfig().getCalSuite();
+    if (calSuite != null) {
+      sb.append(".");
+      sb.append(calSuite);
+    }
+
+    return sb.toString();
+  }
+
+  private String getAppName(final HttpSession sess) {
+    ServletContext sc = sess.getServletContext();
+
+    String appname = sc.getInitParameter(appNameInitParameter);
+    if (appname == null) {
+      appname = "?";
+    }
+
+    return appname;
+  }
+
+  /** Ensure we have a CalAdminSvcI object for the given user.
+   *
+   * <p>For an admin client with a super user we may switch to a different
+   * user to administer their events.
+   *
+   * @param request       for pars
+   * @param user          String user we want to be
+   * @param canSwitch     true if we should definitely allow user to switch
+   *                      this allows a user to switch between and into
+   *                      groups of which they are a member
+   * @return boolean      false for problems.
+   * @throws Throwable
+   */
+  boolean checkSvci(final Request request,
+                    final String user,
+                    boolean canSwitch) throws Throwable {
+    BwActionFormBase form = (BwActionFormBase)request.getForm();
+    boolean publicAdmin = getPublicAdmin(form);
+    String calSuiteName = null;
+
+    if (user == null) {
+      // A guest user using the public clients. Get the calendar suite from the
+      // configuration
+      calSuiteName = form.retrieveConfig().getCalSuite();
+    } else if (publicAdmin) {
+      /* Calendar suite we are administering is the one we find attached to a
+       * group as we proceed up the tree
+       */
+      BwCalSuiteWrapper cs = AdminUtil.findCalSuite(form,
+                                                    form.getAdminGroupName());
+      form.setCurrentCalSuite(cs);
+
+      if (cs != null) {
+        calSuiteName = cs.getName();
+      }
+
+      if (debug) {
+        if (cs != null) {
+          debugOut("Found calSuite " + cs);
+        } else {
+          debugOut("No calsuite found");
+        }
+      }
+    }
+
+    /** Do some checks first
+     */
+    String authUser = String.valueOf(form.getCurrentUser());
+
+    if (!publicAdmin) {
+      /* We're never allowed to switch identity as a user client.
+       */
+      if (!authUser.equals(String.valueOf(user))) {
+        return false;
+      }
+    } else if (user == null) {
+      throw new CalFacadeException("Null user parameter for public admin.");
+    }
+
+    HttpSession hsess = request.getRequest().getSession();
+    BwCallback cb = (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
+    if (cb == null) {
+      /* create a call back object so the filter can open the service
+      interface */
+
+      cb = new Callback(form, request.getMapping());
+      hsess.setAttribute(BwCallback.cbAttrName, cb);
+    }
+
+    if (debug) {
+      debugMsg("checkSvci-- set req in cb - form action path = " +
+               form.getActionPath() +
+               " conv-type = " + request.getConversationType());
+    }
+    ((Callback)cb).req = request;
+
+    CalSvcI svci = BwWebUtil.getCalSvcI(request.getRequest());
+
+    try {
+      /** Make some checks to see if this is an old - restarted session.
+        If so discard the svc interface
+       */
+      if (svci != null) {
+        /* Not the first time through here so for a public admin client we
+         * already have the authorised user's rights set in the form.
+         */
+
+        if (!svci.isOpen()) {
+          //svci.flushAll();
+          svci = null;
+          info(".Svci interface discarded from old session");
+          ((Callback)cb).closeNow(); // So we're not waiting for ourself
+        } else if (publicAdmin) {
+
+          BwPrincipal pr = svci.getPrincipal();
+          if (pr == null) {
+            throw new CalFacadeException("Null user for public admin.");
+          }
+
+          canSwitch = canSwitch || form.getCurUserContentAdminUser() ||
+                      form.getCurUserSuperUser();
+
+          String curUser = pr.getAccount();
+
+          if (!canSwitch && !user.equals(curUser)) {
+            /** Trying to switch but not allowed */
+            return false;
+          }
+
+          if (!user.equals(curUser)) {
+            /** Switching user */
+            svci.endTransaction();
+            svci.close();
+            //svci.flushAll();
+            svci = null;
+            ((Callback)cb).closeNow(); // So we're not waiting for ourself
+          }
+        }
+
+      }
+
+      if (svci != null) {
+        /* Already there and already opened */
+        if (debug) {
+          debugMsg("CalSvcI-- Obtained from session for user " +
+                   svci.getPrincipal());
+        }
+
+      } else {
+        if (debug) {
+          debugMsg(".CalSvcI-- get new object for user " + user);
+        }
+
+        boolean adminCanEditAllPublicCategories = false;
+        boolean adminCanEditAllPublicLocations = false;
+        boolean adminCanEditAllPublicSponsors = false;
+
+        if (publicAdmin) {
+          AdminConfig conf = (AdminConfig)form.getConfig();
+
+          adminCanEditAllPublicCategories = conf.getAllowEditAllCategories();
+          adminCanEditAllPublicLocations = conf.getAllowEditAllLocations();
+          adminCanEditAllPublicSponsors = conf.getAllowEditAllContacts();
+        }
+
+        CalSvcIPars pars = new CalSvcIPars(form.getCurrentUser(),
+                                           user,
+                                           calSuiteName,
+                                           publicAdmin,
+                                           false, // Allow non-admin super user
+                                           false, // service
+                                           adminCanEditAllPublicCategories,
+                                           adminCanEditAllPublicLocations,
+                                           adminCanEditAllPublicSponsors,
+                                           false,    // sessionless
+                                           form.getConfig());
+        svci = new CalSvcFactoryDefault().getSvc(pars);
+
+        BwWebUtil.setCalSvcI(request.getRequest(), svci);
+
+        form.setCalSvcI(svci);
+
+        cb.in();
+        reload(request);
+      }
+    } catch (CalFacadeException cfe) {
+      throw cfe;
+    } catch (Throwable t) {
+      throw new CalFacadeException(t);
+    }
+
+    Collection<Locale> reqLocales = request.getLocales();
+    String reqLoc = request.getReqPar("locale");
+
+    if (reqLoc != null) {
+      if ("default".equals(reqLoc)) {
+        form.setRequestedLocale(null);
+      } else {
+        try {
+          Locale loc = BwLocale.makeLocale(reqLoc);
+          form.setRequestedLocale(loc); // Make it stick
+        } catch (Throwable t) {
+          // Ignore bad parameter?
+        }
+      }
+    }
+
+    Locale loc = svci.getPrefsHandler().getUserLocale(reqLocales,
+                                                      form.getRequestedLocale());
+
+    if (loc != null) {
+      BwLocale.setLocale(loc);
+      Locale cloc = form.getCurrentLocale();
+      if ((cloc == null) | (!cloc.equals(loc))) {
+        form.setRefreshNeeded(true);
+      }
+      form.setCurrentLocale(loc);
+    }
+
+    BwPrincipal pr = svci.getPrincipal();
+
+    form.assignUserVO((BwPrincipal)pr.clone());
+
+    if (publicAdmin) {
+      form.assignCurrentAdminUser(pr.getAccount());
+    }
+
+    return true;
+  }
+
+  /* * This method determines the access rights of the current user based on
+   * their assigned roles. There are two sections to this which appear to do
+   * the same thing.
+   *
+   * <p>They are there because at some time servlet containers (jetty for one)
+   * appeared to be broken. Role mapping did not appear to work reliably.
+   * This seems to have something to do with jetty doing internal redirects
+   * to handle login. In the process it seems to lose the appropriate servlet
+   * context and with it the mapping of roles.
+   *
+   * @param req        HttpServletRequest
+   * @param messages   MessageResources
+   * @return int access
+   * @throws CalFacadeException
+   * /
+  private int getAccess(HttpServletRequest req,
+                        MessageResources messages) throws CalFacadeException {
+    int access = 0;
+
+    /** This form works with broken containers.
+     * /
+    if (req.isUserInRole(
+          getMessages().getMessage("org.bedework.role.admin"))) {
+      access += UserAuth.superUser;
+    }
+
+    if (req.isUserInRole(
+          getMessages().getMessage("org.bedework.role.contentadmin"))) {
+      access += UserAuth.contentAdminUser;
+    }
+
+    if (req.isUserInRole(
+          getMessages().getMessage("org.bedework.role.alert"))) {
+      access += UserAuth.alertUser;
+    }
+
+    if (req.isUserInRole(
+          getMessages().getMessage("org.bedework.role.owner"))) {
+      access += UserAuth.publicEventUser;
+    }
+
+    /** This is how it ought to look
+    if (req.isUserInRole("admin")) {
+      access += UserAuth.superUser;
+    }
+
+    if (req.isUserInRole("contentadmin")) {
+      access += UserAuth.contentAdminUser;
+    }
+
+    if (req.isUserInRole("alert")) {
+      access += UserAuth.alertUser;
+    }
+
+    if (req.isUserInRole("owner")) {
+      access += UserAuth.publicEventUser;
+    } * /
+
+    return access;
+  }*/
+
+  private void checkRefresh(final BwActionFormBase form) {
+    if (!form.isRefreshNeeded()){
+      try {
+        if (!form.fetchSvci().refreshNeeded()) {
+          return;
+        }
+      } catch (Throwable t) {
+        // Not much we can do here
+        form.getErr().emit(t);
+        return;
+      }
+    }
+
+    form.refreshView();
+    form.setRefreshNeeded(false);
+  }
+}

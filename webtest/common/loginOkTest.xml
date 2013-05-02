@@ -1,0 +1,3 @@
+
+<verifyText description="Check if login ok"
+             text="${login.ok.value}"  />

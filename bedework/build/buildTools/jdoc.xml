@@ -1,0 +1,56 @@
+<!-- ===================================================================
+     Run javadoc for the current project.
+       
+     Authors: Mike Douglass   douglm    rpi.edu
+     =================================================================== -->
+
+<project name="do.jdoc" basedir="." default="">
+  <macrodef name="jdoc">
+    <attribute name="sourcepath" default="${project.home}/src" />
+    <sequential>
+      <property name="destdir" location="${dist.home}/docs/api"/>
+      <mkdir dir="${destdir}"/>
+  
+      <javadoc sourcepath="@{sourcepath}"
+             classpathref="compile.classpath"
+                  destdir="${destdir}"
+             packagenames="org.bedework.*,edu.rpi.*"
+                   access="public"
+                   author="true"
+                  version="true"
+            breakiterator="yes"
+              windowtitle="${project.name} ${project.version} API Documentation">
+        <doctitle><![CDATA[${project.name} ${project.version}<br/>API Documentation]]></doctitle>
+        <header><![CDATA[${project.name} ${project.version}<br/>API Documentation]]></header>
+        <link href="${bedework.home}/projects/access/api" />
+        <link href="${bedework.home}/projects/calendarapi/api" />
+        <link href="${bedework.home}/projects/davutil/api" />
+        <link href="${bedework.home}/projects/rpiutil/api" />
+        <link href="${bedework.home}/projects/webdav/api" />
+        <link href="${env.JAVA_HOME}/docs/api" />
+      <!--
+      <group title="Calendar entity definitions"
+             packages="org.bedework.calfacade:org.bedework.calfacade.base"/>
+      <group title="Service (Application level) api"
+             packages="org.bedework.calsvc*:org.bedework.calfacade.svc*"/>
+      <group title="Miscellaneous facade definitions" >
+        <package name="org.bedework.calfacade.configs"/>
+        <package name="org.bedework.calfacade.exc"/>
+        <package name="org.bedework.calfacade.filter"/>
+        <package name="org.bedework.calfacade.ifs"/>
+        <package name="org.bedework.calfacade.locale"/>
+        <package name="org.bedework.calfacade.mail"/>
+        <package name="org.bedework.calfacade.sysevents"/>
+        <package name="org.bedework.calfacade.sysevents"/>
+        <package name="org.bedework.calfacade.timezones"/>
+        <package name="org.bedework.calfacade.util"/>
+        <package name="org.bedework.calfacade.wrappers"/>
+      </group>
+      <group title="Core backend definitions"
+             packages="org.bedework.calcore*"/>
+             -->
+      </javadoc>
+    </sequential>
+  </macrodef>
+</project>
+  

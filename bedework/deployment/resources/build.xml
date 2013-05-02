@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     Default public events web application deployer
+     =================================================================== -->
+
+<project name="bwcommonresources.deploy" default="deploy" >
+  <property name="propval.app.context.root"
+            value="${org.bedework.global.build.common.context.root}" />
+  <property name="propval.app.deploy.dir"
+            value="${org.bedework.global.build.common.context.deploy.dir}" />
+  <property name="propval.app.display.name"
+            value="${org.bedework.global.build.common.context.name}" />
+  <property name="propval.app.war.name"
+            value="${org.bedework.global.build.common.context.war.name}" />
+
+  <!--<import file="${build.dir}/buildfilters.xml" />-->
+  <buildfilters/>
+
+  <target name="init" >
+    <dirname property="common.resources.dir" file="${ant.file}"/>
+
+    <property name="app.common.resources.dest.dir"
+              location="${org.bedework.deploy.app.sou}" />
+
+    <property name="org.bedework.use.jquery" value="true" />
+
+    <property name="common.war.name"
+              value="${org.bedework.global.build.common.context.war.name}" />
+    <property name="common.dest.war"
+              location="${org.bedework.temp.wars.home}/${common.war.name}.war" />
+
+    <property name="common.war.file"
+              location="${dist.home}/${common.war.name}.war" />
+  </target>
+
+  <!-- =================================================================
+       The "deploy" target is called by applications which need common
+       resources copied into their own directory structure.
+       ================================================================= -->
+
+  <target name="deploy" depends="init" >
+    <!--
+    <if>
+      <isset property="org.bedework.global.build.common.context" />
+      <then>
+       -->
+        <!-- Build a deployable war file with common files -->
+
+        <delete dir="${common.dest.war}" />
+
+        <copy todir="${common.dest.war}" failonerror="false" >
+          <fileset dir="${org.bedework.common.resources}/common-context" />
+          <filterset refid="property.filters" />
+        </copy>
+
+        <if>
+          <isset property="org.bedework.use.jquery" />
+          <then>
+            <!-- Add jquery -->
+            <copy todir="${common.dest.war}/javascript/jquery">
+              <fileset dir="${common.resources.dir}/javascript/${org.bedework.jquery.dir}" />
+            </copy>
+          </then>
+        </if>
+
+        <!-- Add bedework javascript -->
+        <copy todir="${common.dest.war}/javascript/bedework">
+          <fileset dir="${common.resources.dir}/javascript/bedework" />
+        </copy>
+
+        <copy todir="${common.dest.war}">
+          <fileset dir="${common.resources.dir}/xsl" />
+        </copy>
+
+        <copy todir="${common.dest.war}/images">
+          <fileset dir="${common.resources.dir}/images" />
+        </copy>
+
+        <!-- build the war file -->
+        <mkdir dir="${dist.home}" />
+        <delete file="${common.war.file}" />
+
+        <war warfile="${common.war.file}"
+             webxml="${common.dest.war}/WEB-INF/web.xml"
+             basedir="${common.dest.war}"
+             excludes="WEB-INF/web.xml" />
+
+        <if>
+          <not>
+            <isset property="org.bedework.global.build.ear" />
+          </not>
+          <then>
+            <echo message="***************************************************************" />
+            <echo message="Deploying common context ${common.war.file} into ${org.bedework.appserver.dir}/${propval.app.deploy.dir}" />
+            <echo message="***************************************************************" />
+
+            <!-- Delete expanded version -->
+            <delete dir="${org.bedework.appserver.dir}/${propval.app.deploy.dir}/${propval.app.war.name}" />
+
+            <!-- copy the war file. -->
+            <copy todir="${org.bedework.appserver.dir}/${propval.app.deploy.dir}"
+                  file="${common.war.file}"
+                  overwrite="yes" />
+
+            <!-- Delete the quickstart context def -->
+            <delete file="${org.bedework.appserver.dir}/conf/Catalina/localhost/${propval.app.war.name}.xml" />
+          </then>
+        </if>
+
+    <!-- Add the contex root to the file. Note that newline is required -->
+    <echo file="${org.bedework.global.context.roots}" append="yes">
+${propval.app.war.name}.context=${org.bedework.global.build.common.context.root}
+    </echo>
+<!--
+      </then>
+      <else>
+        <if>
+          <not>
+            <isset property="org.bedework.global.noskins" />
+          </not>
+          <then>
+            < ! - - Just copy into a common location  - - >
+            <property name="cmn.destdir"
+                      location="${org.bedework.appserver.dir}/${org.bedework.global.common.deploydir}"/>
+            <if>
+              <isset property="org.bedework.use.dojo" />
+              <then>
+                < ! - - Add dojo - - >
+                <copy todir="${cmn.destdir}/javascript/dojo">
+                  <fileset dir="${common.resources.dir}/javascript/${org.bedework.dojo.dir}" />
+                </copy>
+              </then>
+            </if>
+
+            <copy todir="${cmn.destdir}">
+              <fileset dir="${common.resources.dir}/xsl" />
+            </copy>
+
+            <copy todir="${cmn.destdir}/images">
+              <fileset dir="${common.resources.dir}/images" />
+            </copy>
+
+          </then>
+        </if>
+      </else>
+    </if>
+       -->
+  </target>
+</project>
+

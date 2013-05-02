@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.bedework</groupId>
+		<artifactId>bw-calendar-client</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<artifactId>bw-calendar-client-appcommon</artifactId>
+	<packaging>jar</packaging>
+	<dependencies>
+		<!-- Bedework -->
+		<dependency>
+			<groupId>org.bedework</groupId>
+			<artifactId>bw-access</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bedework</groupId>
+			<artifactId>bw-calendar-engine-facade</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun</groupId>
+					<artifactId>tools</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.bedework</groupId>
+			<artifactId>bw-calendar-engine-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bedework</groupId>
+			<artifactId>bw-calendar-engine-ical</artifactId>
+		</dependency>
+		<!-- Third Party -->
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts-taglib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.imgscalr</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+		</dependency>
+	</dependencies>
+</project>

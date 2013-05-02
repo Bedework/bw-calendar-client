@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See http://www.jboss.org/community/wiki/Multiple1PC for information about local-tx-datasource -->
+<!-- $Id: mysql-ds.xml 88948 2009-05-15 14:09:08Z jesper.pedersen $ -->
+<!--  Datasource config for MySQL using 3.0.9 available from:
+http://www.mysql.com/downloads/api-jdbc-stable.html
+-->
+
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>SynchDS</jndi-name>
+
+    <connection-url>jdbc:hsqldb:hsql://localhost:1704</connection-url>
+    
+    <driver-class>org.hsqldb.jdbcDriver</driver-class>
+
+    <user-name>sa</user-name>
+    <password></password>
+
+    <!-- The minimum connections in a pool/sub-pool. Pools are lazily constructed on first use -->
+    <min-pool-size>5</min-pool-size>
+
+    <!-- The maximum connections in a pool/sub-pool -->
+    <max-pool-size>20</max-pool-size>
+
+    <!-- The time before an unused connection is destroyed -->
+    <!-- NOTE: This is the check period. It will be destroyed somewhere between 1x and 2x this timeout after last use -->
+    <!-- TEMPORARY FIX! - Disable idle connection removal, HSQLDB has a problem with not reaping threads on closed connections -->
+    <idle-timeout-minutes>0</idle-timeout-minutes>
+
+    <!-- HSQL DB benefits from prepared statement caching -->
+    <prepared-statement-cache-size>32</prepared-statement-cache-size>
+
+    <!-- corresponding type-mapping in the standardjbosscmp-jdbc.xml (optional) -->
+    <metadata>
+       <type-mapping>Hypersonic SQL</type-mapping>
+    </metadata>
+
+    <depends>jboss:service=HsqlBwSynch</depends>
+  </local-tx-datasource>
+
+   <mbean code="org.jboss.jdbc.HypersonicDatabase" 
+     name="jboss:service=HsqlBwSynch">
+    <!-- Should be done like this
+     <attribute name="Port">        
+        <value-factory bean="ServiceBindingManager" method="getIntBinding" 
+           parameter="jboss:service=HsqlBedework"/>
+     </attribute>
+     <attribute name="BindAddress">        
+        <value-factory bean="ServiceBindingManager" method="getStringBinding" 
+           parameter="jboss:service=Hypersonic"/>
+     </attribute>     
+    -->
+     <attribute name="Port">1704</attribute>
+     <attribute name="Silent">true</attribute>
+     <attribute name="Database">SynchDb3p7</attribute>
+     <attribute name="Trace">false</attribute>
+     <attribute name="No_system_exit">true</attribute>
+   </mbean>
+</datasources>
+

@@ -1,0 +1,22 @@
+
+<property name="webtest.home" location="${user.home}/drop2/canoo/r_1593/build.zip_FILES" />
+
+<property name="admin.bad.user" value="not-an-admin-user" />
+
+<property name="admin.bad.password" value="not-an-admin-password" />
+
+<property name="login.ok.value" value="Logged in as" />
+
+<property name="login.bad.value" value="Login error" />
+
+<property name="admin.super.user" value="caladmin" />
+<property name="admin.super.user.ok.password" value="bedework" />
+<property name="admin.super.user.suite" value="MainCampus" />
+<property name="admin.super.user.group" value="agrp_admGrp2" />
+<property name="admin.super.user.group.name" value="Communications" />
+
+<property name="admin.user" value="calowner" />
+<property name="admin.user.ok.password" value="bedework" />
+<property name="admin.user.suite" value="MainCampus" />
+<property name="admin.user.group" value="agrp_admGrp2" />
+<property name="admin.user.group.name" value="Communications" />

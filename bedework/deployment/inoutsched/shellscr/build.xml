@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     System event logger shell script deployer
+     =================================================================== -->
+
+<project name="bwcrawler.deploy" default="deploy" >
+  <import file="${build.dir}/platforms/${org.bedework.global.deploy.platform}Service.xml" />
+
+  <dirname property="this.dir" file="${ant.file}"/>
+
+  <import file="${org.bedework.deployment.base}/bw-core-appjars.xml" />
+
+  <target name="init" >
+    <getExtraJars />
+
+    <property name="app.sou.dir" location="${org.bedework.deploy.app.sou}" />
+
+    <property name="app.resources.dir"
+              location="${this.dir}/resources" />
+
+    <property name="app.run.shellscr"
+              location="${app.resources.dir}/bwrun.sh" />
+
+    <property name="app.run.batscr"
+              location="${app.resources.dir}/bwrun.bat" />
+
+    <property name="org.bedework.runsh.log4j.xml"
+              location="${app.resources.dir}/log4j.xml" />
+  </target>
+
+  <!-- =================================================================
+       The "deploy" target first builds a configured component then copies
+       all required files to the appropriate servlet container directories.
+
+       Currently this only works for the quickstart distribution.
+       For example, it does not handle deploying into jboss and copying
+       resource files (images, stylesheets) to external locations.
+       ================================================================= -->
+
+  <target name="deploy" depends="init,build.configured" >
+    <if>
+      <not>
+        <istrue value="${propval.app.in.ear}"/>
+      </not>
+      <then>
+        <antcall target="deployService" inheritRefs="true" />
+      </then>
+    </if>
+  </target>
+
+  <target name="build.configured" depends="init" >
+    <!-- ===============================================================
+         Build the shell script
+         =============================================================== -->
+
+    <ant antfile="${buildsh}" inheritRefs="true" target="build" />
+  </target>
+</project>
+

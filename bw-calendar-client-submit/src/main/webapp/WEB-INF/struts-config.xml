@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+
+  <!-- ====================================================================
+     This is a the Struts configuration for the Bedework event submission web client.
+     ====================================================================== -->
+
+   <!--
+     The action-mappings below are divided into "normal" actions (suffixed
+     with ".do") and render actions (suffixed with ".rdo"). All normal actions
+     (which are typically used to change the application's state) redirect
+     to a render action that returns a jsp page for display. Render actions
+     do not change state.
+
+     The action-mappings are grouped together by function.
+     The division between normal and render actions is required, among other
+     things, to allow Bedework to run in a portal.
+     By convention, most render actions are named "show[Name]".
+
+     Note that nearly all global forwards map to a render action that produce
+     a jsp page for display.
+
+     All action URLs used in any client are produced in header.jsp to take
+     advantage of appropriate encoding or extensions required by the container
+     and/or portal.  These "urlPrefixes" are then pulled into the xslt
+     for use in constructing links into the application.  Look at the top of
+     header.jsp and the default.xsl files within any client for examples.  Use
+     the url-prefix variables in the xslt rather than calling these paths directly.
+
+     Struts allows the specification of an action parameter.  We use this to
+     pass a semicolon separated string of key/value pairs to the action classes.
+
+     Each action is marked with its action type, and optionally a refresh time
+     and/or refresh action, for example
+
+     parameter="actionType=render;refinterval=900;conversation=end"
+
+     Valid parameter keywords and values:
+     refinterval    integer refresh seconds
+     refaction      action forward for refresh
+     actionType     action, render or resource
+     conversation   start    - start of a multi-request conversation
+                    continue - part-way through a multi-request conversation
+                    end - end of a multi-request conversation
+                    only - if a conversation is started, end it on entry with no
+                      processing of changes.
+                      start a new conversation which we end on exit.
+                    processAndOnly - if a conversation is started, process changes
+                      and end it on entry.
+                      start a new conversation which we end on exit.
+     auth           yes/no does this action require authentication
+
+     In the absence of a conversation parameter we assume that a conversation
+     starts with actionType=action and ends with actionType=render.
+
+     Conversations are related to the persistance framework and allow us to keep
+     a persistance engine session running until the sequence of actions is
+     completed.
+
+     What we don't see here are the urls generated to bridge the gaps in the
+     conversations. For example, we fetch an event and display it to the user.
+
+     The conversation does not end at this point - when the user submits the
+     updates we continue and if some invalid input is discovered we may
+     re-present the form. The conversation would end after a successful update.
+
+     -->
+
+<struts-config>
+  <!-- ========== Form Bean Definitions =================================== -->
+  <form-beans>
+    <form-bean      name="calForm"
+                    type="org.bedework.webcommon.BwActionFormBase"/>
+  </form-beans>
+
+  <!-- ========== Global Forward Definitions ============================== -->
+  <global-forwards>
+    <!-- render forwards -->
+    <forward name="initialise" path="/main/initialise.rdo"/>
+    <forward name="showEditEvent" path="/event/showEditEvent.rdo"/>
+    <forward name="eventMore" path="/event/showEventMore.rdo"/>
+    <forward name="initUpload" path="/misc/initUpload.rdo"/>
+
+    <!-- Forward for a new session from some bookmarked link; used by
+         org.bedework.webcommon.RenderAction when a refresh is needed -->
+    <forward name="gotomain" path="/docs/main.jsp" />
+
+    <!-- set up state and get going. -->
+    <forward name="initial" path="/setup.do"/>
+
+    <!-- global redirects used by many actions -->
+    <forward name="error" path="/main/showMain.rdo" redirect="true" />
+    <forward name="noAction" path="/main/showMain.rdo" redirect="true" />
+    <forward name="cancelled" path="/main/showMain.rdo" redirect="true" />
+    <forward name="noAccess" path="/main/showMain.rdo" redirect="true" />
+  </global-forwards>
+
+  <!-- ========== Action Mapping Definitions ============================== -->
+  <action-mappings>
+
+  <!-- ===============================================================
+                      Fundamental Actions
+   =============================================================== -->
+
+    <!-- ........... PUBLIC and PERSONAL clients ...... -->
+
+    <!-- renderUrl -->
+    <action    path="/main/initialise"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only"
+               unknown="true"
+               validate="false">
+      <forward name="success" path="/docs/main.jsp" />
+      <forward name="loggedOut" path="/docs/login/logout.html" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/main/processShowMain"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=processAndOnly"
+               validate="false">
+      <forward name="success" path="/docs/main.jsp"/>
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/main/showMain"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only"
+               validate="false">
+      <forward name="success" path="/docs/main.jsp"/>
+    </action>
+
+    <!-- was BwAction -->
+    <action    path="/setup"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showMain.rdo" redirect="true" />
+      <forward name="loggedOut" path="/docs/login/logout.html" />
+    </action>
+
+  <!-- ...............................................................
+           Switch to a subscription, calendar or view
+       ............................................................... -->
+
+    <action    path="/main/setSelection"
+               type="org.bedework.webcommon.misc.SetSelectionAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showMain.rdo" redirect="true" />
+      <forward name="noViewDef" path="/main/showMain.rdo" redirect="true" />
+    </action>
+
+  <!-- ...............................................................
+           Display an event
+       ............................................................... -->
+
+    <action    path="/main/setViewPeriod"
+               type="org.bedework.webcommon.misc.GoToAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+    </action>
+
+  <!-- ===============================================================
+                        Events
+       =============================================================== -->
+
+  <!-- ...............................................................
+           Display an event
+       ............................................................... -->
+
+    <action    path="/event/eventView"
+               type="org.bedework.webcommon.event.EventKeyAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/event/showEventMore.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/event/showEventMore"
+               type="org.bedework.webcommon.event.RenderEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="success" path="/docs/event/eventMore.jsp" />
+    </action>
+
+   <!-- ...............................................................
+           List events
+       ............................................................... -->
+
+
+    <action    path="/event/showPendingEvents"
+               type="org.bedework.webcommon.event.RenderEventListAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="continue" path="/docs/event/eventList.jsp"/>
+    </action>
+
+    <action    path="/event/initPendingEvents"
+               type="org.bedework.webcommon.event.EventListParsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/event/showPendingEvents.rdo" redirect="true" />
+    </action>
+
+    <action    path="/event/showEvent"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="success" path="/docs/event/displayEvent.jsp"/>
+    </action>
+
+    <action    path="/event/fetchForDisplay"
+               type="org.bedework.webcommon.event.FetchEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="notFound" path="/main/showMain.rdo" redirect="true" />
+      <forward name="continue" path="/event/showEvent.rdo" redirect="true" />
+    </action>
+
+  <!-- ...............................................................
+           Edit an event
+           delete forward only if we have a "delete" request parameter
+       ............................................................... -->
+
+    <action    path="/event/editEvent"
+               type="org.bedework.webcommon.event.FetchEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="noAction" path="/main/showMain.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showMain.rdo" redirect="true" />
+      <forward name="continue" path="/event/showEditEvent.rdo" redirect="true" />
+      <forward name="copy" path="/event/showEditEvent.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/event/showEditEvent"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=continue;refinterval=900"
+               validate="false">
+      <forward name="success" path="/docs/event/editEvent.jsp" />
+    </action>
+
+    <action    path="/event/updateEvent"
+               type="org.bedework.webcommon.event.UpdateEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="noAction" path="/main/showMain.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showMain.rdo" redirect="true" />
+      <forward name="validationError" path="/main/showMain.rdo" redirect="true" />
+      <forward name="retry" path="/event/showEditEvent.rdo" redirect="true" />
+      <forward name="duplicate" path="/event/showEditEvent.rdo" redirect="true" />
+      <forward name="continue" path="/event/showEditEvent.rdo" redirect="true" />
+      <forward name="delete" path="/event/showDeleteConfirm.rdo" redirect="true" />
+      <forward name="copy" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="editEventAttendees" path="/event/showAttendeesForEvent.rdo" redirect="true" />
+      <forward name="makeEventIntoMeeting" path="/event/showAttendeesForEvent.rdo" redirect="true" />
+      <forward name="eventDatesInited" path="/event/showEditEvent.rdo" redirect="true" />
+    </action>
+    <!-- No longer?
+           <forward name="updateEventAccess" path="/event/showEditEvent.rdo" redirect="true" />
+     -->
+
+  <!-- ...............................................................
+           Modify an event
+       ............................................................... -->
+
+    <action    path="/event/gotoEditEvent"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="success" path="/event/showEditEvent.rdo" redirect="true" />
+    </action>
+
+  <!-- ...............................................................
+           Add an event
+       ............................................................... -->
+
+    <action    path="/event/initEvent"
+               type="org.bedework.webcommon.event.InitAddEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="validationError" path="/event/showAddEvent.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/event/showAddEvent"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=continue;refinterval=900"
+               validate="false">
+      <forward name="success" path="/docs/event/addEvent.jsp" />
+    </action>
+
+    <action    path="/event/addEvent"
+               type="org.bedework.webcommon.event.UpdateEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showMain.rdo" redirect="true" />
+      <forward name="noAction" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="error" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="validationError" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="duplicate" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="continue" path="/event/showEditEvent.rdo" redirect="true" />
+      <forward name="delete" path="/event/showDeleteConfirm.rdo" redirect="true" />
+      <forward name="copy" path="/event/showModForm.rdo" redirect="true" />
+      <forward name="editEventAttendees" path="/event/showAttendeesForEvent.rdo" redirect="true" />
+      <forward name="updateEventAccess" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="makeEventIntoMeeting" path="/event/showAttendeesForEvent.rdo" redirect="true" />
+    </action>
+
+  <!-- ...............................................................
+           Deleting an event (link on edit event page)
+       ............................................................... -->
+
+    <action    path="/event/delEvent"
+               type="org.bedework.webcommon.event.DeleteEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+    </action>
+
+  <!-- ...............................................................
+           Deleting an event (where from?)
+       ............................................................... -->
+
+    <!-- renderUrl -->
+    <action    path="/event/showDeleteConfirm"
+               type="org.bedework.webcommon.event.RenderEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=continue"
+               validate="false">
+      <forward name="success" path="/docs/event/deleteConfirm.jsp" />
+    </action>
+
+
+    <action    path="/event/deleteConfirm"
+               type="org.bedework.webcommon.event.EventKeyAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/event/showDeleteConfirm.rdo" redirect="true" />
+    </action>
+
+  <!-- ...............................................................
+       Adding Event References
+       ............................................................... -->
+
+    <action    path="/event/addEventRef"
+               type="org.bedework.webcommon.event.EventKeyAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/event/showAddEventRef.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/event/showAddEventRef"
+               type="org.bedework.webcommon.event.RenderEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=continue"
+               validate="false">
+      <forward name="success" path="/docs/event/addEventRef.jsp" />
+    </action>
+
+    <action    path="/event/addEventRefComplete"
+               type="org.bedework.webcommon.event.AddEventRefAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="duplicate" path="/main/showMain.rdo" redirect="true" />
+    </action>
+
+  <!-- ===============================================================
+                    Export (download) and Import
+       =============================================================== -->
+
+    <!-- ........... PUBLIC and PERSONAL clients ...... -->
+
+    <action    path="/misc/export"
+               type="org.bedework.webcommon.misc.ExportAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=resource;conversation=only"
+               validate="false">
+    </action>
+
+    <!-- ........... PERSONAL client only ...... -->
+
+    <!-- renderUrl -->
+    <action    path="/misc/initUpload"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only"
+               validate="false">
+      <forward name="success" path="/docs/upload.jsp" />
+    </action>
+
+    <!--  Action called by the upload form -->
+    <action    path="/misc/upload"
+               type="org.bedework.webcommon.misc.UploadAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="baddata" path="/main/showMain.rdo" redirect="true" />
+      <forward name="retry" path="/misc/initUpload.rdo" redirect="true" />
+    </action>
+
+    <!-- ===============================================================
+                         Category Actions
+         =============================================================== -->
+
+  <!-- ...............................................................
+           Display categories page
+       ............................................................... -->
+
+    <action    path="/category/initUpdate"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/category/showUpdateList.rdo" redirect="true" />
+    </action>
+
+    <action    path="/category/showUpdateList"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="success" path="/docs/category/categoryList.jsp"/>
+    </action>
+
+  <!-- ===============================================================
+                        Locations
+       =============================================================== -->
+
+    <!-- renderUrl -->
+
+    <!-- ===============================================================
+                         Calendars
+         =============================================================== -->
+
+    <!-- renderUrl -->
+    <action    path="/calendar/showPublicCals"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="success" path="/docs/calendar/calendarList.jsp" />
+    </action>
+
+    <action    path="/calendar/fetchPublicCalendars"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/calendar/showPublicCals.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/calendar/showCals"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="success" path="/docs/calendar/emitCalendars.jsp" />
+    </action>
+
+    <action    path="/calendar/fetchCalendars"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/calendar/showCals.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/calendar/showCalendarForExport"
+               type="org.bedework.webcommon.calendars.RenderCalendarAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="notFound" path="/docs/showMain.rdo" />
+      <forward name="success" path="/docs/calendar/displayCalendarForExport.jsp"/>
+    </action>
+
+    <action    path="/calendar/fetchForExport"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/calendar/showCalendarForExport.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/calendar/showCalendar"
+               type="org.bedework.webcommon.calendars.RenderCalendarAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="notFound" path="/main/showMain.rdo" />
+      <forward name="success" path="/docs/calendar/displayCalendar.jsp"/>
+    </action>
+
+    <action    path="/calendar/fetchForDisplay"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/calendar/showCalendar.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/calendar/listForExport"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="success" path="/docs/calendar/calendarListForExport.jsp"/>
+    </action>
+
+    <!-- === display a page of descriptions for public calendars (not currently used) === -->
+    <!-- renderUrl -->
+    <action    path="/calendar/showDescriptionList"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="success" path="/docs/calendar/calendarDescriptions.jsp"/>
+    </action>
+
+    <!-- ===============================================================
+                     Searching
+         =============================================================== -->
+
+    <action    path="/search/search"
+               type="org.bedework.webcommon.search.Search"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="noAction" path="/main/showMain.rdo" redirect="true" />
+      <forward name="success" path="/search/showResult.rdo" redirect="true" />
+    </action>
+
+    <!-- renderUrl -->
+    <action    path="/search/showResult"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="success" path="/docs/search/list.jsp" />
+    </action>
+
+    <action    path="/search/next"
+               type="org.bedework.webcommon.search.SearchResultParams"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/search/showResult.rdo" redirect="true" />
+    </action>
+  </action-mappings>
+
+  <!-- Below will be one or more comments which must not be edited or removed
+       for the portlet build process to succeed. The comment will be replaced
+        by some extra cofiguration.
+       -->
+
+  <!-- portlet controller def here -->
+
+  <message-resources parameter="servlet" null="true" />
+
+</struts-config>

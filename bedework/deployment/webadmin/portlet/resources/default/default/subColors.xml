@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Licensed to Jasig under one or more contributor license
+   agreements. See the NOTICE file distributed with this work
+   for additional information regarding copyright ownership.
+   Jasig licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file
+   except in compliance with the License. You may obtain a
+   copy of the License at:
+  
+   http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on
+   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied. See the License for the
+   specific language governing permissions and limitations
+   under the License.  
+-->
+
+<subscriptionColors>
+  <!-- light pastels -->
+  <color name="white">bwwhite</color>
+  <color name="lt pink">bwltpink</color>
+  <color name="lt purple">bwltpurple</color>
+  <color name="lt steelblue">bwltsteelblue</color>
+  <color name="lt blue">bwltblue</color>
+  <color name="lt aquamarine">bwltaquamarine</color>
+  <color name="lt seagreen">bwltaquamarine</color>
+  <color name="lt green">bwltgreen</color>
+  <color name="lt yellow">bwltyellow</color>
+  <color name="lt salmon">bwltsalmon</color>
+
+  <!-- medium pastels -->
+  <color name="gray">bwgray</color>
+  <color name="pink">bwpink</color>
+  <color name="purple">bwpurple</color>
+  <color name="steelblue">bwsteelblue</color>
+  <color name="blue">bwblue</color>
+  <color name="aquamarine">bwaquamarine</color>
+  <color name="seagreen">bwseagreen</color>
+  <color name="green">bwgreen</color>
+  <!-- don't allow bright yellow - reserve for a hover color
+  <color name="yellow">bwyellow</color> -->
+  <color name="salmon">bwsalmon</color>
+
+  <!-- dark pastels -->
+  <color name="md gray">bwmdgray</color>
+  <color name="md pink">bwmdpink</color>
+  <color name="md purple">bwmdpurple</color>
+  <color name="md steelblue">bwmdsteelblue</color>
+  <color name="md blue">bwmdblue</color>
+  <color name="md aquamarine">bwmdaquamarine</color>
+  <color name="md seagreen">bwmdseagreen</color>
+  <color name="md green">bwmdgreen</color>
+  <!-- don't allow bright yellow - reserve for a hover color
+  <color name="md yellow">bwmdyellow</color> -->
+  <color name="md salmon">bwmdsalmon</color>
+</subscriptionColors>

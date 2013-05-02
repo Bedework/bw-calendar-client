@@ -1,0 +1,11 @@
+<!-- If we have to choose a group do so -->
+<ifStep description="Choose a group?">
+  <condition>
+    <verifyElementText description="Check for choose group"
+                       type="h2" text="Choose Your Administrative Group" />
+  </condition>
+
+  <!-- Take the first url -->
+  <clickLink description="Click href of Communications group"
+             href="#{admin.group.name}" />
+</ifStep>

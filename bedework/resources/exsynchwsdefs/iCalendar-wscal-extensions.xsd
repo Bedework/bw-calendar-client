@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--OASIS WS-Calendar extensions to icalendar -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xcal="urn:ietf:params:xml:ns:icalendar-2.0" 
+           targetNamespace="urn:ietf:params:xml:ns:icalendar-2.0" 
+           elementFormDefault="qualified">
+
+  <xs:include schemaLocation="iCalendar-valtypes.xsd" />
+            
+  <!-- ===================== Properties =================================  -->
+  <xs:include schemaLocation="iCalendar-props.xsd" />
+            
+  <!-- ===================== Components =================================  -->
+  <xs:include schemaLocation="iCalendar.xsd" />
+          
+  <!-- =====================================================================
+       3.2 Property parameter definitions
+       ===================================================================== -->
+
+  <!-- Parameters that take a duration value -->
+  <xs:complexType name="DurationParameterType" >
+    <xs:complexContent mixed="false">
+      <xs:extension base="xcal:BaseParameterType">
+        <xs:sequence>
+          <xs:element ref="xcal:duration"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Gap is used in the LINK property -->
+  <xs:element name="gap" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+
+  <!-- The following are used with attach -->
+  
+  <xs:element name="startbeforetolerance" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+
+  <xs:element name="startaftertolerance" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+
+  <xs:element name="endtbeforetolerance" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+
+  <xs:element name="endaftertolerance" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+
+  <xs:element name="durationlongtolerance" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+
+  <xs:element name="durationshorttolerance" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+
+  <xs:element name="granularity" type="xcal:DurationParameterType" 
+              substitutionGroup="xcal:baseParameter" />
+           
+  <!-- =====================================================================
+       3.4 Calendar Components
+       ===================================================================== -->  
+
+  <xs:complexType name="WsCalendarGluonType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="xcal:BaseComponentType"/>
+    </xs:complexContent>
+  </xs:complexType>
+              
+  <xs:element name="gluon" type="xcal:WsCalendarGluonType"
+              substitutionGroup="xcal:baseComponent"/>
+
+  <xs:complexType name="WsCalendarIntervalType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="xcal:BaseComponentType"/>
+    </xs:complexContent>
+  </xs:complexType>
+              
+  <xs:element name="interval" type="xcal:WsCalendarIntervalType"
+              substitutionGroup="xcal:baseComponent"/>
+
+  <!-- =====================================================================
+       3.7 Calendar Properties
+       ===================================================================== -->  
+
+  <xs:complexType name="WscalendarTypeType">
+    <xs:complexContent mixed="false">
+      <xs:extension base="xcal:TextPropertyType"/>
+    </xs:complexContent>
+  </xs:complexType>
+    
+  <xs:complexType name="WscalendarAttachType">
+    <xs:annotation>
+      <xs:documentation>types the content of the xCal attach element</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="xcal:BasePropertyType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="artifact" block="">
+            <xs:complexType>
+              <xs:annotation>
+                <xs:documentation>The artifact is here for use in extending by other specifications, to to allow attributes from other namespaces to be added to ws-calendar-based schemas.</xs:documentation>
+              </xs:annotation>
+              <xs:complexContent>
+                <xs:restriction base="xs:anyType">
+                  <xs:anyAttribute namespace="##other" processContents="lax"/>
+                </xs:restriction>
+              </xs:complexContent>
+            </xs:complexType>
+          </xs:element>
+          <xs:element ref="xcal:uri"/>
+          <xs:element ref="xcal:text"/>
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+
+  <xs:element name="x-wscalendar-attach" 
+              type="xcal:WscalendarAttachType"
+              substitutionGroup="xcal:baseProperty" />
+
+  <xs:element name="x-wscalendar-type" 
+              type="xcal:WscalendarTypeType"
+              substitutionGroup="xcal:baseProperty" />
+</xs:schema>

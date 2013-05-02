@@ -1,0 +1,1177 @@
+<!-- Define a number of tasks and macros
+     deftasks:  define someuseful build tasks
+     projectDefs: standard project definitions
+     xMsg: x=info,debug etc. For message output
+
+     Authors: Mike Douglass   douglm rpi.edu
+-->
+
+<project name="doDeftasks" basedir="." default=""
+         xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  <macrodef name="deftasks">
+    <sequential>
+      <property name="build.dir" location="${bedework.home}/build"/>
+
+      <path id="build.cp">
+        <fileset dir="${build.dir}">
+          <include name="*.jar"/>
+        </fileset>
+      </path>
+      
+      <!-- maven ant tasks -->
+      <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+               uri="antlib:org.apache.maven.artifact.ant"
+               classpathref="build.cp" />
+      
+      <taskdef name="applicationXml"
+               classname="org.bedework.deployment.ApplicationXmlTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <!--
+      <taskdef name="artifactId"
+               classname="org.bedework.deployment.ArtifactIdTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <taskdef name="dependencies"
+               classname="org.bedework.deployment.DependenciesTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <taskdef name="dependency"
+               classname="org.bedework.deployment.DependencyTask">
+        <classpath refid="build.cp"/>
+      </taskdef>-->
+         
+      <taskdef name="forApp"
+               classname="org.bedework.deployment.ForAppTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+  
+      <taskdef name="forEachApp"
+               classname="org.bedework.deployment.ForEachAppTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <!--
+      <taskdef name="groupId"
+               classname="org.bedework.deployment.GroupIdTask">
+        <classpath refid="build.cp"/>
+      </taskdef>-->
+
+      <taskdef name="license"
+               classname="org.bedework.deployment.LicenseTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <taskdef name="makeLangXsl"
+               classname="org.bedework.deployment.MakeLangXsl">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <taskdef name="optional"
+               classname="org.bedework.deployment.OptionalTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <taskdef name="resolveFile"
+               classname="org.bedework.deployment.ResolveFile">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <!--
+      <taskdef name="scope"
+               classname="org.bedework.deployment.ScopeTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <taskdef name="type"
+               classname="org.bedework.deployment.TypeTask">
+        <classpath refid="build.cp"/>
+      </taskdef>
+
+      <taskdef name="version"
+               classname="org.bedework.deployment.VersionTask">
+        <classpath refid="build.cp"/>
+      </taskdef>-->
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="installJar">
+    <attribute name="dir"/>
+    <attribute name="name"/>
+    <sequential>
+      <artifact:pom id="the-pom" file="@{dir}/pom.xml" />
+
+      <if>
+        <isset property="org.bedework.appserver.repository.dir" />
+        <then>
+          <!-- use this as the local repository -->
+          
+          <artifact:install file="@{name}">
+            <localRepository path="${org.bedework.appserver.repository.dir}"/>
+            <pom refid="the-pom"/>
+          </artifact:install>
+        </then>
+        <else>
+          <!-- Use default repository -->
+
+          <artifact:install file="@{name}">
+            <pom refid="the-pom"/>
+          </artifact:install>
+        </else>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="installPom">
+    <attribute name="dir"/>
+    <sequential>
+      <artifact:pom id="the-pom" file="@{dir}/pom.xml" />
+
+      <if>
+        <isset property="org.bedework.appserver.repository.dir" />
+        <then>
+          <!-- use this as the local repository -->
+          
+          <artifact:install file="@{dir}/pom.xml">
+            <localRepository path="${org.bedework.appserver.repository.dir}"/>
+            <pom refid="the-pom"/>
+          </artifact:install>
+        </then>
+        <else>
+          <!-- Use default repository -->
+
+          <artifact:install file="@{dir}/pom.xml">
+            <pom refid="the-pom"/>
+          </artifact:install>
+        </else>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <!-- Deploy into the app server -->
+  <macrodef name="deployJar">
+    <attribute name="dir"/>
+    <attribute name="name"/>
+    <sequential>
+      <if>
+        <isset property="org.bedework.appserver.repository.dir" />
+        <then>
+          <artifact:pom id="the-pom" file="@{dir}/pom.xml" />
+
+          <artifact:install file="@{name}">
+            <localRepository path="${org.bedework.appserver.repository.dir}"/>
+            <pom refid="the-pom"/>
+          </artifact:install>
+
+          <!--
+          <artifact:deploy file="@{name}">
+            <localRepository path="${org.bedework.appserver.repository.dir}"/>
+            <pom refid="the-pom"/>
+          </artifact:deploy> -->
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <!-- Resolve dependencies with the given pom file -->
+  <macrodef name="resolveDependencies">
+    <attribute name="pomFile"/>
+    <sequential>
+      <artifact:pom id="the-pom" file="@{pomFile}" />
+
+      <if>
+        <isset property="org.bedework.appserver.repository.dir" />
+        <then>
+          <!-- use this as the local repository -->
+          <artifact:dependencies filesetId="dependency.fileset" 
+                                 useScope="compile" 
+                                 pomRefId="the-pom">
+            <localRepository path="${org.bedework.appserver.repository.dir}"/>
+          </artifact:dependencies>
+        </then>
+        <else>
+          <!-- Use default repository -->
+          <artifact:dependencies filesetId="dependency.fileset" 
+                                 useScope="compile" 
+                                 pomRefId="the-pom">
+          </artifact:dependencies>
+        </else>
+      </if>
+      
+      <copy todir="${lib.dir}">
+        <fileset refid="dependency.fileset" />
+        <!-- This mapper strips off all leading directory information -->
+        <mapper type="flatten" />
+      </copy>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="execProject">
+    <attribute name="project"/>
+    <attribute name="target"/>
+    <sequential>
+      <ant antfile="${bedework.home}/../@{project}/build.xml" 
+           inheritall="false"
+           target="@{target}" />
+    </sequential>
+  </macrodef>
+    
+  <macrodef name="buildfilters">
+    <sequential>
+      <filterset id="property.filters" >
+        <!--      Global settings            -->
+        <filter token="QUICKSTART_DIR"
+                value="${quickstart.dir}"/>
+
+        <filter token="APPSERVER-DATA-DIR"
+                value="${org.bedework.data.dir}"/>
+      	
+        <filter token="DATA_DIR"
+                value="${org.bedework.data.dir}"/>
+
+        <filter token="BW-APP-NAME"
+                value="${org.bedework.deploy.name}"/>
+
+        <filter token="HIBERNATE-DIALECT"
+                value="${org.bedework.global.hibernate.dialect}" />
+
+        <filter token="SECOND-LEVEL-CACHING"
+                value="${org.bedework.global.hibernate.cache.use_second_level_cache}" />
+
+        <filter token="CACHE-PROVIDER"
+                value="${org.bedework.global.hibernate.cache.provider_class}" />
+
+        <filter token="DIRECTORY-BROWSING-DISALLOWED"
+                value="${org.bedework.global.directory.browsing.disallowed}" />
+
+        <filter token="SERVLET-CLASS"
+                value="${org.bedework.global.servlet.class}"/>
+
+        <filter token="PORTLET-SERVLET-CLASS"
+                value="${org.bedework.global.portlet-servlet.class}"/>
+
+        <filter token="PORTAL-SERVLET-CONTEXT-PROVIDER"
+                value="${org.bedework.global.portal-servlet.context.provider}"/>
+
+        <filter token="PORTAL-SERVLET-CONTEXT-LISTENER"
+                value="${org.bedework.global.portal-servlet.context.listener}"/>
+
+        <filter token="PORTLET-CLASS"
+                value="${org.bedework.global.portlet.class}"/>
+
+        <filter token="IGNORE-CONTENT-TYPE"
+                value="${org.bedework.global.ignoreContentType}" />
+
+        <filter token="GENURL-TAGLIB-TLD"
+                value="${org.bedework.global.genurl.taglib.tld}"/>
+
+        <filter token="LIFERAY-COMPANY-ID"
+                value="${org.bedework.global.liferay.company-id}"/>
+
+        <filter token="JBOSS-CARDDB-DATASOURCE"
+                value="${org.bedework.global.jboss.carddb.datasource.jndiname}"/>
+
+        <filter token="JBOSS-EVENTREGDB-DATASOURCE"
+                value="${org.bedework.global.jboss.eventreg.datasource.jndiname}"/>
+
+        <filter token="JBOSS-DB-DATASOURCE"
+                value="${org.bedework.global.jboss.db.datasource.jndiname}"/>
+
+        <!--      Application settings            -->
+
+        <filter token="APP-DESCRIPTION"
+                value="${propval.app.description}" />
+
+        <filter token="PORTLET-NAME"
+                value="${propval.app.portlet.name}"/>
+
+        <filter token="CAL-SUITE"
+                value="${propval.app.cal.suite}"/>
+
+        <filter token="SECURITY-DOMAIN"
+                value="${propval.app.security.domain}"/>
+        <filter token="SECURITY-PREFIX"
+                value="${propval.app.security.prefix}"/>
+        <filter token="TRANSPORT-GUARANTEE"
+                value="${propval.app.transport.guarantee}"/>
+
+        <filter token="DISPLAY-NAME"
+                value="${propval.app.display.name}"/>
+        <filter token="CONTEXT-ROOT"
+                value="${propval.app.context.root}" />
+        <filter token="APP-NAME"
+                value="${propval.app.name}"/>
+        <filter token="APP-DESCRIPTION"
+                value="${propval.app.description}"/>
+        <filter token="WAR-NAME"
+                value="${propval.app.war.name}"/>
+        <filter token="TOMCAT-DOC-BASE"
+                value="${org.bedework.appserver.dir}${propval.app.deploy.dir}/${propval.app.war.name}"/>
+
+        <filter token="DEFAULT-CONTENTTYPE"
+                value="${propval.app.default.contenttype}" />
+        <filter token="NOXSLT"
+                value="${propval.app.noxslt}" />
+
+        <!-- Change this to be an app par -->
+        <filter token="RUN-AS-USER"
+                value="${org.bedework.syspar.public.user}" />
+
+                <!-- ???????
+        <filter token="CALFILE-NAME"
+                value="${propval.app.calfile.name}" /> -->
+
+        <!--      Shell script settings            -->
+
+        <filter token="SCHEMA-DELIMITER"
+                value="${propval.app.schema.delimiter}" />
+
+        <filter token="KEYFILE-DIR"
+                value="${org.bedework.global.keyfile.dir}"/>
+
+        <filter token="calSoapWsURI"
+                value="${org.bedework.calws-soap.uri}" />
+
+        <filter token="synchWsURI"
+                value="${org.bedework.synch.uri}" />
+
+        <filter token="synchService"
+                value="${org.bedework.synch.service}" />
+
+        <filter token="synchServiceManager"
+                value="${org.bedework.synch.service.manager}" />
+
+        <filter token="SYNCH_WSDL_DIR"
+                value="${org.bedework.synch.wsdl.deploy.dir}" />
+
+        <filter token="synchWsdlURI"
+                value="${org.bedework.synch.wsdl.uri}" />
+
+        <filter token="tzdataURI"
+                value="${org.bedework.app.tzsvr.tzdata.url}" />
+
+        <filter token="tzdataRefreshInterval"
+                value="${org.bedework.app.tzsvr.refetch.interval}" />
+
+        <filter token="tzserverPrimary"
+                value="${org.bedework.app.tzsvr.primary.server}" />
+
+        <filter token="tzserverPrimaryUrl"
+                value="${org.bedework.app.tzsvr.primary.url}" />
+        
+        <filter token="APP-VERSION"
+                value="${org.bedework.global.version}"/>
+        
+        <filter token="orgBedeworkVersion"
+                value="${org.bedework.version}"/>
+        <filter token="orgBedeworkAccessVersion"
+                value="${org.bedework.access.version}"/>
+        <filter token="orgBedeworkAnnotationsVersion"
+                value="${org.bedework.annotations.version}"/>
+        <filter token="orgBedeworkBedenoteVersion"
+                value="${org.bedework.bedenote.version}"/>
+        <filter token="orgBedeworkBwcaldavVersion"
+                value="${org.bedework.bwcaldav.version}"/>
+        <filter token="orgBedeworkBwtoolsVersion"
+                value="${org.bedework.bwtools.version}"/>
+        <filter token="orgBedeworkBwxmlVersion"
+                value="${org.bedework.bwxml.version}"/>
+        <filter token="orgBedeworkCalcoreVersion"
+                value="${org.bedework.calcore.version}"/>
+        <filter token="orgBedeworkCaldavVersion"
+                value="${org.bedework.caldav.version}"/>
+        <filter token="orgBedeworkCaldavtestVersion"
+                value="${org.bedework.caldavtest.version}"/>
+        <filter token="orgBedeworkCalfacadeVersion"
+                value="${org.bedework.calfacade.version}"/>
+        <filter token="orgBedeworkCarddavVersion"
+                value="${org.bedework.carddav.version}"/>
+        <filter token="orgBedeworkDavutilVersion"
+                value="${org.bedework.davutil.version}"/>
+        <filter token="orgBedeworkDumprestoreVersion"
+                value="${org.bedework.dumprestore.version}"/>
+        <filter token="orgBedeworkExchggatewayVersion"
+                value="${org.bedework.exchggateway.version}"/>
+        <filter token="orgBedeworkIcalendarVersion"
+                value="${org.bedework.icalendar.version}"/>
+        <filter token="orgBedeworkIndexerVersion"
+                value="${org.bedework.indexer.version}"/>
+        <filter token="orgBedeworkInterfacesVersion"
+                value="${org.bedework.interfaces.version}"/>
+        <filter token="orgBedeworkMiscVersion"
+                value="${org.bedework.misc.version}"/>
+        <filter token="orgBedeworkMonitorVersion"
+                value="${org.bedework.monitor.version}"/>
+        <filter token="orgBedeworkRpiutilVersion"
+                value="${org.bedework.rpiutil.version}"/>
+        <filter token="orgBedeworkSynchVersion"
+                value="${org.bedework.synch.version}"/>
+        <filter token="orgBedeworkSyseventsVersion"
+                value="${org.bedework.sysevents.version}"/>
+        <filter token="orgBedeworkTestsuiteVersion"
+                value="${org.bedework.testsuite.version}"/>
+        <filter token="orgBedeworkBwtzsvrVersion"
+                value="${org.bedework.bwtzsvr.version}"/>
+        <filter token="orgBedeworkWebappsVersion"
+                value="${org.bedework.webapps.version}"/>
+        <filter token="orgBedeworkWebdavVersion"
+                value="${org.bedework.webdav.version}"/>
+        <filter token="orgBedeworkXmlschemaVersion"
+                value="${org.bedework.xmlschema.version}"/>
+
+      </filterset>
+    </sequential>
+  </macrodef>
+      
+  <macrodef name="projectDefs">
+    <attribute name="name"/>
+    <attribute name="version"/>
+    <attribute name="deployment-name" default=""/>
+    <attribute name="subproject" default="false"/>
+    <sequential>
+      <property name="project.name" value="@{name}"/>
+      
+      <property name="project.version" value="@{version}"/>
+      
+      <property name="dist.home" location="${project.home}/dist"/>
+      <mkdir dir="${dist.home}" />
+
+      <property name="lib.dir" location="${project.home}/lib"/>
+
+      <property name="buildjar" location="${build.dir}/buildTools/buildjar.xml"/>
+      <property name="buildwar" location="${build.dir}/buildwar.xml"/>
+      <property name="buildsh" location="${build.dir}/buildsh.xml"/>
+
+      <property name="resources.dir" location="${project.home}/resources"/>
+
+      <property name="org.bedework.libcache.dir"
+                location="${bedework.home}/libcache"/>
+      
+      <property name="org.bedework.temp.dir"
+                location="${dist.home}/temp" />
+
+      <if>
+        <istrue value="@{subproject}" />
+        <then>
+          <property name="source.home" location="${project.home}/src"/>
+        </then>
+        <else>
+          <delete dir="${org.bedework.temp.dir}" />
+          <mkdir dir="${org.bedework.temp.dir}" />
+          
+          <property name="org.bedework.deployment.name"
+                    value="@{deployment-name}" />
+
+          <deftasks/>
+        </else>
+      </if>
+
+      <import file="${build.dir}/buildTools/getJar.xml"/>
+      <import file="${build.dir}/buildTools/jdoc.xml"/>
+      
+      <!-- Now we have getjar build a classpath for the bundle tasks
+      <mkdir dir="${org.bedework.temp.dir}/bundle-build" />
+      <getJar name="commons-io" version="2.0.1"
+              lib="${org.bedework.temp.dir}/bundle-build"/>
+      <getJar name="bcel" version="5.3-SNAPSHOT"
+              lib="${org.bedework.temp.dir}/bundle-build"/>
+      <getJar name="ch.jm.osgi.util.bundle" version="1.0.0"
+              lib="${org.bedework.temp.dir}/bundle-build"/>
+
+      <path id="bundle-util.classpath">
+          <fileset dir="${org.bedework.temp.dir}/bundle-build"/>
+      </path>
+      <taskdef resource="ch/jm/osgi/util/bundle/ant/antlib.xml"
+          classpathref="bundle-util.classpath" onerror="fail"/> -->
+      
+      <!-- And the cargo tasks 
+      <mkdir dir="${org.bedework.temp.dir}/cargo" />
+      <getJar name="cargo-ant" version="1.2.0"
+              lib="${org.bedework.temp.dir}/cargo"/>
+      <getJar name="cargo-core-uberjar" version="1.2.0"
+              lib="${org.bedework.temp.dir}/cargo"/>
+      <getJar name="commons-discovery" version="20040218.194635"
+              lib="${org.bedework.temp.dir}/cargo"/>
+      <getJar name="commons-logging"
+              lib="${org.bedework.temp.dir}/cargo"/>
+
+      <path id="cargo.classpath">
+          <fileset dir="${org.bedework.temp.dir}/cargo"/>
+      </path>
+      <taskdef resource="cargo.tasks"
+          classpathref="cargo.classpath" onerror="fail"/>-->
+    </sequential>
+  </macrodef>
+
+  <!-- ===================================================================
+       Load the deployment configuration from the properties file. We also load
+       the run time options and define some properties based on some of the
+       values found there
+       =================================================================== -->
+  <macrodef name="loadDeployConfig">
+    <!--<attribute name="extra.options" default="${org.bedework.carddav.options}"/> -->
+    <sequential>
+      <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+    
+      <if>
+        <not>
+          <isset property="bedework-options.org.bedework.global.portal.platform"/>
+        </not>
+        <then>
+        <property environment="env"/>
+  
+        <!-- Load build property definition overrides -->
+        <property file="${org.bedework.build.properties}" />
+  
+        <configMsg message="Loading build properties from ${org.bedework.build.properties}" />
+        <configMsg message="Use config override properties ${org.bedework.config.override.properties}" />
+        <configMsg message="Use config properties ${org.bedework.config.properties}" />
+        <configMsg message="Runtime options from ${org.bedework.config.options}" />
+  
+        <property file="${org.bedework.configuration.versions}" />
+        <property file="${org.bedework.config.override.properties}" />
+        <property file="${org.bedework.config.properties}" />
+  
+        <!-- Load the run time options and define some properties based on some
+             of the values -->
+  
+        <!-- Load the general bedework options -->
+        <xmlproperty file="${org.bedework.config.options}"/>
+  
+        <!-- Load the extra options 
+        <xmlproperty file="@{extra.options}"/>-->
+  
+        <if>
+          <isset property="bedework-options.org.bedework.global.portal.platform"/>
+          <then>
+            <property name="org.bedework.global.portal.platform"
+                      value="${bedework-options.org.bedework.global.portal.platform}" />
+  
+            <property name="org.bedework.config.portal.home"
+                      value="${org.bedework.configurations.home}/.portal/${org.bedework.global.portal.platform}" />
+  
+            <property name="org.bedework.config.portal.common.home"
+                      value="${org.bedework.configurations.home}/.portal/common-resources" />
+  
+            <debugMsg message="******************* load from ${org.bedework.config.portal.home}/portal.properties" />
+  
+            <property file="${org.bedework.config.portal.home}/portal.properties" />
+          </then>
+          <else>
+            <debugMsg message="******************* load from ${org.bedework.configurations.home}/.standalone/standalone.properties" />
+  
+            <property file="${org.bedework.configurations.home}/.platform/standalone.properties" />
+          </else>
+        </if>
+  
+        <property name="org.bedework.global.version"
+                  value="${bedework-options.org.bedework.global.version}" />
+  
+        <property name="org.bedework.global.directory.browsing.disallowed"
+                  value="${bedework-options.org.bedework.syspars.directoryBrowsingDisallowed}" />
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+
+  <!-- =====================================================================
+       Assumes projectDefs was called previously.
+       ===================================================================== -->
+  <macrodef name="projectInit">
+    <sequential>
+      <infoMsg message="* =========== Building ${project.name}" />
+
+      <loadDeployConfig/>
+      
+      <delete dir="${lib.dir}" />
+      <mkdir dir="${lib.dir}" />
+
+      <property name="test.data.dir"
+                location="${dist.home}/test-data" />
+
+      <property name="test.reports.dir"
+                location="${dist.home}/test-reports" />
+
+      <property name="org.bedework.empty.dir"
+                location="${dist.home}/empty-dir" />
+      <mkdir dir="${org.bedework.empty.dir}" />
+
+      <fileset id="empty.fileset" dir="${org.bedework.empty.dir}"
+               excludes="*" />
+
+      <!-- ==================== Compilation Classpath ==================== -->
+
+      <path id="compile.classpath">
+        <fileset dir="${lib.dir}">
+           <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${dist.home}">
+           <include name="*.jar"/>
+        </fileset>
+      </path>
+    </sequential>
+  </macrodef>
+
+  <!-- =====================================================================
+       Assumes projectDefs was called previously.
+       Set things up ready for deployment
+       ===================================================================== -->
+  <macrodef name="deployInit">
+    <attribute name="ear-name"/>
+    <sequential>
+      <!-- Where we put ear stuff -->
+      <if>
+        <isset property="org.bedework.global.build.ear" />
+        <then>
+          <property name="app.ear.file.name"
+                    value="@{ear-name}.ear" />
+
+          <property name="org.bedework.ear.name"
+                    value="@{ear-name}" />
+
+          <property name="org.bedework.ear.templib"
+                    location="${org.bedework.temp.dir}/earlib" />
+
+          <property name="org.bedework.ear.properties.dir"
+                    location="${org.bedework.temp.dir}/ear-properties" />
+
+          <delete dir="${org.bedework.ear.templib}" />
+          <mkdir dir="${org.bedework.ear.templib}" />
+
+          <delete dir="${org.bedework.ear.properties.dir}" />
+          <mkdir dir="${org.bedework.ear.properties.dir}" />
+        </then>
+      </if>
+      
+      <property name="org.bedework.global.build.common.context.war.name"
+                value="bw-common" />
+      
+      <property name="org.bedework.temp.wars.home"
+                location="${org.bedework.temp.dir}/wars" />
+
+      <property name="org.bedework.temp.shellscr.home"
+                location="${org.bedework.temp.dir}/shellscr" />
+
+      <!-- Recreated by each app build file. Place extra jars here -->
+      <property name="org.bedework.temp.extrajars.dir"
+                location="${org.bedework.temp.dir}/extrajars" />
+
+      <!-- Preserve extra jars for ear builds -->
+      <property name="org.bedework.temp.ear.extrajars.dir"
+                location="${org.bedework.temp.dir}/earextrajars" />
+      
+      <property name="org.bedework.global.context.roots"
+                location="${org.bedework.temp.dir}/context-roots.properties" />
+
+      <tempfile property="org.bedework.global.context.roots"
+                destdir="${org.bedework.temp.dir}"
+                prefix="context-roots" suffix=".properties" />
+      
+      <!-- Clean up before we start -->
+      <delete dir="${org.bedework.temp.wars.home}" />
+      <mkdir dir="${org.bedework.temp.wars.home}" />
+
+      <delete dir="${org.bedework.temp.ear.extrajars.dir}" />
+      <mkdir dir="${org.bedework.temp.ear.extrajars.dir}" />
+
+      <delete dir="${org.bedework.temp.extrajars.dir}" />
+      <mkdir dir="${org.bedework.temp.extrajars.dir}" />
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="deployTerm">
+    <sequential>
+      <if>
+        <equals arg1="${propval.app.package.type}" arg2="service" />
+      <then>
+        <ant antfile="${build.dir}/../deployment/termination/service/build.xml" 
+             target="deploy" inheritRefs="true" />
+      </then>
+      <else>
+        <ant antfile="${build.dir}/../deployment/termination/webapp/build.xml" 
+             target="deploy" inheritRefs="true" />
+      </else>
+     </if>
+      
+      <!-- Platform specific -->
+      <ant antfile="${build.dir}/../deployment/termination/build.xml" 
+           target="deploy" inheritRefs="true" />
+    </sequential>
+  </macrodef>
+
+  <!-- =================================================================
+       Standard targets for build files. Two targets (at least) need to be 
+       overridden by the importing task
+       
+       init - carry out project specific initialisation
+       build-source - builds the source to creat ejars.
+       =================================================================-->
+  
+  <!-- Override this -->
+  <target name="init" />
+  
+  <!-- Override this if needed -->
+  <target name="build-init" depends="init">
+    <resolveDependencies pomFile="pom.xml" />
+  </target>
+
+  <!-- Override this -->
+  <target name="build-source" />
+  
+  <!-- Override this -->
+  <target name="deploy-init" depends="init">
+    <deployInit ear-name="" />
+  </target>
+  
+  <!-- This should be called from the deploy target for bundles. -->
+  <macrodef name="deployBundle">
+    <attribute name="bundle"/>
+    <sequential>
+      <!--
+      <if>
+        <isset property="org.bedework.global.deploy.bundles" />
+        <then>
+          <cargo containerId="${org.bedework.global.deploy.platform}" 
+                 home="${org.bedework.appserver.dir}"
+                 action="deploy">
+            <configuration>
+              <deployable type="bundle" file="@{bundle}"/>
+            </configuration>
+          </cargo>
+        </then>
+      </if>
+      -->
+    </sequential>
+  </macrodef>
+  
+  <!-- Override this -->
+  <target name="deploy" depends="deploy-init,build" />
+
+  <!-- =================================================================
+       Clean out all library files from other projects and all generated
+       files in preparation for a complete rebuild.
+
+       Needed because switching versions leaves a load of old bedework
+       generated stuff in the libraries.
+       ================================================================= -->
+  <target name="deep-clean" depends="clean">
+  </target>
+
+  <!-- =================================================================
+       Clean all generated files
+       ================================================================= -->
+  <target name="clean">
+    <delete dir="${dist.home}" />
+    <delete dir="${lib.dir}" />
+  </target>
+
+  <target name="quickstart-clean" depends="clean" >
+  </target>
+
+  <!-- =================================================================
+       Clean and deploy in one go
+       ================================================================= -->
+  <target name="clean.deploy" depends="clean,deploy" />
+
+  <!-- =================================================================
+       Clean up after a build.
+       ================================================================= -->
+  <target name="cleanup">
+    <!--
+    <delete dir="${org.bedework.empty.dir}" />
+    -->
+  </target>
+
+  <!-- ========================== Base build Targets ===================
+       Here we have one target building the classes and interfaces that make
+       up the access control suite.
+       ================================================================= -->
+
+  <target name="clean-build" depends="clean,build"
+          description="Clean and compile classes"/>
+
+  <target name="clean-build-all" depends="clean,build-all"
+          description="Clean and compile classes"/>
+
+  <target name="build" depends="init,build-source,cleanup"
+          description="Compile classes"/>
+
+  <target name="build-all" depends="build"
+          description="Compile classes"/>
+  
+  <target name="javadoc" depends="build-init"
+          description="Create Javadoc API documentation">
+    <jdoc/>
+  </target>
+  
+  <macrodef name="build-jar-stats">
+    <sequential>
+      <if>
+        <not>
+          <isset property="org.bedework.jars.built" />
+        </not>
+        <then>
+          <echo message="No jars were checked or built" />
+        </then>
+        <else>
+          <echo message="${org.bedework.jars.checked} jars checked: ${org.bedework.jars.built} built" />
+        </else>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <!-- This macro builds a single jar file. It just sets defaults for the java
+       compiler then invokes it.
+
+       This is the only place we compile files.
+
+       On entry we require:
+         jar.file              Fully specified name of destination jar file.
+         base.java.sources     Defines the java source files
+         base.class.patternset Defines the java class files
+         base.resource.files   Defines extra resources to go in the jar
+
+       We will copy all files defined by base.java.patternset to a temporary
+       location and compile out of that into a temporary classes location.
+
+       We do that to avoid a problematic feature of the java compilers, the
+       tendency to recompile any referenced sources found on the source path.
+
+       So, if we have all our sources under the directory "src" and compile a
+       single package in that tree, all referenced classes will be compiled,
+       even if they exist in a jar file on the class path.
+
+       The other side-effect is that we might compile and include classes we
+       didn't realise we were compiling.
+
+       The downside is that we need to be very specific about the classes we
+       compile for a package and we might need to put classes in
+       base.java.sources which we don't want in the final jar file.
+
+       On exit we will have created classes in the directory
+          ${jar.temp.classes}
+       and a jar file
+          ${build.jar.file}
+
+       Authors: Mike Douglass   douglm rpi.edu
+  -->
+  <macrodef name="build-jar">
+    <attribute name="module-base"/>
+    <attribute name="jar-file"/>
+    <attribute name="jar-dependency" default=""/>
+    <attribute name="generated-sources" default=""/>
+    <attribute name="property-resources" default=""/>
+    <attribute name="bundle-xml" default=""/> <!-- bundle -->
+    <attribute name="jar-name" default=""/> <!-- bundle -->
+    <attribute name="jar-version" default=""/> <!-- bundle -->
+    
+    <sequential>
+      <if>
+        <not>
+          <isset property="org.bedework.jars.built" />
+        </not>
+        <then>
+          <var name="org.bedework.jars.built" value="0" />
+          <var name="org.bedework.jars.checked" value="0" />
+        </then>
+      </if>
+      
+      <math result="org.bedework.jars.checked" 
+            operand1="${org.bedework.jars.checked}" 
+            operation="+" operand2="1" datatype="int"/>
+
+      <if>
+        <equals arg1="@{generated-sources}" arg2="" />
+        <then>
+          <fileset id="buildjar.generated.java.sources" refid="empty.fileset" />
+        </then>
+        <else>
+          <fileset id="buildjar.generated.java.sources" dir="@{generated-sources}" >
+            <include name="org/bedework/**/*.java"/>
+          </fileset>
+        </else>
+      </if>
+
+      <if>
+        <equals arg1="@{property-resources}" arg2="" />
+        <then>
+          <fileset id="buildjar.resource.files" refid="empty.fileset" />
+        </then>
+        <else>
+          <fileset id="buildjar.resource.files" dir="@{property-resources}" >
+            <include name="**/*.properties"/>
+          </fileset>
+        </else>
+      </if>
+
+      <fileset id="buildjar.java.sources" dir="@{module-base}/src" >
+        <include name="**/*.java"/>
+      </fileset>
+
+      <patternset id="base.class.patternset">
+        <include name="**/*.class"/>
+      </patternset>
+
+      <if>
+        <not>
+          <equals arg1="@{jar-dependency}" arg2="" />
+        </not>
+        <then>
+          <var name="build.jar.dependency" value="@{jar-dependency}" />
+        </then>
+      </if>
+      
+      <!--  =================== Compilation Control Options ===============
+        These properties control option settings on the Javac compiler when it
+        is invoked using the <javac> task.
+
+        compile.debug        Should compilation include the debug option?
+        compile.deprecation  Should compilation include the deprecation option?
+        compile.optimize     Should compilation include the optimize option?
+
+        Below are the defaults. They may already be set in the build properties.
+      -->
+
+      <property name="compile.debug" value="true"/>
+      <property name="compile.deprecation" value="false"/>
+      <property name="compile.optimize" value="true"/>
+      <property name="compile.verbose" value="false"/>
+      <property name="compile.listfiles" value="false"/>
+
+      <var name="jar.temp.sources"
+           value="${dist.home}/source" />
+      <var name="jar.temp.classes"
+           value="${dist.home}/classes" />
+
+      <!-- ==============================================================
+            See if the jar is up to date. We recompile if any of the
+            source files or metainf files are newer. We also recompile if
+            any jars on the package classpath are newer.
+           ============================================================== -->
+
+      <noisyMsg message="build.jar.file=@{jar-file}" />
+      
+      <if>
+        <isset property="build.jar.dependency"/>
+        <then>
+          <dirname file="${build.jar.dependency}"
+                   property="dependency.dirname" />
+          <basename file="${build.jar.dependency}"
+                    property="dependency.basename" />
+          <fileset dir="${dependency.dirname}" id="dependency.fileset">
+            <include name="${dependency.basename}"/>
+          </fileset>
+        </then>
+        <else>
+          <fileset refid="empty.fileset" id="dependency.fileset"/>
+        </else>
+      </if>      
+
+      <!-- See if the libraries are later than any classes --> 
+
+      <var name="org.bedework.libraries.changed" value="false" />
+      
+      <outofdate outputsources="org.bedework,changed.sources">
+        <sourcefiles>
+          <fileset dir="${lib.dir}">
+             <include name="*.jar"/>
+          </fileset>
+          <!-- This makes almost everything rebuild all the time
+               because it has the generated jars for the current package
+          <path refid="compile.classpath"/> 
+          -->
+        </sourcefiles>
+        <targetfiles>
+          <pathelement path="@{jar-file}"/>
+        </targetfiles>
+        <sequential>
+          <var name="org.bedework.libraries.changed" value="true" />
+          <noisyMsg message="**** @{jar-file} needs rebuilding - libraries changed" />
+        </sequential>
+      </outofdate>
+      
+      <noisyMsg message="**** org.bedework,changed.sources = ${org.bedework,changed.sources}" />
+      <noisyMsg message="**** org.bedework.libraries.changed = ${org.bedework.libraries.changed}" />
+
+      <if>
+        <and>
+          <not>
+            <equals arg1="${org.bedework.libraries.changed}" arg2="true" />
+          </not>
+          <uptodate targetfile="@{jar-file}" >
+            <srcfiles refid="buildjar.java.sources" />
+            <srcfiles refid="buildjar.generated.java.sources" />
+            <srcfiles refid="buildjar.resource.files"/>
+            <srcfiles refid="dependency.fileset"/>
+          </uptodate>
+        </and>
+        <then>
+          <noisyMsg message="**** @{jar-file} is up to date" />
+        </then>
+        <else>
+          <noisyMsg message="**** @{jar-file} needs rebuilding" />
+
+          <math result="org.bedework.jars.built" 
+                operand1="${org.bedework.jars.built}" 
+                operation="+" operand2="1" datatype="int"/>
+
+          <!-- Delete jar file -->
+          <delete file="@{jar-file}"/>
+
+          <dirname property="build.jar.dir" file="@{jar-file}"/>
+
+          <mkdir dir="${build.jar.dir}" />
+
+          <!-- ==========================================================
+                            Build the classes
+               ========================================================== -->
+
+          <!-- First copy the sources we are going to compile into a temp
+               directory. -->
+          <delete dir="${jar.temp.sources}" />
+          <mkdir dir="${jar.temp.sources}" />
+          
+          <copy toDir="${jar.temp.sources}">
+            <fileset refid="buildjar.java.sources" />
+            <fileset refid="buildjar.generated.java.sources" />
+            <fileset refid="buildjar.resource.files"/>
+          </copy>
+
+          <mkdir dir="${jar.temp.classes}"/>
+          
+          <debugMsg message="About to build jar @{jar-file}"/>
+          <debugCpid idpar="compile.classpath" />
+
+          <javac srcdir="${jar.temp.sources}"
+                 destdir="${jar.temp.classes}"
+                 debug="${compile.debug}"
+                 verbose="${compile.verbose}"
+                 listfiles="${compile.listfiles}"
+                 deprecation="${compile.deprecation}"
+                 optimize="${compile.optimize}">
+            <classpath refid="compile.classpath"/>
+            <include name="**/*.java"/>
+            <compilerarg value="-nowarn" compiler="jikes" />
+          </javac>
+
+          <!-- ==========================================================
+                            Build jar file
+               ========================================================== -->
+
+          <if>
+            <equals arg1="@{bundle-xml}" arg2="" />
+            <then>
+              <!-- Not a bundle -->
+              <jar jarfile="@{jar-file}">
+                <fileset dir="${jar.temp.classes}">
+                  <patternset refid="base.class.patternset"/>
+                </fileset>
+                <fileset refid="buildjar.resource.files"/>
+              </jar>
+            </then>
+            <else>
+              <!-- Build manifest from bundle descriptor and add additional entries -->
+              <bundle-manifest file="${jar.temp.classes}/META-INF/MANIFEST.MF"
+                    classes="${jar.temp.classes}"
+                    descriptor="@{bundle-xml}">
+                <attribute name="Bundle-Version" value="@{jar-version}"/>
+                <attribute name="Bundle-Vendor" value="Bedework"/>
+                <attribute name="Bundle-DocURL" value="bedework.org"/>
+                <attribute name="Implementation-Title"
+                    value="@{jar-name} (${project.name})"/>
+                <attribute name="Implementation-Version" value="@{jar-version}"/>
+                <attribute name="Implementation-Vendor"
+                    value="bedework"/>
+                <attribute name="Implementation-URL"
+                    value="bedework.org"/>
+              </bundle-manifest>
+              
+              <!-- Now build the actual bundle. -->
+              <jar jarfile="@{jar-file}"
+                    filesetmanifest="merge" manifestencoding="UTF-8">
+                <fileset dir="${jar.temp.classes}"/>
+                <!--
+                <metainf dir="${project.home}" includes="LICENSE.txt,NOTICE.txt"/>
+                -->
+                <metainf dir="${project.home}" includes="LICENSE.txt"/>
+              </jar>
+            </else>
+          </if>
+
+          <!-- ==========================================================
+                            Clean up
+               ========================================================== -->
+
+          <delete dir="${jar.temp.sources}" />
+          <delete dir="${jar.temp.classes}"/>
+        </else>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="infoMsg">
+    <attribute name="message"/>
+    <sequential>
+      <if>
+        <not>
+          <istrue value="${org.bedework.build.silent}" />
+        </not>
+        <then>
+          <echo message="@{message}" />
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="noisyMsg">
+    <attribute name="message"/>
+    <sequential>
+      <if>
+        <istrue value="${org.bedework.build.noisy}" />
+        <then>
+          <echo message="@{message}" />
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="configMsg">
+    <attribute name="message"/>
+    <sequential>
+      <if>
+        <istrue value="${org.bedework.build.showconfigs}" />
+        <then>
+          <echo message="@{message}" />
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="debugMsg">
+    <attribute name="message"/>
+    <sequential>
+      <if>
+        <istrue value="${org.bedework.build.debug}" />
+        <then>
+          <echo message="@{message}" />
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="debugCpid">
+    <attribute name="idpar"/>
+    <sequential>
+      <if>
+        <istrue value="${org.bedework.build.debug}" />
+        <then>
+          <property name="cp" refid="@{idpar}" />
+          <echo message="***************cp: ${cp}"/>
+        </then>
+      </if>
+    </sequential>
+  </macrodef>
+</project>

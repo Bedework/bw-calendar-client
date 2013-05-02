@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     Bedework public events submission web application deployer
+     =================================================================== -->
+
+<project name="bwsubmit.deploy" default="deploy" >
+  <import file="${build.dir}/platforms/${org.bedework.global.deploy.platform}War.xml" />
+
+  <dirname property="this.dir" file="${ant.file}"/>
+
+  <!--<import file="${this.dir}/appjars.xml" />-->
+  <import file="${org.bedework.deployment.base}/bw-core-appjars.xml" />
+
+  <target name="init" >
+    <getExtraJars />
+
+    <property name="app.war.file"
+              location="${dist.home}/${propval.app.war.name}.war" />
+
+    <property name="app.sou.dir" location="${org.bedework.deploy.app.sou}" />
+
+    <property name="org.bedework.use.dojo" value="true" />
+
+    <property name="org.bedework.use.jquery" value="true" />
+
+    <!-- Flag as struts -->
+    <property name="org.bedework.strutsapp" value="true" />
+
+    <!-- Properties that differ from the public client -->
+    <!--
+    <property name="app.web.xml"
+              value="${app.sou.dir}/war/WEB-INF/web.xml" />
+              -->
+
+    <property name="app.resources.dir"
+              location="${this.dir}/resources" />
+  </target>
+
+  <!-- =================================================================
+       The "deploy" target first builds a configured component then copies
+       all required files to the appropriate servlet container directories.
+
+       Currently this only works for the quickstart distribution.
+       For example, it does not handle deploying into jboss and copying
+       resource files (images, stylesheets) to external locations.
+       ================================================================= -->
+
+  <target name="deploy" depends="init,build.configured" >
+    <!-- First copy the resources into the server -->
+
+    <if>
+      <not>
+        <isset property="org.bedework.global.noskins" />
+      </not>
+      <then>
+        <delete dir="${org.bedework.appserver.dir}/${propval.app.resources.dir}" />
+        <copy todir="${org.bedework.appserver.dir}/${propval.app.resources.dir}">
+          <fileset dir="${app.resources.dir}/demoskins" />
+        </copy>
+
+        <if>
+          <isset property="org.bedework.global.portal.platform" />
+          <then>
+            <!-- The intent is to have a set of quickstart skins configured for
+                 portal use. So far we've not managed that so for the time being we
+                 will just use the standalone skin set. -->
+            <property name="dest.skins.dir"
+                      location="${org.bedework.appserver.dir}/${propval.app.resources.dir}.${org.bedework.global.portal.platform}.${propval.app.cal.suite}" />
+            <delete dir="${dest.skins.dir}" />
+            <copy todir="${dest.skins.dir}">
+              <fileset dir="${app.resources.dir}/demoskins" />
+            </copy>
+          </then>
+        </if>
+      </then>
+    </if>
+
+    <!-- Platform specific -->
+    <antcall target="deployWar" inheritRefs="true" />
+  </target>
+
+  <target name="build.configured" depends="init" >
+    <!-- ===============================================================
+         Build the war
+         =============================================================== -->
+
+    <ant antfile="${buildwar}" inheritRefs="true" target="build" />
+  </target>
+</project>
+

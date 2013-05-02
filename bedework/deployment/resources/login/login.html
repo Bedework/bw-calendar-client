@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>@DISPLAY-NAME@ Login</title>
+    <script language="JavaScript" type="text/javascript">
+      <!--
+      // places the cursor in the first available form element when the page is loaded
+      // (if a form exists on the page)
+      function focusFirstElement() {
+        if (window.document.forms[0]) {
+          window.document.forms[0].elements[0].focus();
+        }
+      }
+      // -->
+    </script>
+    <style type="text/css">
+    <!--
+      body {
+        font-family: Arial, Helvetica, Verdana, sans-serif;
+        margin: 0;
+        padding: 2em;
+        background-color: white;
+        color: black;
+      }
+      #title {
+        white-space: nowrap;
+        font-size: 1.1em;
+      }
+      #loginBox {
+        text-align: left;
+        margin-left: 0em;
+        white-space: nowrap;
+      }
+      #loginBox td {
+        padding-right: 0.5em;
+      }
+      #loginBox input {
+        width: 10em;
+      }
+      #loginBox input.submit {
+        width: 6em;
+      }
+      form {
+        margin: 1em 0;
+        padding: 0;
+      }
+    -->
+    </style>
+  </head>
+
+  <body bgcolor="white" onLoad="javascript:focusFirstElement()">
+    <div id="logo">
+      <img src="/bedework-common/images/bedeworkLogo.gif" alt="Bedework Logo"/>
+    </div>
+    <form method="post" action="j_security_check" >
+      <table border="0" id="loginBox">
+        <tr>
+          <td>
+            UserID:
+          </td>
+          <td>
+            <input type="text" name="j_username" size="20"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Password:
+          </td>
+          <td>
+            <input type="password" name="j_password" size="20"/>
+            <input type="submit" class="submit" name="j_security_check" value="login"/>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>

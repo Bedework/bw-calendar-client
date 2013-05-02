@@ -1,0 +1,6 @@
+<Context path="@CONTEXT-ROOT@" reloadable="false">
+
+  <!-- Disables restart persistence of sessions -->
+  <Manager pathname=""/>
+</Context>
+

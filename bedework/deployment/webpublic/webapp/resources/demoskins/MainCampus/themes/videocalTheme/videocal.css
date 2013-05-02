@@ -1,0 +1,121 @@
+/*
+   Licensed to Jasig under one or more contributor license
+   agreements. See the NOTICE file distributed with this work
+   for additional information regarding copyright ownership.
+   Jasig licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file
+   except in compliance with the License. You may obtain a
+   copy of the License at:
+  
+   http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on
+   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied. See the License for the
+   specific language governing permissions and limitations
+   under the License.  
+*/
+
+/* Font sizes are set in pixels because the screen resolution is 800x600
+   Two overscan modes were viewed when creating the styles: this sheet
+   accomodates a larger overscan mode.  videocal.css is for a
+   smaller overscan mode.*/
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #eee;
+  background : #116 url("calBackground1.jpg") no-repeat;
+}
+h1 {
+  font-size: 38px; /* 38 was optimal */
+  color: #ee3;
+  background-color: transparent;
+  margin: 0;
+  padding-top: 0.5em;
+  padding-left: 60px;
+  padding-bottom: 0;
+  padding-right: 50px;
+}
+h2#calTitle {
+  width: 100%;
+  background-color: black;
+  color: #666;
+  margin: 0;
+  height: 28px;
+  padding: 20px 0 0 0; /* 20px top */
+  font-size: 20px;
+  text-align: center;
+}
+h2#dayTitle {
+  width: 100%;
+  background-color: #004;
+  color: #ccc;
+  margin: 0;
+  padding: 0.2em 0 0.2em 0;
+  font-size: 28px; /* 28 px */
+  text-align: center;
+}
+#time {
+  color: #eee;
+  background-color: transparent;
+  margin: 0;
+  padding-top: 0.5em;
+  padding-left: 90px;
+  padding-bottom: 0;
+  padding-right: 90px;
+  font-size: 28px;
+  font-weight: bold;
+}
+#location {
+  color: #e99;
+  background-color: transparent;
+  margin: 0;
+  padding: 0 90px 0 90px;
+  font-size: 24px;
+  font-weight: bold;
+}
+#description {
+  color: #aaa;
+  background-color: transparent;
+  margin: 0;
+  padding-top: 1em;
+  padding-left: 60px;
+  padding-bottom: 0;
+  padding-right: 55px;
+  font-size: 25px;
+  font-weight: bold;
+}
+#calPlug {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+}
+#calPlug h1 {
+  margin-top: 120px;
+  font-size: 52px;
+  color: #eee;
+  background-color : transparent;
+}
+#calPlug h2 {
+  font-size: 42px;
+  color: #ee3;
+  background-color : transparent;
+}
+#getBack {
+  text-align: center;
+  color: #eee;
+  background-color : transparent;
+}
+#getBack a {
+  color: #eee;
+  background-color : transparent;
+}
+#info {
+  width: 400px;
+  margin: 1em auto;
+  color: #eee;
+  background-color : transparent;
+}

@@ -1,0 +1,3 @@
+
+<verifyText description="Check if login failed"
+             text="${login.bad.value}"  />

@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+  <!ENTITY adminLogin     SYSTEM "../adminLogin.xml">
+  <!ENTITY chooseGroup    SYSTEM "../chooseGroup.xml">
+  <!ENTITY config    SYSTEM "../config.xml">
+  <!ENTITY defs      SYSTEM "../defs.xml">
+  <!ENTITY loginBad  SYSTEM "../../common/loginBadTest.xml">
+  <!ENTITY loginOk   SYSTEM "../../common/loginOkTest.xml">
+  <!ENTITY login     SYSTEM "../../common/login.xml">
+]>
+
+  <!--
+      # add event
+
+    * link from Main Menu [ok]
+    * form validation:
+          o click add with missing fields validates correctly [ok]
+          o end date/time before start date/time validates correctly [ok]
+          o using a preferred calendar [ok]
+          o using a preferred location [ok]
+          o using a preferred contact [ok]
+          o "all" lists for calendars, locations, and contacts [ok]
+          o "all" lists for calendars, locations, and contacts override preferred lists [ok]
+          o all day checkbox works [ok]
+          o duration radio button works [ok]
+          o zero duration for all day event disallowed [ok]
+          o duration type switching produces valid data (weeks zero out when needed) [ok]
+          o cancel add event [ok]
+          o event appears in public calendar properly (data and display all good) [ok]
+          o adding event returns to update event page [ok]
+    * events appear as expected in public calendar [ok]
+    * data, inc. dates and times, ok in public calendar [ok]
+   -->
+
+<project name="addEventTest" basedir="." default="addEventTest">
+  &defs;
+  <import file="../../common/taskdef.xml"/>
+
+  <target name="addEventTest">
+    <webtest name="Add event test">
+      &config;
+      <steps>
+        <!-- Login as admin user -->
+        &adminLogin;
+
+        <!-- Follow add event link -->
+        <clickLink description="Add event link"
+                   href="AddEvent" />
+
+        <selectForm description="Add event form"
+                    name="eventForm"/>
+
+        <!-- Click submit without setting any fields - should take us back -->
+        <clickButton name="addEvent"
+                     description="Click the add event button" />
+
+        <selectForm description="Add event form"
+                    name="eventForm"/>
+
+        <!-- title -->
+        <setInputField description="Set event title"
+                       htmlId="iTitle"
+                       value="Title 1"  />
+
+        <!-- select calendar -->
+        <setSelectField description="Select calendar"
+                        name="calendarId"
+                        text="Arts/Dance"  />
+
+        <!-- Start date fields
+<input type="hidden" value="2007" name="eventStartDate.year"/>
+<input type="hidden" value="7" name="eventStartDate.month"/>
+<input type="hidden" value="30" name="eventStartDate.day"/>
+        -->
+
+        <!-- What about 24hour mode? -->
+
+        <!-- select hour -->
+        <setSelectField description="Select hour"
+                        name="eventStartDate.hour"
+                        text="10"  />
+
+        <!-- select minute -->
+        <setSelectField description="Select minute"
+                        name="eventStartDate.minute"
+                        text="0"  />
+
+        <!-- select am/pm -->
+
+        <!-- Set duration -->
+        <setRadioButton description="Set endtype to duration"
+                        name="eventEndType"
+                        value="D" />
+        <setRadioButton description="Set duration to daytime type"
+                        name="eventDuration.type"
+                        value="daytime" />
+
+        <!-- description -->
+        <setInputField description="Set event description"
+                       htmlId="iDesc"
+                       value="Description 1"  />
+
+        <!-- cost -->
+
+        <!-- url -->
+
+        <!-- location -->
+        <setSelectField description="Select location"
+                        name="allLocationId"
+                        text="unknown"  />
+
+        <!-- contact -->
+        <setSelectField description="Select contact"
+                        name="allContactId"
+                        text="unknown"  />
+
+        <clickButton name="addEvent"
+                     description="Click the add event button" />
+      </steps>
+    </webtest>
+  </target>
+</project>

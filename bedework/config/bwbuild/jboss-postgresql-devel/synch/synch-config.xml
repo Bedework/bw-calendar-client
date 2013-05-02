@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<synch-confinfo>
+  <synchlingPoolSize type="java.lang.Integer">20</synchlingPoolSize>
+  <synchlingPoolTimeout type="java.lang.Long">5000</synchlingPoolTimeout>
+  <missingTargetRetries type="java.lang.Integer">10</missingTargetRetries>
+  <callbackURI>http://localhost:8080/synch/</callbackURI>
+  <privKeys>@DATA_DIR@/privkeys</privKeys>
+  <pubKeys>@DATA_DIR@/pubkeys</pubKeys>
+  <timezonesURI>http://localhost:8080/tzsvr</timezonesURI>
+</synch-confinfo>

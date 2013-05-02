@@ -1,0 +1,11 @@
+        <!-- Valid login and choose group -->
+        <property name="user.id" value="${admin.user}" />
+        <property name="user.password" value="${admin.user.ok.password" />
+        &login;
+        &loginOk;
+
+        <storeProperty description="admin group name"
+                       name="admin.group.name"
+                       propertyType="dynamic"
+                       value="${admin.user.group.name}"/>
+        &chooseGroup;

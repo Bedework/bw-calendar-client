@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     terminations task.
+     =================================================================== -->
+
+<project name="bwdeploy.termination" default="deploy" >
+  <import file="${build.dir}/platforms/${org.bedework.global.deploy.platform}-${org.bedework.deployment.name}.xml" />
+
+  <dirname property="this.dir" file="${ant.file}"/>
+
+  <target name="init">
+  </target>
+
+  <target name="deploy" depends="init,build.configured" >
+    <!-- Platform specific -->
+    <antcall target="doPlatform" inheritRefs="true" />
+  </target>
+
+  <target name="build.configured" depends="init" >
+  </target>
+  
+  <target name="copyToServer">
+    <copy todir="${appserver.lib.dir}" file="${org.bedework.extra.jar}" />
+  </target>
+</project>

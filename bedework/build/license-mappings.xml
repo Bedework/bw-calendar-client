@@ -1,0 +1,1201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<license-lookup xmlns="https://source.jasig.org/schemas/maven-notice-plugin/license-lookup"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://source.jasig.org/schemas/maven-notice-plugin/license-lookup https://source.jasig.org/schemas/maven-notice-plugin/license-lookup/license-lookup-v1.0.xsd">
+
+    <artifact>
+        <groupId>antisamy-bin</groupId>
+        <artifactId>org.owasp.validator</artifactId>
+        <license>BSD license</license>
+    </artifact>
+    <artifact>
+        <groupId>antlr</groupId>
+        <artifactId>antlr</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>asm</groupId>
+        <artifactId>asm-attrs</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>backport-util-concurrent</groupId>
+        <artifactId>backport-util-concurrent</artifactId>
+        <license>Creative Commons Public Domain (Retired)</license>
+    </artifact>
+    <artifact>
+        <groupId>batik</groupId>
+        <artifactId>batik-css</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>batik</groupId>
+        <artifactId>batik-ext</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>batik</groupId>
+        <artifactId>batik-gui-util</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>batik</groupId>
+        <artifactId>batik-util</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.access</groupId>
+        <artifactId>rpiaccess</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwannotations</groupId>
+        <artifactId>bw-annotations</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcalcore</groupId>
+        <artifactId>bw-alarms</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcalcore</groupId>
+        <artifactId>bw-calcore</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcalcore</groupId>
+        <artifactId>bw-calcorei</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcalcore</groupId>
+        <artifactId>bw-calsvc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcalcore</groupId>
+        <artifactId>bw-inoutsched</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcaldav</groupId>
+        <artifactId>bw-caldav</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcalfacade</groupId>
+        <artifactId>bw-calfacade</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwcalfacade</groupId>
+        <artifactId>bw-chgnote</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwdeployutil</groupId>
+        <artifactId>bw-deployutil</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwical</groupId>
+        <artifactId>bw-icalendar</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwinterfaces</groupId>
+        <artifactId>bw-interfaces</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwmisc</groupId>
+        <artifactId>bw-misc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwsysevents</groupId>
+        <artifactId>bw-sysevents</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwtzsvr</groupId>
+        <artifactId>bw-tzsvr</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwtzsvr</groupId>
+        <artifactId>bw-tzsvr-cmn</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwtzsvr</groupId>
+        <artifactId>bw-tzsvr-svc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwwebapps</groupId>
+        <artifactId>bw-appcommon</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwwebapps</groupId>
+        <artifactId>bw-webcommon</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwxml</groupId>
+        <artifactId>bw-caldavschema</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwxml</groupId>
+        <artifactId>bw-calws-soapschema</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwxml</groupId>
+        <artifactId>bw-exchangewsschema</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwxml</groupId>
+        <artifactId>bw-icalschema</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwxml</groupId>
+        <artifactId>bw-synchschema</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwxml</groupId>
+        <artifactId>bw-synchwsschema</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.bwxml</groupId>
+        <artifactId>bw-tzschema</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.caldav</groupId>
+        <artifactId>bw-cdvserver</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.caldav</groupId>
+        <artifactId>bw-cdvutil</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.carddav</groupId>
+        <artifactId>bw-carddavsvr</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-davio</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.dumprestore</groupId>
+        <artifactId>bw-dumpres</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.eventreg</groupId>
+        <artifactId>bw-eventreg</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.eventreg</groupId>
+        <artifactId>bw-eventreg-common</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.eventreg</groupId>
+        <artifactId>bw-eventregsvc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.indexer</groupId>
+        <artifactId>bw-indexer</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.rpiutil</groupId>
+        <artifactId>rpiutil</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.synch</groupId>
+        <artifactId>bw-synch</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.synch</groupId>
+        <artifactId>bw-synch-common</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.synch</groupId>
+        <artifactId>bw-synchsvc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.bedework.webdav</groupId>
+        <artifactId>bw-webdavserver</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.w3c.tidy</groupId>
+        <artifactId>jtidy</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>castor</groupId>
+        <artifactId>castor</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>cglib</groupId>
+        <artifactId>cglib-nodep</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>cglib</groupId>
+        <artifactId>cglib-full</artifactId>
+        <license>Apache License, Version 1.1</license>
+    </artifact>
+    <artifact>
+        <groupId>ch.jm.osgi</groupId>
+        <artifactId>ch.jm.osgi.util.bundle</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>classworlds</groupId>
+        <artifactId>classworlds</artifactId>
+        <license>BSD Style License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-ant</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-core-uberjar</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.carrotsearch</groupId>
+        <artifactId>junit-benchmarks</artifactId>
+        <version>0.3.0-SONATYPE</version>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.google.code.atinject</groupId>
+        <artifactId>atinject</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.google.code.googleportlet</groupId>
+        <artifactId>googleportlet</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.googlecode.cernunnos</groupId>
+        <artifactId>cernunnos</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.h2database</groupId>
+       <artifactId>h2</artifactId>
+        <license>Eclipse Public License V1.0 or H2 (MPL 1.1 modified)</license>
+    </artifact>
+    <artifact>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <license>MIT License</license>
+    </artifact>
+    <artifact>
+        <groupId>com.oracle</groupId>
+        <artifactId>csdk</artifactId>
+        <license>Not distributed with project</license>
+    </artifact>
+    <artifact>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>dsn</artifactId>    
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>imap</artifactId>    
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>mailapi</artifactId>
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>pop3</artifactId>
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>smtp</artifactId>
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+      <groupId>com.sun.xml.stream.buffer</groupId>
+      <artifactId>streambuffer</artifactId>
+      <license>Dual license consisting of the CDDL v1.1 and GPL v2</license>
+    </artifact>
+    <artifact>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>com.yahoo.platform.yui</groupId>
+        <artifactId>yuicompressor</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>de.zeigermann.xml</groupId>
+        <artifactId>xml-im-exporter</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>doxia</groupId>
+        <artifactId>doxia-sink-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.fusesource.hawtdb</groupId>
+        <artifactId>hawtdb</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.geronimo.modules</groupId>
+        <artifactId>geronimo-kernel</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>httpunit</groupId>
+        <artifactId>httpunit</artifactId>
+        <license>BSD Style License</license>
+    </artifact>
+    <artifact>
+        <groupId>jakarta-regexp</groupId>
+        <artifactId>jakarta-regexp</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <license>Mozilla Public License, Version 1.1</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>1.1.1</version>
+        <name>JavaBeans(TM) Activation Framework</name>
+        <license>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.el</groupId>
+        <artifactId>el-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.jms</groupId>
+        <artifactId>jms</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.portlet</groupId>
+        <artifactId>portlet-api</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.script</groupId>
+        <artifactId>groovy-engine</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.script</groupId>
+        <artifactId>js-engine</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.script</groupId>
+        <artifactId>script-api</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.transaction</groupId>
+        <artifactId>jta</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs</artifactId>
+        <license>Commons Development and Distribution License, Version 1.1</license>
+    </artifact>
+    <artifact>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <license>Apache style license</license>
+    </artifact>
+    <artifact>
+        <groupId>jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <license>Apache style license</license>
+    </artifact>
+    <artifact>
+        <groupId>junit-addons</groupId>
+        <artifactId>junit-addons</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <license>Common Public License - v 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>nekohtml</groupId>
+        <artifactId>nekohtml</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>net.jcip</groupId>
+        <artifactId>jcip-annotations</artifactId>
+        <license>Creative Commons Attribution License</license>
+    </artifact>
+    <artifact>
+        <groupId>net.sf.jsr107cache</groupId>
+        <artifactId>jsr107cache</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>ognl</groupId>
+        <artifactId>ognl</artifactId>
+        <license>The OpenSymphony Software License, Version 1.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr-runtime</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant-launcher</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.bcel</groupId>
+        <artifactId>bcel</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-jms</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.commons.io</groupId>
+        <artifactId>commons-io</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.commons.discovery</groupId>
+        <artifactId>commons-discovery</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.commons.logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.commons.ssl</groupId>
+        <artifactId>commons-ssl</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derbynet</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>apache-jdkim-library</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-misc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.maven.doxia</groupId>
+        <artifactId>doxia-sink-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+      <groupId>org.apache.pluto</groupId>
+      <artifactId>pluto</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.portals.bridges</groupId>
+        <artifactId>portals-bridges-common</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.portals.bridges</groupId>
+        <artifactId>portals-bridges-struts-1.2.7</artifactId>
+        <!-- Note the jar does that that name. e.g. a jar is 
+              portals-bridges-struts-1.2.7-1.0.3.jar
+         -->
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.xerces</groupId>
+        <artifactId>resolver</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.xerces</groupId>
+        <artifactId>serializer</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.xerces</groupId>
+        <artifactId>xml-apis</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>fop</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.castor</groupId>
+        <artifactId>castor</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-archiver</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-cli</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-container-default</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-digest</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-i18n</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-interactivity-api</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-velocity</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.swizzle</groupId>
+        <artifactId>swizzle-jira</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.swizzle</groupId>
+        <artifactId>swizzle-jirareport</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.codehaus.swizzle</groupId>
+        <artifactId>swizzle-stream</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.cyberneko.html</groupId>
+        <artifactId>nekohtml</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.hibernate</groupId>
+        <artifactId>ejb3-persistence</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-annotations</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.hibernate</groupId>
+        <artifactId>ejb3.persistence</artifactId>
+        <license>Sun Binary Code License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <license>Sun Binary Code License</license>
+    </artifact>
+    <artifact>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+      <license>Sun Binary Code License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.imgscalr</groupId>
+        <artifactId>imgscalr-lib</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-j2se</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-kernel</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-system</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-system-jmx</artifactId>
+        <license>LGPL, v2.1</license>
+    </artifact>
+    <artifact>
+        <groupId>org.json</groupId>
+        <artifactId>org.json</artifactId>
+        <license>The JSON License</license>
+    </artifact>
+    <artifact>
+      <groupId>org.jvnet.staxex</groupId>
+      <artifactId>stax-ex</artifactId>  
+      <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.mnode.ical4j</groupId>
+        <artifactId>ical4j</artifactId>
+        <license>iCal4j - License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.mnode.ical4j</groupId>
+        <artifactId>ical4j-vcard</artifactId>
+    </artifact>
+    <artifact>
+        <groupId>org.opensaml</groupId>
+        <artifactId>opensaml</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.opensaml</groupId>
+        <artifactId>openws</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.opensaml</groupId>
+        <artifactId>xmltooling</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.osaf</groupId>
+        <artifactId>caldav4j</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.owasp</groupId>
+        <artifactId>antisamy</artifactId>
+        <license>BSD License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <license>MIT License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <license>MIT License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <license>MIT License</license>
+    </artifact>
+    <artifact>
+        <groupId>org.sonatype.plexus</groupId>
+        <artifactId>plexus-jetty6</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.sonatype.spice</groupId>
+        <artifactId>plexus-ehcache</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.apache.solr</groupId>
+        <artifactId>solr-solrj</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.sonatype.spice</groupId>
+        <artifactId>spice-utils</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-asm</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aspects</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-oxm</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc-portlet</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ldap</groupId>
+        <artifactId>spring-ldap-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ldap</groupId>
+        <artifactId>spring-ldap-core-tiger</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>org.springframework.binding</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>org.springframework.js</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>org.springframework.webflow</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>spring-binding</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>spring-js</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>spring-js-resources</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>spring-webflow</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-oxm</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-oxm-tiger</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-ws-core</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-ws-core-tiger</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-ws-security</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>org.springframework.ws</groupId>
+        <artifactId>spring-xml</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>oro</groupId>
+        <artifactId>oro</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>portlet-api</groupId>
+        <artifactId>portlet-api</artifactId>
+        <license>Commons Development and Distribution License, Version 1.0</license>
+    </artifact>
+    <artifact>
+        <groupId>quartz</groupId>
+        <artifactId>quartz</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>rhino</groupId>
+        <artifactId>js</artifactId>
+        <license>Mozilla Public License, Version 1.1</license>
+    </artifact>
+    <artifact>
+        <groupId>rome</groupId>
+        <artifactId>modules</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>rome</groupId>
+        <artifactId>rome</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>slide</groupId>
+        <artifactId>jakarta-slide-webdavlib</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>struts</groupId>
+        <artifactId>struts</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>taglibs</groupId>
+        <artifactId>standard</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>tyrex</groupId>
+        <artifactId>tyrex</artifactId>
+        <license>BSD Style License</license>
+    </artifact>
+    <artifact>
+        <groupId>velocity-tools</groupId>
+        <artifactId>velocity-tools</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>xalan</groupId>
+        <artifactId>serializer</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>xerces</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>xml-apis</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>xml-resolver</groupId>
+        <artifactId>xml-resolver</artifactId>
+        <license>Apache License, Version 2.0</license>
+    </artifact>
+    <artifact>
+        <groupId>xom</groupId>
+        <artifactId>xom</artifactId>
+        <license>GNU Lesser General Public License</license>
+    </artifact>
+    <artifact>
+        <groupId>xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <license>BSD license</license>
+    </artifact>
+</license-lookup>

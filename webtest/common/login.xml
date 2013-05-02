@@ -1,0 +1,13 @@
+<invoke description="goto start page"
+        url="" />
+
+<setInputField description="set user name"
+               name="j_username"
+               value="#{user.id}" />
+
+<setInputField description="set password"
+  name="j_password"
+  value="#{user.password}" />
+
+<clickButton name="j_security_check"
+             description="Click the submit button" />

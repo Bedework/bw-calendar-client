@@ -1,0 +1,316 @@
+<?xml version="1.0"?>
+
+<!-- This is the ant build file for the bedework Calendar quickstart.
+
+     It is imported by the quickstart build.xml ensuring all changes to this file
+     appear in the repository.
+
+     Authors: Mike Douglass   douglm@rpi.edu
+-->
+
+<project name="quickstart-build-file" default="deploy" basedir=".">
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+
+  <property environment="env"/>
+
+  <dirname property="bedework.quickstart.basedir" 
+  	       file="${ant.file.quickstart-build-file}"/>
+
+  <import file="${bedework.quickstart.basedir}/run-dir.xml" />
+  <import file="${bedework.quickstart.basedir}/install.xml" />
+
+  <import file="${bedework.quickstart.basedir}/../buildTools/deftasks.xml"/>
+
+  <property name="bedework.home"
+            location="${env.QUICKSTART_HOME}/bedework" />
+
+  <deftasks/>
+
+ <target name="init" >
+   <dirname property="quickstart.dir" file="${ant.file}"/>
+
+   <property name="org.bedework.project.bedework"
+             location="${basedir}/bedework" />
+
+   <loadDeployConfig />
+   
+   <property name="org.bedework.config.base"
+             location="${org.bedework.project.bedework}/config" />
+
+   <property name="bedework.build.file"
+             location="${basedir}/bedework/build.xml" />
+
+   <!-- Unfortunately it sits on top of everything
+   <splash imageurl="file://${org.bedework.project.bedework}/docs/icons/bedeworkLogo.gif"/>
+   -->
+ </target>
+
+  <target name="README" depends="init"
+          description="Describe targets and their usage">
+    <loadfile property="org.bedework.README" srcFile="${org.bedework.calendar.dir}/docs/README"/>
+    <echo message="${org.bedework.README}" />
+  </target>
+
+  <target name="usage" depends="init"
+          description="Describe targets and their usage">
+    <echo level="info" message="As distributed the package should be ready to go."/>
+    <echo level="info" message=""/>
+    <echo level="info" message="cd into the quickstart then do"/>
+    <echo level="info" message="    ./startjboss"/>
+    <echo level="info" message=""/>
+    <echo level="info" message="Once jboss is running you should be able to go to a"/>
+    <echo level="info" message="browser and connect to"/>
+    <echo level="info" message="    http://localhost:8080/bedework"/>
+    <echo level="info" message="and follow the instructions."/>
+    <echo level="info" message=""/>
+    <echo level="info" message="To build and deploy bedework do"/>
+    <echo level="info" message="    ./bw -quickstart deploy"/>
+    <echo level="info" message="which does a build and deploy of all calendar components"/>
+    <echo level="info" message=""/>
+    <echo level="info" message="See documentation in the docs directory or on bedework.org"/>
+    <echo level="info" message="for instructions on creating a locally configured calendar application"/>
+    <echo level="info" message=""/>
+  </target>
+
+  <target name="run.init" depends="init" >
+  </target>
+
+  <!-- =================================================================
+       The "build" target builds the jar files
+       ================================================================= -->
+
+  <target name="build" depends="init"
+          description="builds the jars">
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="build" />
+
+    <tstamp>
+      <format property="deploydebug.time" pattern="MM/dd/yyyy HH:mm:ss"/>
+    </tstamp>
+
+    <echo message="* ============== finished at ${deploydebug.time}" />
+  </target>
+
+  <target name="clean.build" depends="clean"
+          description="cleans then builds the jars">
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="clean.build" />
+
+    <tstamp>
+      <format property="deploydebug.time" pattern="MM/dd/yyyy HH:mm:ss"/>
+    </tstamp>
+
+    <echo message="* ============== finished at ${deploydebug.time}" />
+  </target>
+
+  <!-- =================================================================
+       "deploylog4j" target
+       ================================================================= -->
+
+  <target name="deploylog4j" depends="init"
+          description="Copy the log4j config into the appserver">
+    <copy tofile="${org.bedework.log4j.config}" 
+          file="${org.bedework.config.logging}"
+    	    overwrite="true" />
+  </target>
+
+  <!-- =================================================================
+       "deployActivemq" target
+       ================================================================= -->
+
+  <target name="deployActivemq" depends="init"
+          description="Copy the Activemq config into the appserver">
+    <copy file="${org.bedework.activemq.configurations}/activemq-ra.xml"
+          tofile="${org.bedework.global.activemq.dir}/META-INF/ra.xml"
+          overwrite="yes" />
+    <copy file="${org.bedework.activemq.configurations}/activemq-broker-config.xml"
+          tofile="${org.bedework.global.activemq.dir}/broker-config.xml"
+          overwrite="yes" />
+    <copy file="${org.bedework.activemq.configurations}/activemq-jms-ds.xml"
+          tofile="${org.bedework.appserver.deploy.dir}/activemq-jms-ds.xml"
+          overwrite="yes" />
+  </target>
+
+  <!-- =================================================================
+       "deploySolr" target
+       ================================================================= -->
+
+  <target name="deploySolr" depends="init"
+          description="Copy the solr config into the appserver">
+    <copy file="${org.bedework.solr.configurations}/schema.xml"
+          tofile="${org.bedework.global.solr.dir}/${org.bedework.global.solr.publiccore}/conf/schema.xml"
+          overwrite="yes" />
+    <copy file="${org.bedework.solr.configurations}/solrconfig.xml"
+          tofile="${org.bedework.global.solr.dir}/${org.bedework.global.solr.publiccore}/conf/solrconfig.xml"
+          overwrite="yes" />
+    <copy file="${org.bedework.solr.configurations}/solr.xml"
+          tofile="${org.bedework.global.solr.dir}/solr.xml"
+          overwrite="yes" />
+  </target>
+
+  <!-- =================================================================
+       "saveData" target - for use by quickstart maintainers
+       ================================================================= -->
+
+  <target name="saveData" depends="init"
+          description="Save the quickstart data ready for commit for use by deployData">
+    <property name="org.bedework.savadata.temp"
+              location="${org.bedework.project.bedework}/dist/dataTemp" />
+    
+    <delete dir="${org.bedework.savadata.temp}" />
+    
+    <mkdir dir="${org.bedework.savadata.temp}" />
+    <mkdir dir="${org.bedework.savadata.temp}/db" />
+    <mkdir dir="${org.bedework.savadata.temp}/bedework" />
+    <mkdir dir="${org.bedework.savadata.temp}/solr" />
+    
+    <copy todir="${org.bedework.savadata.temp}/db">
+      <fileset dir="${org.bedework.jboss.data.dir}/hypersonic" />
+    </copy>
+    
+    <copy todir="${org.bedework.savadata.temp}/bedework">
+      <fileset dir="${org.bedework.jboss.data.dir}/bedework" />
+    </copy>
+    
+    <copy todir="${org.bedework.savadata.temp}/solr">
+      <fileset dir="${org.bedework.jboss.data.dir}/solr" />
+    </copy>
+    
+    <delete file="${org.bedework.project.bedework}/resources/data.zip" />
+    
+    <zip destfile="${org.bedework.project.bedework}/resources/data.zip"
+         encoding="UTF-8"
+         basedir="${org.bedework.savadata.temp}" />
+  </target>
+
+  <!-- =================================================================
+       "deployData" target
+       ================================================================= -->
+
+  <target name="deployData" depends="init"
+          description="Copy the quickstart data into the appserver">
+    <property name="org.bedework.savadata.temp"
+              location="${org.bedework.project.bedework}/dist/dataTemp" />
+    
+    <delete dir="${org.bedework.savadata.temp}" />
+    
+    <mkdir dir="${org.bedework.savadata.temp}" />
+    
+    <unzip src="${org.bedework.project.bedework}/resources/data.zip"
+           dest="${org.bedework.savadata.temp}" />
+    
+    <delete dir="${org.bedework.jboss.data.dir}/hypersonic" />
+    <delete dir="${org.bedework.jboss.data.dir}/bedework" />
+    <delete dir="${org.bedework.jboss.data.dir}/solr" />
+    
+    <copy todir="${org.bedework.jboss.data.dir}/hypersonic">
+      <fileset dir="${org.bedework.savadata.temp}/db" />
+    </copy>
+    
+    <copy todir="${org.bedework.jboss.data.dir}/bedework">
+      <fileset dir="${org.bedework.savadata.temp}/bedework" />
+    </copy>
+    
+    <copy todir="${org.bedework.jboss.data.dir}/solr">
+      <fileset dir="${org.bedework.savadata.temp}/solr" />
+    </copy>
+  </target>
+
+  <!-- =================================================================
+       The "deploy" target builds and deploys the applications
+       ================================================================= -->
+
+  <target name="deploy" depends="init"
+          description="builds and deploys the applications">
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="deploy" />
+
+    <tstamp>
+      <format property="deploydebug.time" pattern="MM/dd/yyyy HH:mm:ss"/>
+    </tstamp>
+
+    <echo message="* ============== finished at ${deploydebug.time}" />
+  </target>
+
+  <!-- =================================================================
+       The "clean.deploy" target cleans, builds and deploys the applications
+       ================================================================= -->
+
+  <target name="clean" depends="init"
+          description="Remove all generated files.">
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="clean" />
+  </target>
+
+  <target name="quickstart-clean" depends="init"
+          description="partial clean up for quickstart.">
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="quickstart-clean" />
+
+    <tstamp>
+      <format property="deploydebug.time" pattern="MM/dd/yyyy HH:mm:ss"/>
+    </tstamp>
+
+    <echo message="* ============== finished at ${deploydebug.time}" />
+  </target>
+
+  <target name="clean.deploy" depends="init"
+          description="builds and deploys the applications">
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="clean.deploy" />
+
+    <tstamp>
+      <format property="deploydebug.time" pattern="MM/dd/yyyy HH:mm:ss"/>
+    </tstamp>
+
+    <echo message="* ============== finished at ${deploydebug.time}" />
+  </target>
+
+  <!-- =================================================================
+       The "build.configured" target builds configured applications
+       ================================================================= -->
+
+  <target name="build.configured" depends="init"
+          description="Build configured applications" >
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="build.configured" />
+  </target>
+
+  <target name="clean.build.configured" depends="init"
+          description="Build configured applications" >
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="clean.build.configured" />
+  </target>
+
+  <!-- =================================================================
+       Build and run the cmdline utility
+       ================================================================= -->
+
+  <target name="cmdutil" depends="init"
+          description="run the cmdline utility">
+    <antfetch antfile="${bedework.build.file}" inheritall="true"
+              target="cmdutil"
+              return="org.bedework.cmdutil.status" >
+    </antfetch>
+  </target>
+
+  <!-- =================================================================
+       The "javadoc" target builds javadocs for all projects
+       ================================================================= -->
+
+  <target name="javadoc" depends="init"
+          description="Build javadocs" >
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+         target="javadoc" />
+  </target>
+
+  <!-- =================================================================
+       The "run.test" target builds and runs tests
+       ================================================================= -->
+
+  <target name="run.test" depends="init"
+          description="builds and runs the tests">
+    <ant antfile="${bedework.build.file}" inheritrefs="true"
+           target="run.test" />
+  </target>
+</project>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<project name="eventTest" basedir="." default="eventTest">
+  <target name="eventTest">
+    <ant antfile="events/addEventTest.xml"/>
+  </target>
+</project>

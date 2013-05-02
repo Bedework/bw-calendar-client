@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+         http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+  <display-name>@DISPLAY-NAME@</display-name>
+
+  <context-param>
+    <param-name>rpiappname</param-name>
+    <param-value>@APP-NAME@</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>bwappname</param-name>
+    <param-value>@BW-APP-NAME@</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>debug</param-name>
+    <param-value>@RPI-DEBUG@</param-value>
+  </context-param>
+
+  <!-- Do not alter or move  the following comment -->
+  <!-- add context params here -->
+
+  <filter>
+    <filter-name>XSLT Filter</filter-name>
+    <filter-class>edu.rpi.sss.util.servlets.ConfiguredXSLTFilter</filter-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>@RPI-DEBUG@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>directoryBrowsingDisallowed</param-name>
+      <param-value>@DIRECTORY-BROWSING-DISALLOWED@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ignoreContentType</param-name>
+      <param-value>@IGNORE-CONTENT-TYPE@</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <filter-name>SvcI Filter</filter-name>
+    <filter-class>org.bedework.webcommon.BwSvciFilter</filter-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>@RPI-DEBUG@</param-value>
+    </init-param>
+  </filter>
+
+  <!-- not yet - need to reconfig jboss - see cocoon install for hints
+  <filter>
+    <filter-name>FOP Filter</filter-name>
+    <filter-class>edu.rpi.sss.util.servlets.FOPFilter</filter-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>dump</param-name>
+      <param-value>false</param-value>
+    </init-param>
+  </filter> -->
+
+  <!-- XSLT should get the response before the FOPFilter -->
+
+  <filter-mapping>
+    <filter-name>SvcI Filter</filter-name>
+    <url-pattern>*.do</url-pattern>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>SvcI Filter</filter-name>
+    <url-pattern>*.rdo</url-pattern>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>SvcI Filter</filter-name>
+    <url-pattern>*.gdo</url-pattern>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>XSLT Filter</filter-name>
+    <url-pattern>*.rdo</url-pattern>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+
+  <listener>
+    <listener-class>edu.rpi.sss.util.jsp.SessionListener</listener-class>
+  </listener>
+
+  <!-- Do not alter or move  the following comment -->
+  <!-- add listeners here -->
+
+  <servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>
+      @SERVLET-CLASS@
+    </servlet-class>
+
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Do not alter or move  the following comment -->
+  <!-- add servlet definitions here -->
+
+  <servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.gdo</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.rdo</url-pattern>
+  </servlet-mapping>
+
+  <!-- This probably has to be last for struts -->
+  <servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+
+  <!-- Do not alter or move  the following comment -->
+  <!-- add servlet mappings here -->
+
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+
+  <!-- This should be the name of the action we want to execute for a
+       url with no path component. A file of this name must exist but will
+       not be used (except to fool the container). -->
+  <welcome-file-list>
+    <welcome-file>setup.do</welcome-file>
+  </welcome-file-list>
+
+  <jsp-config>
+    <!--  Reference a taglib in the jsp like this:
+      <%@ taglib uri="struts-bean" prefix="bean" %>
+     -->
+
+    <taglib>
+      <taglib-uri>struts-bean</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/struts-bean.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>struts-html</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/struts-html.tld</taglib-location>
+    </taglib>
+
+    <taglib>
+      <taglib-uri>struts-genurl</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/@GENURL-TAGLIB-TLD@</taglib-location>
+    </taglib>
+
+    <taglib>
+      <taglib-uri>struts-logic</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/struts-logic.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>struts-template</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/struts-template.tld</taglib-location>
+    </taglib>
+
+    <taglib>
+      <taglib-uri>bedework</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/bedework.tld</taglib-location>
+    </taglib>
+  </jsp-config>
+
+  <!-- JDBC DataSources (java:comp/env/jdbc) -->
+  <resource-ref>
+    <description>The calendar DS</description>
+    <res-ref-name>jdbc/calDB</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+  <!-- JMS DataSources (java:comp/env/jms) -->
+  <resource-ref>
+    <res-ref-name>jms/BedeworkConnectionFactory</res-ref-name>
+    <res-type>javax.jms.ConnectionFactory</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+  <!-- The role name of * below means all roles defined in this web.xml -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Bedework</web-resource-name>
+      <description>Bedework user</description>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>*</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <description>no description</description>
+      <transport-guarantee>@TRANSPORT-GUARANTEE@</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Prevent access to JSP pages </web-resource-name>
+      <url-pattern>*.jsp</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <description>No roles, no access</description>
+    </auth-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <realm-name>@SECURITY-DOMAIN@</realm-name>
+    <form-login-config>
+      <form-login-page>/docs/login/login.html</form-login-page>
+      <form-error-page>/docs/login/error.html</form-error-page>
+    </form-login-config>
+  </login-config>
+
+  <security-role>
+    <description>A calendar system user</description>
+    <role-name>@SECURITY-PREFIX@.user</role-name>
+  </security-role>
+
+  <!-- Insert ejb-ref here -->
+</web-app>

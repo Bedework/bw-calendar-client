@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!-- ===================================================================
+     terminations task.
+     =================================================================== -->
+
+<project name="bwdeploy.termination" default="deploy" >
+  <import file="${build.dir}/platforms/${org.bedework.global.deploy.platform}Service.xml" />
+
+  <!--<import file="${build.dir}/buildfilters.xml" />-->
+  <buildfilters/>
+
+  <dirname property="this.dir" file="${ant.file}"/>
+
+  <target name="init">
+  </target>
+
+  <target name="deploy" depends="init,build.configured" >
+    <antcall target="deployService" inheritRefs="true" />
+  </target>
+
+  <target name="build.configured" depends="init" >
+  </target>
+</project>

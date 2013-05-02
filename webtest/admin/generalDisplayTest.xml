@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+  <!ENTITY chooseGroup    SYSTEM "chooseGroup.xml">
+  <!ENTITY config    SYSTEM "config.xml">
+  <!ENTITY defs      SYSTEM "defs.xml">
+  <!ENTITY superLogin  SYSTEM "superLogin.xml">
+  <!ENTITY loginBad  SYSTEM "../common/loginBadTest.xml">
+  <!ENTITY loginOk   SYSTEM "../common/loginOkTest.xml">
+  <!ENTITY login     SYSTEM "../common/login.xml">
+]>
+
+  <!--
+      * general display info:
+          o userid displayed in header properly [ok]
+          o group displayed in header properly [ok]
+          o calendar suite displayed in header properly [ok]
+          o super-user sees full menu / public events admin user main menu only [ok]
+          o public event admin user cannot access super-user screens [user can, but see next two tests]
+          o access denied to admin attempting to change super-user features [ok]
+          o listing of accounts to non super-user not allowed (exits to "noaccess") [ok]
+   -->
+<project name="generalDisplayTest" basedir="." default="generalDisplayTest">
+  &defs;
+  <import file="../common/taskdef.xml"/>
+
+  <target name="generalDisplayTest">
+    <webtest name="General Display">
+      &config;
+      <steps>
+        <!-- Login as super user -->
+        &superLogin;
+
+        <verifyXPath description="Look for calendar suite"
+                     xpath="/html/body/table/tbody/tr/td[2]/span[1]"
+                     text="${admin.super.user.suite}"/>
+
+        <verifyXPath description="Look for admin group"
+                     xpath="/html/body/table/tbody/tr/td[2]/span[2]"
+                     text="${admin.super.user.group}"/>
+
+        <verifyXPath description="Look for admin group name"
+                     xpath="/html/body/table/tbody/tr/td[2]/span[3]"
+                     text="${admin.super.user.group.name}"/>
+
+      </steps>
+    </webtest>
+  </target>
+</project>

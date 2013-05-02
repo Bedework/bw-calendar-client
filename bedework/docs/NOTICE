@@ -1,0 +1,633 @@
+Jar: asm-3.2   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+   Carddav package
+   bedework main project
+   synch engine
+
+Jar: asm-attrs-   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+   Carddav package
+   bedework main project
+   synch engine
+
+Jar: backport-util-concurrent-   Licence: Creative Commons Public Domain (Retired)
+Referenced by the following components:
+   bedework main project
+   synch engine
+
+Jar: bw-annotations-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework icalendar
+   Bedework interfaces
+   Bedework misc package
+   Bedework web apps
+   bedework indexer package
+   bedework main project
+   dump/restore package
+
+Jar: bw-appcommon-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: bw-calcore-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+   dump/restore package
+
+Jar: bw-calcorei-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+   dump/restore package
+
+Jar: bw-caldav-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: bw-caldavschema-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   bedework main project
+
+Jar: bw-calfacade-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework calendar api classes and definitions
+   Bedework icalendar
+   Bedework interfaces
+   Bedework misc package
+   Bedework web apps
+   bedework indexer package
+   bedework main project
+   dump/restore package
+
+Jar: bw-calsvc-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework indexer package
+   bedework main project
+
+Jar: bw-calws-soapschema-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework timezones server
+   RPI utility package
+   bedework main project
+
+Jar: bw-carddavsvr-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Carddav package
+
+Jar: bw-carddumpres-3.8   Licence: 
+Referenced by the following components:
+   Carddav package
+
+Jar: bw-cardtools-3.8   Licence: 
+Referenced by the following components:
+   Carddav package
+
+Jar: bw-cdvserver-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework calendar api classes and definitions
+   bedework main project
+
+Jar: bw-cdvutil-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework interfaces
+   Bedework web apps
+   bedework main project
+
+Jar: bw-davio-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework misc package
+   Bedework web apps
+   Carddav package
+   Webdav abstract server classes
+   bedework main project
+   synch engine
+
+Jar: bw-dumpres-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: bw-exchangewsschema-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   synch engine
+
+Jar: bw-icalendar-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework calendar api classes and definitions
+   Bedework misc package
+   Bedework web apps
+   bedework main project
+   dump/restore package
+
+Jar: bw-icalschema-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework icalendar
+   Bedework misc package
+   RPI utility package
+   dump/restore package
+
+Jar: bw-indexer-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: bw-inoutsched-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: bw-interfaces-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework calendar api classes and definitions
+   Bedework icalendar
+   Bedework sysevents
+   Bedework web apps
+   bedework indexer package
+   bedework main project
+   dump/restore package
+
+Jar: bw-misc-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework calendar api classes and definitions
+   bedework main project
+
+Jar: bw-synch-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   synch engine
+
+Jar: bw-synch-common-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   synch engine
+
+Jar: bw-synchsvc-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   synch engine
+
+Jar: bw-synchwsschema-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework web apps
+   bedework main project
+   synch engine
+
+Jar: bw-sysevents-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework calendar api classes and definitions
+   Bedework web apps
+   bedework indexer package
+   bedework main project
+   dump/restore package
+
+Jar: bw-tzschema-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+   RPI utility package
+   bedework main project
+
+Jar: bw-tzsvr-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+
+Jar: bw-tzsvr-cmn-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+
+Jar: bw-tzsvr-svc-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+
+Jar: bw-webcommon-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: bw-webdavserver-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework web apps
+   Carddav package
+   bedework main project
+
+Jar: cglib-2.1.3   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+   Carddav package
+   bedework main project
+   synch engine
+
+Jar: commons-beanutils-1.7.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: commons-codec-1.3   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Carddav package
+   bedework main project
+
+Jar: commons-codec-1.5   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Carddav package
+   RPI utility package
+   synch engine
+
+Jar: commons-collections-   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+   Carddav package
+   bedework main project
+
+Jar: commons-digester-1.7   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework web apps
+   bedework indexer package
+   bedework main project
+   dump/restore package
+
+Jar: commons-fileupload-   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: commons-httpclient-3.0   Licence: 
+Referenced by the following components:
+   Carddav package
+
+Jar: commons-lang-2.1   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Carddav package
+   synch engine
+
+Jar: commons-lang-2.6   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+   bedework main project
+
+Jar: commons-validator-1.3.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: derby-10.5.3.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   RPI utility package
+
+Jar: derbynet-10.5.3.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   RPI utility package
+
+Jar: dsn-1.4   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   bedework main project
+
+Jar: ehcache-1.2.3   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Carddav package
+   bedework main project
+   synch engine
+
+Jar: ehcache-1.6.2   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+
+Jar: ejb3-persistence-3.4.0.GA   Licence: LGPL, v2.1
+Referenced by the following components:
+   Carddav package
+   synch engine
+
+Jar: fop-   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   RPI utility package
+
+Jar: gdata-calendar-1.0   Licence: 
+Referenced by the following components:
+   Carddav package
+
+Jar: gdata-client-1.0   Licence: 
+Referenced by the following components:
+   Carddav package
+
+Jar: gson-1.5   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework web apps
+   bedework main project
+
+Jar: h2-1.2.130   Licence: Eclipse Public License V1.0 or H2 (MPL 1.1 modified)
+Referenced by the following components:
+   RPI utility package
+
+Jar: hibernate-3.6.9.Final   Licence: LGPL, v2.1
+Referenced by the following components:
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework timezones server
+   Carddav package
+   RPI utility package
+   bedework indexer package
+   bedework main project
+   dump/restore package
+   synch engine
+
+Jar: hibernate-validator-3.1.0.GA   Licence: 
+Referenced by the following components:
+   Bedework timezones server
+   Carddav package
+   bedework main project
+   synch engine
+
+Jar: httpclient-4.1.2   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework timezones server
+   RPI utility package
+   bedework main project
+   dav io classes
+   synch engine
+
+Jar: httpcore-4.1.2   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework misc package
+   Bedework timezones server
+   Carddav package
+   RPI utility package
+   bedework main project
+   dav io classes
+   synch engine
+
+Jar: ical4j-1.0-rc3-SNAPSHOT   Licence: iCal4j - License
+Referenced by the following components:
+   Bedework timezones server
+   Carddav package
+
+Jar: ical4j-head-20100601   Licence: iCal4j - License
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework icalendar
+   Bedework misc package
+   Bedework sysevents
+   Bedework web apps
+   RPI utility package
+   bedework indexer package
+   bedework main project
+   dump/restore package
+   synch engine
+
+Jar: ical4j-vcard-0.9.3-SNAPSHOT   Licence: 
+Referenced by the following components:
+   Bedework calfacade
+   Carddav package
+   bedework main project
+
+Jar: imap-1.4   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   bedework main project
+
+Jar: jaxb-impl-2.1.8   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework xml schema
+
+Jar: jaxb-xjc-2.1.7   Licence: 
+Referenced by the following components:
+   Bedework xml schema
+
+Jar: jaxws-rt-2.1.4   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework xml schema
+
+Jar: jaxws-tools-2.1.4   Licence: 
+Referenced by the following components:
+   Bedework xml schema
+
+Jar: jboss-j2se-5.1.0.GA   Licence: LGPL, v2.1
+Referenced by the following components:
+   Bedework timezones server
+   RPI utility package
+   dav io classes
+   synch engine
+
+Jar: jboss-kernel-5.1.0.GA   Licence: LGPL, v2.1
+Referenced by the following components:
+   Bedework timezones server
+   dav io classes
+   synch engine
+
+Jar: jboss-system-5.1.0.GA   Licence: LGPL, v2.1
+Referenced by the following components:
+   Bedework timezones server
+   dav io classes
+   synch engine
+
+Jar: jboss-system-jmx-5.1.0.GA   Licence: LGPL, v2.1
+Referenced by the following components:
+   Bedework timezones server
+   dav io classes
+   synch engine
+
+Jar: jgroups-2.2.8   Licence: 
+Referenced by the following components:
+   Carddav package
+
+Jar: jms-1.1   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework calendar api classes and definitions
+   Bedework sysevents
+   bedework indexer package
+
+Jar: jsp-api-2.1   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework web apps
+
+Jar: jstl-1.1.2   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   bedework main project
+
+Jar: jstl-standard-1.1.2   Licence: 
+Referenced by the following components:
+   bedework main project
+
+Jar: jta-1.1   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework timezones server
+   Carddav package
+   bedework main project
+
+Jar: jtidy-   Licence: 
+Referenced by the following components:
+   RPI utility package
+
+Jar: junit-4.4   Licence: Common Public License - v 1.0
+Referenced by the following components:
+   RPI access control package
+   RPI utility package
+
+Jar: log4j-1.2.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework icalendar
+   Bedework misc package
+   Bedework sysevents
+   Bedework timezones server
+   Bedework web apps
+   Carddav package
+   RPI access control package
+   RPI utility package
+   Webdav abstract server classes
+   bedework indexer package
+   dav io classes
+   dump/restore package
+   synch engine
+
+Jar: lucene-core-2.0.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework calendar api classes and definitions
+   RPI utility package
+   bedework main project
+
+Jar: lucene-misc-2.0.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework calendar api classes and definitions
+   RPI utility package
+   bedework main project
+
+Jar: mailapi-1.4   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework misc package
+   bedework main project
+
+Jar: pluto-1.0.1-rc2   Licence: 
+Referenced by the following components:
+   Bedework web apps
+
+Jar: pop3-1.4   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   bedework main project
+
+Jar: portals-bridges-common-1.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework web apps
+
+Jar: portals-bridges-struts-1.2.7-1.0   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework web apps
+
+Jar: portlet-api-1.0   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework web apps
+
+Jar: rpiaccess-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework interfaces
+   Bedework sysevents
+   Bedework web apps
+   Carddav package
+   Webdav abstract server classes
+   bedework indexer package
+   bedework main project
+   dav io classes
+   dump/restore package
+   synch engine
+
+Jar: rpiutil-3.8   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework annotations
+   Bedework calendar api classes and definitions
+   Bedework calfacade
+   Bedework icalendar
+   Bedework interfaces
+   Bedework misc package
+   Bedework sysevents
+   Bedework timezones server
+   Bedework web apps
+   Carddav package
+   RPI access control package
+   Webdav abstract server classes
+   bedework indexer package
+   bedework main project
+   dav io classes
+   dump/restore package
+   synch engine
+
+Jar: serializer-2.7.1   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+
+Jar: servlet-api-2.4   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework CalDAV implementation package
+   Bedework abstract CalDAV server
+   Bedework calendar api classes and definitions
+   Bedework misc package
+   Bedework timezones server
+   Bedework web apps
+   Carddav package
+   RPI utility package
+   Webdav abstract server classes
+   dav io classes
+   synch engine
+
+Jar: smtp-1.4   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   bedework main project
+
+Jar: spring-beans-3.0.5.RELEASE   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   synch engine
+
+Jar: spring-context-3.0.5.RELEASE   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   synch engine
+
+Jar: spring-core-3.0.5.RELEASE   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   synch engine
+
+Jar: stax-ex-2.2.1   Licence: Commons Development and Distribution License, Version 1.0
+Referenced by the following components:
+   Bedework xml schema
+
+Jar: streambuffer-1.0   Licence: Dual license consisting of the CDDL v1.1 and GPL v2
+Referenced by the following components:
+   Bedework xml schema
+
+Jar: struts-1.2.9   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   Bedework web apps
+   RPI utility package
+   bedework main project
+
+Jar: xalan-2.7.1   Licence: Apache License, Version 2.0
+Referenced by the following components:
+   bedework main project
+

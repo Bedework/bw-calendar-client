@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE datasources
+        PUBLIC "-//JBoss//DTD JBOSS JCA Config 1.5//EN"
+        "http://www.jboss.org/j2ee/dtd/jboss-ds_1_5.dtd">
+
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>SynchDS</jndi-name>
+
+    <!-- Embedded mode - does not need mbean
+    <driver-class>org.apache.derby.jdbc.EmbeddedDriver</driver-class>
+
+    <connection-url>jdbc:derby:${jboss.server.data.dir}/bedework/derby/CalDb3p6;create=true</connection-url>
+    -->
+
+    <!-- Server mode needs the mbean -->
+    <driver-class>org.apache.derby.jdbc.ClientDriver</driver-class>
+
+    <connection-url>jdbc:derby://localhost:1527/${jboss.server.data.dir}/bedework/derby/SynchDb3p6;create=true</connection-url>
+
+    <!-- If bedework calendar is deployed the DerbyDb mbean may be defined there 
+      The definition is commented out below.
+    -->
+    <depends>org.bedework:service=DerbyDb</depends>
+    
+    <user-name>sa</user-name>
+    <password>bw</password>
+    <min-pool-size>5</min-pool-size>
+    <max-pool-size>20</max-pool-size>
+    <idle-timeout-minutes>5</idle-timeout-minutes>
+    <track-statements/>
+
+    <!-- corresponding type-mapping in the standardjbosscmp-jdbc.xml (optional) -->
+    <metadata>
+      <type-mapping>Derby</type-mapping>
+    </metadata>
+  </local-tx-datasource>
+
+  <!-- mbean for server mode 
+  <mbean code="edu.rpi.cmt.db.hibernate.derby.DerbyDb" 
+         name="org.bedework:service=DerbyDb">
+    < ! - - Should be done like this
+    <attribute name="Port">        
+      <value-factory bean="ServiceBindingManager" method="getIntBinding" 
+           parameter="jboss:service=Hypersonic"/>
+    </attribute>
+    - - >
+    <attribute name="Port">1527</attribute>
+    < ! - -
+    <attribute name="BindAddress">        
+        <value-factory bean="ServiceBindingManager" method="getStringBinding" 
+           parameter="jboss:service=Hypersonic"/>
+    </attribute>     
+    - - >
+    <attribute name="Account">sa</attribute>
+    <attribute name="Pw">bw</attribute>
+  </mbean>
+  -->
+</datasources>
+

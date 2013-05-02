@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:tns="http://www.bedework.org/exsynch/wsmessages" 
+                  xmlns:s="http://www.w3.org/2001/XMLSchema" 
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+                  targetNamespace="http://www.bedework.org/exsynch/wsmessages" 
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema>
+      <s:import schemaLocation="wsmessages.xsd" 
+                namespace="http://www.bedework.org/exsynch/wsmessages" />
+    </s:schema>
+  </wsdl:types> 
+
+  <!-- ====================== startServiceNotification ===================== -->  
+
+  <wsdl:message name="StartServiceIn">
+    <wsdl:part name="request" element="tns:start-service-notification" />
+  </wsdl:message>
+  
+  <wsdl:message name="StartServiceOut">
+    <wsdl:part name="response" element="tns:start-service-response" />
+  </wsdl:message>
+
+  <!-- ============================ getSynchInfo =========================== -->  
+
+  <wsdl:message name="GetSynchInfoIn">
+    <wsdl:part name="request" element="tns:get-sycnch-info" />
+  </wsdl:message>
+  
+  <wsdl:message name="GetSynchInfoOut">
+    <wsdl:part name="response" element="tns:synch-info-response" />
+  </wsdl:message>
+
+  <!-- ============================= addItem =============================== -->  
+
+  <wsdl:message name="AddItemIn">
+    <wsdl:part name="addItemRequest" element="tns:add-item" />
+  </wsdl:message>
+  
+  <wsdl:message name="AddItemOut">
+    <wsdl:part name="addItemResponse" element="tns:add-item-response" />
+  </wsdl:message>
+
+  <!-- ============================= fetchItem =============================== -->  
+
+  <wsdl:message name="FetchItemIn">
+    <wsdl:part name="fetchItemRequest" element="tns:fetch-item" />
+  </wsdl:message>
+  
+  <wsdl:message name="FetchItemOut">
+    <wsdl:part name="fetchItemResponse" element="tns:fetch-item-response" />
+  </wsdl:message>
+
+  <!-- ============================= UpdateItem =============================== -->  
+
+  <wsdl:message name="UpdateItemIn">
+    <wsdl:part name="request" element="tns:update-item" />
+  </wsdl:message>
+  
+  <wsdl:message name="UpdateItemOut">
+    <wsdl:part name="response" element="tns:update-item-response" />
+  </wsdl:message>
+
+  <!-- ============================== port ================================= -->  
+  
+  <wsdl:portType name="ExsynchRemoteServicePortType">
+    <wsdl:operation name="NotifyRemoteService">
+      <wsdl:input message="tns:StartServiceIn" />
+      <wsdl:output message="tns:StartServiceOut" />
+    </wsdl:operation>
+    
+    <wsdl:operation name="GetSynchInfo">
+      <wsdl:input message="tns:GetSynchInfoIn" />
+      <wsdl:output message="tns:GetSynchInfoOut" />
+    </wsdl:operation>
+    
+    <wsdl:operation name="AddItem">
+      <wsdl:input message="tns:AddItemIn" />
+      <wsdl:output message="tns:AddItemOut" />
+    </wsdl:operation>
+    
+    <wsdl:operation name="FetchItem">
+      <wsdl:input message="tns:FetchItemIn" />
+      <wsdl:output message="tns:FetchItemOut" />
+    </wsdl:operation>
+    
+    <wsdl:operation name="UpdateItem">
+      <wsdl:input message="tns:UpdateItemIn" />
+      <wsdl:output message="tns:UpdateItemOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  
+  <!-- ============================ binding ================================ -->  
+  
+  <wsdl:binding name="ExsynchRemoteServiceBinding" 
+                type="tns:ExsynchRemoteServicePortType">
+    <wsdl:documentation>
+      <wsi:Claim conformsTo="http://ws-i.org/profiles/basic/1.0" 
+                 xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/" />
+    </wsdl:documentation>
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    
+    <wsdl:operation name="NotifyRemoteService">
+      <soap:operation soapAction="http://www.bedework.org/exsynch/wsmessages/notify-remote-service" />
+      <wsdl:input>
+        <soap:body use="literal" parts="request" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" parts="response" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="GetSynchInfo">
+      <soap:operation soapAction="http://www.bedework.org/exsynch/wsmessages/get-synch-info" />
+      <wsdl:input>
+        <soap:body use="literal" parts="request" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" parts="response" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="AddItem">
+      <soap:operation soapAction="http://www.bedework.org/exsynch/wsmessages/add-item" />
+      <wsdl:input>
+        <soap:body use="literal" parts="addItemRequest" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" parts="addItemResponse" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="FetchItem">
+      <soap:operation soapAction="http://www.bedework.org/exsynch/wsmessages/fetch-item" />
+      <wsdl:input>
+        <soap:body use="literal" parts="fetchItemRequest" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" parts="fetchItemResponse" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="UpdateItem">
+      <soap:operation soapAction="http://www.bedework.org/exsynch/wsmessages/update-item" />
+      <wsdl:input>
+        <soap:body use="literal" parts="request" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" parts="response" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="ExsynchRemoteService">
+    <wsdl:port name="ExsynchRSPort" binding="tns:ExsynchRemoteServiceBinding">
+       <soap:address location="http://localhost:8080/pubcaldav/exsynchws/"></soap:address>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>  

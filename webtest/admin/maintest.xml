@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<project name="mainTest" basedir="." default="main">
+  <target name="main">
+    <ant antfile="initialEntryTest.xml"/>
+    <ant antfile="generalDisplayTest.xml"/>
+  </target>
+</project>

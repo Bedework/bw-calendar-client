@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+  <!ENTITY chooseGroup    SYSTEM "chooseGroup.xml">
+  <!ENTITY config      SYSTEM "config.xml">
+  <!ENTITY defs        SYSTEM "defs.xml">
+  <!ENTITY superLogin  SYSTEM "superLogin.xml">
+  <!ENTITY loginBad  SYSTEM "../common/loginBadTest.xml">
+  <!ENTITY loginOk   SYSTEM "../common/loginOkTest.xml">
+  <!ENTITY login     SYSTEM "../common/login.xml">
+]>
+
+  <!-- Test initial entry to admin client
+    * initial entry:
+          o login screen comes up appropriately [ok]
+          o invalid userid rejects login [ok]
+          o invalid password rejects login [ok]
+          o "Please try again" link works [ok]
+          o login ok [ok]
+          o logout ok [ok]
+          o login after logout [ok]
+          o main menu delivered correctly [ok]
+   -->
+<project name="initialEntryTest" basedir="." default="initialEntryTest">
+  &defs;
+  <import file="../common/taskdef.xml"/>
+
+  <target name="initialEntryTest">
+    <webtest name="Check logins">
+      &config;
+      <steps>
+        <!-- Try bad id -->
+        <storeProperty description="bad user id"
+                       name="user.id"
+                       propertyType="dynamic"
+                       value="${admin.bad.user}"/>
+        <storeProperty description="ok user password"
+                       name="user.password"
+                       propertyType="dynamic"
+                       value="${admin.super.user.ok.password}"/>
+        &login;
+        &loginBad;
+
+        <!-- Follow try again link -->
+        <clickLink description="Try again link"
+                   href="setup" />
+
+        <!-- Try bad pw -->
+        <storeProperty description="super user id"
+                       name="user.id"
+                       propertyType="dynamic"
+                       value="${admin.super.user}"/>
+        <storeProperty description="bad user password"
+                       name="user.password"
+                       propertyType="dynamic"
+                       value="${admin.bad.password}"/>
+        &login;
+        &loginBad;
+
+        <!-- Follow try again link -->
+        <clickLink description="Try again link"
+                   href="setup" />
+
+        <!-- Try ok id/pw -->
+        <storeProperty description="super user id"
+                       name="user.id"
+                       propertyType="dynamic"
+                       value="${admin.super.user}"/>
+        <storeProperty description="ok user password"
+                       name="user.password"
+                       propertyType="dynamic"
+                       value="${admin.super.user.ok.password}"/>
+        &login;
+        &loginOk;
+
+        <!-- Log out -->
+        <clickLink description="Try log out"
+                   href="logout" />
+
+        <!-- Valid login and choose group -->
+        &superLogin;
+
+        <verifyText description="Look for main menu"
+                    text="Main Menu"  />
+      </steps>
+    </webtest>
+  </target>
+</project>

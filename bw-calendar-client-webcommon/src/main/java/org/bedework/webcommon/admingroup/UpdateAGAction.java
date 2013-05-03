@@ -23,7 +23,6 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.DirectoryInfo;
-import org.bedework.calfacade.env.CalOptionsFactory;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.ifs.Directories;
@@ -266,7 +265,7 @@ public class UpdateAGAction extends BwAbstractAction {
       form.getErr().emit(ValidationError.missingEventOwner);
       ok = false;
     } else {
-      String prefix = CalOptionsFactory.getOptions().getGlobalStringProperty("adminGroupsIdPrefix");
+      String prefix = svci.getAdminDirectories().getAdminGroupsIdPrefix();
 
       if (dir.isPrincipal(adminGroupEventOwner)) {
         // XXX For the moment just strip down to the account
@@ -327,7 +326,7 @@ public class UpdateAGAction extends BwAbstractAction {
 
     BwPrincipal ageo = users.getUser(adminGroupEventOwner);
 
-    String prefix = CalOptionsFactory.getOptions().getGlobalStringProperty("adminGroupsIdPrefix");
+    String prefix = svci.getAdminDirectories().getAdminGroupsIdPrefix();
 
     if (!adminGroupEventOwner.startsWith(prefix)) {
       adminGroupEventOwner = prefix + adminGroupEventOwner;

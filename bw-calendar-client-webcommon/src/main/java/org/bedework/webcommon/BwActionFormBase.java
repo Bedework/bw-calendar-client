@@ -55,7 +55,6 @@ import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.ConfigCommon;
 import org.bedework.calfacade.configs.WebConfigCommon;
-import org.bedework.calfacade.env.CalOptionsFactory;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.mail.MailerIntf;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -615,16 +614,26 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * ==================================================================== */
 
   /**
-   * @param name
    * @return String
    */
-  public String getGlobalProperty(final String name) {
-    try {
-      return CalOptionsFactory.getOptions().getGlobalStringProperty(name);
-    } catch (Throwable t) {
-      return null;
-    }
+  public String getPublicAdminUri() {
+    return getConfig().getPublicAdminUri();
   }
+
+  /**
+   * @return String
+   */
+  public String getPublicCalendarUri() {
+    return getConfig().getPublicCalendarUri();
+  }
+
+  /**
+   * @return String
+   */
+  public String getPersonalCalendarUri() {
+    return getConfig().getPersonalCalendarUri();
+  }
+
 
   /**
    * @param val

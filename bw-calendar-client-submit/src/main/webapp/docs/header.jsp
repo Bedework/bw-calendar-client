@@ -110,10 +110,9 @@ try {
   <urlpattern><genurl:rewrite action="DUMMYACTION.DO" /></urlpattern>
 
   <%-- URLs of other Bedework web clients --%>
-  <personaluri><bean:write name="calForm" property="globalProperty(personalCalendarUri)"/></personaluri>
-  <publicuri><bean:write name="calForm" property="globalProperty(publicCalendarUri)"/></publicuri>
-  <adminuri><bean:write name="calForm" property="globalProperty(publicAdminUri)"/></adminuri>
-  <bean:define id="personalUri"><bean:write name="calForm" property="globalProperty(personalCalendarUri)"/></bean:define>
+  <personaluri><bean:write name="calForm" property="personalCalendarUri"/></personaluri>
+  <publicuri><bean:write name="calForm" property="publicCalendarUri"/></publicuri>
+  <adminuri><bean:write name="calForm" property="publicAdminUri"/></adminuri>
 
   <!-- Path to calendar for public event submissions -->
   <submissionsRoot>
@@ -129,7 +128,7 @@ try {
        append the query string, we can always begin with an ampersand. --%>
 
     <%-- Public and personal client URLs --%>
-    <setup><bw:rewrite actionURL="true" page="/setup.do?b=de"/></setup>
+    <setup><bw:rewrite actionURL="true" action="setup.do?b=de"/></setup>
 
     <main>
       <initialise><genurl:rewrite forward="initialise"/></initialise>

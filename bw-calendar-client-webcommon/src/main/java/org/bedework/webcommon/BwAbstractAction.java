@@ -1978,8 +1978,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /* If we're running as a portlet change the app root to point to a
      * portlet specific directory.
      */
-    String portalPlatform = CalOptionsFactory.getOptions().
-                                  getOptStringProperty("portalPlatform");
+    String portalPlatform = form.retrieveConfig().getPortalPlatform();
+
     if (isPortlet && (portalPlatform != null)) {
       sb.append(".");
       sb.append(portalPlatform);

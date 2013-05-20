@@ -27,18 +27,17 @@ import java.util.Set;
 /**
  * A simple class to encapsulate the management of a calendar suite's
  * context.
- * 
+ *
  * @author eric.wittmann@redhat.com
  */
 public class CalSuiteContextHelper {
-  
   private BwSystem syspars;
 
   /**
    * Constructor.
    * @param syspars
    */
-  public CalSuiteContextHelper(BwSystem syspars) {
+  public CalSuiteContextHelper(final BwSystem syspars) {
     this.syspars = syspars;
   }
 
@@ -49,32 +48,34 @@ public class CalSuiteContextHelper {
    * @param newDefContext
    * @return true if anything was changed
    */
-  public boolean updateSuiteContext(BwCalSuite suite, String newContextName, boolean newDefContext) {
+  public boolean updateSuiteContext(final BwCalSuite suite, final String newContextName, final boolean newDefContext) {
     boolean somethingChanged = false;
-    boolean hasNewContext = newContextName != null && newContextName.trim().length() > 0;
-    
+    boolean hasNewContext = (newContextName != null) && (newContextName.trim().length() > 0);
+
     // Figure out the currently configured sub-context (if any)
     SubContext oldContext = null;
     SubContext oldDefaultContext = null;
     Set<SubContext> contexts = syspars.getContexts();
     for (SubContext subContext : contexts) {
-      if (subContext.getCalSuite().equals(suite.getName()))
+      if (subContext.getCalSuite().equals(suite.getName())) {
         oldContext = subContext;
-      if (subContext.getDefaultContext())
+      }
+      if (subContext.getDefaultContext()) {
         oldDefaultContext = subContext;
+      }
     }
     boolean hasOldContext = oldContext != null;
-    
+
     // No old context, no new context - do nothing
     if (!hasOldContext && !hasNewContext) {
       // Nothing to be done!
     }
     // Add a new context for the suite (no need to delete the old one, none existed)
     if (!hasOldContext && hasNewContext) {
-      if (newDefContext && oldDefaultContext != null) {
+      if (newDefContext && (oldDefaultContext != null)) {
         syspars.removeContext(oldDefaultContext);
-        syspars.addContext(new SubContext(oldDefaultContext.getContextName(), 
-                                          oldDefaultContext.getCalSuite(), 
+        syspars.addContext(new SubContext(oldDefaultContext.getContextName(),
+                                          oldDefaultContext.getCalSuite(),
                                           false));
       }
       syspars.addContext(new SubContext(newContextName, suite.getName(), newDefContext));
@@ -89,10 +90,10 @@ public class CalSuiteContextHelper {
     if (hasOldContext && hasNewContext) {
       boolean oldDefContext = oldContext.getDefaultContext();
       // default changed - need to un-default the old default context
-      if (newDefContext && (newDefContext != oldDefContext) && oldDefaultContext != null) {
+      if (newDefContext && (newDefContext != oldDefContext) && (oldDefaultContext != null)) {
         syspars.removeContext(oldDefaultContext);
-        syspars.addContext(new SubContext(oldDefaultContext.getContextName(), 
-                                          oldDefaultContext.getCalSuite(), 
+        syspars.addContext(new SubContext(oldDefaultContext.getContextName(),
+                                          oldDefaultContext.getCalSuite(),
                                           false));
       }
       // do the update (remove/add actually)
@@ -100,7 +101,7 @@ public class CalSuiteContextHelper {
       syspars.addContext(new SubContext(newContextName, suite.getName(), newDefContext));
       somethingChanged = true;
     }
-    
+
     return somethingChanged;
   }
 
@@ -109,7 +110,7 @@ public class CalSuiteContextHelper {
    * @param ctxName the context name
    * @return true if the context was successfully removed
    */
-  public boolean removeSuiteContext(String ctxName) {
+  public boolean removeSuiteContext(final String ctxName) {
     SubContext oldContext = null;
     Set<SubContext> contexts = syspars.getContexts();
     for (SubContext subContext : contexts) {

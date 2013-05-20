@@ -21,7 +21,6 @@ package org.bedework.webcommon;
 
 import edu.rpi.sss.util.servlets.PresentationState;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.util.MessageResources;
 
 import java.net.URI;
@@ -49,17 +48,13 @@ public class BwSessionImpl implements BwSession {
     new HashMap<String, Counts>();
   private long sessionNum = 0;
 
-  /** True if we want debugging output
-   */
-  private boolean debug;
-
   /** The current user - null for guest
    */
   private String user;
 
   /** The application root
    */
-  private String appRoot;
+  //private String appRoot;
 
   /** The application name
    */
@@ -88,12 +83,6 @@ public class BwSessionImpl implements BwSession {
                        final MessageResources messages,
                        final String schemeHostPort) throws Throwable {
     this.user = user;
-
-    if (rootlessUri(appRoot)) {
-      this.appRoot = "/" + appRoot;
-    } else {
-      this.appRoot = appRoot;
-    }
 
     this.appName = appName;
     this.ps = ps;
@@ -170,20 +159,6 @@ public class BwSessionImpl implements BwSession {
   /**
    * @param val
    */
-  public void setAppRoot(final String val) {
-    appRoot = val;
-  }
-
-  /**
-   * @return app root
-   */
-  public String getAppRoot() {
-    return appRoot;
-  }
-
-  /**
-   * @param val
-   */
   @Override
   public void setUser(final String val) {
     user = val;
@@ -203,13 +178,6 @@ public class BwSessionImpl implements BwSession {
   @Override
   public void setPresentationState(final PresentationState val) {
     ps = val;
-    if (ps != null) {
-      ps.setAppRoot(getAppRoot());
-    }
-
-    if (debug) {
-      Logger.getLogger(this.getClass()).debug("appRoot=" + appRoot);
-    }
   }
 
   /**

@@ -22,8 +22,8 @@
   </context-param>
 
   <context-param>
-    <param-name>debug</param-name>
-    <param-value>@RPI-DEBUG@</param-value>
+    <param-name>bwapptype</param-name>
+    <param-value>feeder</param-value>
   </context-param>
 
   <!-- Do not alter or move  the following comment -->
@@ -32,10 +32,6 @@
   <filter>
     <filter-name>XSLT Filter</filter-name>
     <filter-class>edu.rpi.sss.util.servlets.ConfiguredXSLTFilter</filter-class>
-    <init-param>
-      <param-name>debug</param-name>
-      <param-value>@RPI-DEBUG@</param-value>
-    </init-param>
     <init-param>
       <param-name>directoryBrowsingDisallowed</param-name>
       <param-value>@DIRECTORY-BROWSING-DISALLOWED@</param-value>
@@ -49,10 +45,6 @@
   <filter>
     <filter-name>SvcI Filter</filter-name>
     <filter-class>org.bedework.webcommon.BwSvciFilter</filter-class>
-    <init-param>
-      <param-name>debug</param-name>
-      <param-value>@RPI-DEBUG@</param-value>
-    </init-param>
   </filter>
 
   <!-- not yet - need to reconfig jboss - see cocoon install for hints

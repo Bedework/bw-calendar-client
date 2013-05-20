@@ -53,7 +53,7 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
-import org.bedework.calfacade.configs.ConfigCommon;
+import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.configs.WebConfigCommon;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.mail.MailerIntf;
@@ -121,7 +121,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private transient CollectionCollator<BwLocation> locationCollator;
 
   /* This should be a cloned copy only */
-  private BwSystem syspars;
+  private SystemProperties syspars;
 
   /* This should be a cloned copy only */
   private DirectoryInfo dirInfo;
@@ -158,6 +158,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /** True if this user has more than the default rights
    */
   private boolean authorisedUser;
+
+  private String appType;
+
+  private boolean submitApp;
 
   /** true if we are showing the public face
    */
@@ -634,7 +638,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return getConfig().getPersonalCalendarUri();
   }
 
-
   /**
    * @param val
    */
@@ -751,7 +754,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public int getMaxDescriptionLength() {
     try {
-      return fetchSvci().getSysparsHandler().get().getMaxPublicDescriptionLength();
+      return getSyspars().getMaxPublicDescriptionLength();
     } catch (Throwable t) {
       err.emit(t);
       return 0;
@@ -1291,17 +1294,17 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /** Set a (cloned) copy of the system parameters
    * @param val
    */
-  public void setSyspars(final BwSystem val) {
-    syspars = (BwSystem)val.clone();
+  public void setSyspars(final SystemProperties val) {
+    syspars = val.cloneIt();
   }
 
   /**
    * @return BwSystem object
    */
-  public BwSystem getSyspars() {
+  public SystemProperties getSyspars() {
     if (syspars == null) {
       try {
-        syspars = (BwSystem)fetchSvci().getSysparsHandler().get().clone();
+        syspars = fetchSvci().getSystemProperties();
       } catch (Throwable t) {
         getErr().emit(t);
       }
@@ -1473,6 +1476,36 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return fetchSvci().getSuperUser();
   }
 
+  /** apptype
+   *
+   * @return boolean
+   */
+  public String getAppType() {
+    return appType;
+  }
+
+  /**
+   * @param val
+   */
+  public void assignAppType(final String val) {
+    appType = val;
+  }
+
+  /** True for submitApp
+   *
+   * @return boolean
+   */
+  public boolean getSubmitApp() {
+    return submitApp;
+  }
+
+  /**
+   * @param val
+   */
+  public void assignSubmitApp(final boolean val) {
+    submitApp = val;
+  }
+
   /* ====================================================================
    *                   Calendar suites
    * ==================================================================== */
@@ -1592,7 +1625,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     try {
       Map<String, SubContext> suiteToContextMap = new HashMap<String, SubContext>();
       SysparsI sysi = fetchSvci().getSysparsHandler();
-      BwSystem syspars = sysi.get(sysi.getSystemName());
+      BwSystem syspars = sysi.get();
       Set<SubContext> contexts = syspars.getContexts();
       for (SubContext subContext : contexts) {
         suiteToContextMap.put(subContext.getCalSuite(), subContext);
@@ -2418,10 +2451,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return String path.
    */
   public String getSubmissionsRoot() {
-    String appType = retrieveConfig().getAppType();
+    String appType = getAppType();
 
-    if (ConfigCommon.appTypeWebsubmit.equals(appType) ||
-        ConfigCommon.appTypeWebadmin.equals(appType)) {
+    if (appTypeWebsubmit.equals(appType) ||
+        appTypeWebadmin.equals(appType)) {
       try {
         return URLEncoder.encode(retrieveConfig().getSubmissionRoot(), "UTF-8");
       } catch (Throwable t) {
@@ -2437,10 +2470,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return String path.
    */
   public String getUnencodedSubmissionsRoot() {
-    String appType = retrieveConfig().getAppType();
+    String appType = getAppType();
 
-    if (ConfigCommon.appTypeWebsubmit.equals(appType) ||
-        ConfigCommon.appTypeWebadmin.equals(appType)) {
+    if (appTypeWebsubmit.equals(appType) ||
+        appTypeWebadmin.equals(appType)) {
       return retrieveConfig().getSubmissionRoot();
     }
 
@@ -2472,7 +2505,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     BwCalendar calendar;
 
     try {
-      if (ConfigCommon.appTypeWebsubmit.equals(getConfig().getAppType())) {
+      if (getSubmitApp()) {
         // Use submission root
         calendar = fetchSvci().getCalendarsHandler().get(getConfig().getSubmissionRoot());
       } else {
@@ -4076,10 +4109,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
       if (kind == ownersEntity) {
 
-        String appType = getConfig().getAppType();
-        if (ConfigCommon.appTypeWebsubmit.equals(appType) ||
-            ConfigCommon.appTypeWebpublic.equals(appType) ||
-            ConfigCommon.appTypeFeeder.equals(appType)) {
+        String appType = getAppType();
+        if (appTypeWebsubmit.equals(appType) ||
+            appTypeWebpublic.equals(appType) ||
+            appTypeFeeder.equals(appType)) {
           // Use public
           vals = calsvci.getCategoriesHandler().get(getPublicUser().getPrincipalRef(), null);
         } else {
@@ -4121,7 +4154,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       Collection<BwLocation> vals = null;
 
       if (kind == ownersEntity) {
-        if (ConfigCommon.appTypeWebsubmit.equals(getConfig().getAppType())) {
+        if (getSubmitApp()) {
           // Use public
           vals = calsvci.getLocationsHandler().get(getPublicUser().getPrincipalRef(), null);
         } else {
@@ -4161,7 +4194,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       Collection<BwContact> vals = null;
 
       if (kind == ownersEntity) {
-        if (ConfigCommon.appTypeWebsubmit.equals(getConfig().getAppType())) {
+        if (getSubmitApp()) {
           // Use public
           vals = calsvci.getContactsHandler().get(getPublicUser().getPrincipalRef(), null);
         } else {

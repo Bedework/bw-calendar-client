@@ -73,7 +73,7 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
       // After deleting the calendar suite, make sure to remove that suite's
       // sub-context if it has one.
       SysparsI sysi = form.fetchSvci().getSysparsHandler();
-      BwSystem syspars = sysi.get(sysi.getSystemName());
+      BwSystem syspars = sysi.get();
       String ctxName = csw.getContext();
       if (ctxName != null) {
         CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
@@ -100,7 +100,7 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
 
     /* -------------------------- Context ----------------------------- */
     SysparsI sysi = form.fetchSvci().getSysparsHandler();
-    BwSystem syspars = sysi.get(sysi.getSystemName());
+    BwSystem syspars = sysi.get();
     CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
     String newContextName = request.getReqPar("context");
     boolean newDefContext = "true".equals(request.getReqPar("defaultContext"));

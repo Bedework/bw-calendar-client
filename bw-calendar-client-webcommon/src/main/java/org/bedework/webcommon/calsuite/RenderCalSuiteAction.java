@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -48,8 +48,9 @@ public class RenderCalSuiteAction extends RenderAction {
   /* (non-Javadoc)
    * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
    */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
     CalSvcI svc = form.fetchSvci();
 
     String name = form.getCalSuiteName();
@@ -68,13 +69,14 @@ public class RenderCalSuiteAction extends RenderAction {
 
     SubContext suiteCtx = null;
     SysparsI sysi = form.fetchSvci().getSysparsHandler();
-    BwSystem syspars = sysi.get(sysi.getSystemName());
+    BwSystem syspars = sysi.get();
     Set<SubContext> contexts = syspars.getContexts();
     for (SubContext subContext : contexts) {
-      if (subContext.getCalSuite().equals(cs.getName()))
+      if (subContext.getCalSuite().equals(cs.getName())) {
         suiteCtx = subContext;
+      }
     }
-    
+
     if (suiteCtx != null) {
       cs.setContext(suiteCtx.getContextName());
       cs.setDefaultContext(suiteCtx.getDefaultContext());

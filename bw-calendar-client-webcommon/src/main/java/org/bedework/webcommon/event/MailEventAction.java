@@ -117,7 +117,7 @@ public class MailEventAction extends BwAbstractAction {
 
     if (val.getFrom() == null) {
       // This should be a property
-      val.setFrom("donotreply-" + form.fetchSvci().getSysparsHandler().getSysid());
+      val.setFrom("donotreply-" + form.getSyspars().getSystemid());
     }
 
     form.getMailer().post(val);

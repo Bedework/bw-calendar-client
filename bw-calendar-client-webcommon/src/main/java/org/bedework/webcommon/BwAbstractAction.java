@@ -52,7 +52,7 @@ import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.configs.AdminConfig;
-import org.bedework.calfacade.configs.ConfigCommon;
+import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.configs.WebConfigCommon;
 import org.bedework.calfacade.env.CalOptionsFactory;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
@@ -147,9 +147,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String adminUserId = null;
 
     setConfig(request, form);
-
-    request.setSessionAttr("org.bedework.logprefix",
-                           form.retrieveConfig().getLogPrefix());
 
     boolean guestMode = form.retrieveConfig().getGuestMode();
 
@@ -274,7 +271,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       form.setHour24(form.getConfig().getHour24());
       if (!getPublicAdmin(form) &&
-          !getSubmitApp(form) &&
+          !form.getSubmitApp() &&
           !form.getGuest()) {
         form.setHour24(prefs.getHour24());
       }
@@ -286,7 +283,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (form.getSyspars() == null) {
-      form.setSyspars(svci.getSysparsHandler().get());
+      form.setSyspars(svci.getSystemProperties().cloneIt());
     }
 
     /* see if we got cancelled */
@@ -459,6 +456,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       appname = "unknown-app-name";
     }
 
+    String appType = sc.getInitParameter("bwapptype");
+
+    if ((appType == null) || (appType.length() == 0)) {
+      throw new Exception("No bwapptype context param");
+    }
+
     WebConfigCommon conf = (WebConfigCommon)CalOptionsFactory.getOptions().
         getAppProperty(appname);
     if (conf == null) {
@@ -467,6 +470,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     conf = (WebConfigCommon)conf.clone();
     form.setConfig(conf); // So we can get an svci object and set defaults
+
+    form.assignAppType(appType);
+    form.assignSubmitApp(BedeworkDefs.appTypeWebsubmit.equals(appType));
 
     if (!conf.getGuestMode()) {
       return;
@@ -535,7 +541,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
 
-    BwSystem sysp = svc.getSysparsHandler().get();
+    SystemProperties sysp = svc.getSystemProperties();
 
     int days = request.getIntReqPar("days", -32767);
     if (days < 0) {
@@ -946,7 +952,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     for (BwCategory cat: toRemove) {
-      if (ent.removeCategory(cat)) {
+      if (evcats.remove(cat)) {
         secr.numRemoved++;
       }
     }
@@ -1420,38 +1426,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   public boolean getPublicAdmin(final BwActionFormBase frm) throws Throwable {
     return frm.getConfig().getPublicAdmin();
-  }
-
-  /** Is this the public event submissions client?
-   *
-   * @param frm
-   * @return boolean  true for a public events submissions client
-   * @throws Throwable
-   */
-  public boolean getSubmitApp(final BwActionFormBase frm) throws Throwable {
-    String appType = frm.retrieveConfig().getAppType();
-
-    return ConfigCommon.appTypeWebsubmit.equals(appType);
-  }
-
-  /** Get a prefix for the loggers.
-   *
-   * @param request    Request
-   * @return  String    log prefix
-   */
-  protected String getLogPrefix(final Request request) {
-    try {
-      String pfx = (String)request.getSessionAttr("org.bedework.logprefix");
-
-      if (pfx == null) {
-        return "NOT-SET";
-      }
-
-      return pfx;
-    } catch (Throwable t) {
-      error(t);
-      return "LOG-PREFIX-EXCEPTION";
-    }
   }
 
   /* We should probably return false for a portlet

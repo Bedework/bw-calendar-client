@@ -25,7 +25,7 @@
     </error>
   </logic:iterate>
 
-  <approot><bean:write name="calForm" property="presentationState.appRoot"/></approot>
+  <approot><bean:write name="calForm" property="config.appRoot"/></approot>
 
   <page>attendeeWidget</page>  
 

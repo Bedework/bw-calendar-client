@@ -920,7 +920,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       }
     }
 
-    int maxAttendees = svc.getSysparsHandler().get().getMaxAttendees();
+    int maxAttendees = svc.getSystemProperties().getMaxAttendeesPerInstance();
 
     if ((atts.getAttendees() != null) &&
         (atts.getAttendees().size() == maxAttendees)) {
@@ -1050,8 +1050,8 @@ public abstract class EventActionBase extends BwAbstractAction {
     BwEvent ev = form.getEvent();
     ChangeTable changes = ei.getChangeset(svc.getPrincipal().getPrincipalRef());
 
-    String evregToken = svc.getSysparsHandler().get().getEventregAdminToken();
-    String evregUrl = svc.getSysparsHandler().get().getEventregUrl();
+    String evregToken = svc.getSystemProperties().getEventregAdminToken();
+    String evregUrl = svc.getSystemProperties().getEventregUrl();
 
     if ((evregToken == null) || (evregUrl == null)) {
       // Cannot notify

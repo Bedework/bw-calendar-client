@@ -1121,44 +1121,6 @@
       <forward name="success" path="/globalres/showResources.rdo" redirect="true" />
     </action>
 
-
-    <!-- ===============================================================
-                         Syspars Actions
-         =============================================================== -->
-
-
-    <action    path="/syspars/show"
-               type="org.bedework.webcommon.system.RenderSysparsAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render"
-               validate="false">
-      <forward name="success" path="/docs/system/modSyspars.jsp"/>
-    </action>
-
-
-    <action    path="/syspars/fetch"
-               type="org.bedework.webcommon.system.RenderSysparsAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="success" path="/syspars/show.rdo" redirect="true" />
-    </action>
-
-    <!-- on update, pass back through fetch action to refresh -->
-    <action    path="/syspars/update"
-               type="org.bedework.webcommon.system.UpdateSysparsAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="badRequest" path="/syspars/show.rdo" redirect="true" />
-      <forward name="nochange" path="/syspars/show.rdo" redirect="true" />
-      <forward name="success" path="/syspars/show.rdo" redirect="true" />
-      <forward name="cancelled" path="/main/showSystemTab.rdo" redirect="true"/>
-    </action>
-
     <!-- ===============================================================
                          Timezone Actions
          =============================================================== -->

@@ -105,7 +105,7 @@ public class UpdateEventAction extends EventActionBase {
                       final BwActionFormBase form) throws Throwable {
     CalSvcI svci = form.fetchSvci();
     boolean publicAdmin = getPublicAdmin(form);
-    boolean submitApp = getSubmitApp(form);
+    boolean submitApp = form.getSubmitApp();
 
     String submitterEmail = null;
     //String submitter = null;
@@ -659,7 +659,7 @@ public class UpdateEventAction extends EventActionBase {
   private Set<BwCategory> setEventAliases(final BwRequest request,
                                           final BwEvent ev) throws Throwable {
     if (!getPublicAdmin(request.getBwForm()) &&
-        !getSubmitApp(request.getBwForm())) {
+        !request.getBwForm().getSubmitApp()) {
       return null;
     }
 

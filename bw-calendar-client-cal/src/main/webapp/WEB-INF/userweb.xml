@@ -21,6 +21,11 @@
     <param-value>@BW-APP-NAME@</param-value>
   </context-param>
 
+  <context-param>
+    <param-name>bwapptype</param-name>
+    <param-value>webuser</param-value>
+  </context-param>
+
   <!-- Do not alter or move  the following comment -->
   <!-- add context params here -->
 
@@ -40,10 +45,6 @@
   <filter>
     <filter-name>SvcI Filter</filter-name>
     <filter-class>org.bedework.webcommon.BwSvciFilter</filter-class>
-    <init-param>
-      <param-name>debug</param-name>
-      <param-value>@RPI-DEBUG@</param-value>
-    </init-param>
   </filter>
 
   <!-- not yet - need to reconfig jboss - see cocoon install for hints

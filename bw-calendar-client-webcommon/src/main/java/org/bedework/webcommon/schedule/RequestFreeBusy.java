@@ -26,9 +26,9 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwFreeBusyComponent;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
+import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.ifs.Directories;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calsvci.CalSvcI;
@@ -93,7 +93,7 @@ public class RequestFreeBusy extends BwAbstractAction {
         orgUri = dir.principalToCaladdr(svci.getPrincipal());
       }
 
-      BwSystem sysp = svci.getSysparsHandler().get();
+      SystemProperties sysp = form.getSyspars();
 
       int max = 0;
 

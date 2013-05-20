@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -63,5 +63,16 @@ public interface BedeworkDefs extends Serializable {
 
   /** Display using a 'filter' */
   //public static final String selectionTypeFiltered = "filtered";
+
+  /** */
+  public static final String appTypeWebadmin = "webadmin";
+  /** */
+  public static final String appTypeWebsubmit = "websubmit";
+  /** */
+  public static final String appTypeWebpublic = "webpublic";
+  /** */
+  public static final String appTypeFeeder = "feeder";
+  /** */
+  public static final String appTypeWebuser = "webuser";
 }
 

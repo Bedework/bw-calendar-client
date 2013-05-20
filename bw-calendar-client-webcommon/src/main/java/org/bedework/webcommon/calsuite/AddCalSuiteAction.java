@@ -88,7 +88,7 @@ public class AddCalSuiteAction extends BwAbstractAction {
 
     /* -------------------------- Context ----------------------------- */
     SysparsI sysi = form.fetchSvci().getSysparsHandler();
-    BwSystem syspars = sysi.get(sysi.getSystemName());
+    BwSystem syspars = sysi.get();
     CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
     String newContextName = request.getReqPar("context");
     boolean newDefContext = "true".equals(request.getReqPar("defaultContext"));

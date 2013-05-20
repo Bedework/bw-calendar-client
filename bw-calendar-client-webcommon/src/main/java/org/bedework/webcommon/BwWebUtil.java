@@ -27,8 +27,8 @@ import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwLongString;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwString;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.base.StartEndComponent;
+import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
@@ -261,7 +261,7 @@ public class BwWebUtil {
     }
 
     /* ------------- Check summary and description ------------------ */
-    BwSystem syspars = svci.getSysparsHandler().get();
+    SystemProperties syspars = svci.getSystemProperties();
     int maxDescLen;
     if (publicAdmin || prePublish) {
       maxDescLen = syspars.getMaxPublicDescriptionLength();

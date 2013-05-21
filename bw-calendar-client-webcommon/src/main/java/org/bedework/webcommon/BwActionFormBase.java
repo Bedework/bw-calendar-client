@@ -4098,7 +4098,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * ==================================================================== */
 
   private BwPrincipal getPublicUser() throws Throwable {
-    return calsvci.getUsersHandler().getUser(getSyspars().getPublicUser());
+    return calsvci.getUsersHandler().getUser(calsvci.getBasicSystemProperties().getPublicUser());
   }
 
   // ENUM

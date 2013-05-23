@@ -51,10 +51,7 @@ import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.base.CategorisedEntity;
-import org.bedework.calfacade.configs.AdminConfig;
 import org.bedework.calfacade.configs.SystemProperties;
-import org.bedework.calfacade.configs.WebConfigCommon;
-import org.bedework.calfacade.env.CalOptionsFactory;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
@@ -77,6 +74,9 @@ import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
 import org.bedework.sysevents.events.SysEventBase.SysCode;
+import org.bedework.webcommon.config.AdminConfig;
+import org.bedework.webcommon.config.ClientConfigurations;
+import org.bedework.webcommon.config.ConfigCommon;
 
 import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
 import edu.rpi.cmt.calendar.ScheduleStates;
@@ -148,7 +148,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     setConfig(request, form);
 
-    boolean guestMode = form.retrieveConfig().getGuestMode();
+    boolean guestMode = form.getConfig().getGuestMode();
 
     if (guestMode) {
       form.assignCurrentUser(null);
@@ -382,7 +382,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     // Not public admin.
 
-    WebConfigCommon conf = form.retrieveConfig();
+    ConfigCommon conf = form.getConfig();
 
     /*
     if (form.getNewSession()) {
@@ -462,13 +462,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       throw new Exception("No bwapptype context param");
     }
 
-    WebConfigCommon conf = (WebConfigCommon)CalOptionsFactory.getOptions().
-        getAppProperty(appname);
+    ConfigCommon conf = ClientConfigurations.getConfigs().getClientConfig(appname);
     if (conf == null) {
       throw new CalFacadeException("No config available for app " + appname);
     }
 
-    conf = (WebConfigCommon)conf.clone();
+//    conf = (ConfigCommon)conf.clone();
     form.setConfig(conf); // So we can get an svci object and set defaults
 
     form.assignAppType(appType);
@@ -1905,9 +1904,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       s = new BwSessionImpl(form.getCurrentUser(),
                             suffixRoot(form,
-                                       form.retrieveConfig().getBrowserResourceRoot()),
+                                       form.getConfig().getBrowserResourceRoot()),
                             suffixRoot(form,
-                                       form.retrieveConfig().getAppRoot()),
+                                       form.getConfig().getAppRoot()),
                             appName,
                             form.getPresentationState(), messages,
                             form.getSchemeHostPort());
@@ -1952,7 +1951,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /* If we're running as a portlet change the app root to point to a
      * portlet specific directory.
      */
-    String portalPlatform = form.retrieveConfig().getPortalPlatform();
+    String portalPlatform = form.getConfig().getPortalPlatform();
 
     if (isPortlet && (portalPlatform != null)) {
       sb.append(".");
@@ -1960,7 +1959,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     /* If calendar suite is non-null append that. */
-    String calSuite = form.retrieveConfig().getCalSuite();
+    String calSuite = form.getConfig().getCalSuite();
     if (calSuite != null) {
       sb.append(".");
       sb.append(calSuite);
@@ -2003,7 +2002,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (user == null) {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
-      calSuiteName = form.retrieveConfig().getCalSuite();
+      calSuiteName = form.getConfig().getCalSuite();
     } else if (publicAdmin) {
       /* Calendar suite we are administering is the one we find attached to a
        * group as we proceed up the tree
@@ -2134,8 +2133,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                            adminCanEditAllPublicCategories,
                                            adminCanEditAllPublicLocations,
                                            adminCanEditAllPublicSponsors,
-                                           false,    // sessionless
-                                           form.getConfig());
+                                           false);    // sessionless
         svci = new CalSvcFactoryDefault().getSvc(pars);
 
         BwWebUtil.setCalSvcI(request.getRequest(), svci);

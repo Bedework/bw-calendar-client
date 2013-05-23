@@ -22,7 +22,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calfacade.configs.AdminConfig;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.ifs.Directories;
 import org.bedework.calfacade.svc.AdminGroups;
@@ -31,6 +30,7 @@ import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcI;
+import org.bedework.webcommon.config.AdminConfig;
 
 import edu.rpi.sss.util.jsp.Request;
 

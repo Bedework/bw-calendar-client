@@ -660,7 +660,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       /* The location id from the form didn't change so they didn't select from
        * the list. If we allow auto create - did they provide a new location
        */
-      if (form.retrieveConfig().getAutoCreateLocations()) {
+      if (form.getConfig().getAutoCreateLocations()) {
         BwLocation l = form.getLocation();
 
         ValidateResult vr = BwWebUtil.validateLocation(form);
@@ -756,7 +756,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     if (!form.retrieveCtctId().getChanged()) {
       /* Didn't select from list. Do  we allow auto-creat */
-      if (form.retrieveConfig().getAutoCreateContacts()) {
+      if (form.getConfig().getAutoCreateContacts()) {
         c = form.getContact();
 
         ValidateResult vr = BwWebUtil.validateContact(form);
@@ -1047,7 +1047,6 @@ public abstract class EventActionBase extends BwAbstractAction {
   protected boolean notifyEventReg(final EventInfo ei,
                                    final BwActionFormBase form) throws Throwable {
     CalSvcI svc = form.fetchSvci();
-    BwEvent ev = form.getEvent();
     ChangeTable changes = ei.getChangeset(svc.getPrincipal().getPrincipalRef());
 
     String evregToken = svc.getSystemProperties().getEventregAdminToken();

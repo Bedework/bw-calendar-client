@@ -54,7 +54,6 @@ import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.SystemProperties;
-import org.bedework.calfacade.configs.WebConfigCommon;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.mail.MailerIntf;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -71,6 +70,7 @@ import org.bedework.calsvci.ClientStateI;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.calsvci.SysparsI;
 import org.bedework.icalendar.RecurRuleComponents;
+import org.bedework.webcommon.config.ConfigCommon;
 import org.bedework.webcommon.search.SearchResultEntry;
 
 import edu.rpi.cmt.timezones.TimeZoneName;
@@ -111,7 +111,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /** This object will be set up appropriately for the kind of client,
    * e.g. admin, guest etc.
    */
-  private WebConfigCommon config;
+  private ConfigCommon config;
 
   private Locale requestedLocale;
 
@@ -1317,7 +1317,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *
    * @param val
    */
-  public void setConfig(final WebConfigCommon val) {
+  public void setConfig(final ConfigCommon val) {
     config = val;
 
     /* Set defaults */
@@ -1329,12 +1329,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *
    * @return Config object
    */
-  public WebConfigCommon getConfig() {
-    if (config == null) {
-      return null;
-    }
-
-    return (WebConfigCommon)config.clone();
+  public ConfigCommon getConfig() {
+    return config;
   }
 
   /** True if we have a config object set.
@@ -1343,14 +1339,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public boolean configSet() {
     return config != null;
-  }
-
-  /** Return the uncloned config parameters
-   *
-   * @return Config object
-   */
-  public WebConfigCommon retrieveConfig() {
-    return config;
   }
 
   /** Set system statistics
@@ -2456,7 +2444,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     if (appTypeWebsubmit.equals(appType) ||
         appTypeWebadmin.equals(appType)) {
       try {
-        return URLEncoder.encode(retrieveConfig().getSubmissionRoot(), "UTF-8");
+        return URLEncoder.encode(getConfig().getSubmissionRoot(), "UTF-8");
       } catch (Throwable t) {
         getErr().emit(t);
       }
@@ -2474,7 +2462,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
     if (appTypeWebsubmit.equals(appType) ||
         appTypeWebadmin.equals(appType)) {
-      return retrieveConfig().getSubmissionRoot();
+      return getConfig().getSubmissionRoot();
     }
 
     return "";

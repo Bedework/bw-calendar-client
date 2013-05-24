@@ -34,7 +34,7 @@ import javax.management.ObjectName;
 @SuppressWarnings("rawtypes")
 public final class ClientConfigurations extends ConfBase {
   /* Name of the property holding the location of the config data */
-  private static final String datauriPname = "org.bedework.clients.datauri";
+  private static final String confuriPname = "org.bedework.clients.confuri";
 
   private static volatile Object lock = new Object();
 
@@ -69,7 +69,7 @@ public final class ClientConfigurations extends ConfBase {
     super("org.bedework.clients:service=System");
 
     try {
-      setConfigPname(datauriPname);
+      setConfigPname(confuriPname);
 
       loadClientConfigs();
     } catch (CalFacadeException cfe) {

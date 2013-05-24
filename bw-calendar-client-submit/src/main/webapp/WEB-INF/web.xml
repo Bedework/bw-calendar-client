@@ -34,7 +34,7 @@
     </init-param>
     <init-param>
       <param-name>directoryBrowsingDisallowed</param-name>
-      <param-value>@DIRECTORY-BROWSING-DISALLOWED@</param-value>
+      <param-value>true</param-value>
     </init-param>
     <init-param>
       <param-name>ignoreContentType</param-name>

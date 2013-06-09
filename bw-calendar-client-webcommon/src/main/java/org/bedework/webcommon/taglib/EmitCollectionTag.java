@@ -258,7 +258,7 @@ public class EmitCollectionTag extends EmitTextTag {
 
     if ((prefPath != null) && prefPath.equals(col.getPath())) {
       emitElement(out, indent, "default-scheduling-collection", null);
-    } else if (col.getCalType() == BwCalendar.calTypeCalendarCollection) {
+    } else if (col.getCollectionInfo().shareable) {
       emitElement(out, indent, "can-be-shared", null);
       emitElement(out, indent, "can-be-published", null);
     }

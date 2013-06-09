@@ -56,6 +56,8 @@
 
 	<modules>
 		<module>bw-calendar-client-appcommon</module>
+    <module>bw-calendar-client-webcommon</module>
+    <!-- 
 		<module>bw-calendar-client-caladmin</module>
 		<module>bw-calendar-client-cal</module>
 		<module>bw-calendar-client-feeder</module>
@@ -64,7 +66,7 @@
 		<module>bw-calendar-client-ucal</module>
 		<module>bw-calendar-client-ucaldav</module>
 		<module>bw-calendar-client-ucalws</module>
-		<module>bw-calendar-client-webcommon</module>
+     -->
 	</modules>
 
 	<repositories>

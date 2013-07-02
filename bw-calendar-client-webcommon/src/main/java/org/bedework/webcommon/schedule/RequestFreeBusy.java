@@ -19,6 +19,7 @@
 package org.bedework.webcommon.schedule;
 
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.ParseUtil;
 import org.bedework.caldav.util.TimeRange;
 import org.bedework.calfacade.BwAttendee;
@@ -29,7 +30,6 @@ import org.bedework.calfacade.BwFreeBusyComponent;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.configs.SystemProperties;
-import org.bedework.calfacade.ifs.Directories;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
@@ -78,19 +78,19 @@ public class RequestFreeBusy extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     try {
       CalSvcI svci = form.fetchSvci();
+      Client cl = form.fetchClient();
 
       Collection<String> attendees = request.getReqPars("attendeeUri");
       Set<String> attendeeUris = new TreeSet<String>();
-      Directories dir = svci.getDirectories();
 
       for (String att: attendees) {
-        attendeeUris.add(dir.uriToCaladdr(att));
+        attendeeUris.add(cl.uriToCaladdr(att));
       }
 
       String orgUri = request.getReqPar("organizerUri");
 
       if (orgUri == null) {
-        orgUri = dir.principalToCaladdr(svci.getPrincipal());
+        orgUri = cl.getCurrentCalendarAddress();
       }
 
       SystemProperties sysp = form.getSyspars();

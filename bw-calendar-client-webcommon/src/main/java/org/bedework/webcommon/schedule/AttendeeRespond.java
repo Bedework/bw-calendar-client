@@ -18,13 +18,13 @@
 */
 package org.bedework.webcommon.schedule;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calfacade.ifs.Directories;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calsvci.CalSvcI;
@@ -98,6 +98,7 @@ public class AttendeeRespond extends EventActionBase {
     }
 
     CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     SchedulingI sched = svc.getScheduler();
 
@@ -187,7 +188,7 @@ public class AttendeeRespond extends EventActionBase {
 
     /* ------------------ final validation -------------------------- */
 
-    Collection<ValidationError>  ves = BwWebUtil.validateEvent(svc,
+    Collection<ValidationError>  ves = BwWebUtil.validateEvent(cl,
                                                                false,
                                                                false,
                                                                ev);
@@ -209,7 +210,7 @@ public class AttendeeRespond extends EventActionBase {
 
     String partStat = request.getReqPar("partstat");
 
-    setupAttendeeRespond(svc,
+    setupAttendeeRespond(form.fetchClient(),
                          ei,
                          request.getReqPar("delegate"),        // delegate
                          methStr,      // method
@@ -217,16 +218,14 @@ public class AttendeeRespond extends EventActionBase {
                          request.getReqPar("comment"),         // comment
                          request.getBooleanReqPar("rsvp", false));
 
-    UpdateResult ur = svc.getEventsHandler().update(ei,
-                                                    false,
-                                                    null);
+    UpdateResult ur = cl.updateEvent(ei, false, null);
 
     emitScheduleStatus(form, ur.schedulingResult, false);
 
     return forwardSuccess;
   }
 
-  private String setupAttendeeRespond(final CalSvcI svc,
+  private String setupAttendeeRespond(final Client cl,
                                       final EventInfo ei,
                                       final String delegate,
                                       final String meth,
@@ -245,8 +244,7 @@ public class AttendeeRespond extends EventActionBase {
 
     /* Check that the current user is actually an attendee
      */
-    Directories dir = svc.getDirectories();
-    String uri = dir.principalToCaladdr(svc.getPrincipal());
+    String uri = cl.getCurrentCalendarAddress();
     BwAttendee att = ev.findAttendee(uri);
 
     if (att == null) {
@@ -295,7 +293,7 @@ public class AttendeeRespond extends EventActionBase {
        *   .  The "Delegator" MUST also send a copy of the original "REQUEST"
        *      method to the "Delegate".
        */
-      String calAddr = svc.getDirectories().uriToCaladdr(delegate);
+      String calAddr = cl.uriToCaladdr(delegate);
       if (calAddr == null) {
         return ValidationError.invalidUser;
       }

@@ -20,21 +20,15 @@ package org.bedework.webcommon.calendars;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwPreferences;
-import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwView;
-import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.CalendarsI;
-import org.bedework.webcommon.BwAbstractAction;
+mport org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-import java.util.Collection;
 import java.util.List;
 
 /** This action moves a calendar or the contents.
@@ -63,8 +57,7 @@ public class MoveCalendarAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defense
     }
 
-    CalSvcI svci = form.fetchSvci();
-    CalendarsI cals = svci.getCalendarsHandler();
+    Client cl = form.fetchClient();
 
     boolean contents = request.present("contents");
 
@@ -75,7 +68,7 @@ public class MoveCalendarAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    if (!contents && cal.equals(cals.getHome())) {
+    if (!contents && cal.equals(cl.getHome())) {
       form.getErr().emit(ClientError.cannotMoveHome, cal.getPath());
       return forwardInUse;
     }
@@ -86,13 +79,15 @@ public class MoveCalendarAction extends BwAbstractAction {
     }
 
     /* redo filters */
-    svci.getClientState().flush();
+    cl.flushState();
 
     if (!contents) {
       return moveCollection(cal, newCal, form);
     }
 
-    return moveContents(cal, newCal, form);
+    cl.moveContents(cal, newCal);
+
+    return forwardContinue;
   }
 
   private int moveCollection(final BwCalendar cal,
@@ -102,20 +97,18 @@ public class MoveCalendarAction extends BwAbstractAction {
      * automatically remove the subscription. For others we list the references
      */
 
-    CalSvcI svci = form.fetchSvci();
-    CalendarsI cals = svci.getCalendarsHandler();
+    Client cl = form.fetchClient();
 
     boolean reffed = false;
     boolean autoRemove = !getPublicAdmin(form) &&
-      (svci.getPrefsHandler().get().getUserMode() == BwPreferences.basicMode);
+      (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
 
-    for (BwView v:  svci.getViewsHandler().getAll()) {
+    for (BwView v:  cl.getAllViews()) {
       List<String> paths = v.getCollectionPaths();
 
       if ((paths != null) && paths.contains(cal.getPath())) {
         if (autoRemove) {
-          if (!svci.getViewsHandler().removeCollection(v.getName(),
-                                                       cal.getPath())) {
+          if (!cl.removeViewCollection(v.getName(), cal.getPath())) {
             form.getErr().emit(ClientError.unknownView, v.getName());
             return forwardError;
           }
@@ -131,7 +124,7 @@ public class MoveCalendarAction extends BwAbstractAction {
     }
 
     try {
-      cals.move(cal, newCal);
+      cl.moveCollection(cal, newCal);
     } catch (CalFacadeException cfe) {
       if (CalFacadeException.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
         form.getErr().emit(ClientError.referencedCalendar, "default calendar");
@@ -142,44 +135,6 @@ public class MoveCalendarAction extends BwAbstractAction {
     }
 
     form.getMsg().emit(ClientMessage.movedCalendar, cal.getPath());
-
-    return forwardContinue;
-  }
-
-  private int moveContents(final BwCalendar cal,
-                           final BwCalendar newCal,
-                           final BwActionFormBase form) throws Throwable {
-    /* Check for references in views. For user extra simple mode only we will
-     * automatically remove the subscription. For others we list the references
-     */
-
-    CalSvcI svci = form.fetchSvci();
-
-    // TODO - get a set of keys then move each - or bulk mod?
-
-    RecurringRetrievalMode rrm = new RecurringRetrievalMode(Rmode.overrides);
-
-    Collection<EventInfo> eis = svci.getEventsHandler().getEvents(cal,
-                                                                  null,
-                                                                  null,
-                                                                  null,
-                                                                  null, // retrieveList
-                                                                  rrm);
-
-    for (EventInfo ei: eis) {
-      BwEvent ev = ei.getEvent();
-
-      ev.setColPath(newCal.getPath());
-      ev.updateStag(svci.getCurrentTimestamp());
-
-      svci.getEventsHandler().update(ei, false, null);
-    }
-
-    Collection<BwCalendar> cals = svci.getCalendarsHandler().getChildren(cal);
-
-    for (BwCalendar c: cals) {
-      svci.getCalendarsHandler().move(c, newCal);
-    }
 
     return forwardContinue;
   }

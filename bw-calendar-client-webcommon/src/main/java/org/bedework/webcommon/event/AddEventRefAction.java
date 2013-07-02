@@ -21,13 +21,12 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.EventKey;
@@ -81,7 +80,7 @@ public class AddEventRefAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
 //    EventInfo ei = findEvent(request, Rmode.masterOnly);
 
@@ -108,12 +107,12 @@ public class AddEventRefAction extends EventActionBase {
     EventInfo eref = new EventInfo(proxy);
     form.setEventInfo(eref); // Make it available
 
-    BwCalendar cal = request.getNewCal(false);
+    String calPath = getReqPar(request.getRequest(), "newCalPath");
 
-    if (cal == null) {
-      cal = svci.getCalendarsHandler().getPreferred();
+    if (calPath == null) {
+      calPath = cl.getPreferredCollectionPath();
     }
-    proxy.setOwnerHref(svci.getPrincipal().getPrincipalRef());
+    proxy.setOwnerHref(cl.getCurrentPrincipalHref());
 
     String transparency = request.getReqPar("transparency");
     if (transparency != null) {
@@ -125,14 +124,19 @@ public class AddEventRefAction extends EventActionBase {
       proxy.setTransparency(transparency);
     }
 
-    eref.getEvent().setColPath(cal.getPath());
+    eref.getEvent().setColPath(calPath);
 
     try {
-      svci.getEventsHandler().add(eref, true, false, false);
+      cl.addEvent(eref, true, false, false);
       form.getMsg().emit(ClientMessage.addedEventrefs, 1);
     } catch (CalFacadeException cfe) {
       if (CalFacadeException.duplicateGuid.equals(cfe.getMessage())) {
         form.getErr().emit(ClientError.duplicateUid);
+        return forwardDuplicate;
+      }
+
+      if (CalFacadeException.collectionNotFound.equals(cfe.getMessage())) {
+        form.getErr().emit(ValidationError.missingCalendar);
         return forwardDuplicate;
       }
 

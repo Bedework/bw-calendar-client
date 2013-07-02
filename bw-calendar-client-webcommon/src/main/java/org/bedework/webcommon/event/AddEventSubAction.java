@@ -20,10 +20,10 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCalendar.EventListEntry;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.EventKey;
@@ -78,7 +78,7 @@ public class AddEventSubAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     EventKey ekey = form.getEventKey();
 
     if (ekey == null) {
@@ -98,7 +98,7 @@ public class AddEventSubAction extends EventActionBase {
     if (subColPath != null) {
       /* See if the collection exists and is an event list collection */
 
-      col = svci.getCalendarsHandler().get(subColPath);
+      col = cl.getCollection(subColPath);
 
       if (col == null) {
         // Not correct forward
@@ -112,7 +112,7 @@ public class AddEventSubAction extends EventActionBase {
       }
     } else {
       /* See if we have a default "referenced" collection in the calendar home */
-      col = svci.getCalendarsHandler().getSpecial(BwCalendar.calTypeEventList, true);
+      col = cl.getSpecial(BwCalendar.calTypeEventList, true);
     }
 
     /* add the href to the collection */
@@ -128,7 +128,7 @@ public class AddEventSubAction extends EventActionBase {
 
     col.setEventList(refs);
 
-    svci.getCalendarsHandler().update(col);
+    cl.updateCollection(col);
 
     return forwardSuccess;
   }

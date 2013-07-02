@@ -26,7 +26,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -60,7 +59,6 @@ public class InitAddEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
     form.refreshIsNeeded();
 
     form.setEventInfo(null); // force reinit
@@ -70,7 +68,7 @@ public class InitAddEventAction extends EventActionBase {
 
     EventInfo ei = form.getEventInfo();
     BwEvent ev = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(svci.getPrincipal().getPrincipalRef());
+    ChangeTable changes = ei.getChangeset(form.fetchClient().getCurrentPrincipalHref());
 
     form.assignAddingEvent(true);
     form.setAttendees(new Attendees());

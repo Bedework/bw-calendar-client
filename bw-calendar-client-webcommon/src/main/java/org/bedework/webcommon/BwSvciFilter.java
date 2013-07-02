@@ -68,6 +68,7 @@ public class BwSvciFilter implements Filter {
     Throwable thr = null;
 
     try {
+      /* cb is not set up at this point
       cb = getCb(sess, "in");
 
       if (cb != null) {
@@ -78,6 +79,7 @@ public class BwSvciFilter implements Filter {
           return;
         }
       }
+      */
 
       /* We need this to force utf encoding.
        * Not sure whether this is always correct

@@ -19,6 +19,7 @@
 package org.bedework.webcommon.sharing;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteNotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
@@ -60,6 +61,7 @@ public class ShareReplyAction extends BwAbstractAction {
     }
 
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     NotificationType note = svci.getNotificationsHandler().find(request.getReqPar("name"));
 
@@ -109,7 +111,7 @@ public class ShareReplyAction extends BwAbstractAction {
 
     svci.getNotificationsHandler().remove(note);
     form.setNotificationInfo(null); // force a refresh
-    svci.getClientState().flush();
+    cl.flushState();
 
     if (error) {
       return forwardError;

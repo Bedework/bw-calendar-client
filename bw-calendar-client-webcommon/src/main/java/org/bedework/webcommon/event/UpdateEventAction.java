@@ -21,6 +21,8 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -38,7 +40,6 @@ import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.webcommon.Attendees;
@@ -103,7 +104,7 @@ public class UpdateEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     boolean publicAdmin = getPublicAdmin(form);
     boolean submitApp = form.getSubmitApp();
 
@@ -116,13 +117,13 @@ public class UpdateEventAction extends EventActionBase {
 
     if ((publicAdmin && !form.getAuthorisedUser()) ||
         form.getGuest()) {
-      svci.rollbackTransaction();
+      cl.rollback();
       return forwardNoAccess;
     }
 
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
-      svci.rollbackTransaction();
+      cl.rollback();
       return forwardNoAccess;
     }
 
@@ -134,7 +135,7 @@ public class UpdateEventAction extends EventActionBase {
 
     if (publishEvent && (ev.getRecurrenceId() != null)) {
       // Cannot publish an instance - only the master
-      svci.rollbackTransaction();
+      cl.rollback();
       return forwardError;
     }
 
@@ -146,7 +147,7 @@ public class UpdateEventAction extends EventActionBase {
     }*/
 
     /* This should be done by a wrapper */
-    ChangeTable changes = ei.getChangeset(svci.getPrincipal().getPrincipalRef());
+    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     /*
     BwEventAnnotation ann = null;
@@ -176,7 +177,7 @@ public class UpdateEventAction extends EventActionBase {
 
       if (form.getErrorsEmitted()) {
         // Unrecoverable? Error in form.
-        svci.rollbackTransaction();
+        cl.rollback();
         return forwardValidationError;
       }
 
@@ -303,7 +304,7 @@ public class UpdateEventAction extends EventActionBase {
     String colPath = ev.getColPath();
     BwCalendar evCol = null;
     if (colPath != null) {
-      evCol = svci.getCalendarsHandler().get(colPath);
+      evCol = cl.getCollection(colPath);
     }
 
     String submissionsRoot = form.getUnencodedSubmissionsRoot();
@@ -312,14 +313,14 @@ public class UpdateEventAction extends EventActionBase {
       /* Event MUST NOT be in a submission calendar */
       if (colPath.startsWith(submissionsRoot)) {
         form.getErr().emit(ValidationError.inSubmissionsCalendar);
-        svci.rollbackTransaction();
+        cl.rollback();
         return forwardValidationError;
       }
     } else if (updateSubmitEvent) {
       /* Event MUST be in a submission calendar */
       if (!colPath.startsWith(submissionsRoot)) {
         form.getErr().emit(ValidationError.notSubmissionsCalendar);
-        svci.rollbackTransaction();
+        cl.rollback();
         return forwardValidationError;
       }
     }
@@ -339,7 +340,7 @@ public class UpdateEventAction extends EventActionBase {
 
       if (!pi.OK) {
         if (!pi.retry) {
-          svci.rollbackTransaction();
+          cl.rollback();
           return forwardValidationError;
         }
         return forwardRetry;
@@ -360,7 +361,7 @@ public class UpdateEventAction extends EventActionBase {
 
     int res = processXprops(request, ev, extras, publishEvent, changes);
     if (res == forwardValidationError) {
-      svci.rollbackTransaction();
+      cl.rollback();
       return res;
     }
 
@@ -378,7 +379,7 @@ public class UpdateEventAction extends EventActionBase {
 
     res = form.getEventDates().updateEvent(ei);
     if (res == forwardValidationError) {
-      svci.rollbackTransaction();
+      cl.rollback();
       return res;
     }
 
@@ -418,7 +419,7 @@ public class UpdateEventAction extends EventActionBase {
     SetEntityCategoriesResult secr = setEntityCategories(request, cats,
                                                          ev, changes);
     if (secr.rcode != forwardSuccess) {
-      svci.rollbackTransaction();
+      cl.rollback();
       return secr.rcode;
     }
 
@@ -478,7 +479,7 @@ public class UpdateEventAction extends EventActionBase {
     /* If we're updating but not publishing a submitted event, treat it as
      * if it were the submit app.
      */
-    List<ValidationError>  ves = BwWebUtil.validateEvent(svci,
+    List<ValidationError>  ves = BwWebUtil.validateEvent(cl,
                                 updateSubmitEvent || submitApp,
                                 publicAdmin,
                                 ev);
@@ -521,16 +522,16 @@ public class UpdateEventAction extends EventActionBase {
     /* ------------- web submit - copy entities and change owner ------------ */
 
     if (publishEvent) {
-      copyEntities(ev, svci);
-      changeOwner(ev, svci);
+      copyEntities(ev);
+      changeOwner(ev, cl);
 
       // Do the same for any overrides
 
       if (ev.getRecurring() &&
           (ei.getOverrideProxies() != null)) {
         for (BwEvent oev: ei.getOverrideProxies()) {
-          copyEntities(oev, svci);
-          changeOwner(oev, svci);
+          copyEntities(oev);
+          changeOwner(oev, cl);
           oev.setColPath(ev.getColPath());
         }
       }
@@ -544,16 +545,14 @@ public class UpdateEventAction extends EventActionBase {
 
     try {
       UpdateResult ur = null;
-      ei.getEvent().updateStag(svci.getCurrentTimestamp());
       ei.setNewEvent(adding);
 
       if (adding) {
-        ur = svci.getEventsHandler().add(ei,
-                                         !sendInvitations, false,
-                                         true);
+        ur = cl.addEvent(ei,
+                         !sendInvitations, false,
+                         true);
       } else {
-        ur = svci.getEventsHandler().update(ei,
-                                            !sendInvitations);
+        ur = cl.updateEvent(ei, !sendInvitations, null);
       }
 
       if ((ur != null) && (ur.schedulingResult != null)) {
@@ -566,17 +565,16 @@ public class UpdateEventAction extends EventActionBase {
 
       String aclStr = request.getReqPar("acl");
       if (aclStr != null) {
-        Acl acl = new AccessXmlUtil(null, svci).getAcl(aclStr, true);
+        Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
 
-        svci.changeAccess(ev, acl.getAces(), true);
+        cl.changeAccess(ev, acl.getAces(), true);
       }
     } catch (CalFacadeException cfe) {
-      svci.rollbackTransaction();
+      cl.rollback();
 
       if (CalFacadeException.noRecurrenceInstances.equals(cfe.getMessage())) {
         form.getErr().emit(ClientError.noRecurrenceInstances,
                            ev.getUid());
-        svci.rollbackTransaction();
         return forwardValidationError;
       }
 
@@ -605,13 +603,13 @@ public class UpdateEventAction extends EventActionBase {
       Collection<BwCategory> evcats = ev.getCategories();
       if (evcats != null) {
         for (BwCategory cat: evcats) {
-          svci.getPrefsHandler().updateAdminPrefs(false, null, cat, null, null);
+          cl.updateAdminPrefs(false, null, cat, null, null);
         }
       }
 
-      svci.getPrefsHandler().updateAdminPrefs(false, evCol, null,
-                                              ev.getLocation(),
-                                              ev.getContact());
+      cl.updateAdminPrefs(false, evCol, null,
+                          ev.getLocation(),
+                          ev.getContact());
 
       resetEvent(form);
     } else {
@@ -672,13 +670,13 @@ public class UpdateEventAction extends EventActionBase {
       return cats;
     }
 
-    CalSvcI svci = request.getBwForm().fetchSvci();
+    Client cl = request.getBwForm().fetchClient();
 
     for (BwXproperty alias: aliases) {
       Collection<BwCalendar> cols = null;
 
       try {
-        cols = svci.getCalendarsHandler().decomposeVirtualPath(alias.getValue());
+        cols = cl.decomposeVirtualPath(alias.getValue());
       } catch (CalFacadeException cfe) {
         request.getErr().emit(ClientError.unknownCalendar, alias);
       }
@@ -706,7 +704,7 @@ public class UpdateEventAction extends EventActionBase {
 
       while (curCol != null) {
         try {
-          curCol = svci.getCalendarsHandler().get(curCol.getColPath());
+          curCol = cl.getCollection(curCol.getColPath());
           if (curCol != null) {
             cats.addAll(curCol.getCategories());
           }
@@ -721,13 +719,12 @@ public class UpdateEventAction extends EventActionBase {
   }
 
   private void changeOwner(final BwEvent ev,
-                           final CalSvcI svci) throws CalFacadeException {
-    svci.getEventsHandler().claim(ev);
-    ev.setCreatorHref(svci.getPrincipal().getPrincipalRef());
+                           final Client cl) throws CalFacadeException {
+    cl.claimEvent(ev);
+    ev.setCreatorHref(cl.getCurrentPrincipalHref());
   }
 
-  private void copyEntities(final BwEvent ev,
-                            final CalSvcI svci) throws CalFacadeException {
+  private void copyEntities(final BwEvent ev) throws CalFacadeException {
     /* Copy event entities */
     BwLocation loc = ev.getLocation();
     if ((loc != null) && !loc.getPublick()) {
@@ -1004,8 +1001,8 @@ public class UpdateEventAction extends EventActionBase {
     sb.append("END:VEVENT\n" +
               "END:VCALENDAR\n");
 
-    CalSvcI svci = request.getBwForm().fetchSvci();
-    IcalTranslator trans = new IcalTranslator(svci.getIcalCallback());
+    Client cl = request.getBwForm().fetchClient();
+    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
     Icalendar c = trans.fromIcal(null, new StringReader(sb.toString()));
 
     BwEvent ev = c.getEventInfo().getEvent();

@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,6 +18,8 @@
 */
 package org.bedework.webcommon.misc;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.RecurringRetrievalMode;
@@ -25,7 +27,6 @@ import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.webcommon.BwAbstractAction;
@@ -65,7 +66,7 @@ public class ExportAction extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     String calPath = request.getReqPar("calPath");
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     EventInfo ev = null;
     Collection<EventInfo> evs = null;
@@ -93,7 +94,7 @@ public class ExportAction extends BwAbstractAction {
     } else {
       BwCalendar col = null;
       if (calPath != null) {
-        col = svci.getCalendarsHandler().get(calPath);
+        col = cl.getCollection(calPath);
         if (col == null) {
           return forwardNotFound;
         }
@@ -122,14 +123,14 @@ public class ExportAction extends BwAbstractAction {
         }
       }
 
-      FilterBase f = svci.getClientState().getViewFilter(col);
+      FilterBase f = cl.getViewFilter(col);
 
-      evs = svci.getEventsHandler().getEvents(null,
-                                              f,
-                                              tr.getStart(),
-                                              tr.getEnd(),
-                                              null, // retrieveList
-                                              rrm);
+      evs = cl.getEvents(null,
+                         f,
+                         tr.getStart(),
+                         tr.getEnd(),
+                         null, // retrieveList
+                         rrm);
 
       if (evs == null) {
         return forwardNotFound;
@@ -142,7 +143,7 @@ public class ExportAction extends BwAbstractAction {
       evs.add(ev);
     }
 
-    IcalTranslator trans = new IcalTranslator(svci.getIcalCallback());
+    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
     Calendar ical = trans.toIcal(evs, method);
 

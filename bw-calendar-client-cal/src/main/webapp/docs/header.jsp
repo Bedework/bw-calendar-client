@@ -148,12 +148,12 @@ try {
       <fetchCalendars><bw:rewrite actionURL="true" page="/calendar/fetchCalendars.do?b=de"/></fetchCalendars>
       <fetchForExport><bw:rewrite actionURL="true" page="/calendar/fetchForExport.do?b=de"/></fetchForExport>
     </calendar>
-    
+
     <sharing>
       <shareCollection><bw:rewrite actionURL="true" page="/sharing/sharecol.do?b=de"/></shareCollection>
       <reply><bw:rewrite actionURL="true" page="/sharing/reply.do?b=de"/></reply>
     </sharing>
-    
+
     <notifications>
       <remove><bw:rewrite actionURL="true" page="/notify/remove.do?b=de"/></remove>
       <removeTrans><bw:rewrite actionURL="true" page="/notify/removeTrans.do?b=de"/></removeTrans>
@@ -197,7 +197,7 @@ try {
         <selectCalForEvent><bw:rewrite resourceURL="true" page="/event/selectCalForEvent.gdo?b=de"/></selectCalForEvent>
         <requestFreeBusy><bw:rewrite resourceURL="true" page="/event/requestFreeBusy.gdo?b=de"/></requestFreeBusy>
       </event>
-      
+
       <widget>
         <attendees><bw:rewrite actionURL="true" page="/widget/attendees.do?b=de"/></attendees>
       </widget>
@@ -232,12 +232,12 @@ try {
         <setPropsInGrid><bw:rewrite actionURL="true" page="/calendar/setPropsInGrid.do?b=de"/></setPropsInGrid>
         <setPropsInList><bw:rewrite actionURL="true" page="/calendar/setPropsInList.do?b=de"/></setPropsInList>
       </calendar>
-      
+
       <sharing>
         <initAddSubscription><bw:rewrite actionURL="true" page="/sharing/initAddSubscription.do?b=de"/></initAddSubscription>
         <subscribe><bw:rewrite actionURL="true" page="/sharing/subscribe.do?b=de"/></subscribe>
       </sharing>
-      
+
       <category>
         <initAdd><bw:rewrite actionURL="true" page="/category/initAdd.do?b=de"/></initAdd>
         <initUpdate><bw:rewrite actionURL="true" page="/category/initUpdate.do?b=de"/></initUpdate>
@@ -273,7 +273,7 @@ try {
 
     </logic:equal>
   </urlPrefixes>
-  
+
   <%-- Begin Duke additions --%>
   <groups>
     <logic:iterate id="adminGroup" name="calForm" property="adminGroupsInfo" >
@@ -399,17 +399,17 @@ try {
         Used to branch into different presentation depending on the type of
         output we expect --%>
     <collection>
-      <logic:present name="calForm" property="clientState.currentCollection" >
-        <name><bean:write name="calForm" property="clientState.currentCollection.name"/></name>
-        <path><bean:write name="calForm" property="clientState.currentCollection.path"/></path>
+      <logic:present name="calForm" property="currentCollection" >
+        <name><bean:write name="calForm" property="currentCollection.name"/></name>
+        <path><bean:write name="calForm" property="currentCollection.path"/></path>
       </logic:present>
-      <logic:present name="calForm" property="clientState.virtualPath" >
-        <virtualpath><bean:write name="calForm" property="clientState.virtualPath"/></virtualpath>
+      <logic:present name="calForm" property="currentVirtualPath" >
+        <virtualpath><bean:write name="calForm" property="currentVirtualPath"/></virtualpath>
       </logic:present>
     </collection>
     <view>
-      <logic:present name="calForm" property="clientState.currentView" >
-        <name><bean:write name="calForm" property="clientState.currentView.name"/></name><%--
+      <logic:present name="calForm" property="currentView" >
+        <name><bean:write name="calForm" property="currentView.name"/></name><%--
           Value: string - Name of selected view for display --%>
       </logic:present>
     </view>
@@ -466,7 +466,7 @@ try {
       <bw:emitText name="dir" property="venuePrincipalRoot" />
     </logic:present>
   </syspars>
-  
+
   <logic:present name="calForm" property="imageUploadDirectory" >
     <bw:emitText name="calForm" property="imageUploadDirectory" />
   </logic:present>

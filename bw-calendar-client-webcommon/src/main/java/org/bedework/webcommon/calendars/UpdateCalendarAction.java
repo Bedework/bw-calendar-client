@@ -21,6 +21,7 @@ package org.bedework.webcommon.calendars;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.CalFacadeDefs;
@@ -83,6 +84,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
     }
 
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     boolean add = form.getAddingCalendar();
 
     BwCalendar cal = form.getCalendar();
@@ -110,7 +112,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
           return forwardContinue;
         }
 
-        svci.getCalendarsHandler().move(cal, newCal);
+        cl.moveCollection(cal, newCal);
         form.getMsg().emit(ClientMessage.updatedCalendar);
 
         return forwardContinue;
@@ -173,7 +175,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
       }
 
       try {
-        form.setCalendar(svci.getCalendarsHandler().add(cal, parentPath));
+        form.setCalendar(cl.addCollection(cal, parentPath));
       } catch (CalFacadeException cfe) {
         if (cfe.getMessage().equals(CalFacadeException.duplicateCalendar)) {
           form.getErr().emit(CalFacadeException.duplicateCalendar,
@@ -184,14 +186,14 @@ public class UpdateCalendarAction extends BwAbstractAction {
       }
       form.assignAddingCalendar(false);
     } else {
-      svci.getCalendarsHandler().update(cal);
+      cl.updateCollection(cal);
     }
 
     /* -------------------------- Access ------------------------------ */
 
     String aclStr = request.getReqPar("acl");
     if (aclStr != null) {
-      AccessXmlUtil axu = new AccessXmlUtil(null, svci);
+      AccessXmlUtil axu = new AccessXmlUtil(null, cl);
 
       Acl acl = axu.getAcl(aclStr, true);
 
@@ -229,7 +231,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
     }
 
     /* redo filters */
-    svci.getClientState().flush();
+    cl.flushState();
 
     return forwardContinue;
   }

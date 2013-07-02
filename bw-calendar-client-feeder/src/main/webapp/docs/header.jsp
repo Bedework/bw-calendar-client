@@ -252,7 +252,7 @@ try {
 
     </logic:equal>
   </urlPrefixes>
-  
+
   <%-- Begin Duke additions --%>
   <groups>
     <logic:iterate id="adminGroup" name="calForm" property="adminGroupsInfo" >
@@ -371,17 +371,17 @@ try {
         Used to branch into different presentation depending on the type of
         output we expect --%>
     <collection>
-      <logic:present name="calForm" property="clientState.currentCollection" >
-        <name><bean:write name="calForm" property="clientState.currentCollection.name"/></name>
-        <path><bean:write name="calForm" property="clientState.currentCollection.path"/></path>
+      <logic:present name="calForm" property="currentCollection" >
+        <name><bean:write name="calForm" property="currentCollection.name"/></name>
+        <path><bean:write name="calForm" property="currentCollection.path"/></path>
       </logic:present>
-      <logic:present name="calForm" property="clientState.virtualPath" >
-        <virtualpath><bean:write name="calForm" property="clientState.virtualPath"/></virtualpath>
+      <logic:present name="calForm" property="currentVirtualPath" >
+        <virtualpath><bean:write name="calForm" property="currentVirtualPath"/></virtualpath>
       </logic:present>
     </collection>
     <view>
-      <logic:present name="calForm" property="clientState.currentView" >
-        <name><bean:write name="calForm" property="clientState.currentView.name"/></name><%--
+      <logic:present name="calForm" property="currentView" >
+        <name><bean:write name="calForm" property="currentView.name"/></name><%--
           Value: string - Name of selected view for display --%>
       </logic:present>
     </view>

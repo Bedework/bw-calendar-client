@@ -34,6 +34,7 @@ import org.bedework.appcommon.SelectId;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.WeekView;
 import org.bedework.appcommon.YearView;
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
@@ -66,7 +67,6 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.ClientStateI;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.calsvci.SysparsI;
 import org.bedework.icalendar.RecurRuleComponents;
@@ -168,6 +168,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private boolean publicView;
 
   private CalSvcI calsvci;
+  private Client client;
 
   private String[] yearVals;
   private static final int numYearVals = 10;
@@ -1778,8 +1779,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String getCalendarUserAddress() {
     try {
-      CalSvcI svc = fetchSvci();
-      return svc.getDirectories().principalToCaladdr(svc.getPrincipal());
+      return client.getCurrentCalendarAddress();
     } catch (Throwable t) {
       getErr().emit(t);
       return "**error**";
@@ -1842,6 +1842,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public CalSvcI fetchSvci() {
     return calsvci;
+  }
+
+  /**
+   * @param val a client object
+   */
+  public void setClient(final Client val) {
+    client = val;
+  }
+
+  /**
+   * @return a client object
+   */
+  public Client fetchClient() {
+    return client;
   }
 
   /** Set flag to show if this user has any admin rights.
@@ -2262,29 +2276,33 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
       switch (curViewPeriod) {
       case BedeworkDefs.todayView:
-        setCurTimeView(new DayView(getErr(),
-                                   viewMcDate, fetchSvci(),
-                                   publicView, filter));
+        setCurTimeView(new DayView(fetchClient(),
+                                   getErr(),
+                                   viewMcDate,
+                                   filter));
         break;
       case BedeworkDefs.dayView:
-        setCurTimeView(new DayView(getErr(),
-                                   viewMcDate, fetchSvci(),
-                                   publicView, filter));
+        setCurTimeView(new DayView(fetchClient(),
+                                   getErr(),
+                                   viewMcDate,
+                                   filter));
         break;
       case BedeworkDefs.weekView:
-        setCurTimeView(new WeekView(getErr(),
-                                    viewMcDate, fetchSvci(),
-                                    publicView, filter));
+        setCurTimeView(new WeekView(fetchClient(),
+                                    getErr(),
+                                    viewMcDate,
+                                    filter));
         break;
       case BedeworkDefs.monthView:
-        setCurTimeView(new MonthView(getErr(),
-                                     viewMcDate, fetchSvci(),
-                                     publicView, filter));
+        setCurTimeView(new MonthView(fetchClient(),
+                                     getErr(),
+                                     viewMcDate,
+                                     filter));
         break;
       case BedeworkDefs.yearView:
-        setCurTimeView(new YearView(getErr(),
-                                    viewMcDate, fetchSvci(),
-                                    publicView,
+        setCurTimeView(new YearView(fetchClient(),
+                                    getErr(),
+                                    viewMcDate,
                        getShowYearData(), filter));
         break;
       }
@@ -2366,13 +2384,35 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     }
   }
 
-  /** Get the current client state
+  /** Get the current collection from the client state
    *
-   * @return ClientState object  object or null for all events
+   * @return BwCalendar object  object or null for all events
    */
-  public ClientStateI getClientState() {
+  public BwCalendar getCurrentCollection() {
+    return null; // clientState always returns null
+  }
+
+  /** Get the current virtual path from the client state
+   *
+   * @return BwCalendar object  object or null for all events
+   */
+  public String getCurrentVirtualPath() {
     try {
-      return fetchSvci().getClientState();
+      return client.getVirtualPath();
+    } catch (Throwable t) {
+      err.emit(t);
+      return null;
+    }
+  }
+
+  /** Get the current view we have set
+   *
+   * @return BwView    named Collection of Collections or null for default
+   * @throws CalFacadeException
+   */
+  public BwView getCurrentView() throws CalFacadeException {
+    try {
+      return client.getCurrentView();
     } catch (Throwable t) {
       err.emit(t);
       return null;
@@ -3504,10 +3544,15 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public EventDates getEventDates() {
     if (eventDates == null) {
-      eventDates = new EventDates(fetchSvci(), getCalInfo(),
-                                  getHour24(), getEndDateType(),
-                                  config.getMinIncrement(),
-                                  err);
+      try {
+        eventDates = new EventDates(fetchClient().getCurrentPrincipalHref(),
+                                    getCalInfo(),
+                                    getHour24(), getEndDateType(),
+                                    config.getMinIncrement(),
+                                    err);
+      } catch (Throwable t) {
+        err.emit(t);
+      }
     }
 
     return eventDates;
@@ -4111,7 +4156,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
               (getEvent() != null) &&
               (getEvent().getCategories() != null)) {
             for (BwCategory cat: getEvent().getCategories()) {
-              if (!cat.getOwnerHref().equals(fetchSvci().getPrincipal())) {
+              if (!cat.getOwnerHref().equals(client.getCurrentPrincipalHref())) {
                 vals.add(cat);
               }
             }
@@ -4153,7 +4198,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
             BwLocation loc = getEvent().getLocation();
 
             if ((loc != null) &&
-                (!loc.getOwnerHref().equals(fetchSvci().getPrincipal()))) {
+                (!loc.getOwnerHref().equals(client.getCurrentPrincipalHref()))) {
               vals.add(loc);
             }
           }

@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.webcommon.BwActionFormBase;
@@ -77,7 +78,7 @@ public class EventListParsAction extends EventActionBase {
         return forwardNull;
       }
 
-      IcalTranslator trans = new IcalTranslator(form.fetchSvci().getIcalCallback());
+      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(form.fetchClient()));
 
       Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
 

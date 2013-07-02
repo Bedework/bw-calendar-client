@@ -19,9 +19,10 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.EventFormatter;
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.webcommon.BwActionFormBase;
@@ -64,7 +65,7 @@ public class RenderEventAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     BwEvent ev = ei.getEvent();
 
     // Not export - just set up for display
@@ -77,8 +78,8 @@ public class RenderEventAction extends EventActionBase {
       form.setRruleComponents(null);
     }
 
-    EventFormatter ef = new EventFormatter(svc,
-                                           new IcalTranslator(svc.getIcalCallback()),
+    EventFormatter ef = new EventFormatter(cl,
+                                           new IcalTranslator(new IcalCallbackcb(cl)),
                                            ei);
 
     form.setCurEventFmt(ef);
@@ -119,7 +120,7 @@ public class RenderEventAction extends EventActionBase {
 
     if (ev.getScheduleMethod() != ScheduleMethods.methodTypeNone) {
       // Assume we need the collection containing the meeting
-      form.setMeetingCal(svc.getCalendarsHandler().get(ev.getColPath()));
+      form.setMeetingCal(cl.getCollection(ev.getColPath()));
     }
 
     return forwardSuccess;

@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,13 +18,13 @@
 */
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 
 import edu.rpi.cmt.access.Acl.CurrentAccess;
 
@@ -37,7 +37,7 @@ import java.util.Collection;
  *  @version 1.0
  */
 public class InOutBoxInfo implements Serializable {
-  private CalSvcI svci;
+  private Client cl;
 
   private boolean inbox; // false for outbox.
 
@@ -58,13 +58,13 @@ public class InOutBoxInfo implements Serializable {
 
   /** Constructor
    *
-   * @param svci
+   * @param cl
    * @param inbox  boolean
    * @throws CalFacadeException
    */
-  public InOutBoxInfo(CalSvcI svci,
-                      boolean inbox) throws CalFacadeException {
-    this.svci = svci;
+  public InOutBoxInfo(final Client cl,
+                      final boolean inbox) throws CalFacadeException {
+    this.cl = cl;
     this.inbox = inbox;
 
     refresh(true);
@@ -83,7 +83,7 @@ public class InOutBoxInfo implements Serializable {
       calType = BwCalendar.calTypeOutbox;
     }
 
-    BwCalendar cal = svci.getCalendarsHandler().getSpecial(calType, false);
+    BwCalendar cal = cl.getSpecial(calType, false);
 
     if (cal == null) {
       // Cannot go away - never existed - no change.
@@ -107,12 +107,12 @@ public class InOutBoxInfo implements Serializable {
     // XXX need to be able to store and retrieve other types of info.
 
     RecurringRetrievalMode rrm =
-      new RecurringRetrievalMode(Rmode.overrides);
-    Collection<EventInfo> evs = svci.getEventsHandler().getEvents(cal,
-                                                                  null, null,
-                                                                  null,
-                                                                  null, // retrieveList
-                                                                  rrm);
+            new RecurringRetrievalMode(Rmode.overrides);
+    Collection<EventInfo> evs = cl.getEvents(cal,
+                                             null, null,
+                                             null,
+                                             null, // retrieveList
+                                             rrm);
     numActive = 0;
     numProcessed = 0;
 
@@ -124,7 +124,7 @@ public class InOutBoxInfo implements Serializable {
       }
     }
 
-    events = new FormattedEvents(svci, evs);
+    events = new FormattedEvents(cl, evs);
     changed = true;
   }
 

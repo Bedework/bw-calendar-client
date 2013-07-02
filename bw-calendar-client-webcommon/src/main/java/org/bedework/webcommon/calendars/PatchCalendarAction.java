@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,8 +18,8 @@
 */
 package org.bedework.webcommon.calendars;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -58,7 +58,7 @@ public class PatchCalendarAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     boolean changed = false;
 
     BwCalendar cal = request.getCalendar(false);
@@ -76,10 +76,10 @@ public class PatchCalendarAction extends BwAbstractAction {
     }
 
     if (changed) {
-      svci.getCalendarsHandler().update(cal);
+      cl.updateCollection(cal);
     }
 
-    svci.getClientState().flush();
+    cl.flushState();
 
     return forwardContinue;
   }

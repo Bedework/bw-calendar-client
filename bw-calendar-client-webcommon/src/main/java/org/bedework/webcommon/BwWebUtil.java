@@ -19,6 +19,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.CheckData;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
@@ -64,6 +65,10 @@ public class BwWebUtil {
   /** Name of the session attribute holding our calendar interface
    */
   public static final String sessCalSvcIAttr = "org.bedework.calsvci";
+
+  /** Name of the session attribute holding our calendar interface
+   */
+  public static final String sessClientAttr = "org.bedework.client";
 
   /** Try to get the session state object  embedded in
    *  the current session.
@@ -184,6 +189,73 @@ public class BwWebUtil {
     }
   }
 
+  /** Try to get the Client object  embedded in
+   *  the current session.
+   *
+   * @param request  Needed to locate session
+   * @return Client  null on failure
+   */
+  public static Client getClient(final HttpServletRequest request) {
+    return getClient(request.getSession(false));
+  }
+
+  /** Drop the Client object  embedded in
+   *  the current session.
+   *
+   * @param request  Needed to locate session
+   */
+  public static void dropClient(final HttpServletRequest request) {
+    dropClient(request.getSession(false));
+  }
+
+  /** Try to get the Client object  embedded in
+   *  the given session.
+   *
+   * @param sess
+   * @return Client  null on failure
+   */
+  public static Client getClient(final HttpSession sess) {
+    if (sess == null) {
+      noSession();
+    }
+
+    Object o = sess.getAttribute(sessClientAttr);
+    if ((o != null) && (o instanceof Client)) {
+      return (Client)o;
+    }
+
+    return null;
+  }
+
+  /** Drop the Client object embedded in
+   *  the given session.
+   *
+   * @param sess
+   */
+  public static void dropClient(final HttpSession sess) {
+    if (sess == null) {
+      return;
+    }
+
+    sess.removeAttribute(sessClientAttr);
+  }
+
+  /** Set the Client object into the current session.
+   *
+   * @param request        HttpServletRequest Needed to locate session
+   * @param cl           Client object
+   */
+  public static void setClient(final HttpServletRequest request,
+                                final Client cl) {
+    HttpSession sess = request.getSession(false);
+
+    if (sess != null) {
+      sess.setAttribute(sessClientAttr, cl);
+    } else {
+      noSession();
+    }
+  }
+
   /** Validate the date properties of the event.
    *
    * @param form
@@ -193,7 +265,6 @@ public class BwWebUtil {
    */
   public static boolean validateEventDates(final BwActionFormBase form,
                                            final EventInfo ei) throws CalFacadeException {
-    CalSvcI svc = form.fetchSvci();
     BwEvent ev = ei.getEvent();
     boolean ok = true;
 
@@ -227,7 +298,7 @@ public class BwWebUtil {
       /* This calculates the duration etc. We need to merge this in with the
        * EventDates stuff as we are setting things twice
        */
-      IcalUtil.setDates(svc.getPrincipal().getPrincipalRef(),
+      IcalUtil.setDates(form.fetchClient().getCurrentPrincipalHref(),
                         ei, start, end, dur);
     }
 
@@ -236,14 +307,14 @@ public class BwWebUtil {
 
   /** Validate the properties of the event.
    *
-   * @param svci
+   * @param cl - for system properties
    * @param prePublish - a public event being submitted or updated before publish
    * @param publicAdmin
    * @param ev
    * @return  null for OK, validation errors otherwise.
    * @throws CalFacadeException
    */
-  public static List<ValidationError> validateEvent(final CalSvcI svci,
+  public static List<ValidationError> validateEvent(final Client cl,
                                                     final boolean prePublish,
                                                     final boolean publicAdmin,
                                                     final BwEvent ev)
@@ -261,7 +332,7 @@ public class BwWebUtil {
     }
 
     /* ------------- Check summary and description ------------------ */
-    SystemProperties syspars = svci.getSystemProperties();
+    SystemProperties syspars = cl.getSystemProperties();
     int maxDescLen;
     if (publicAdmin || prePublish) {
       maxDescLen = syspars.getMaxPublicDescriptionLength();
@@ -334,7 +405,7 @@ public class BwWebUtil {
 
     if (ev.getNumRecipients() > 0) {
       for (String recip: ev.getRecipients()) {
-        if (!validateUserHref(svci, recip)) {
+        if (!validateUserHref(cl, recip)) {
           ves = addError(ves, ValidationError.invalidRecipient, recip);
         }
       }
@@ -342,7 +413,7 @@ public class BwWebUtil {
 
     if (ev.getNumAttendees() > 0) {
       for (BwAttendee att: ev.getAttendees()) {
-        if (!validateUserHref(svci, att.getAttendeeUri())) {
+        if (!validateUserHref(cl, att.getAttendeeUri())) {
           ves = addError(ves, ValidationError.invalidAttendee,
                          att.getAttendeeUri());
         }
@@ -351,7 +422,7 @@ public class BwWebUtil {
 
     BwOrganizer org = ev.getOrganizer();
     if (org != null) {
-      if (!validateUserHref(svci, org.getOrganizerUri())) {
+      if (!validateUserHref(cl, org.getOrganizerUri())) {
         ves = addError(ves, ValidationError.invalidOrganizer,
                  org.getOrganizerUri());
       }
@@ -382,20 +453,20 @@ public class BwWebUtil {
    * <p>If it's external to the system we just accept it. If it's internal we
    * require it be a valid user account.
    *
-   * @param svci
-   * @param href
+   * @param cl - client
+   * @param href of possible principal
    * @return boolean true for ok
    * @throws CalFacadeException
    */
-  public static boolean validateUserHref(final CalSvcI svci,
+  public static boolean validateUserHref(final Client cl,
                                          final String href) throws CalFacadeException {
-    AccessPrincipal p = svci.getDirectories().caladdrToPrincipal(href);
+    AccessPrincipal p = cl.calAddrToPrincipal(href);
 
     if (p == null) {
       return true; // External user.
     }
 
-    return svci.getDirectories().validPrincipal(p.getPrincipalRef());
+    return cl.validPrincipal(p.getPrincipalRef());
   }
 
   /** */

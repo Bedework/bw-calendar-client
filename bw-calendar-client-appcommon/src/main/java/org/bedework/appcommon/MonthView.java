@@ -19,9 +19,9 @@
 
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calsvci.CalSvcI;
 
 import edu.rpi.sss.util.log.MessageEmit;
 
@@ -33,20 +33,18 @@ import edu.rpi.sss.util.log.MessageEmit;
 public class MonthView extends TimeView {
   /** Constructor:
    *
+   * @param  cl        Client interface
    * @param err - for error messages
    * @param  curDay    MyCalendarVO representing current day.
-   * @param  cal       CalSvcI calendar service interface
-   * @param  publicView  boolean true if this is for public events
    * @param  filter    non-null to filter the results.
    * @throws CalFacadeException
    */
-  public MonthView(final MessageEmit err,
+  public MonthView(final Client cl,
+                   final MessageEmit err,
                    final MyCalendarVO curDay,
-                   final CalSvcI cal,
-                   final boolean publicView,
                    final FilterBase filter) throws CalFacadeException {
-    super(err,
-          curDay.getCalendar(), "Month", cal,
+    super(cl, err,
+          curDay.getCalendar(), "Month",
           CalendarInfo.getInstance().getFirstDayOfThisMonth(curDay.getCalendar().getTimeZone(),
                                                             curDay.getCalendar().getTime()),
           CalendarInfo.getInstance().getLastDayOfThisMonth(curDay.getCalendar().getTimeZone(),
@@ -54,7 +52,6 @@ public class MonthView extends TimeView {
           curDay.getPrevMonth().getDateDigits(),
           curDay.getNextMonth().getDateDigits(),
           true,  // showdata
-          publicView,
           filter);
   }
 }

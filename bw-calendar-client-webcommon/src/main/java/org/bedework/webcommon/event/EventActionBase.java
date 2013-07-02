@@ -22,7 +22,8 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.SelectId;
-import org.bedework.caldav.util.filter.FilterBase;
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwContact;
@@ -41,7 +42,6 @@ import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
-import org.bedework.calsvc.indexing.BwIndexer;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
@@ -66,8 +66,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.xml.ws.Holder;
-
 /** Common base class fro some or all event actions.
  *
  * @author douglm
@@ -83,107 +81,48 @@ public abstract class EventActionBase extends BwAbstractAction {
   public Collection<EventInfo> getEventsList(final BwActionFormBase form) throws Throwable {
     form.assignAddingEvent(false);
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     EventListPars elpars = form.getEventListPars();
     if (elpars == null) {
       return null;
     }
 
-    /* See if we can use the indexed version */
+    int pos = 0;
+    int pageSize = -1;    // Give me all
 
-    boolean publicIndex = getPublicAdmin(form) | form.getPublicView();
-    BwIndexer idx = svci.getIndexingHandler().getIndexer(publicIndex,
-                                                         svci.getPrincipal().getPrincipalRef());
-
-    FilterBase f = FilterBase.addAndChild(elpars.getFilter(),
-                                          svci.getClientState().getViewFilter(elpars.getCollection()));
-
-    if (!elpars.getUseDbSearch() && !elpars.getForExport() && idx.isFetchEnabled()) {
-      // Fetch from the index.
-
-      String from = null;
-      String to = null;
-
-      if (elpars.getFromDate() !=null) {
-        from = elpars.getFromDate().getDate();
+    if (elpars.getPaged()) {
+      pos = elpars.getCurPage() - 1;
+      if (pos < 0) {
+        pos = 0;
       }
 
-      if (elpars.getToDate() !=null) {
-        to = elpars.getToDate().getDate();
-      }
-
-      Holder<Integer> resSz = new Holder<Integer>();
-
-      /*
-       *         form.setResultStart(0);
-        form.setResultCt(pageSize);
-       */
-
-      int pos = 0;
-      int pageSize = -1;    // Give me all
-
-      if (elpars.getPaged()) {
-        pos = elpars.getCurPage() - 1;
-        if (pos < 0) {
-          pos = 0;
-        }
-
-        pageSize = elpars.getPageSize();
-        pos *= pageSize;
-      }
-
-      Collection<EventInfo> events = idx.fetch(f,
-                                               from,
-                                               to,
-                                               resSz,
-                                               pos,
-                                               pageSize);
-
-      if (resSz.value != null) {
-        elpars.setResultSize(resSz.value);
-        elpars.setNumPages((((resSz.value + pageSize) - 1) / pageSize));
-      } else if (!Util.isEmpty(events)) {
-        elpars.setResultSize(resSz.value);
-        elpars.setNumPages(0);
-      } else {
-        elpars.setResultSize(resSz.value);
-        elpars.setNumPages(0);
-      }
-
-      form.setResultSize(elpars.getResultSize());
-      form.setNumPages(elpars.getNumPages());
-
-      int count = 0;
-      if (!Util.isEmpty(events)) {
-        count = events.size();
-      }
-
-      /* We need to implant categories etc */
-
-      svci.getEventsHandler().implantEntities(events);
-
-      if (debug) {
-        debugMsg("Used indexer to retrieve " + count + " events");
-      }
-
-      return events;
+      pageSize = elpars.getPageSize();
+      pos *= pageSize;
     }
 
-    elpars.setPaged(false);
+    Client.GetEventsResult ger = cl.getEvents(elpars.getFromDate(),
+                                              elpars.getToDate(),
+                                              elpars.getFilter(),
+                                              elpars.getForExport(),
+                                              elpars.getUseDbSearch(),
+                                              pos,
+                                              pageSize);
 
-    RecurringRetrievalMode rrm;
-    if (elpars.getForExport()) {
-      rrm = new RecurringRetrievalMode(Rmode.overrides);
+    elpars.setResultSize((int)ger.getCount());
+
+    if (ger.getPaged()) {
+      elpars.setNumPages(
+              (int)(((ger.getCount() + pageSize) - 1) / pageSize));
     } else {
-      rrm = new RecurringRetrievalMode(Rmode.expanded);
+      elpars.setNumPages(0);
+      elpars.setPaged(false);
     }
 
-    return svci.getEventsHandler().getEvents((BwCalendar)null,
-                                             f,
-                                             elpars.getFromDate(),
-                                             elpars.getToDate(),
-                                             null, // retrieveList
-                                             rrm);
+    form.setResultSize(elpars.getResultSize());
+    form.setNumPages(elpars.getNumPages());
+
+    return ger.getEvents();
   }
 
   /** Given the EventInfo object refresh the information in the form.
@@ -202,7 +141,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     BwEvent ev = ei.getEvent();
 
     form.setEventInfo(ei);
@@ -227,7 +166,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     form.setEventStatus(ev.getStatus());
 
     if (!request.setEventCalendar(ei,
-                                  ei.getChangeset(svc.getPrincipal().getPrincipalRef()))) {
+                                  ei.getChangeset(cl.getCurrentPrincipalHref()))) {
       return forwardNoAction;
     }
 
@@ -259,15 +198,15 @@ public abstract class EventActionBase extends BwAbstractAction {
       form.setRruleComponents(null);
     }
 
-    EventFormatter ef = new EventFormatter(svc,
-                                           new IcalTranslator(svc.getIcalCallback()),
+    EventFormatter ef = new EventFormatter(cl,
+                                           new IcalTranslator(new IcalCallbackcb(cl)),
                                            ei);
 
     form.setCurEventFmt(ef);
 
     if (ev.getScheduleMethod() != ScheduleMethods.methodTypeNone) {
       // Assume we need a list of event calendars
-      form.setMeetingCal(svc.getCalendarsHandler().get(ev.getColPath()));
+      form.setMeetingCal(cl.getCollection(ev.getColPath()));
     }
 
     Collection<BwDateTime> dates = ev.getRdates();
@@ -645,16 +584,17 @@ public abstract class EventActionBase extends BwAbstractAction {
   /** Validate the location provided for an event and embed it in the event and
    * the form.
    *
-   * @param form
-   * @param event
+   * @param form the struts form
+   * @param ei event object
    * @return boolean  true OK, false not OK and message(s) emitted.
    * @throws Throwable
    */
   protected boolean adminEventLocation(final BwActionFormBase form,
                                        final EventInfo ei) throws Throwable {
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     BwEvent event = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(svci.getPrincipal().getPrincipalRef());
+    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     if (!form.retrieveLocId().getChanged()) {
       /* The location id from the form didn't change so they didn't select from
@@ -668,7 +608,8 @@ public abstract class EventActionBase extends BwAbstractAction {
           return false;
         }
 
-        l = svci.getLocationsHandler().ensureExists(l, svci.getPrincipal().getPrincipalRef()).entity;
+        l = svci.getLocationsHandler().ensureExists(l,
+                                                    cl.getCurrentPrincipalHref()).entity;
 
         if (changes.changed(PropertyInfoIndex.LOCATION.getPname(),
                             event.getLocation(), l)) {
@@ -708,9 +649,8 @@ public abstract class EventActionBase extends BwAbstractAction {
   protected boolean setEventLocation(final EventInfo ei,
                                      final BwActionFormBase form,
                                      final boolean webSubmit) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
     BwEvent ev = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(svci.getPrincipal().getPrincipalRef());
+    ChangeTable changes = ei.getChangeset(form.fetchClient().getCurrentPrincipalHref());
 
     BwLocation loc = getLocation(form, ev.getOwnerHref(), webSubmit);
     BwLocation eloc = ev.getLocation();
@@ -742,20 +682,20 @@ public abstract class EventActionBase extends BwAbstractAction {
    */
   protected boolean setEventContact(final BwActionFormBase form,
                                     final boolean webSubmit) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     EventInfo ei = form.getEventInfo();
     BwEvent event = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(svci.getPrincipal().getPrincipalRef());
+    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     BwContact c = null;
     String owner = event.getOwnerHref();
 
     if (owner == null) {
-      owner = svci.getPrincipal().getPrincipalRef();
+      owner = cl.getCurrentPrincipalHref();
     }
 
     if (!form.retrieveCtctId().getChanged()) {
-      /* Didn't select from list. Do  we allow auto-creat */
+      /* Didn't select from list. Do  we allow auto-create */
       if (form.getConfig().getAutoCreateContacts()) {
         c = form.getContact();
 
@@ -764,8 +704,7 @@ public abstract class EventActionBase extends BwAbstractAction {
           return false;
         }
 
-        c = svci.getContactsHandler().ensureExists(c, owner).entity;
-
+        c = cl.ensureContactExists(c, owner);
 
         if (changes.changed(PropertyInfoIndex.CONTACT.getPname(),
                             event.getContact(), c)) {
@@ -789,7 +728,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     if (uid != null) {
       try {
-        c = svci.getContactsHandler().get(uid);
+        c = cl.getContact(uid);
       } catch (Throwable t) {
         form.getErr().emit(t);
         return false;
@@ -963,6 +902,7 @@ public abstract class EventActionBase extends BwAbstractAction {
   public int initMeeting(final BwActionFormBase form,
                          final boolean freebusy) throws Throwable {
     CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     BwEvent ev = form.getEvent();
 
     if (ev.getScheduleMethod() == ScheduleMethods.methodTypeNone) {
@@ -973,7 +913,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       /* Set the organizer to us */
       BwOrganizer org = new BwOrganizer();
 
-      org.setOrganizerUri(svc.getDirectories().principalToCaladdr(svc.getPrincipal()));
+      org.setOrganizerUri(cl.getCurrentCalendarAddress());
 
       ev.setOrganizer(org);
       ev.setOrganizerSchedulingObject(true);
@@ -996,7 +936,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     if (Util.isEmpty(form.getEvent().getAttendees())) {
       // Add ourselves as an attendee
-      String uri = svc.getDirectories().principalToCaladdr(svc.getPrincipal());
+      String uri = cl.getCurrentCalendarAddress();
 
       int res = doAttendee(form,
                            false, false, true, true,
@@ -1047,7 +987,8 @@ public abstract class EventActionBase extends BwAbstractAction {
   protected boolean notifyEventReg(final EventInfo ei,
                                    final BwActionFormBase form) throws Throwable {
     CalSvcI svc = form.fetchSvci();
-    ChangeTable changes = ei.getChangeset(svc.getPrincipal().getPrincipalRef());
+    Client cl = form.fetchClient();
+    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     String evregToken = svc.getSystemProperties().getEventregAdminToken();
     String evregUrl = svc.getSystemProperties().getEventregUrl();

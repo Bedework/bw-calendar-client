@@ -1,0 +1,139 @@
+/* ********************************************************************
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License. You may obtain a
+    copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on
+    an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+*/
+package org.bedework.appcommon.client;
+
+import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwContact;
+import org.bedework.calfacade.BwLocation;
+import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.BwString;
+import org.bedework.calfacade.RecurringRetrievalMode;
+import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.icalendar.IcalCallback;
+import org.bedework.icalendar.URIgen;
+
+import java.util.Collection;
+
+/**
+ * User: douglm Date: 6/28/13 Time: 3:51 PM
+ */
+public class IcalCallbackcb implements IcalCallback {
+  private int strictness = conformanceRelaxed;
+  private Client cl;
+
+  /**
+   * @param cl
+   */
+  public IcalCallbackcb(Client cl) {
+    this.cl = cl;
+  }
+
+  @Override
+  public void setStrictness(final int val) throws CalFacadeException {
+    strictness = val;
+  }
+
+  @Override
+  public int getStrictness() throws CalFacadeException {
+    return strictness;
+  }
+
+  @Override
+  public BwPrincipal getPrincipal() throws CalFacadeException {
+    return cl.getCurrentPrincipal();
+  }
+
+  @Override
+  public BwPrincipal getOwner() throws CalFacadeException {
+    return cl.getOwner();
+  }
+
+  @Override
+  public String getCaladdr(final String val) throws CalFacadeException {
+    return cl.getCalendarAddress(val);
+  }
+
+  @Override
+  public BwCategory findCategory(final BwString val) throws CalFacadeException {
+    return cl.getCategoryByName(val);
+  }
+
+  @Override
+  public void addCategory(final BwCategory val) throws CalFacadeException {
+    cl.addCategory(val);
+  }
+
+  @Override
+  public BwContact getContact(final String uid) throws CalFacadeException {
+    return cl.getContact(uid);
+  }
+
+  @Override
+  public BwContact findContact(final BwString val) throws CalFacadeException {
+    return cl.findContact(val);
+  }
+
+  @Override
+  public void addContact(final BwContact val) throws CalFacadeException {
+    cl.addContact(val);
+  }
+
+  @Override
+  public BwLocation getLocation(final String uid) throws CalFacadeException {
+    return cl.getLocation(uid);
+  }
+
+  /* (non-Javadoc)
+   * @see org.bedework.icalendar.IcalCallback#findLocation(org.bedework.calfacade.BwString)
+   */
+  @Override
+  public BwLocation findLocation(final BwString address) throws CalFacadeException {
+    return cl.findLocation(address);
+  }
+
+  /* (non-Javadoc)
+   * @see org.bedework.icalendar.IcalCallback#addLocation(org.bedework.calfacade.BwLocation)
+   */
+  @Override
+  public void addLocation(final BwLocation val) throws CalFacadeException {
+    cl.addLocation(val);
+  }
+
+  @Override
+  public Collection getEvent(final BwCalendar cal,
+                             final String guid,
+                             final String rid,
+                             final RecurringRetrievalMode recurRetrieval)
+          throws CalFacadeException {
+    return cl.getEvent(cal.getPath(), guid,
+                       rid, recurRetrieval, false);
+  }
+
+  @Override
+  public URIgen getURIgen() throws CalFacadeException {
+    return null;
+  }
+
+  @Override
+  public boolean getTimezonesByReference() throws CalFacadeException {
+    return cl.getSystemProperties().getTimezonesByReference();
+  }
+}
+

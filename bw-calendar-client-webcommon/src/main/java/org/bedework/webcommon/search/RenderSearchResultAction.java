@@ -20,6 +20,8 @@
 package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.EventFormatter;
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calsvci.BwIndexSearchResultEntry;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
@@ -48,6 +50,7 @@ public class RenderSearchResultAction extends RenderAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     int start = form.getResultStart();
     int count = form.getResultCt();
@@ -69,11 +72,11 @@ public class RenderSearchResultAction extends RenderAction {
       svci.getIndexingHandler().getSearchResult(start, count, limits);
     Collection<SearchResultEntry> sres = new ArrayList<SearchResultEntry>();
 
-    IcalTranslator trans = new IcalTranslator(svci.getIcalCallback());
+    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
     for (BwIndexSearchResultEntry sre: sr) {
       if (sre.getEvent() != null) {
-        EventFormatter ev = new EventFormatter(svci, trans, sre.getEvent());
+        EventFormatter ev = new EventFormatter(cl, trans, sre.getEvent());
         sres.add(new SearchResultEntry(ev, sre.getScore()));
 
       } else {

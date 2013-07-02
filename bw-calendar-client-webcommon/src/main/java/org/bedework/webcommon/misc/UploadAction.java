@@ -21,6 +21,7 @@ package org.bedework.webcommon.misc;
 import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
@@ -229,6 +230,7 @@ public class UploadAction extends BwAbstractAction {
                                     final BwCalendar cal,
                                     final boolean stripAlarms) throws Throwable {
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     // Scheduling method - should contain a single entity
 
@@ -257,7 +259,7 @@ public class UploadAction extends BwAbstractAction {
         return forwardRetry;
       }
 
-      String userUri = svci.getDirectories().principalToCaladdr(svci.getPrincipal());
+      String userUri = cl.getCurrentCalendarAddress();
 
       boolean isOrganizer = userUri.equals(org.getOrganizerUri());
       ev.setOrganizerSchedulingObject(isOrganizer);
@@ -266,7 +268,6 @@ public class UploadAction extends BwAbstractAction {
       //ev.setOriginator(org.getOrganizerUri());
 
       ev.setScheduleMethod(ic.getMethodType());
-      ev.updateStag(svci.getCurrentTimestamp());
 
       /* Make up a unique name for the event. */
       ev.setName(ev.getUid() + ".ics");

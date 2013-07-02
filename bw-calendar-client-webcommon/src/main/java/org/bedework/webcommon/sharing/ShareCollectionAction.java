@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.sharing;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.sharing.AccessType;
 import org.bedework.caldav.util.sharing.RemoveType;
 import org.bedework.caldav.util.sharing.SetType;
@@ -78,6 +79,7 @@ public class ShareCollectionAction extends BwAbstractAction {
     //}
 
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     BwCalendar col = request.getCollection(false);
     if (col == null) {
@@ -90,7 +92,7 @@ public class ShareCollectionAction extends BwAbstractAction {
       return forwardRetry;
     }
 
-    String calAddr = svci.getDirectories().uriToCaladdr(cua);
+    String calAddr = cl.uriToCaladdr(cua);
     if (calAddr == null) {
       form.getErr().emit(ValidationError.invalidUser, cua);
       return forwardRetry;
@@ -122,11 +124,10 @@ public class ShareCollectionAction extends BwAbstractAction {
         // No more than read
         at.setRead(true);
       } else {
-        String userHref = svci.getPrincipal().getPrincipalRef();
-
         boolean readWrite = request.present("rw");
 
-        if (readWrite && !col.getOwnerHref().equals(userHref)) {
+        if (readWrite &&
+                !col.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
           readWrite = false;
         }
 
@@ -147,7 +148,7 @@ public class ShareCollectionAction extends BwAbstractAction {
       return forwardRetry;
     }
 
-    svci.getClientState().flush();
+    cl.flushState();
 
     return forwardContinue;
   }

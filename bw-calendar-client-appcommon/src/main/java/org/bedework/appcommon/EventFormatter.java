@@ -19,16 +19,15 @@
 
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.EventTimeZonesRegistry;
 import org.bedework.icalendar.IcalTranslator;
 
 import net.fortuna.ical4j.model.TimeZoneRegistry;
-
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -39,12 +38,12 @@ import java.util.Date;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class EventFormatter extends EventTimeZonesRegistry
-  implements TimeZoneRegistry, Serializable {
+        implements TimeZoneRegistry, Serializable {
   /** The event
    */
   private EventInfo eventInfo;
 
-  private CalSvcI svci;
+  private  Client cl;
 
   /** The view currently in place.
    */
@@ -66,17 +65,17 @@ public class EventFormatter extends EventTimeZonesRegistry
 
   /** Constructor
    *
-   * @param svci
+   * @param cl for callbacks
    * @param trans - will be synchronized so may be shared
    * @param eventInfo
    */
-  public EventFormatter(final CalSvcI svci,
+  public EventFormatter(final Client cl,
                         final IcalTranslator trans,
                         final EventInfo eventInfo) {
     super(trans,
           eventInfo.getEvent());
     this.eventInfo = eventInfo;
-    this.svci = svci;
+    this.cl = cl;
   }
 
   /** =====================================================================
@@ -98,8 +97,8 @@ public class EventFormatter extends EventTimeZonesRegistry
   }
 
   /** ===================================================================
-                      Convenience methods
-      =================================================================== */
+   Convenience methods
+   =================================================================== */
 
   /** Get today as a calendar object
    *
@@ -185,7 +184,7 @@ public class EventFormatter extends EventTimeZonesRegistry
     try {
       if (xmlAccess == null) {
         xmlAccess = AccessXmlUtil.getXmlAclString(eventInfo.getCurrentAccess().getAcl(),
-                                                  svci);
+                                                  cl);
       }
     } catch (Throwable t) {
       error(t);

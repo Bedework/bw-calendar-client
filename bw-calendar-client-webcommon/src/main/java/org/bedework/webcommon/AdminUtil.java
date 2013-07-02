@@ -19,6 +19,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
@@ -54,6 +55,7 @@ public class AdminUtil implements ForwardDefs {
 
     BwActionFormBase form = (BwActionFormBase)request.getForm();
     CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     UserAuth ua = svc.getUserAuth();
     BwAuthUser au = ua.getUser(form.getCurrentUser());
@@ -63,7 +65,7 @@ public class AdminUtil implements ForwardDefs {
       if (!form.getCurUserSuperUser()) {
         return forwardNoAccess;
       }
-      au = BwAuthUser.makeAuthUser(svc.getPrincipal().getPrincipalRef(),
+      au = BwAuthUser.makeAuthUser(cl.getCurrentPrincipalHref(),
                                    UserAuth.publicEventUser);
       ua.updateUser(au);
     }
@@ -89,7 +91,7 @@ public class AdminUtil implements ForwardDefs {
     }
 
     /** Show the owner we are administering */
-    form.setAdminUserId(form.fetchSvci().getPrincipal().getAccount());
+    form.setAdminUserId(cl.getCurrentAccount());
 
     if (debug) {
       logIt("-------- isSuperUser: " + form.getCurUserSuperUser());
@@ -234,7 +236,7 @@ public class AdminUtil implements ForwardDefs {
       return forwardNoAccess;
     }
 
-    form.setAdminUserId(form.fetchSvci().getPrincipal().getAccount());
+    form.setAdminUserId(form.fetchClient().getCurrentAccount());
 
     return forwardNoAction;
   }

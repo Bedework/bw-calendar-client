@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,11 +20,11 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -58,7 +58,7 @@ public class SetAlarmAction extends BwAbstractAction {
       return forwardNoAction;
     }
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     BwAlarm alarm = new BwAlarm();
 
@@ -107,15 +107,15 @@ public class SetAlarmAction extends BwAbstractAction {
 
     BwAttendee att = new BwAttendee();
 
-    att.setAttendeeUri(svci.getDirectories().userToCaladdr(recipient));
+    att.setAttendeeUri(cl.getCalendarAddress(recipient));
 
     alarm.addAttendee(att);
 
     alarm.setEvent(ev);
-    alarm.setOwnerHref(svci.getPrincipal().getPrincipalRef());
+    alarm.setOwnerHref(cl.getCurrentPrincipalHref());
 
     ev.addAlarm(alarm);
-    svci.getEventsHandler().update(new EventInfo(ev), true, null);
+    cl.updateEvent(new EventInfo(ev), true, null);
 
     form.getMsg().emit(ClientMessage.setAlarm);
 

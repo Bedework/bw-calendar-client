@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.calsvci.CalSvcI;
+import org.bedework.appcommon.client.Client;
 
 /** This is a no-op action
  *
@@ -34,9 +34,9 @@ public class NoopAction extends BwAbstractAction {
     if (form.getNewSession()) {
       form.refreshIsNeeded();
 
-      CalSvcI svc = form.fetchSvci();
+      Client cl = form.fetchClient();
 
-      String defViewMode = svc.getPrefsHandler().get().getDefaultViewMode();
+      String defViewMode = cl.getPreferences().getDefaultViewMode();
 
       if ("list".equals(defViewMode)) {
         /* Set up the event list parameters */

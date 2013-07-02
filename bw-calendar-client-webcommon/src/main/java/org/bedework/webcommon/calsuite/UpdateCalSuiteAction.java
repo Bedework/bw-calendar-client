@@ -19,6 +19,7 @@
 package org.bedework.webcommon.calsuite;
 
 import org.bedework.appcommon.AccessXmlUtil;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcI;
@@ -61,6 +62,7 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
     }
 
     CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     BwCalSuiteWrapper csw = form.getCalSuite();
 
@@ -93,9 +95,9 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
 
     String aclStr = request.getReqPar("acl");
     if (aclStr != null) {
-      Acl acl = new AccessXmlUtil(null, svc).getAcl(aclStr, true);
+      Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
 
-      svc.changeAccess(csw, acl.getAces(), true);
+      cl.changeAccess(csw, acl.getAces(), true);
     }
 
     /* -------------------------- Context ----------------------------- */

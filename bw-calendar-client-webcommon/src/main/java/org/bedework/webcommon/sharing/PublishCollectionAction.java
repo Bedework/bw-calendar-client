@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.sharing;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
@@ -57,6 +58,7 @@ public class PublishCollectionAction extends BwAbstractAction {
     //}
 
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     BwCalendar col = request.getCollection(false);
     if (col == null) {
@@ -71,7 +73,7 @@ public class PublishCollectionAction extends BwAbstractAction {
       svci.getSharingHandler().publish(col);
     }
 
-    svci.getClientState().flush();
+    cl.flushState();
 
     return forwardContinue;
   }

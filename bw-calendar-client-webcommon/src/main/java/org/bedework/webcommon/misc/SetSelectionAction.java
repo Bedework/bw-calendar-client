@@ -21,7 +21,6 @@ package org.bedework.webcommon.misc;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.svc.BwView;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -75,14 +74,13 @@ public class SetSelectionAction extends BwAbstractAction {
    */
   private int tryCal(final BwRequest request,
                      final BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
     String vpath = request.getReqPar("virtualPath");
 
     if (vpath == null) {
       return forwardNoAction;
     }
 
-    if (!svci.getClientState().setVirtualPath(vpath)) {
+    if (!form.fetchClient().setVirtualPath(vpath)) {
       form.getErr().emit(ClientError.badVpath, vpath);
       return forwardNoAction;
     }
@@ -104,7 +102,7 @@ public class SetSelectionAction extends BwAbstractAction {
       view.setName("--temp--");
       view.setCollectionPaths(vpaths);
       view.setConjunction(request.getBooleanReqPar("conjunction", false));
-      form.fetchSvci().getClientState().setCurrentView(view);
+      form.fetchClient().setCurrentView(view);
 
       form.setSelectionType(BedeworkDefs.selectionTypeView);
       form.refreshIsNeeded();

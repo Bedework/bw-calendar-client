@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.notifications;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
@@ -57,6 +58,7 @@ public class RemoveAction extends BwAbstractAction {
     }
 
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     NotificationsI notes = svci.getNotificationsHandler();
 
     NotificationType note = notes.find(request.getReqPar("name"));
@@ -79,7 +81,7 @@ public class RemoveAction extends BwAbstractAction {
     }
 
     form.setNotificationInfo(null); // force a refresh
-    svci.getClientState().flush();
+    cl.flushState();
 
     return forward;
   }

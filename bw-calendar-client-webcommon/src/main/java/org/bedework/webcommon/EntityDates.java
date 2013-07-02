@@ -20,7 +20,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.CalendarInfo;
-import org.bedework.calsvci.CalSvcI;
 
 import edu.rpi.sss.util.log.MessageEmit;
 
@@ -33,7 +32,7 @@ import java.io.Serializable;
  * This is the base class for entity specific classes.
  */
 public class EntityDates implements Serializable {
-  protected CalSvcI svci;
+  protected String principalHref;
   private CalendarInfo calInfo;
 
   protected boolean hour24;
@@ -48,16 +47,17 @@ public class EntityDates implements Serializable {
 
   /** Constructor
    *
-   * @param svci
+   * @param principalHref
    * @param calInfo
    * @param hour24
    * @param minIncrement
    * @param err
    */
-  public EntityDates(final CalSvcI svci, final CalendarInfo calInfo,
+  public EntityDates(final String principalHref,
+                     final CalendarInfo calInfo,
                      final boolean hour24, final int minIncrement,
                      final MessageEmit err) {
-    this.svci = svci;
+    this.principalHref = principalHref;
     this.calInfo = calInfo;
     this.hour24 = hour24;
     this.minIncrement = minIncrement;

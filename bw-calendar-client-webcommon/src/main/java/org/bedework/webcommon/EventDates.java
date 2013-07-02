@@ -29,7 +29,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
-import org.bedework.calsvci.CalSvcI;
 
 import edu.rpi.cmt.calendar.IcalDefs;
 import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
@@ -59,18 +58,19 @@ public class EventDates extends EntityDates implements ForwardDefs {
   private DurationBean duration;
 
   /**
-   * @param svci
+   * @param principalHref
    * @param calInfo
    * @param hour24
    * @param endTypeName
    * @param minIncrement
    * @param err
    */
-  public EventDates(final CalSvcI svci, final CalendarInfo calInfo,
+  public EventDates(final String principalHref,
+                    final CalendarInfo calInfo,
                     final boolean hour24, final String endTypeName,
                     final int minIncrement,
                     final MessageEmit err) {
-    super(svci, calInfo, hour24, minIncrement, err);
+    super(principalHref, calInfo, hour24, minIncrement, err);
 
     if (endTypeName != null) {
       if (BwPreferences.preferredEndTypeDuration.equals(endTypeName)) {
@@ -155,7 +155,7 @@ public class EventDates extends EntityDates implements ForwardDefs {
    */
   public int updateEvent(final EventInfo ei) throws Throwable {
     BwEvent ev = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(svci.getPrincipal().getPrincipalRef());
+    ChangeTable changes = ei.getChangeset(principalHref);
     int res = forwardNoAction;
 
     String endPname;

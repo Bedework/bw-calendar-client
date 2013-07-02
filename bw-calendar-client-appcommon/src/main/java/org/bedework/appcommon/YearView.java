@@ -19,9 +19,9 @@
 
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calsvci.CalSvcI;
 
 import edu.rpi.sss.util.log.MessageEmit;
 
@@ -33,10 +33,9 @@ import edu.rpi.sss.util.log.MessageEmit;
 public class YearView extends TimeView {
   /** Constructor:
    *
-   * @param err - for error messages
+   * @param  cl        Client interface
+   * @param  err - for error messages
    * @param  curDay    MyCalendarVO representing current day.
-   * @param  cal       CalSvcI calendar service interface
-   * @param  publicView  boolean true if this is for public events
    * @param  showData  boolean true if this TimeView can be used to
    *                   display events or if it is used for structure only.
    *                   For example we may use the year for navigation only
@@ -44,14 +43,13 @@ public class YearView extends TimeView {
    * @param  filter    non-null to filter the results.
    * @throws CalFacadeException
    */
-  public YearView(final MessageEmit err,
+  public YearView(final Client cl,
+                  final MessageEmit err,
                   final MyCalendarVO curDay,
-                  final CalSvcI cal,
-                  final boolean publicView,
                   final boolean showData,
                   final FilterBase filter) throws CalFacadeException {
-    super(err,
-          curDay.getCalendar(), "Year", cal,
+    super(cl, err,
+          curDay.getCalendar(), "Year",
           CalendarInfo.getInstance().getFirstDayOfThisYear(curDay.getCalendar().getTimeZone(),
                                                            curDay.getCalendar().getTime()),
           CalendarInfo.getInstance().getLastDayOfThisYear(curDay.getCalendar().getTimeZone(),
@@ -59,7 +57,6 @@ public class YearView extends TimeView {
           curDay.getPrevYear().getDateDigits(),
           curDay.getNextYear().getDateDigits(),
           showData,
-          publicView,
           filter);
   }
 }

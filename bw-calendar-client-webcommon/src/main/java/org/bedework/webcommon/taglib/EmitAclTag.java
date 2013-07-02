@@ -20,7 +20,7 @@
 package org.bedework.webcommon.taglib;
 
 import org.bedework.appcommon.AccessXmlUtil;
-import org.bedework.calsvci.CalSvcI;
+import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwWebUtil;
 
 import edu.rpi.cmt.access.Acl.CurrentAccess;
@@ -73,7 +73,7 @@ public class EmitAclTag extends NameScopePropertyTag {
       return null;
     }
 
-    CalSvcI svci = BwWebUtil.getCalSvcI(pageContext.getSession());
-    return AccessXmlUtil.getXmlAclString(ca.getAcl(), svci);
+    Client cl = BwWebUtil.getClient(pageContext.getSession());
+    return AccessXmlUtil.getXmlAclString(ca.getAcl(), cl);
   }
 }

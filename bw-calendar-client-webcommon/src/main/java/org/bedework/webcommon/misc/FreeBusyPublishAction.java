@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.misc;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwOrganizer;
@@ -71,6 +72,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     BwPrincipal principal = null;
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     gotoDateView(form, form.getDate(), form.getViewTypeI());
 
@@ -82,11 +84,11 @@ public class FreeBusyPublishAction extends BwAbstractAction {
     }
 
     if (cua != null) {
-      principal = svci.getDirectories().caladdrToPrincipal(cua);
+      principal = cl.calAddrToPrincipal(cua);
     } else if (userId != null) {
-      principal = svci.getUsersHandler().getUser(userId);
+      principal = cl.getUser(userId);
     } else if (!form.getGuest()) {
-      principal = svci.getPrincipal();
+      principal = cl.getCurrentPrincipal();
     }
 
     if (principal == null) {
@@ -139,7 +141,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
         cals.add(cal);
       }
 
-      String orgUri = svci.getDirectories().principalToCaladdr(svci.getPrincipal());
+      String orgUri = cl.getCurrentCalendarAddress();
       BwOrganizer org = new BwOrganizer();
       org.setOrganizerUri(orgUri);
 

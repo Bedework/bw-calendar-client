@@ -19,6 +19,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
@@ -276,7 +277,7 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public BwCalendar getNewCal(final boolean required) throws Throwable {
-    CalSvcI svci = getBwForm().fetchSvci();
+    Client cl = getBwForm().fetchClient();
 
     String newCalPath = getReqPar("newCalPath");
     BwCalendar newCal = null;
@@ -288,7 +289,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    newCal = svci.getCalendarsHandler().get(newCalPath);
+    newCal = cl.getCollection(newCalPath);
     if (newCal == null) {
       getErr().emit(ClientError.unknownCalendar, newCalPath);
       return null;
@@ -342,17 +343,17 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public Collection<BwCalendar> getCalendars() throws Throwable {
-    CalSvcI svci = getBwForm().fetchSvci();
+    Client cl = getBwForm().fetchClient();
 
     Collection<String> calPaths = getReqPars("calPath");
-    Collection<BwCalendar> cals = new ArrayList<BwCalendar>();
+    Collection<BwCalendar> cals = new ArrayList<>();
 
     if (calPaths == null) {
       return cals;
     }
 
     for (String calPath: calPaths) {
-      BwCalendar cal = svci.getCalendarsHandler().get(calPath);
+      BwCalendar cal = cl.getCollection(calPath);
 
       if (cal != null) {
         cals.add(cal);
@@ -408,7 +409,7 @@ public class BwRequest extends Request {
    */
   public BwCalendar getCalendar(final String reqParName,
                                 final boolean required) throws Throwable {
-    CalSvcI svci = getBwForm().fetchSvci();
+    Client cl = getBwForm().fetchClient();
 
     String calPath = getReqPar(reqParName);
 
@@ -420,7 +421,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    BwCalendar cal = svci.getCalendarsHandler().get(calPath);
+    BwCalendar cal = cl.getCollection(calPath);
 
     if (cal == null) {
       getErr().emit(ClientError.unknownCalendar, calPath);
@@ -475,7 +476,7 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public EventKey makeEventKey(boolean forExport) throws Throwable {
-    CalSvcI svci = getBwForm().fetchSvci();
+    Client cl = getBwForm().fetchClient();
 
     String calPath = getReqPar("calPath");
 
@@ -485,7 +486,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    BwCalendar cal = svci.getCalendarsHandler().get(calPath);
+    BwCalendar cal = cl.getCollection(calPath);
 
     if (cal == null) {
       // Assume no access

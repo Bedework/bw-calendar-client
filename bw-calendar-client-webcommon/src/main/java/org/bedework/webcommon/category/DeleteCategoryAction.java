@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,8 +20,8 @@ package org.bedework.webcommon.category;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calsvci.EventProperties;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -53,19 +53,19 @@ public class DeleteCategoryAction extends BwAbstractAction {
     form.setPropRefs(null);
 
     BwCategory key = form.getCategory();
-    EventProperties<BwCategory> cats = form.fetchSvci().getCategoriesHandler();
-    int delResult = cats.delete(key);
 
-    if (delResult == 2) {
-      form.setPropRefs(cats.getRefs(key));
+    Client.DeleteCategoryResult dcr = form.fetchClient().deleteCategory(key);
+
+    if (dcr == null) {
+      form.getErr().emit(ClientError.unknownCategory, key);
+      return forwardNotFound;
+    }
+
+    if (!dcr.getDeleted()) {
+      form.setPropRefs(dcr.getReferences());
 
       form.getErr().emit(ClientError.referencedCategory);
       return forwardInUse;
-    }
-
-    if (delResult == 1) {
-       form.getErr().emit(ClientError.unknownCategory, key);
-      return forwardNotFound;
     }
 
     form.getMsg().emit(ClientMessage.deletedCategory);

@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,10 +20,10 @@ package org.bedework.webcommon.category;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -50,7 +50,7 @@ public class UpdateCategoryAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     String reqpar = request.getReqPar("delete");
 
@@ -78,19 +78,23 @@ public class UpdateCategoryAction extends BwAbstractAction {
 
     if (add) {
       cat.setPublick(getPublicAdmin(form));
-      added = svci.getCategoriesHandler().ensureExists(cat, null).added;
+
+      if (!cl.categoryExists(cat)) {
+        cl.addCategory(cat);
+        added = true;
+      }
     } else if (vcr.changed) {
-      svci.getCategoriesHandler().update(cat);
+      cl.updateCategory(cat);
     }
 
     form.assignAddingCategory(false);
 
     if ((add && added) | (!add && vcr.changed)) {
-      svci.getPrefsHandler().updateAdminPrefs(false,
-                                              null,
-                                              cat,
-                                              null,
-                                              null);
+      cl.updateAdminPrefs(false,
+                          null,
+                          cat,
+                          null,
+                          null);
     }
 
     if (add) {

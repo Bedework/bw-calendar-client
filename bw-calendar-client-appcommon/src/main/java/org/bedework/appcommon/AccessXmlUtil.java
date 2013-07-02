@@ -18,8 +18,8 @@
 */
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calsvci.CalSvcI;
 
 import edu.rpi.cmt.access.AccessException;
 import edu.rpi.cmt.access.AccessPrincipal;
@@ -43,14 +43,14 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
   /**
    */
   public static class Cb implements AccessXmlCb, Serializable {
-    private CalSvcI svci;
+    private Client cl;
     private TagUtils tagUtil = TagUtils.getInstance();
 
     QName errorTag;
     String errorMsg;
 
-    Cb(final CalSvcI svci) {
-      this.svci = svci;
+    Cb(final Client cl) {
+      this.cl = cl;
     }
 
     /* (non-Javadoc)
@@ -58,7 +58,7 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
      */
     public String makeHref(final String id, final int whoType) throws AccessException {
       try {
-        return tagUtil.filter(svci.getDirectories().makePrincipalUri(id, whoType));
+        return tagUtil.filter(cl.makePrincipalUri(id, whoType));
       } catch (Throwable t) {
         throw new AccessException(t);
       }
@@ -69,7 +69,7 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
      */
     public AccessPrincipal getPrincipal() throws AccessException {
       try {
-        return svci.getPrincipal();
+        return cl.getCurrentPrincipal();
       } catch (CalFacadeException cfe) {
         throw new AccessException(cfe);
       }
@@ -80,7 +80,7 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
      */
     public AccessPrincipal getPrincipal(final String href) throws AccessException {
       try {
-        return svci.getDirectories().getPrincipal(href);
+        return cl.getPrincipal(href);
       } catch (CalFacadeException cfe) {
         throw new AccessException(cfe);
       }
@@ -117,23 +117,24 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
 
   /** Acls use tags in the webdav and caldav namespace.
    *
-   * @param xml
-   * @param svci
+   * @param xml to emit xml
+   * @param cl fo callbacks
    */
-  public AccessXmlUtil(final XmlEmit xml, final CalSvcI svci) {
-    super(caldavPrivTags, xml, new Cb(svci));
+  public AccessXmlUtil(final XmlEmit xml,
+                       final Client cl) {
+    super(caldavPrivTags, xml, new Cb(cl));
   }
 
   /** Represent the acl as an xml string
    *
    * @param acl
-   * @param svci
+   * @param cl fo callbacks
    * @return String xml representation
    * @throws AccessException
    */
   public static String getXmlAclString(final Acl acl,
-                                       final CalSvcI svci) throws AccessException {
-    return getXmlAclString(acl, false, caldavPrivTags, new Cb(svci));
+                                       final Client cl) throws AccessException {
+    return getXmlAclString(acl, false, caldavPrivTags, new Cb(cl));
   }
 
   /** Produce an xml representation of current user privileges from an array

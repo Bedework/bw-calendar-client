@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,11 +20,11 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.mail.ObjectAttachment;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.webcommon.BwAbstractAction;
@@ -73,12 +73,10 @@ public class MailEventAction extends BwAbstractAction {
     Message emsg = new Message();
     String[] to = new String[]{recipient};
 
-    CalSvcI svci = form.fetchSvci();
-
     emsg.setMailTo(to);
     emsg.setSubject(ev.getSummary());
 
-    IcalTranslator trans = new IcalTranslator(svci.getIcalCallback());
+    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(form.fetchClient()));
 
     Calendar cal = trans.toIcal(ei, Icalendar.methodTypePublish);
     mailMessage(emsg, cal.toString(),

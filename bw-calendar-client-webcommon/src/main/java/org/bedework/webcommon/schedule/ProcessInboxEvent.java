@@ -20,6 +20,8 @@ package org.bedework.webcommon.schedule;
 
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.EventFormatter;
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
@@ -72,6 +74,7 @@ public class ProcessInboxEvent extends EventActionBase {
                       final BwActionFormBase form) throws Throwable {
     boolean preserveInbox = request.present("preserveInbox");
     CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     form.assignAddingEvent(false);
 
     Rmode mode;
@@ -121,8 +124,8 @@ public class ProcessInboxEvent extends EventActionBase {
     }
 
 
-    EventFormatter ef = new EventFormatter(svc,
-                                           new IcalTranslator(svc.getIcalCallback()),
+    EventFormatter ef = new EventFormatter(cl,
+                                           new IcalTranslator(new IcalCallbackcb(cl)),
                                            colEi);
 
     form.setCurEventFmt(ef);

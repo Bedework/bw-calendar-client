@@ -527,7 +527,7 @@ public class TimeViewDailyInfo implements Serializable {
 
         eventFormatters = new ArrayList<EventFormatter>();
         for (EventInfo ei: events) {
-          eventFormatters.add(new EventFormatter(view.getSvcI(),
+          eventFormatters.add(new EventFormatter(view.getClient(),
                                                  view.getTrans(),
                                                  ei));
         }

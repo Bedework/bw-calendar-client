@@ -18,25 +18,21 @@
 */
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvc.indexing.BwIndexer;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 
 import edu.rpi.cmt.calendar.IcalDefs;
 import edu.rpi.cmt.timezones.Timezones;
 import edu.rpi.cmt.timezones.TimezonesException;
 import edu.rpi.sss.util.DateTimeUtil;
-import edu.rpi.sss.util.Util;
 import edu.rpi.sss.util.log.MessageEmit;
 
 import org.apache.log4j.Logger;
@@ -62,15 +58,15 @@ import java.util.Date;
  * <p>The calendar is represented as a sequence of, possibly overlapping,
  * events which must be rendered in some manner by the display.
  *
- * @author  Mike Douglass douglm@rpi.edu
+ * @author  Mike Douglass douglm  rpi.edu
  */
 public class TimeView implements Serializable {
   protected boolean debug;
 
   private MessageEmit err;
 
-//  protected CalendarInfo calInfo;
-  protected CalSvcI cal;
+  //  protected CalendarInfo calInfo;
+  protected Client cl;
   protected IcalTranslator trans;
   protected String periodName;
   protected Calendar firstDay;
@@ -148,9 +144,9 @@ public class TimeView implements Serializable {
       FieldPosition f = new FieldPosition(DateFormat.MONTH_FIELD);
 
       DateFormat df = DateFormat.
-          getDateTimeInstance(DateFormat.LONG,
-                              DateFormat.LONG,
-                              BwLocale.getLocale());
+              getDateTimeInstance(DateFormat.LONG,
+                                  DateFormat.LONG,
+                                  BwLocale.getLocale());
       try {
         df.setTimeZone(Timezones.getDefaultTz());
       } catch (Throwable t) {
@@ -179,8 +175,6 @@ public class TimeView implements Serializable {
     }*/
   }
 
-  private boolean publicView;
-
   /* Fetched when required
    */
   protected Collection<EventInfo> events;
@@ -199,10 +193,10 @@ public class TimeView implements Serializable {
 
   /** Constructor:
    *
-   * @param err - for error messages
+   * @param  cl        Client interface
+   * @param  err - for error messages
    * @param  curDay    MyCalendarVO representing current day.
    * @param  periodName Name of period, capitalized, e.g. Week
-   * @param  cal       CalSvcI calendar service interface
    * @param  firstDay  Calendar representing first day of period.
    * @param  lastDay   Calendar representing last day of period.
    * @param  prevDate  previous date for this time period in YYYYMMDD form
@@ -211,20 +205,18 @@ public class TimeView implements Serializable {
    *                   display events or if it is used for structure only.
    *                   For example we may use the year for navigation only
    *                   to reduce the amount of data retrieved.
-   * @param  publicView  boolean true if this is for public events
    * @param  filter    non-null to filter the results.
    * @throws CalFacadeException
    */
-  public TimeView(final MessageEmit err,
+  public TimeView(final Client cl,
+                  final MessageEmit err,
                   final Calendar curDay,
                   final String periodName,
-                  final CalSvcI cal,
                   final Calendar firstDay,
                   final Calendar lastDay,
                   final String prevDate,
                   final String nextDate,
                   final boolean showData,
-                  final boolean publicView,
                   final FilterBase filter) throws CalFacadeException {
     this.err = err;
 
@@ -233,13 +225,12 @@ public class TimeView implements Serializable {
     lastDayFmt = new CalFmt(lastDay);
 
     this.periodName = periodName;
-    this.cal = cal;
+    this.cl = cl;
     this.firstDay = firstDay;
     this.lastDay = lastDay;
     this.prevDate = prevDate;
     this.nextDate = nextDate;
     this.showData = showData;
-    this.publicView = publicView;
     this.filter = filter;
     debug = Logger.getLogger(this.getClass()).isDebugEnabled();
   }
@@ -252,10 +243,10 @@ public class TimeView implements Serializable {
   }
 
   /**
-   * @return CalSvcI
+   * @return Client
    */
-  public CalSvcI getSvcI() {
-    return cal;
+  public Client getClient() {
+    return cl;
   }
 
   /**
@@ -263,7 +254,7 @@ public class TimeView implements Serializable {
    */
   public IcalTranslator getTrans() {
     if (trans == null) {
-      trans = new IcalTranslator(cal.getIcalCallback());
+      trans = new IcalTranslator(new IcalCallbackcb(cl));
     }
 
     return trans;
@@ -390,7 +381,7 @@ public class TimeView implements Serializable {
       BwEvent ev = ei.getEvent();
 
       if ((ev.getEntityType() == IcalDefs.entityTypeTodo)  &&
-           ev.getNoStart()) {
+              ev.getNoStart()) {
         if (today) {
           al.add(ei);
         }
@@ -404,11 +395,11 @@ public class TimeView implements Serializable {
       String evEnd;
 
 //      if (floating) {
-  //      evStart = ev.getDtstart().getDtval();
-    //    evEnd = ev.getDtend().getDtval();
+      //      evStart = ev.getDtstart().getDtval();
+      //    evEnd = ev.getDtend().getDtval();
       //} else {
-        evStart = ev.getDtstart().getDate();
-        evEnd = ev.getDtend().getDate();
+      evStart = ev.getDtstart().getDate();
+      evEnd = ev.getDtend().getDate();
 //      }
 
       /* Event is within range if:
@@ -425,10 +416,10 @@ public class TimeView implements Serializable {
 
       int evstSt;
 
-  //    if (floating) {
-    //    evstSt = evStart.compareTo(endLocal);
+      //    if (floating) {
+      //    evstSt = evStart.compareTo(endLocal);
       //} else {
-        evstSt = evStart.compareTo(end);
+      evstSt = evStart.compareTo(end);
 //      }
 
       if (evstSt >= 0) {
@@ -439,13 +430,13 @@ public class TimeView implements Serializable {
       int evendSt;
 
 //      if (floating) {
-  //      evendSt = evEnd.compareTo(startLocal);
-    //  } else {
-        evendSt = evEnd.compareTo(start);
+      //      evendSt = evEnd.compareTo(startLocal);
+      //  } else {
+      evendSt = evEnd.compareTo(start);
       //}
 
       if ((evendSt > 0) ||
-          (evStart.equals(evEnd) && (evendSt >= 0))) {
+              (evStart.equals(evEnd) && (evendSt >= 0))) {
         // Passed the tests.
 
         /*
@@ -471,64 +462,13 @@ public class TimeView implements Serializable {
 
     long curTime = System.currentTimeMillis();
 
-    /* See if we can use the indexed version */
-
-    BwIndexer idx = cal.getIndexingHandler().getIndexer(publicView,
-                                                        cal.getPrincipal().getPrincipalRef());
-
     Calendar lastP1 = (Calendar)lastDay.clone();
     lastP1.add(Calendar.DATE, 1);
-
-    FilterBase f = FilterBase.addAndChild(filter,
-                                      cal.getClientState().getViewFilter(null));
 
     BwDateTime start = getBwDate(firstDayFmt.getDateDigits());
     BwDateTime end = getBwDate(DateTimeUtil.isoDate(lastP1.getTime()));
 
-    if (idx.isFetchEnabled()) {
-      // Fetch from the index.
-
-      events = idx.fetch(f,
-                         start.getDate(),
-                         end.getDate(),
-                         null, // found
-                         0,
-                         -1);    // Give me all
-
-      int count = 0;
-
-      if (debug) {
-        debugMsg("Indexer retrieved " + count + " events after " +
-                 (System.currentTimeMillis() - curTime));
-      }
-
-      /* We need to implant categories and locations */
-
-      if (!Util.isEmpty(events)) {
-        count = events.size();
-      }
-
-
-      cal.getEventsHandler().implantEntities(events);
-
-      if (debug) {
-        debugMsg("Retrieved events fully populated: took " +
-                  (System.currentTimeMillis() - curTime));
-      }
-
-      return;
-    }
-
-    RecurringRetrievalMode rrm =
-      new RecurringRetrievalMode(Rmode.expanded);
-
-    events = cal.getEventsHandler().getEvents((BwCalendar)null, f,
-                                              start,
-                                              end,
-                                              null, // retrieveList
-                                              rrm);
-
-    cal.getClientState().setColor(events);
+    events = cl.getEvents(start, end, filter, false, false, 0, -1).getEvents();
   }
 
   private BwDateTime getBwDate(final String date) throws CalFacadeException {
@@ -635,12 +575,12 @@ public class TimeView implements Serializable {
       gtpi.year = String.valueOf(gtpi.currentDay.getYear());
 
       gtpi.todaysMonth = new MyCalendarVO(   // XXX Expensive??
-                   new Date(System.currentTimeMillis())).getTwoDigitMonth();
+                                             new Date(System.currentTimeMillis())).getTwoDigitMonth();
 
       if (debug) {
         debugMsg("getFirstDayOfWeek() = " + getFirstDayOfWeek());
         debugMsg("gtpi.first.getFirstDayOfWeek() = " +
-                 getCalInfo().getFirstDayOfWeek());
+                         getCalInfo().getFirstDayOfWeek());
       }
 
       initGtpiForMonth(gtpi);
@@ -678,8 +618,8 @@ public class TimeView implements Serializable {
           }
 
           monthTvdi.setEntries(
-             weeks.toArray(new TimeViewDailyInfo[
-                  weeks.size()]));
+                  weeks.toArray(new TimeViewDailyInfo[
+                                        weeks.size()]));
           months.add(monthTvdi);
 
           if (gtpi.isLast) {
@@ -834,7 +774,7 @@ public class TimeView implements Serializable {
     }
 
     return days.toArray(new TimeViewDailyInfo[
-                    days.size()]);
+                                days.size()]);
   }
 
   /**

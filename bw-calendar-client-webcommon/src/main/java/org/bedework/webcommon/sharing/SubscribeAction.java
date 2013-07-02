@@ -19,6 +19,7 @@
 package org.bedework.webcommon.sharing;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.webcommon.BwAbstractAction;
@@ -68,6 +69,7 @@ public class SubscribeAction extends BwAbstractAction {
     }
 
     CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     String href = request.getReqPar("colHref");
     String extUrl = null;
@@ -100,7 +102,7 @@ public class SubscribeAction extends BwAbstractAction {
       form.getErr().emit(ClientError.alreadySubscribed, sr.path);
     }
 
-    svci.getClientState().flush();
+    cl.flushState();
 
     return forwardContinue;
   }

@@ -19,8 +19,9 @@
 
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 
 import java.util.AbstractCollection;
@@ -34,23 +35,23 @@ import java.util.Iterator;
  */
 public class FormattedEvents extends AbstractCollection<EventFormatter> {
   private Collection<EventInfo> events;
-  private CalSvcI svci;
+  private Client cl;
   private IcalTranslator trans;
 
   /** Constructor
    *
-   * @param svci
+   * @param cl - client object
    * @param events
    */
-  public FormattedEvents(final CalSvcI svci,
+  public FormattedEvents(final Client cl,
                          final Collection<EventInfo> events) {
     if (events == null) {
       this.events = new ArrayList<EventInfo>();
     } else {
       this.events = events;
     }
-    this.svci = svci;
-    trans = new IcalTranslator(svci.getIcalCallback());
+    this.cl = cl;
+    trans = new IcalTranslator(new IcalCallbackcb(cl));
   }
 
   @Override
@@ -79,7 +80,7 @@ public class FormattedEvents extends AbstractCollection<EventFormatter> {
     public EventFormatter next() {
       EventInfo ev = it.next();
 
-      return new EventFormatter(svci, trans, ev);
+      return new EventFormatter(cl, trans, ev);
     }
 
     @Override

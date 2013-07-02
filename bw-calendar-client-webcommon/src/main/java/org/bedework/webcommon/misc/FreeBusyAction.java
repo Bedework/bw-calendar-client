@@ -19,9 +19,8 @@
 package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
-import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -64,20 +63,20 @@ public class FreeBusyAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    BwPrincipal user = null;
-    CalSvcI svci = form.fetchSvci();
+    String uri = null;
+    Client cl = form.fetchClient();
 
     gotoDateView(form, form.getDate(), form.getViewTypeI());
 
     String userId = request.getReqPar("userid");
 
     if (userId != null) {
-      user = svci.getUsersHandler().getUser(userId);
+      uri = cl.getCalendarAddress(userId);
     } else if (!form.getGuest()) {
-      user = svci.getPrincipal();
+      uri = cl.getCurrentCalendarAddress();
     }
 
-    if (user == null) {
+    if (uri == null) {
       form.getErr().emit(ClientError.unknownUser);
       return forwardNotFound;
     }
@@ -88,7 +87,6 @@ public class FreeBusyAction extends BwAbstractAction {
     int interval = request.getIntReqPar("interval", 1);
 
     // Make user an attendee
-    String uri = svci.getDirectories().principalToCaladdr(user);
     Attendees atts = new Attendees();
     atts.addRecipient(uri);
 

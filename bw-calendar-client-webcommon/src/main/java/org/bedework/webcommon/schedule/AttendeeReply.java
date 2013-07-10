@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -55,93 +55,6 @@ public class AttendeeReply extends EventActionBase {
     if (form.getGuest()) {
       return forwardNoAccess; // First line of defence
     }
-
-    /* =================== Assuming no longer used =======================
-    CalSvcI svc = form.fetchSvci();
-
-    BwCalendar inbox = svc.getCalendarsHandler().getSpecial(BwCalendar.calTypeInbox, false);
-    if (inbox == null) {
-      return forwardSuccess;
-    }
-
-    EventInfo ei = refetchEvent(form);
-    if (ei == null) {
-      // It's gone!!
-      return forwardNoAction;
-    }
-
-    BwEvent inboxev = ei.getEvent();
-    SchedulingI sched = svc.getScheduler();
-    ScheduleResult sr;
-
-    EventInfo ourCopy = sched.getStoredMeeting(inboxev);
-
-    if (inboxev.getScheduleMethod() != Icalendar.methodTypeCounter) {
-      boolean update = request.getReqPar("update") != null;
-
-      if (!update) {
-        return forwardSuccess;
-      }
-
-      sr = sched.processResponse(ei);
-      emitScheduleStatus(form, sr, false);
-
-      return forwardSuccess;
-    }
-
-    /* Do counter * /
-
-    if (ourCopy == null) {
-      form.getErr().emit(ClientError.noMeeting);
-      return forwardNoAction;
-    }
-
-    String meetingColPath = ourCopy.getEvent().getColPath();
-    form.setMeetingCal(svc.getCalendarsHandler().get(meetingColPath));
-
-    BwAttendee att = inboxev.getAttendees().iterator().next();
-    if (request.present("decline")) {
-      // Just straight to schedule action
-      sr = sched.declineCounter(ei,
-                                request.getReqPar("comment"),
-                                att);
-
-      // delete from inbox
-      svc.getEventsHandler().delete(ei, false);
-      emitScheduleStatus(form, sr, false);
-
-      return forwardDeclined;
-    }
-
-    // straight to edit the event
-    EventKey ekey = new EventKey(meetingColPath,
-                                 inboxev.getUid(),
-                                 inboxev.getRecurrenceId(),
-                                 false);
-
-    ei = findEvent(ekey, form);
-
-    if (ei == null) {
-      return forwardNoAction;
-    }
-
-    /* Update the event we just fetched from the inbox event * /
-    update(inboxev, ei.getEvent());
-
-    form.setEventInfo(ei);
-
-    /* Set information to allow edit event page to do refresh correctly * /
-    ei.setReplyAttendeeURI(att.getAttendeeUri());
-    ei.setInboxEventName(inboxev.getName());
-
-    int fwd = refreshEvent(ei, request);
-    form.setAttendees(new Attendees());
-    form.setFbResponses(null);
-    form.setFormattedFreeBusy(null);
-    if (fwd == forwardContinue) {
-      resetEvent(form);
-    }
-*/
     return forwardEdit;
   }
 

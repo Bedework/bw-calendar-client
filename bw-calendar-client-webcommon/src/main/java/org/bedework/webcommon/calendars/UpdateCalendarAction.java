@@ -27,7 +27,6 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -83,7 +82,6 @@ public class UpdateCalendarAction extends BwAbstractAction {
       return forwardDelete;
     }
 
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
     boolean add = form.getAddingCalendar();
 
@@ -207,14 +205,10 @@ public class UpdateCalendarAction extends BwAbstractAction {
         return forwardRetry;
       }
 
-      svci.changeAccess(cal, acl.getAces(), true);
+      cl.changeAccess(cal, acl.getAces(), true);
     }
 
     form.setParentCalendarPath(null);
-
-    if (cal.getCalendarCollection()) {
-      svci.getPrefsHandler().updateAdminPrefs(false, cal, null, null, null);
-    }
 
     if (cal.getCalendarCollection()) {
       if (add) {

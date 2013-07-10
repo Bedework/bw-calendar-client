@@ -59,7 +59,7 @@ public class InitAddCalendarAction extends BwAbstractAction {
 
     /* We need the synch info to get information about connectors
      */
-    form.setSynchInfo(form.fetchSvci().getSynch().getSynchInfo());
+    form.setSynchInfo(form.fetchClient().getSynchInfo());
 
     /** Set the objects to null so we get new ones.
      */

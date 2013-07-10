@@ -20,11 +20,10 @@ package org.bedework.webcommon.pref;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.BwPreferences;
-import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calsvci.CalSvcI;
+import org.bedework.calfacade.BwPreferences;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -78,7 +77,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     BwPreferences prefs;
     boolean tzChanged = false;
 
@@ -89,19 +88,14 @@ public class UpdatePrefsAction extends BwAbstractAction {
         return forwardNoAccess; // First line of defence
       }
 
-      BwPrincipal p = findPrincipal(request, form);
-      if (p == null) {
-        return forwardNotFound;
-      }
-
-      prefs = svc.getPrefsHandler().get(p);
+      prefs = cl.getPreferences(request.getReqPar("user"));
     } else {
-      prefs = svc.getPrefsHandler().get();
+      prefs = cl.getPreferences();
     }
 
     String str = request.getReqPar("defaultImageDirectory");
     if (str != null) {
-      BwCalendar cal = svc.getCalendarsHandler().get(str);
+      BwCalendar cal = cl.getCollection(str);
       if (cal == null) {
         form.getErr().emit(ClientError.unknownCalendar, str);
         return forwardNotFound;
@@ -120,7 +114,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     str = request.getReqPar("preferredView");
     if (str != null) {
-      if (svc.getViewsHandler().find(str) == null) {
+      if (cl.findView(str) == null) {
         form.getErr().emit(ClientError.unknownView, str);
         return forwardNotFound;
       }
@@ -161,7 +155,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
             continue;
           }
 
-          if (svc.getCategoriesHandler().get(uid) != null) {
+          if (cl.getCategory(uid) != null) {
             uids.add(uid);
           }
         }
@@ -192,7 +186,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     str = request.getReqPar("newCalPath");
     if (str != null) {
-      BwCalendar cal = svc.getCalendarsHandler().get(str);
+      BwCalendar cal = cl.getCollection(str);
       if (cal == null) {
         form.getErr().emit(ClientError.unknownCalendar, str);
         return forwardNotFound;
@@ -302,7 +296,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
       prefs.setScheduleAutoProcessResponses(ival);
     }
 
-    svc.getPrefsHandler().update(prefs);
+    cl.updatePreferences(prefs);
     if (tzChanged) {
       Timezones.setThreadDefaultTzid(prefs.getDefaultTzid());
     }

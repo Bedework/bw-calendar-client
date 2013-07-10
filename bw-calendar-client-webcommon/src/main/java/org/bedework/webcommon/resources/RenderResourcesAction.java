@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,10 +18,9 @@
 */
 package org.bedework.webcommon.resources;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calsvci.CalSuitesI.ResourceClass;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.CalSuiteResource;
@@ -32,11 +31,10 @@ import java.util.List;
 
 /**
  * Render action used to display the list of resources for a calendar suite.
- * 
+ *
  * @author eric.wittmann@redhat.com
  */
 public class RenderResourcesAction extends RenderAction {
-  
   /**
    * Constructor.
    */
@@ -53,9 +51,7 @@ public class RenderResourcesAction extends RenderAction {
       return forwardGotomain;
     }
 
-    CalSvcI svc = form.fetchSvci();
-    
-    List<CalSuiteResource> resources = getResources(form, svc);
+    List<CalSuiteResource> resources = getResources(form);
 
     // TODO: add admin-only suite resources if logged-in user is a superadmin
     form.setCalSuiteResources(resources);
@@ -66,28 +62,31 @@ public class RenderResourcesAction extends RenderAction {
   /**
    * Gets the resources to be displayed in the UI.
    * @param form
-   * @param svc
    * @throws CalFacadeException
    */
-  protected List<CalSuiteResource> getResources(BwActionFormBase form, CalSvcI svc)
+  protected List<CalSuiteResource> getResources(BwActionFormBase form)
       throws CalFacadeException {
-    List<CalSuiteResource> resources = new ArrayList<CalSuiteResource>();
-    List<BwResource> bres = svc.getCalSuitesHandler().getResources(form.getCurrentCalSuite(), ResourceClass.calsuite);
+    Client cl = form.fetchClient();
+
+    List<CalSuiteResource> resources = new ArrayList<>();
+    List<BwResource> bres = cl.getCSResources(form.getCurrentCalSuite(),
+                                              "calsuite");
     if (bres != null) {
       for (BwResource r: bres) {
-        resources.add(new CalSuiteResource(r, ResourceClass.calsuite));
+        resources.add(new CalSuiteResource(r,
+                                           "calsuite"));
       }
     }
-    
+
     if (form.getCurUserSuperUser()) {
-      bres = svc.getCalSuitesHandler().getResources(form.getCurrentCalSuite(), ResourceClass.admin);
+      bres = cl.getCSResources(form.getCurrentCalSuite(),
+                               "admin");
       if (bres != null) {
         for (BwResource r: bres) {
-          resources.add(new CalSuiteResource(r, ResourceClass.admin));
+          resources.add(new CalSuiteResource(r, "admin"));
         }
       }
     }
     return resources;
   }
-  
 }

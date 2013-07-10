@@ -38,7 +38,7 @@ import java.util.Date;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class EventFormatter extends EventTimeZonesRegistry
-        implements TimeZoneRegistry, Serializable {
+  implements TimeZoneRegistry, Serializable {
   /** The event
    */
   private EventInfo eventInfo;
@@ -97,8 +97,8 @@ public class EventFormatter extends EventTimeZonesRegistry
   }
 
   /** ===================================================================
-   Convenience methods
-   =================================================================== */
+                      Convenience methods
+      =================================================================== */
 
   /** Get today as a calendar object
    *

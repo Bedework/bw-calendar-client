@@ -19,20 +19,12 @@
 
 package org.bedework.webcommon.search;
 
-import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.IcalCallbackcb;
-import org.bedework.calsvci.BwIndexSearchResultEntry;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.icalendar.IcalTranslator;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
 
 import edu.rpi.cct.misc.indexing.SearchLimits;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /** Implant the search result in the form.
  *
@@ -49,7 +41,6 @@ public class RenderSearchResultAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
     int start = form.getResultStart();
@@ -62,29 +53,13 @@ public class RenderSearchResultAction extends RenderAction {
       if ("none".equals(lim)) {
         // no limits
       } else if ("beforeToday".equals(lim)) {
-        limits = svci.getIndexingHandler().beforeToday();
+        limits = cl.beforeToday();
       } else if ("fromToday".equals(lim)) {
-        limits = svci.getIndexingHandler().fromToday();
+        limits = cl.fromToday();
       }
     }
 
-    Collection<BwIndexSearchResultEntry> sr =
-      svci.getIndexingHandler().getSearchResult(start, count, limits);
-    Collection<SearchResultEntry> sres = new ArrayList<SearchResultEntry>();
-
-    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
-
-    for (BwIndexSearchResultEntry sre: sr) {
-      if (sre.getEvent() != null) {
-        EventFormatter ev = new EventFormatter(cl, trans, sre.getEvent());
-        sres.add(new SearchResultEntry(ev, sre.getScore()));
-
-      } else {
-        sres.add(new SearchResultEntry(sre.getCal(), sre.getScore()));
-      }
-    }
-
-    form.setSearchResult(sres);
+    form.setSearchResult(cl.getSearchResult(start, count, limits));
 
     return forwardSuccess;
   }

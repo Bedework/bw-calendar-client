@@ -19,8 +19,8 @@
 
 package org.bedework.webcommon.pref;
 
-import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calsvci.CalSvcI;
+import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwPreferences;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -47,26 +47,27 @@ public class FetchPrefsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
 
-    if (request.getReqPar("user") != null) {
+    String str = request.getReqPar("user");
+    if (str != null) {
       /* Fetch a given users preferences */
       if (!form.getCurUserSuperUser()) {
         return forwardNoAccess; // First line of defence
       }
 
-      BwPrincipal p = findPrincipal(request, form);
-      if (p == null) {
-        return forwardNotFound;
+      BwPreferences prefs = cl.getPreferences(str);
+      if (prefs == null) {
+        return forwardNoAccess;
       }
 
-      form.setUserPreferences(svc.getPrefsHandler().get(p));
+      form.setUserPreferences(prefs);
 
       return forwardSuccess;
     }
 
     /* Just set this users prefs */
-    form.setUserPreferences(svc.getPrefsHandler().get());
+    form.setUserPreferences(cl.getPreferences());
 
     return forwardSuccess;
   }

@@ -89,14 +89,6 @@ public class UpdateCategoryAction extends BwAbstractAction {
 
     form.assignAddingCategory(false);
 
-    if ((add && added) | (!add && vcr.changed)) {
-      cl.updateAdminPrefs(false,
-                          null,
-                          cat,
-                          null,
-                          null);
-    }
-
     if (add) {
       if (added) {
         form.getMsg().emit(ClientMessage.addedCategories, 1);

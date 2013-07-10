@@ -65,7 +65,6 @@ public class TimeView implements Serializable {
 
   private MessageEmit err;
 
-  //  protected CalendarInfo calInfo;
   protected Client cl;
   protected IcalTranslator trans;
   protected String periodName;
@@ -398,8 +397,8 @@ public class TimeView implements Serializable {
       //      evStart = ev.getDtstart().getDtval();
       //    evEnd = ev.getDtend().getDtval();
       //} else {
-      evStart = ev.getDtstart().getDate();
-      evEnd = ev.getDtend().getDate();
+        evStart = ev.getDtstart().getDate();
+        evEnd = ev.getDtend().getDate();
 //      }
 
       /* Event is within range if:
@@ -575,12 +574,12 @@ public class TimeView implements Serializable {
       gtpi.year = String.valueOf(gtpi.currentDay.getYear());
 
       gtpi.todaysMonth = new MyCalendarVO(   // XXX Expensive??
-                                             new Date(System.currentTimeMillis())).getTwoDigitMonth();
+                   new Date(System.currentTimeMillis())).getTwoDigitMonth();
 
       if (debug) {
         debugMsg("getFirstDayOfWeek() = " + getFirstDayOfWeek());
         debugMsg("gtpi.first.getFirstDayOfWeek() = " +
-                         getCalInfo().getFirstDayOfWeek());
+                 getCalInfo().getFirstDayOfWeek());
       }
 
       initGtpiForMonth(gtpi);
@@ -618,8 +617,8 @@ public class TimeView implements Serializable {
           }
 
           monthTvdi.setEntries(
-                  weeks.toArray(new TimeViewDailyInfo[
-                                        weeks.size()]));
+             weeks.toArray(new TimeViewDailyInfo[
+                  weeks.size()]));
           months.add(monthTvdi);
 
           if (gtpi.isLast) {
@@ -774,7 +773,7 @@ public class TimeView implements Serializable {
     }
 
     return days.toArray(new TimeViewDailyInfo[
-                                days.size()]);
+                    days.size()]);
   }
 
   /**

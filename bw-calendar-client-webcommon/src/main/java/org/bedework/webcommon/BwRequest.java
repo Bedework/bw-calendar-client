@@ -28,7 +28,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
-import org.bedework.calsvci.CalSvcI;
 
 import edu.rpi.cmt.calendar.IcalDefs;
 import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
@@ -138,7 +137,7 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public BwFilterDef getFilterDef() throws Throwable {
-    CalSvcI svc = getBwForm().fetchSvci();
+    Client cl = getBwForm().fetchClient();
     String name = getReqPar("filterName");
     String fexpr = getReqPar("fexpr");
 
@@ -149,7 +148,7 @@ public class BwRequest extends Request {
     }
 
     if (name != null) {
-      fd = svc.getFiltersHandler().get(name);
+      fd = cl.getFilter(name);
       if (fd == null) {
         form.getErr().emit(ClientError.unknownFilter, name);
         return null;
@@ -161,7 +160,7 @@ public class BwRequest extends Request {
 
     if (fd.getFilters() == null) {
       try {
-        svc.getFiltersHandler().parse(fd);
+        cl.parseFilter(fd);
       } catch (CalFacadeException cfe) {
         getErr().emit(cfe.getMessage(), cfe.getExtra());
         return null;

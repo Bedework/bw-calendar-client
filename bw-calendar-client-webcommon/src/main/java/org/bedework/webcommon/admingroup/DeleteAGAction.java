@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,10 +20,9 @@ package org.bedework.webcommon.admingroup;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.calfacade.ifs.Directories;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -57,10 +56,10 @@ public class DeleteAGAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     // Ensure group is not a calendar suite admin group.
-    BwCalSuiteWrapper csw = svc.getCalSuitesHandler().get(updgrp);
+    BwCalSuiteWrapper csw = cl.getCalSuite(updgrp);
 
     if (csw != null) {
       // Group already assigned to another cal suite
@@ -68,10 +67,9 @@ public class DeleteAGAction extends BwAbstractAction {
       return forwardContinue;
     }
 
-    Directories adgrps = form.fetchSvci().getDirectories();
     form.assignChoosingGroup(false); // reset
 
-    adgrps.removeGroup(updgrp);
+    cl.removeAdminGroup(updgrp);
     form.setUpdAdminGroup(null);
     form.getMsg().emit(ClientMessage.deletedGroup);
     return forwardContinue;

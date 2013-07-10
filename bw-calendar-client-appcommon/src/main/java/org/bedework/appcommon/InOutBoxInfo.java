@@ -107,7 +107,7 @@ public class InOutBoxInfo implements Serializable {
     // XXX need to be able to store and retrieve other types of info.
 
     RecurringRetrievalMode rrm =
-            new RecurringRetrievalMode(Rmode.overrides);
+      new RecurringRetrievalMode(Rmode.overrides);
     Collection<EventInfo> evs = cl.getEvents(cal,
                                              null, null,
                                              null,

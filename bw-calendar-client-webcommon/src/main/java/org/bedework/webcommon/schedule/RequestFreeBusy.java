@@ -31,7 +31,6 @@ import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -77,7 +76,6 @@ public class RequestFreeBusy extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     try {
-      CalSvcI svci = form.fetchSvci();
       Client cl = form.fetchClient();
 
       Collection<String> attendees = request.getReqPars("attendeeUri");
@@ -97,7 +95,7 @@ public class RequestFreeBusy extends BwAbstractAction {
 
       int max = 0;
 
-      if (!svci.getSuperUser()) {
+      if (!cl.isSuperUser()) {
         max = sysp.getMaxFBPeriod();
       }
 
@@ -129,9 +127,9 @@ public class RequestFreeBusy extends BwAbstractAction {
         return forwardBadRequest;
       }
 
-      ScheduleResult sr = svci.getScheduler().schedule(new EventInfo(fbreq),
-                                                       fbreq.getScheduleMethod(),
-                                                       null, null, false);
+      ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
+                                      fbreq.getScheduleMethod(),
+                                      null, null, false);
 
       form.setContentName("freebusy.js");
       resp.setHeader("Content-Disposition",

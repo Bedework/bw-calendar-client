@@ -20,7 +20,6 @@ package org.bedework.webcommon.taglib;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.base.BwShareableContainedDbentity;
-import org.bedework.calsvci.CalendarsI;
 
 import org.apache.log4j.Logger;
 
@@ -56,12 +55,10 @@ public class EmitContainerTag extends EmitCollectionTag {
       BwCalendar col = null;
       BwShareableContainedDbentity entity = (BwShareableContainedDbentity)getObject(false);
       if (entity != null) {
-        CalendarsI cols = getCalSvcI().getCalendarsHandler();
-
-        col = cols.get(entity.getColPath());
+        col = getClient().getCollection(entity.getColPath());
 
         if (col != null) {
-          cols.resolveAlias(col, true, false);
+          getClient().resolveAlias(col, true, false);
         }
       }
 

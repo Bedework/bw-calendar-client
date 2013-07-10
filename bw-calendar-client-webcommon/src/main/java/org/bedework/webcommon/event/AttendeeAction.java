@@ -22,9 +22,9 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-import java.util.Collection;
-
 import com.google.gson.Gson;
+
+import java.util.Collection;
 
 /**
  * Action to handle recipients and attendees for an event. This action

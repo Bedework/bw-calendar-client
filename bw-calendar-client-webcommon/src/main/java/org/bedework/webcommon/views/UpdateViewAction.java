@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,10 +20,9 @@
 package org.bedework.webcommon.views;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -57,7 +56,7 @@ public class UpdateViewAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     String name = request.getReqPar("name");
 
     if (name == null) {
@@ -69,21 +68,19 @@ public class UpdateViewAction extends BwAbstractAction {
     String remove = request.getReqPar("remove");
 
     if (add != null) {
-      BwCalendar cal = svc.getCalendarsHandler().get(add);
-
-      if (cal == null) {
+      if (!cl.collectionExists(add)) {
         form.getErr().emit(ClientError.unknownCalendar, add);
         return forwardNotFound;
       }
 
-      if (!svc.getViewsHandler().addCollection(name, cal.getPath())) {
+      if (!cl.addViewCollection(name, add)) {
         form.getErr().emit(ClientError.unknownView, name);
         return forwardNotFound;
       }
     }
 
     if (remove != null) {
-      if (!svc.getViewsHandler().removeCollection(name, remove)) {
+      if (!cl.removeViewCollection(name, remove)) {
         form.getErr().emit(ClientError.unknownView, name);
         return forwardNotFound;
       }
@@ -105,7 +102,7 @@ public class UpdateViewAction extends BwAbstractAction {
     }
     */
 
-    BwView view = svc.getViewsHandler().find(name);
+    BwView view = cl.findView(name);
 
     if (view == null) {
       form.getErr().emit(ClientError.unknownView, name);

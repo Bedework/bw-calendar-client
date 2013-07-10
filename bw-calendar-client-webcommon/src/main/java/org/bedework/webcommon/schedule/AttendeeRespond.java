@@ -27,8 +27,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.SchedulingI;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -97,10 +95,7 @@ public class AttendeeRespond extends EventActionBase {
       return forwardNoAccess; // First line of defence
     }
 
-    CalSvcI svc = form.fetchSvci();
     Client cl = form.fetchClient();
-
-    SchedulingI sched = svc.getScheduler();
 
     if (request.present("initUpdate")) {
 //      ei = sched.initAttendeeUpdate(ei);
@@ -126,8 +121,8 @@ public class AttendeeRespond extends EventActionBase {
     String methStr = request.getReqPar("method");
 
     if ("REFRESH".equals(methStr)) {
-      ScheduleResult sr = sched.requestRefresh(ei,
-                                               request.getReqPar("comment"));
+      ScheduleResult sr = cl.requestRefresh(ei,
+                                            request.getReqPar("comment"));
       emitScheduleStatus(form, sr, false);
 
       return forwardSuccess;

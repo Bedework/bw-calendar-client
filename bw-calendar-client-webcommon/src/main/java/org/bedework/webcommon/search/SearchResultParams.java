@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon.search;
 
-import org.bedework.calsvci.CalSvcI;
+import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -46,7 +46,7 @@ public class SearchResultParams extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
+    Client cl =form.fetchClient();
 
     int pageNum = request.getIntReqPar("pageNum", -1);
     int start;
@@ -60,7 +60,7 @@ public class SearchResultParams extends BwAbstractAction {
       pageNum = 1;
     }
 
-    count = svci.getPrefsHandler().get().getPageSize();
+    count = cl.getPreferences().getPageSize();
 
     start = (pageNum - 1) * count;
     form.setResultCt(count);

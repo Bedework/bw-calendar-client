@@ -19,12 +19,11 @@
 package org.bedework.webcommon.calsuite;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.SysparsI;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
@@ -51,7 +50,7 @@ public class RenderCalSuiteAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     String name = form.getCalSuiteName();
 
@@ -60,7 +59,7 @@ public class RenderCalSuiteAction extends RenderAction {
       return forwardRetry;
     }
 
-    BwCalSuiteWrapper cs = svc.getCalSuitesHandler().get(name);
+    BwCalSuiteWrapper cs = cl.getCalSuite(name);
 
     if (cs == null) {
       form.getErr().emit(ClientError.unknownCalendarSuite);
@@ -68,8 +67,7 @@ public class RenderCalSuiteAction extends RenderAction {
     }
 
     SubContext suiteCtx = null;
-    SysparsI sysi = form.fetchSvci().getSysparsHandler();
-    BwSystem syspars = sysi.get();
+    BwSystem syspars = cl.getSyspars();
     Set<SubContext> contexts = syspars.getContexts();
     for (SubContext subContext : contexts) {
       if (subContext.getCalSuite().equals(cs.getName())) {

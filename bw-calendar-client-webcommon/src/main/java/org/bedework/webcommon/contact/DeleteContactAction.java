@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,9 +20,7 @@ package org.bedework.webcommon.contact;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.calfacade.BwContact;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.EventProperties;
+import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -54,21 +52,20 @@ public class DeleteContactAction extends BwAbstractAction {
     form.setPropRefs(null);
 
     String uid = form.getContact().getUid();
-    CalSvcI svci = form.fetchSvci();
-    EventProperties<BwContact> cs = svci.getContactsHandler();
+    Client cl = form.fetchClient();
 
-    int delResult = cs.delete(form.getContact());
+    Client.DeleteReffedEntityResult drer = cl.deleteContact(form.getContact());
 
-    if (delResult == 2) {
-      form.setPropRefs(cs.getRefs(form.getContact()));
+    if (drer == null) {
+      form.getErr().emit(ClientError.unknownContact, uid);
+      return forwardNotFound;
+    }
+
+    if (!drer.getDeleted()) {
+      form.setPropRefs(drer.getReferences());
 
       form.getErr().emit(ClientError.referencedContact, uid);
       return forwardInUse;
-    }
-
-    if (delResult == 1) {
-       form.getErr().emit(ClientError.unknownContact, uid);
-      return forwardNotFound;
     }
 
     form.getMsg().emit(ClientMessage.deletedContact);

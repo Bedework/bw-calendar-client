@@ -18,10 +18,10 @@
 */
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calsvci.CalSvcI;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -54,11 +54,11 @@ public class NotificationInfo implements Serializable {
 
   /** Refresh the information
    *
-   * @param svci
+   * @param cl
    * @param force - get it whatever the tag says
    * @throws CalFacadeException
    */
-  public void refresh(final CalSvcI svci,
+  public void refresh(final Client cl,
                       final boolean force) throws CalFacadeException {
     if ((lastRefresh != 0) &&
         ((System.currentTimeMillis() - lastRefresh) < minRefresh)) {
@@ -71,7 +71,7 @@ public class NotificationInfo implements Serializable {
 
     int calType = BwCalendar.calTypeNotifications;
 
-    BwCalendar cal = svci.getCalendarsHandler().getSpecial(calType, false);
+    BwCalendar cal = cl.getSpecial(calType, false);
 
     if (cal == null) {
       // Cannot go away - never existed - no change.
@@ -94,7 +94,7 @@ public class NotificationInfo implements Serializable {
      * resources. We should retrieve a max number of the latest ones.
      */
 
-    Collection<BwResource> rs = svci.getResourcesHandler().getAll(cal.getPath());
+    Collection<BwResource> rs = cl.getAllResources(cal.getPath());
 
     Map<String, NotifyResource> toDelete =
         new HashMap<String, NotifyResource>(notes);
@@ -111,7 +111,7 @@ public class NotificationInfo implements Serializable {
         continue;
       }
 
-      svci.getResourcesHandler().getContent(r);
+      cl.getResourceContent(r);
 
       NotifyResource ri = new NotifyResource(r);
       notes.put(rname, ri);

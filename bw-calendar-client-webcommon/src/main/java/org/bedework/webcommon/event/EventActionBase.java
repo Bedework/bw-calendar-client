@@ -42,7 +42,6 @@ import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.webcommon.Attendees;
@@ -80,7 +79,6 @@ public abstract class EventActionBase extends BwAbstractAction {
    */
   public Collection<EventInfo> getEventsList(final BwActionFormBase form) throws Throwable {
     form.assignAddingEvent(false);
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
     EventListPars elpars = form.getEventListPars();
@@ -291,7 +289,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     form.retrieveLocId().reset(uid, SelectId.AHasPrecedence);
 
-    BwCalendar c = form.fetchSvci().getCalendarsHandler().get(event.getColPath());
+    BwCalendar c = form.fetchClient().getCollection(event.getColPath());
     String path = null;
     if (c != null) {
       path = c.getPath();
@@ -303,7 +301,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
   protected EventInfo findEvent(final EventKey ekey,
                                 final BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     EventInfo ev = null;
     BwCalendar cal = null;
 
@@ -313,7 +311,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       return null;
     }
 
-    cal = svci.getCalendarsHandler().get(ekey.getColPath());
+    cal = cl.getCollection(ekey.getColPath());
 
     if (cal == null) {
       // Assume no access
@@ -337,10 +335,10 @@ public abstract class EventActionBase extends BwAbstractAction {
       } else {
         rrm = new RecurringRetrievalMode(Rmode.expanded);
       }
-      Collection<EventInfo> evs = svci.getEventsHandler().get(cal.getPath(),
-                                                              ekey.getGuid(),
-                                                              rid, rrm,
-                                                              false);
+      Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
+                                              ekey.getGuid(),
+                                              rid, rrm,
+                                              false);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }
@@ -358,7 +356,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
       RecurringRetrievalMode rrm =
         new RecurringRetrievalMode(Rmode.overrides);
-      ev = svci.getEventsHandler().get(cal.getPath(), ekey.getName(), rrm);
+      ev = cl.getEvent(cal.getPath(), ekey.getName(), rrm);
     }
 
     if (ev == null) {
@@ -381,10 +379,10 @@ public abstract class EventActionBase extends BwAbstractAction {
    */
   protected EventInfo fetchEvent(final BwEvent event,
                                  final BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     EventInfo ei = null;
 
-    BwCalendar cal = svci.getCalendarsHandler().get(event.getColPath());
+    BwCalendar cal = cl.getCollection(event.getColPath());
 
     if (cal == null) {
       // Assume no access
@@ -399,7 +397,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     if (!cal.getCollectionInfo().uniqueKey) {
       /* Use name */
       key = event.getName();
-      ei = svci.getEventsHandler().get(cal.getPath(), key, rrm);
+      ei = cl.getEvent(cal.getPath(), key, rrm);
     } else {
       /* Use uid */
       String uid = event.getUid();
@@ -413,9 +411,9 @@ public abstract class EventActionBase extends BwAbstractAction {
 
       String rid = event.getRecurrenceId();
 
-      Collection<EventInfo> evs = svci.getEventsHandler().get(cal.getPath(),
-                                                              uid, rid, rrm,
-                                                              false);
+      Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
+                                              uid, rid, rrm,
+                                              false);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }
@@ -591,7 +589,6 @@ public abstract class EventActionBase extends BwAbstractAction {
    */
   protected boolean adminEventLocation(final BwActionFormBase form,
                                        final EventInfo ei) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
     BwEvent event = ei.getEvent();
     ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
@@ -608,8 +605,8 @@ public abstract class EventActionBase extends BwAbstractAction {
           return false;
         }
 
-        l = svci.getLocationsHandler().ensureExists(l,
-                                                    cl.getCurrentPrincipalHref()).entity;
+        l = cl.ensureLocationExists(l,
+                                    cl.getCurrentPrincipalHref()).getEntity();
 
         if (changes.changed(PropertyInfoIndex.LOCATION.getPname(),
                             event.getLocation(), l)) {
@@ -624,7 +621,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     try {
       String uid = form.retrieveLocId().getVal();
-      BwLocation loc = svci.getLocationsHandler().get(uid);
+      BwLocation loc = cl.getLocation(uid);
       BwLocation eloc = event.getLocation();
 
       if ((loc == null) || !loc.getPublick()) {
@@ -704,7 +701,7 @@ public abstract class EventActionBase extends BwAbstractAction {
           return false;
         }
 
-        c = cl.ensureContactExists(c, owner);
+        c = cl.ensureContactExists(c, owner).getEntity();
 
         if (changes.changed(PropertyInfoIndex.CONTACT.getPname(),
                             event.getContact(), c)) {
@@ -780,7 +777,7 @@ public abstract class EventActionBase extends BwAbstractAction {
                         final String lang,
                         final String cutype,
                         final String dir) throws Throwable {
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     if (uri == null) {
       form.getErr().emit(ValidationError.invalidUser, "null");
@@ -816,7 +813,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       atts.setRecipients(ev.getRecipients());
     }
 
-    String calAddr = svc.getDirectories().uriToCaladdr(uri);
+    String calAddr = cl.uriToCaladdr(uri);
     if (calAddr == null) {
       form.getErr().emit(ValidationError.invalidUser, uri);
       return forwardNoAction;
@@ -859,7 +856,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       }
     }
 
-    int maxAttendees = svc.getSystemProperties().getMaxAttendeesPerInstance();
+    int maxAttendees = cl.getSystemProperties().getMaxAttendeesPerInstance();
 
     if ((atts.getAttendees() != null) &&
         (atts.getAttendees().size() == maxAttendees)) {
@@ -901,7 +898,6 @@ public abstract class EventActionBase extends BwAbstractAction {
    */
   public int initMeeting(final BwActionFormBase form,
                          final boolean freebusy) throws Throwable {
-    CalSvcI svc = form.fetchSvci();
     Client cl = form.fetchClient();
     BwEvent ev = form.getEvent();
 
@@ -979,19 +975,18 @@ public abstract class EventActionBase extends BwAbstractAction {
     emsg.setSubject(form.getSnsubject());
     emsg.setContent(form.getSntext());
 
-    form.getMailer().post(emsg);
+    form.fetchClient().postMessage(emsg);
 
     return true;
   }
 
   protected boolean notifyEventReg(final EventInfo ei,
                                    final BwActionFormBase form) throws Throwable {
-    CalSvcI svc = form.fetchSvci();
     Client cl = form.fetchClient();
     ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
-    String evregToken = svc.getSystemProperties().getEventregAdminToken();
-    String evregUrl = svc.getSystemProperties().getEventregUrl();
+    String evregToken = cl.getSystemProperties().getEventregAdminToken();
+    String evregUrl = cl.getSystemProperties().getEventregUrl();
 
     if ((evregToken == null) || (evregUrl == null)) {
       // Cannot notify

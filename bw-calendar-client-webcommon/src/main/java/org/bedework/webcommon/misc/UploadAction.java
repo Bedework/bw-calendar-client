@@ -22,6 +22,7 @@ import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
@@ -30,7 +31,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.webcommon.AddEventResult;
@@ -87,24 +87,19 @@ public class UploadAction extends BwAbstractAction {
 
     boolean stripAlarms = request.getBooleanReqPar("stripAlarms", false);
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
     BwCalendar col = null;
 
     String newCalPath = request.getReqPar("newCalPath");
 
-    if (newCalPath != null) {
-      col = svci.getCalendarsHandler().get(newCalPath);
+    if (newCalPath == null) {
+      newCalPath = cl.getPreferredCollectionPath();
     }
 
-    if (col == null) {
-      if (getPublicAdmin(form)) {
-        // Must specify a calendar for public events
-        form.getErr().emit(ValidationError.missingCalendar);
-        return forwardRetry;
-      }
+    col = cl.getCollection(newCalPath);
 
-      // Use preferred calendar
-      col = svci.getCalendarsHandler().getPreferred();
+    if (col == null) {
+      form.getErr().emit(ValidationError.missingCalendar);
     }
 
     FormFile upFile = form.getUploadFile();
@@ -130,7 +125,7 @@ public class UploadAction extends BwAbstractAction {
 
       InputStream is = upFile.getInputStream();
 
-      IcalTranslator trans = new IcalTranslator(svci.getIcalCallback());
+      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
       Icalendar ic = trans.fromIcal(col, new InputStreamReader(is));
 
@@ -181,8 +176,8 @@ public class UploadAction extends BwAbstractAction {
 
         if (ei.getNewEvent()) {
           try {
-            UpdateResult eur = svci.getEventsHandler().add(ei, true,
-                                                           false, false);
+            UpdateResult eur = cl.addEvent(ei, true,
+                                           false, false);
 
             AddEventResult aer = new AddEventResult(ev,
                                                     eur.failedOverrides);
@@ -200,7 +195,7 @@ public class UploadAction extends BwAbstractAction {
             form.getErr().emit(cfe.getMessage(), cfe.getExtra());
           }
         } else {
-          svci.getEventsHandler().update(ei, false);
+          cl.updateEvent(ei, false, null);
           numEventsUpdated++;
         }
       }
@@ -229,7 +224,6 @@ public class UploadAction extends BwAbstractAction {
                                     final Icalendar ic,
                                     final BwCalendar cal,
                                     final boolean stripAlarms) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
     // Scheduling method - should contain a single entity
@@ -283,7 +277,7 @@ public class UploadAction extends BwAbstractAction {
         }
       }
 
-      svci.getEventsHandler().add(ei, false, false, true);
+      cl.addEvent(ei, false, false, true);
 
       form.getMsg().emit(ClientMessage.addedEvents, 1);
     }

@@ -54,15 +54,15 @@ public class DeleteCategoryAction extends BwAbstractAction {
 
     BwCategory key = form.getCategory();
 
-    Client.DeleteCategoryResult dcr = form.fetchClient().deleteCategory(key);
+    Client.DeleteReffedEntityResult drer = form.fetchClient().deleteCategory(key);
 
-    if (dcr == null) {
+    if (drer == null) {
       form.getErr().emit(ClientError.unknownCategory, key);
       return forwardNotFound;
     }
 
-    if (!dcr.getDeleted()) {
-      form.setPropRefs(dcr.getReferences());
+    if (!drer.getDeleted()) {
+      form.setPropRefs(drer.getReferences());
 
       form.getErr().emit(ClientError.referencedCategory);
       return forwardInUse;

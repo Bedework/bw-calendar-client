@@ -18,6 +18,8 @@
 */
 package org.bedework.webcommon.misc;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.filter.ObjectFilter;
 import org.bedework.calfacade.BwCalendar;
@@ -28,7 +30,6 @@ import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.webcommon.BwAbstractAction;
@@ -73,7 +74,7 @@ public class WebCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     gotoDateView(form, form.getDate(), form.getViewTypeI());
 
@@ -133,7 +134,7 @@ public class WebCalendarAction extends BwAbstractAction {
 
     String calPath = request.getReqPar("calPath");
     if (calPath != null) {
-      cal = svci.getCalendarsHandler().get(calPath);
+      cal = cl.getCollection(calPath);
       if (cal == null) {
         request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND,
                                         calPath);
@@ -166,14 +167,14 @@ public class WebCalendarAction extends BwAbstractAction {
 
       RecurringRetrievalMode rrm = new RecurringRetrievalMode(Rmode.expanded,
                                                               sdt, edt);
-      Collection<EventInfo> evs = svci.getEventsHandler().getEvents(cal,
-                                                                    filter,
-                                                                    sdt,
-                                                                    edt,
-                                                                    null, // retrieveList
-                                                                    rrm);
+      Collection<EventInfo> evs = cl.getEvents(cal,
+                                               filter,
+                                               sdt,
+                                               edt,
+                                               null, // retrieveList
+                                               rrm);
 
-      IcalTranslator trans = new IcalTranslator(svci.getIcalCallback());
+      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
       net.fortuna.ical4j.model.Calendar c = trans.toIcal(evs,
                                                          Icalendar.methodTypePublish);

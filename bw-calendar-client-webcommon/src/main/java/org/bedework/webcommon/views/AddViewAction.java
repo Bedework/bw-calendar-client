@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,9 +20,9 @@
 package org.bedework.webcommon.views;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -53,7 +53,7 @@ public class AddViewAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     String name = request.getReqPar("name");
 
     if (name == null) {
@@ -71,7 +71,7 @@ public class AddViewAction extends BwAbstractAction {
     BwView view = new BwView();
     view.setName(name);
 
-    if (!svc.getViewsHandler().add(view, makeDefaultView)) {
+    if (!cl.addView(view, makeDefaultView)) {
       form.getErr().emit(ClientError.viewNotAdded, name);
       return forwardNotAdded;
     }

@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,15 +19,15 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.bedework.calsvci.CalSvcI;
+import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwWebUtil;
+
+import org.apache.struts.taglib.TagUtils;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.apache.struts.taglib.TagUtils;
 
 /** Base for simple Tags which provides some commonly used methods
  *
@@ -68,10 +68,10 @@ public class BaseTag extends TagSupport {
     }
   }
 
-  protected CalSvcI getCalSvcI() {
+  protected Client getClient() {
     HttpSession sess = pageContext.getSession();
 
-    return (CalSvcI)sess.getAttribute(BwWebUtil.sessCalSvcIAttr);
+    return (Client)sess.getAttribute(BwWebUtil.sessClientAttr);
   }
 
   /** Return an int value from the property of the named object in the given

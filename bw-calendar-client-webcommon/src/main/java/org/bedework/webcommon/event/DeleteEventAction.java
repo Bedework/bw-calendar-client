@@ -20,12 +20,12 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -68,7 +68,7 @@ public class DeleteEventAction extends EventActionBase {
     boolean publicEvents = publicAdmin || submitApp;
 
     String submitterEmail = null;
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     EventInfo ei = findEvent(request, Rmode.entityOnly);
 
@@ -91,7 +91,7 @@ public class DeleteEventAction extends EventActionBase {
     }
 
     try {
-      if (!svci.getEventsHandler().delete(ei, !publicEvents)) {
+      if (!cl.deleteEvent(ei, !publicEvents)) {
         form.getErr().emit(ClientError.unknownEvent);
         return forwardNoAction;
       }
@@ -99,7 +99,7 @@ public class DeleteEventAction extends EventActionBase {
       if (publicEvents) {
         ev.setDeleted(true);
         try {
-          svci.getEventsHandler().update(ei, true, null);
+          cl.updateEvent(ei, true, null);
         } catch (CalFacadeAccessException cfe1) {
           form.getErr().emit(ClientError.noAccess);
           return forwardNoAction;
@@ -107,7 +107,7 @@ public class DeleteEventAction extends EventActionBase {
       } else {
         try {
           /* Can't really delete it - try annotating it */
-          svci.getEventsHandler().markDeleted(ev);
+          cl.markDeleted(ev);
         } catch (CalFacadeAccessException cfe1) {
           form.getErr().emit(ClientError.noAccess);
           return forwardNoAction;

@@ -24,13 +24,10 @@ import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
-import org.bedework.calfacade.ifs.Directories;
-import org.bedework.calfacade.svc.AdminGroups;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.config.AdminConfig;
 
 import edu.rpi.sss.util.jsp.Request;
@@ -54,20 +51,12 @@ public class AdminUtil implements ForwardDefs {
     boolean debug = getLogger().isDebugEnabled();
 
     BwActionFormBase form = (BwActionFormBase)request.getForm();
-    CalSvcI svc = form.fetchSvci();
     Client cl = form.fetchClient();
 
-    UserAuth ua = svc.getUserAuth();
-    BwAuthUser au = ua.getUser(form.getCurrentUser());
+    BwAuthUser au = cl.getAuthUser(form.getCurrentUser());
 
     if (au == null) {
-      // No authuser entry for this user.
-      if (!form.getCurUserSuperUser()) {
-        return forwardNoAccess;
-      }
-      au = BwAuthUser.makeAuthUser(cl.getCurrentPrincipalHref(),
-                                   UserAuth.publicEventUser);
-      ua.updateUser(au);
+      return forwardNoAccess;
     }
 
     // Refresh current auth user prefs.
@@ -128,11 +117,9 @@ public class AdminUtil implements ForwardDefs {
       return forwardNoAction;
     }
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     try {
-      Directories adgrps = svci.getDirectories();
-
       if (form.retrieveChoosingGroup()) {
         /** This should be the response to presenting a list of groups.
             We handle it here rather than in a separate action to ensure our
@@ -146,7 +133,7 @@ public class AdminUtil implements ForwardDefs {
           return forwardChooseGroup;
         }
 
-        BwAdminGroup adg = (BwAdminGroup)adgrps.findGroup(reqpar);
+        BwAdminGroup adg = (BwAdminGroup)cl.findGroup(reqpar);
         if (adg == null) {
           if (getLogger().isDebugEnabled()) {
             logIt("No user admin group with name " + reqpar);
@@ -164,16 +151,16 @@ public class AdminUtil implements ForwardDefs {
 
       Collection<BwGroup> adgs;
 
-      BwPrincipal p = svci.getUsersHandler().getUser(form.getCurrentUser());
+      BwPrincipal p = cl.getCurrentPrincipal();
       if (p == null) {
         return forwardNoAccess;
       }
 
       if (initCheck || !form.getCurUserSuperUser()) {
         // Always restrict to groups of which we are a member
-        adgs = adgrps.getGroups(p);
+        adgs = cl.getGroups(p);
       } else {
-        adgs = adgrps.getAll(false);
+        adgs = cl.getAllGroups(false);
       }
 
       if (adgs.isEmpty()) {
@@ -183,7 +170,7 @@ public class AdminUtil implements ForwardDefs {
 
         boolean noGroupAllowed =
           ((AdminConfig)form.getConfig()).getNoGroupAllowed();
-        if (svci.getSuperUser() || noGroupAllowed) {
+        if (cl.isSuperUser() || noGroupAllowed) {
           form.assignAdminGroupName(null);
           return forwardNoAction;
         }
@@ -213,11 +200,11 @@ public class AdminUtil implements ForwardDefs {
   private static int setGroup(final Request request,
                               final BwAdminGroup adg) throws Throwable {
     BwActionFormBase form = (BwActionFormBase)request.getForm();
-    CalSvcI svci = form.fetchSvci();
-    Directories adgrps = svci.getDirectories();
+    Client cl = form.fetchClient();
+
     boolean debug = getLogger().isDebugEnabled();
 
-    adgrps.getMembers(adg);
+    cl.getMembers(adg);
 
     if (debug) {
       logIt("Set admin group to " + adg);
@@ -227,7 +214,7 @@ public class AdminUtil implements ForwardDefs {
 
     //int access = getAccess(request, getMessages());
 
-    BwPrincipal p = svci.getUsersHandler().getPrincipal(adg.getOwnerHref());
+    BwPrincipal p = cl.getPrincipal(adg.getOwnerHref());
 
     if ((p == null) ||
         !((BwAbstractAction)request.getAction()).checkSvci(request,
@@ -265,9 +252,7 @@ public class AdminUtil implements ForwardDefs {
       return null;
     }
 
-    CalSvcI svci = form.fetchSvci();
-    Directories adgrps = svci.getDirectories();
-    BwAdminGroup adg = (BwAdminGroup)adgrps.findGroup(groupName);
+    BwAdminGroup adg = (BwAdminGroup)form.fetchClient().findGroup(groupName);
 
     return findCalSuite(form, adg);
   }
@@ -291,19 +276,19 @@ public class AdminUtil implements ForwardDefs {
       return null;
     }
 
-    CalSvcI svci = form.fetchSvci();
-    Directories adgrps = svci.getDirectories();
+    Client cl = form.fetchClient();
+
     /* At this point we still require at least authenticated read access to
      * the target calendar suite
      */
 
     try {
-      BwCalSuiteWrapper cs = svci.getCalSuitesHandler().get(adg);
+      BwCalSuiteWrapper cs = cl.getCalSuite(adg);
       if (cs != null) {
         return cs;
       }
 
-      for (BwGroup parent: ((AdminGroups)adgrps).findGroupParents(adg)) {
+      for (BwGroup parent: cl.findGroupParents(adg)) {
         cs = findCalSuite(form, (BwAdminGroup)parent);
         if (cs != null) {
           return cs;

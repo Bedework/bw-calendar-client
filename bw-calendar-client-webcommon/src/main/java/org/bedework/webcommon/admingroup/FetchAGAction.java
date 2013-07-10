@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon.admingroup;
 
-import org.bedework.calfacade.ifs.Directories;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -46,7 +46,6 @@ public class FetchAGAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    Directories adgrps = form.fetchSvci().getAdminDirectories();
     form.assignChoosingGroup(false); // reset
 
     /** User requested an admin group from the list or by entering the name.
@@ -56,7 +55,9 @@ public class FetchAGAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    BwAdminGroup ag = (BwAdminGroup)adgrps.findGroup(account);
+    Client cl = form.fetchClient();
+
+    BwAdminGroup ag = cl.findAdminGroup(account);
 
     if (debug) {
       if (ag == null) {
@@ -70,7 +71,7 @@ public class FetchAGAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    adgrps.getMembers(ag);
+    cl.getAdminGroupMembers(ag);
     form.setUpdAdminGroup(ag);
     form.assignAddingAdmingroup(false);
 

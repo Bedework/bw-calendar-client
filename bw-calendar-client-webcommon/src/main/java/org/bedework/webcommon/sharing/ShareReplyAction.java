@@ -24,7 +24,6 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteNotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -60,10 +59,9 @@ public class ShareReplyAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defense
     }
 
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
-    NotificationType note = svci.getNotificationsHandler().find(request.getReqPar("name"));
+    NotificationType note = cl.findNotification(request.getReqPar("name"));
 
     if (note == null) {
       return forwardNotFound;
@@ -102,14 +100,13 @@ public class ShareReplyAction extends BwAbstractAction {
     boolean error = false;
 
     try {
-      svci.getSharingHandler().reply(svci.getCalendarsHandler().getHome(),
-                                     reply);
+      cl.sharingReply(reply);
     } catch (CalFacadeForbidden cf) {
       form.getErr().emit(cf.getMessage());
       error = true;
     }
 
-    svci.getNotificationsHandler().remove(note);
+    cl.removeNotification(note);
     form.setNotificationInfo(null); // force a refresh
     cl.flushState();
 

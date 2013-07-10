@@ -118,6 +118,6 @@ public class MailEventAction extends BwAbstractAction {
       val.setFrom("donotreply-" + form.getSyspars().getSystemid());
     }
 
-    form.getMailer().post(val);
+    form.fetchClient().postMessage(val);
   }
 }

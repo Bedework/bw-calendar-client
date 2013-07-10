@@ -20,7 +20,6 @@ package org.bedework.webcommon.sharing;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -68,7 +67,6 @@ public class SubscribeAction extends BwAbstractAction {
       return forwardError;
     }
 
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
     String href = request.getReqPar("colHref");
@@ -85,17 +83,16 @@ public class SubscribeAction extends BwAbstractAction {
       return forwardError;
     }
 
-    SharingI shares = svci.getSharingHandler();
     SharingI.SubscribeResult sr;
 
     if (href != null) {
-      sr = shares.subscribe(href, colName);
+      sr = cl.subscribe(href, colName);
     } else {
-      sr = shares.subscribeExternal(extUrl,
-                                    colName,
-                                    request.getIntReqPar("refresh", -1),
-                                    request.getReqPar("remoteId"),
-                                    request.getReqPar("remotePw"));
+      sr = cl.subscribeExternal(extUrl,
+                                colName,
+                                request.getIntReqPar("refresh", -1),
+                                request.getReqPar("remoteId"),
+                                request.getReqPar("remotePw"));
     }
 
     if (sr.alreadySubscribed) {

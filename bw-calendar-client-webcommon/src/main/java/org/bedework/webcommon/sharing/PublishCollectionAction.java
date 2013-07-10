@@ -20,7 +20,6 @@ package org.bedework.webcommon.sharing;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -57,7 +56,6 @@ public class PublishCollectionAction extends BwAbstractAction {
   //    return forwardNoAccess; // First line of defence
     //}
 
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
     BwCalendar col = request.getCollection(false);
@@ -68,9 +66,9 @@ public class PublishCollectionAction extends BwAbstractAction {
     boolean remove = request.present("remove");
 
     if (remove) {
-      svci.getSharingHandler().unpublish(col);
+      cl.unpublish(col);
     } else {
-      svci.getSharingHandler().publish(col);
+      cl.publish(col);
     }
 
     cl.flushState();

@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,9 +19,9 @@
 package org.bedework.webcommon.filter;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -51,7 +51,7 @@ public class DeleteFilterAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     String name = request.getReqPar("name");
 
     if (name == null) {
@@ -60,7 +60,7 @@ public class DeleteFilterAction extends BwAbstractAction {
     }
 
     try {
-      svc.getFiltersHandler().delete(name);
+      cl.deleteFilter(name);
     } catch (CalFacadeException cfe) {
       if (cfe.getMessage().equals(CalFacadeException.unknownFilter)) {
         form.getErr().emit(ClientError.unknownFilter, name);

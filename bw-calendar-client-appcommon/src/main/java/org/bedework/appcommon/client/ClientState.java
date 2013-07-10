@@ -75,7 +75,7 @@ public class ClientState implements Serializable {
   /** Called if anything is changed which affects the state of the client, e.g
    * switching display flags, deleting collections.
    *
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public void flush() throws CalFacadeException {
     filter = null;
@@ -91,7 +91,7 @@ public class ClientState implements Serializable {
    *
    * @param  val     String view name - null for default
    * @return boolean false - view not found.
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public boolean setCurrentView(final String val) throws CalFacadeException {
     if (val == null) {
@@ -130,7 +130,7 @@ public class ClientState implements Serializable {
    * Unset current calendar.
    *
    * @param  val     view name - null for default
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public void setCurrentView(final BwView val) throws CalFacadeException {
     if (val == null) {
@@ -151,7 +151,7 @@ public class ClientState implements Serializable {
   /** Get the current view we have set
    *
    * @return BwView    named Collection of Collections or null for default
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public BwView getCurrentView() throws CalFacadeException {
     return currentView;
@@ -192,7 +192,7 @@ public class ClientState implements Serializable {
    *
    * @param  vpath  a String virtual path
    * @return false for bad path
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public boolean setVirtualPath(final String vpath) throws CalFacadeException {
     /* We decompose the virtual path into it's elements and then try to
@@ -263,7 +263,7 @@ public class ClientState implements Serializable {
 
   /**
    * @return non-null if setVirtualPath was called succesfully
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public String getVirtualPath() throws CalFacadeException {
     return vpath;
@@ -271,7 +271,7 @@ public class ClientState implements Serializable {
 
   /**
    * @return BwCalendar
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public BwCalendar getCurrentCollection() throws CalFacadeException {
     return null; //cc currentCollection;
@@ -285,7 +285,7 @@ public class ClientState implements Serializable {
    *
    * @param cal
    * @return BwFilter or null
-   * @throws org.bedework.calfacade.exc.CalFacadeException
+   * @throws CalFacadeException
    */
   public FilterBase getViewFilter(final BwCalendar cal) throws CalFacadeException {
     List<String> paths;

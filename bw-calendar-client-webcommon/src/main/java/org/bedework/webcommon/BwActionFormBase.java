@@ -47,16 +47,12 @@ import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calfacade.BwStats.StatsEntry;
 import org.bedework.calfacade.BwString;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
-import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calfacade.mail.MailerIntf;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwView;
@@ -66,9 +62,7 @@ import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.SchedulingI.FbResponses;
-import org.bedework.calsvci.SysparsI;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.webcommon.config.ConfigCommon;
 import org.bedework.webcommon.search.SearchResultEntry;
@@ -88,7 +82,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -115,7 +108,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private Locale requestedLocale;
 
-  private transient CollectionCollator<BwCalendar> calendarCollator;
   private transient CollectionCollator<BwContact> contactCollator;
   private transient CollectionCollator<BwCategory> categoryCollator;
   private transient CollectionCollator<BwLocation> locationCollator;
@@ -129,10 +121,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* Transient result that only needs to stick around till the next action URL */
   private Object lastResult;
 
-  private Collection<StatsEntry> sysStats;
-
-  private transient MailerIntf mailer;
-
   /* Kind of entity we are referring to */
 
   private static int ownersEntity = 1;
@@ -141,8 +129,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private boolean newSession;
 
   private BwSession sess;
-
-  private BwPrincipal userVO;
 
   private long timeIn;
 
@@ -167,7 +153,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   private boolean publicView;
 
-  private CalSvcI calsvci;
   private Client client;
 
   private String[] yearVals;
@@ -428,10 +413,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* ....................................................................
    *                   Authorised user fields
    * .................................................................... */
-
-  /** Auth users for list or mod
-   */
-  private Collection<BwAuthUser> authUsers;
 
   /** Value built out of checked boxes.
    */
@@ -1035,7 +1016,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public boolean getUserMaintOK() {
     try {
-      return fetchSvci().getUserAuth().getUserMaintOK();
+      return fetchClient().getUserMaintOK();
     } catch (Throwable t) {
       err.emit(t);
       return false;
@@ -1043,17 +1024,15 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @param val list of auth users
-   */
-  public void setAuthUsers(final Collection<BwAuthUser> val) {
-    authUsers = val;
-  }
-
-  /**
    * @return list of auth users
    */
   public Collection<BwAuthUser> getAuthUsers() {
-    return authUsers;
+    try {
+      return fetchClient().getAllAuthUsers();
+    } catch (Throwable t) {
+      err.emit(t);
+      return null;
+    }
   }
 
   /** Only called if the flag is set - it's a checkbox.
@@ -1148,7 +1127,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public boolean getAdminGroupMaintOK() {
     try {
-      return fetchSvci().getAdminDirectories().getGroupMaintOK();
+      return fetchClient().getAdminGroupMaintOK();
    } catch (Throwable t) {
       err.emit(t);
       return false;
@@ -1160,7 +1139,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public Collection<BwGroup> getAdminGroups() {
     try {
-      return fetchSvci().getAdminDirectories().getAll(showAgMembers);
+      return fetchClient().getAdminGroups(showAgMembers);
    } catch (Throwable t) {
       err.emit(t);
       return new ArrayList<BwGroup>();
@@ -1184,12 +1163,13 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
             adminGroupsInfo = new ArrayList<BwGroup>();
 
-            Collection<BwGroup> ags = fetchSvci().getAdminDirectories().getAll(false);
+            Collection<BwGroup> ags = fetchClient().getAdminGroups(
+                    false);
 
             for (BwGroup g: ags) {
               BwGroup cg = (BwGroup)g.clone();
 
-              Collection<BwGroup> mgs = fetchSvci().getAdminDirectories().getAllGroups(g);
+              Collection<BwGroup> mgs = fetchClient().getAllAdminGroups(g);
 
               for (BwGroup mg: mgs) {
                 BwGroup cmg = (BwGroup)mg.clone();
@@ -1305,7 +1285,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   public SystemProperties getSyspars() {
     if (syspars == null) {
       try {
-        syspars = fetchSvci().getSystemProperties();
+        syspars = fetchClient().getSystemProperties();
       } catch (Throwable t) {
         getErr().emit(t);
       }
@@ -1340,38 +1320,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public boolean configSet() {
     return config != null;
-  }
-
-  /** Set system statistics
-  *
-  * @param val      Collection of BwStats.StatsEntry objects
-  */
-  public void assignSysStats(final Collection<StatsEntry> val) {
-    sysStats = val;
-  }
-
-  /** Get system statistics
-  *
-  * @return Collection of BwStats.StatsEntry objects
-  */
-  public Collection<StatsEntry> getSysStats() {
-    if (sysStats == null) {
-      sysStats = new ArrayList<StatsEntry>();
-    }
-
-    return sysStats;
-  }
-
-  /** Get system statistics enabled state
-  *
-   * @return boolean true if statistics collection enabled
-  */
-  public boolean getSysStatsEnabled() {
-    try {
-      return fetchSvci().getDbStatsEnabled();
-    } catch (Throwable t) {
-      return false;
-    }
   }
 
   /** This will default to the current user. Superusers will be able to
@@ -1462,7 +1410,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return true for superuser
    */
   public boolean getCurUserSuperUser() {
-    return fetchSvci().getSuperUser();
+    return fetchClient().isSuperUser();
   }
 
   /** apptype
@@ -1612,26 +1560,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public Collection<BwCalSuite> getCalSuites() {
     try {
-      Map<String, SubContext> suiteToContextMap = new HashMap<String, SubContext>();
-      SysparsI sysi = fetchSvci().getSysparsHandler();
-      BwSystem syspars = sysi.get();
-      Set<SubContext> contexts = syspars.getContexts();
-      for (SubContext subContext : contexts) {
-        suiteToContextMap.put(subContext.getCalSuite(), subContext);
-      }
-
-      Collection<BwCalSuite> suites = fetchSvci().getCalSuitesHandler().getAll();
-      for (BwCalSuite bwCalSuite : suites) {
-        SubContext subContext = suiteToContextMap.get(bwCalSuite.getName());
-        if (subContext != null) {
-          bwCalSuite.setContext(subContext.getContextName());
-          bwCalSuite.setDefaultContext(subContext.getDefaultContext());
-        } else {
-          bwCalSuite.setContext(null);
-          bwCalSuite.setDefaultContext(false);
-        }
-      }
-      return suites;
+      return client.getContextCalSuites();
     } catch (Throwable t) {
       err.emit(t);
       return null;
@@ -1746,32 +1675,15 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @return mailer object
-   */
-  public MailerIntf getMailer() {
-    if (mailer == null) {
-      try {
-        mailer = fetchSvci().getMailer();
-      } catch (Throwable t) {
-        err.emit(t);
-      }
-    }
-
-    return mailer;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignUserVO(final BwPrincipal val) {
-    userVO = val;
-  }
-
-  /**
    * @return BwPrincipal
    */
   public BwPrincipal getUserVO() {
-    return userVO;
+    try {
+      return fetchClient().getCurrentPrincipal();
+    } catch (Throwable t) {
+      getErr().emit(t);
+      return null;
+    }
   }
 
   /**
@@ -1828,20 +1740,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String getCurrentAdminUser() {
     return currentAdminUser;
-  }
-
-  /**
-   * @param val svci
-   */
-  public void setCalSvcI(final CalSvcI val) {
-    calsvci = val;
-  }
-
-  /**
-   * @return svci
-   */
-  public CalSvcI fetchSvci() {
-    return calsvci;
   }
 
   /**
@@ -2165,7 +2063,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
         String vn;
 
         try {
-          vn = fetchSvci().getPrefsHandler().get().getPreferredViewPeriod();
+          vn = fetchClient().getPreferences().getPreferredViewPeriod();
           if (vn == null) {
             vn = "week";
           }
@@ -2319,11 +2217,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @throws Throwable
    */
   private FilterBase getFilter(final String filterName) throws Throwable {
-    CalSvcI svci = fetchSvci();
     BwFilterDef fdef = null;
 
     if (filterName != null) {
-      fdef = svci.getFiltersHandler().get(filterName);
+      fdef = fetchClient().getFilter(filterName);
 
       if (fdef == null) {
         getErr().emit(ClientError.unknownFilter, filterName);
@@ -2340,7 +2237,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
     if (fdef.getFilters() == null) {
       try {
-        svci.getFiltersHandler().parse(fdef);
+        fetchClient().parseFilter(fdef);
       } catch (CalFacadeException cfe) {
         getErr().emit(cfe);
       }
@@ -2377,7 +2274,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public Collection<BwView> getViews() {
     try {
-      return fetchSvci().getViewsHandler().getAll();
+      return fetchClient().getAllViews();
     } catch (Throwable t) {
       err.emit(t);
       return null;
@@ -2398,7 +2295,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String getCurrentVirtualPath() {
     try {
-      return client.getVirtualPath();
+      return fetchClient().getVirtualPath();
     } catch (Throwable t) {
       err.emit(t);
       return null;
@@ -2514,7 +2411,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public BwCalendar getPublicCalendars() {
     try {
-      return fetchSvci().getCalendarsHandler().getPublicCalendars();
+      return fetchClient().getPublicCalendars();
     } catch (Throwable t) {
       err.emit(t);
       return null;
@@ -2535,10 +2432,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     try {
       if (getSubmitApp()) {
         // Use submission root
-        calendar = fetchSvci().getCalendarsHandler().get(getConfig().getSubmissionRoot());
+        calendar = fetchClient().getCollection(getConfig().getSubmissionRoot());
       } else {
         // Current owner
-        calendar = fetchSvci().getCalendarsHandler().getHome();
+        calendar = fetchClient().getHome();
       }
 
       if (calendar != null) {
@@ -2549,7 +2446,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
         }
       }
 
-      fetchSvci().getCalendarsHandler().resolveAlias(calendar, true, false);
+      fetchClient().resolveAlias(calendar, true, false);
 
       return calendar;
     } catch (Throwable t) {
@@ -2570,13 +2467,13 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
       if (publicAdmin()) {
         // Use calendar suite owner
-        p = fetchSvci().getUsersHandler().getPrincipal(
+        p = fetchClient().getPrincipal(
                               currentCalSuite.getGroup().getOwnerHref());
       } else {
         p = getUserVO();
       }
 
-      calendar = fetchSvci().getCalendarsHandler().getHome(p, false);
+      calendar = fetchClient().getHome(p, false);
 
       if (calendar != null) {
         Set<String> cos = getCalendarsOpenState();
@@ -2586,7 +2483,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
         }
       }
 
-      fetchSvci().getCalendarsHandler().resolveAlias(calendar, true, false);
+      fetchClient().resolveAlias(calendar, true, false);
 
       return calendar;
     } catch (Throwable t) {
@@ -2605,8 +2502,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public Collection<BwCalendar> getAddContentCalendarCollections() {
     try {
-      return getCalendarCollator().getCollatedCollection(
-                    fetchSvci().getCalendarsHandler().getAddContentCollections(!publicAdmin()));
+      return fetchClient().getAddContentCollections(!publicAdmin());
     } catch (Throwable t) {
       err.emit(t);
       return null;
@@ -2784,7 +2680,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   public BwPreferences getPreferences() {
     if (preferences == null) {
       try {
-        preferences = fetchSvci().getPrefsHandler().get();
+        preferences = fetchClient().getPreferences();
       } catch (Throwable t) {
         err.emit(t);
       }
@@ -2910,6 +2806,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return Collection  preferred categories
    */
   public Collection<BwCategory> getPreferredCategories() {
+    return getCurAuthUserPrefs().getCategoryPrefs().getPreferred();
+    /* XXX Need to return a cached set of these
     try {
       return fetchSvci().getCategoriesHandler().getCached(
                              getCurAuthUserPrefs().getCategoryPrefs().getPreferred());
@@ -2917,6 +2815,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       getErr().emit(t);
       return new ArrayList<BwCategory>();
     }
+*/
   }
 
   /** Get the list of categories for this owner. Return a null list for
@@ -2948,10 +2847,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     Set<BwCategory> cats = new TreeSet<BwCategory>();
 
     try {
-      Set<String> catuids = fetchSvci().getPrefsHandler().get().getDefaultCategoryUids();
+      Set<String> catuids = fetchClient().getPreferences().getDefaultCategoryUids();
 
       for (String uid: catuids) {
-        BwCategory cat = fetchSvci().getCategoriesHandler().get(uid);
+        BwCategory cat = fetchClient().getCategory(uid);
 
         if (cat != null) {
           cats.add(cat);
@@ -4131,7 +4030,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * ==================================================================== */
 
   private BwPrincipal getPublicUser() throws Throwable {
-    return calsvci.getUsersHandler().getUser(calsvci.getBasicSystemProperties().getPublicUser());
+    return fetchClient().getPublicUser();
   }
 
   // ENUM
@@ -4147,10 +4046,11 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
             appTypeWebpublic.equals(appType) ||
             appTypeFeeder.equals(appType)) {
           // Use public
-          vals = calsvci.getCategoriesHandler().get(getPublicUser().getPrincipalRef(), null);
+          vals = fetchClient().getCategories(
+                  getPublicUser().getPrincipalRef());
         } else {
           // Current owner
-          vals = calsvci.getCategoriesHandler().get();
+          vals = fetchClient().getCategories();
 
           if (!publicAdmin() && forEventUpdate &&
               (getEvent() != null) &&
@@ -4163,7 +4063,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
           }
         }
       } else if (kind == editableEntity) {
-        vals = calsvci.getCategoriesHandler().getEditable();
+        vals = fetchClient().getEditableCategories();
       }
 
       if (vals == null) {
@@ -4189,10 +4089,11 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       if (kind == ownersEntity) {
         if (getSubmitApp()) {
           // Use public
-          vals = calsvci.getLocationsHandler().get(getPublicUser().getPrincipalRef(), null);
+          vals = fetchClient().getLocations(
+                  getPublicUser().getPrincipalRef());
         } else {
           // Current owner
-          vals = calsvci.getLocationsHandler().get();
+          vals = fetchClient().getLocations();
 
           if (!publicAdmin() && forEventUpdate && (getEvent() != null)) {
             BwLocation loc = getEvent().getLocation();
@@ -4204,7 +4105,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
           }
         }
       } else if (kind == editableEntity) {
-        vals = calsvci.getLocationsHandler().getEditable();
+        vals = fetchClient().getEditableLocations();
       }
 
       if (vals == null) {
@@ -4229,13 +4130,14 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       if (kind == ownersEntity) {
         if (getSubmitApp()) {
           // Use public
-          vals = calsvci.getContactsHandler().get(getPublicUser().getPrincipalRef(), null);
+          vals = fetchClient().getContacts(
+                  getPublicUser().getPrincipalRef());
         } else {
           // Current owner
-          vals = calsvci.getContactsHandler().get();
+          vals = fetchClient().getContacts();
         }
       } else if (kind == editableEntity) {
-        vals = calsvci.getContactsHandler().getEditable();
+        vals = fetchClient().getEditableContacts();
       }
 
       // Won't need this with 1.5
@@ -4251,14 +4153,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       err.emit(t);
       return new ArrayList<BwContact>();
     }
-  }
-
-  private CollectionCollator<BwCalendar> getCalendarCollator() {
-    if (calendarCollator == null) {
-      calendarCollator = new CollectionCollator<BwCalendar>();
-    }
-
-    return calendarCollator;
   }
 
   private CollectionCollator<BwContact> getContactCollator() {

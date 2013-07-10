@@ -25,7 +25,6 @@ import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.webcommon.BwActionFormBase;
@@ -73,7 +72,6 @@ public class ProcessInboxEvent extends EventActionBase {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     boolean preserveInbox = request.present("preserveInbox");
-    CalSvcI svc = form.fetchSvci();
     Client cl = form.fetchClient();
     form.assignAddingEvent(false);
 
@@ -91,14 +89,14 @@ public class ProcessInboxEvent extends EventActionBase {
 
     // Try to fetch the real copy.
 
-    EventInfo colEi = svc.getScheduler().getStoredMeeting(einf.getEvent());
+    EventInfo colEi = cl.getStoredMeeting(einf.getEvent());
     if (colEi == null) {
       // Copy the inbox copy - will embed it in form
       copyEvent(einf.getEvent(), form);
 
       if (!preserveInbox) {
         // Delete the inbox copy
-        svc.getEventsHandler().delete(einf, false);
+        cl.deleteEvent(einf, false);
       }
 
       form.getMsg().emit(ClientMessage.scheduleColCopyDeleted);
@@ -107,7 +105,7 @@ public class ProcessInboxEvent extends EventActionBase {
 
     if (!preserveInbox) {
       // Delete the inbox copy
-      svc.getEventsHandler().delete(einf, false);
+      cl.deleteEvent(einf, false);
     }
 
     form.setEventInfo(colEi);
@@ -136,7 +134,7 @@ public class ProcessInboxEvent extends EventActionBase {
     setViewDate(form, DateTimeUtil.isoDate(evdt).substring(0, 8));
 
     // Assume we need the collection containing the meeting
-    form.setMeetingCal(svc.getCalendarsHandler().get(ev.getColPath()));
+    form.setMeetingCal(cl.getCollection(ev.getColPath()));
 
     return forwardContinue;
   }

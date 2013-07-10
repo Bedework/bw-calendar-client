@@ -22,8 +22,6 @@ import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.SysparsI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -61,7 +59,6 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    CalSvcI svc = form.fetchSvci();
     Client cl = form.fetchClient();
 
     BwCalSuiteWrapper csw = form.getCalSuite();
@@ -71,25 +68,26 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
     }
 
     if (request.present("delete")) {
-      svc.getCalSuitesHandler().delete(csw);
+      cl.deleteCalSuite(csw);
+
       // After deleting the calendar suite, make sure to remove that suite's
       // sub-context if it has one.
-      SysparsI sysi = form.fetchSvci().getSysparsHandler();
-      BwSystem syspars = sysi.get();
+
+      BwSystem syspars = cl.getSyspars();
       String ctxName = csw.getContext();
       if (ctxName != null) {
         CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
         if (contextHelper.removeSuiteContext(ctxName)) {
-          svc.getSysparsHandler().update(syspars);
+          cl.updateSyspars(syspars);
         }
       }
       return forwardSuccess;
     }
 
-    svc.getCalSuitesHandler().update(csw,
-                                     request.getReqPar("groupName"),
-                                     request.getReqPar("calPath"),
-                                     request.getReqPar("subroot"));
+    cl.updateCalSuite(csw,
+                      request.getReqPar("groupName"),
+                      request.getReqPar("calPath"),
+                      request.getReqPar("subroot"));
 
     /* -------------------------- Access ------------------------------ */
 
@@ -101,13 +99,14 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
     }
 
     /* -------------------------- Context ----------------------------- */
-    SysparsI sysi = form.fetchSvci().getSysparsHandler();
-    BwSystem syspars = sysi.get();
+
+    BwSystem syspars = cl.getSyspars();
     CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
     String newContextName = request.getReqPar("context");
     boolean newDefContext = "true".equals(request.getReqPar("defaultContext"));
+
     if (contextHelper.updateSuiteContext(csw, newContextName, newDefContext)) {
-      svc.getSysparsHandler().update(syspars);
+      cl.updateSyspars(syspars);
     }
     return forwardSuccess;
   }

@@ -19,12 +19,11 @@
 package org.bedework.webcommon.calsuite;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.SysparsI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -57,7 +56,7 @@ public class AddCalSuiteAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     String name = request.getReqPar("name");
 
     if (name == null) {
@@ -78,7 +77,7 @@ public class AddCalSuiteAction extends BwAbstractAction {
       return forwardNotAdded;
     }
 
-    BwCalSuiteWrapper suite = svc.getCalSuitesHandler().add(name, groupName,
+    BwCalSuiteWrapper suite = cl.addCalSuite(name, groupName,
                                       request.getReqPar("calPath"),
                                       request.getReqPar("subroot"));
     if (suite == null) {
@@ -87,13 +86,13 @@ public class AddCalSuiteAction extends BwAbstractAction {
     }
 
     /* -------------------------- Context ----------------------------- */
-    SysparsI sysi = form.fetchSvci().getSysparsHandler();
-    BwSystem syspars = sysi.get();
+    BwSystem syspars = cl.getSyspars();
     CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
     String newContextName = request.getReqPar("context");
     boolean newDefContext = "true".equals(request.getReqPar("defaultContext"));
+
     if (contextHelper.updateSuiteContext(suite, newContextName, newDefContext)) {
-      svc.getSysparsHandler().update(syspars);
+      cl.updateSyspars(syspars);
     }
 
     form.setCalSuiteName(name);

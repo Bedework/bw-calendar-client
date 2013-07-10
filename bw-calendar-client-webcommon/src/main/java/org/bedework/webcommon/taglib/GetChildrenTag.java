@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,9 +19,9 @@
 
 package org.bedework.webcommon.taglib;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.wrappers.CalendarWrapper;
-import org.bedework.calsvci.CalendarsI;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.taglib.TagUtils;
@@ -104,15 +104,15 @@ public class GetChildrenTag extends NameScopePropertyTag {
         throw e;
       }
 
-      CalendarsI cals = getCalSvcI().getCalendarsHandler();
-      BwCalendar cal = cals.resolveAlias((BwCalendar)o, true, false);
+      Client cl = getClient();
+      BwCalendar cal = cl.resolveAlias((BwCalendar)o, true, false);
 
       Collection<BwCalendar> cs;
 
       if (cal == null) {
         cs = new ArrayList();
       } else {
-        cs = cals.getChildren(cal);
+        cs = cl.getChildren(cal);
       }
 
       if (cs != null) {
@@ -121,7 +121,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
         if (getForm() == null) {
           // Assume always open
           for (BwCalendar c: cs) {
-            cals.resolveAlias(c, true, false);
+            cl.resolveAlias(c, true, false);
             if (c instanceof CalendarWrapper) {
               CalendarWrapper ccw = (CalendarWrapper)c;
               ccw.setOpen(true);
@@ -133,7 +133,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
 
           if (cos != null) {
             for (BwCalendar c: cs) {
-              cals.resolveAlias(c, true, false);
+              cl.resolveAlias(c, true, false);
               if (c instanceof CalendarWrapper) {
                 CalendarWrapper ccw = (CalendarWrapper)c;
                 ccw.setOpen(cos.contains(c.getPath()));

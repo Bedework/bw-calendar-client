@@ -20,7 +20,6 @@ package org.bedework.webcommon;
 
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calsvci.CalSuitesI.ResourceClass;
 
 import edu.rpi.sss.util.Util;
 import edu.rpi.sss.util.servlets.ContentType;
@@ -36,7 +35,7 @@ import java.util.List;
 public class CalSuiteResource implements Serializable {
   private BwResource resource;
 
-  private ResourceClass rclass;
+  private String rclass;
 
   private String type;
 
@@ -48,7 +47,7 @@ public class CalSuiteResource implements Serializable {
    * @param rclass
    */
   public CalSuiteResource(final BwResource resource,
-                          final ResourceClass rclass) {
+                          final String rclass) {
     this.resource = resource;
     this.rclass = rclass;
   }
@@ -69,10 +68,10 @@ public class CalSuiteResource implements Serializable {
 
   /** Class of resource
    *
-   * @return String class name
+   * @return String calsuite resource type name
    */
-  public String getResourceClass() {
-    return rclass.name();
+  public String getRClass() {
+    return rclass;
   }
 
   /** Type of resource

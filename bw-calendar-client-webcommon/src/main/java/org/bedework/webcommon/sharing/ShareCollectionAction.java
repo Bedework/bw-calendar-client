@@ -25,7 +25,6 @@ import org.bedework.caldav.util.sharing.SetType;
 import org.bedework.caldav.util.sharing.ShareType;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -78,7 +77,6 @@ public class ShareCollectionAction extends BwAbstractAction {
   //    return forwardNoAccess; // First line of defence
     //}
 
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
     BwCalendar col = request.getCollection(false);
@@ -142,7 +140,7 @@ public class ShareCollectionAction extends BwAbstractAction {
       share.getSet().add(set);
     }
 
-    svci.getSharingHandler().share(col.getOwnerHref(), col, share);
+    cl.share(col.getOwnerHref(), col, share);
 
     if (request.getErrorsEmitted()) {
       return forwardRetry;

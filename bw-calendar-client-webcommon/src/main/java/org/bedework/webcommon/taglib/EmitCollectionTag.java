@@ -62,7 +62,7 @@ public class EmitCollectionTag extends EmitTextTag {
       BwCalendar col = (BwCalendar)getObject(false);
 
       if (col != null) {
-        getCalSvcI().getCalendarsHandler().resolveAlias(col, true, false);
+        getClient().resolveAlias(col, true, false);
       }
 
       String outerTag = null;
@@ -254,7 +254,7 @@ public class EmitCollectionTag extends EmitTextTag {
       return;
     }
 
-    String prefPath = getCalSvcI().getPrefsHandler().get().getDefaultCalendarPath();
+    String prefPath = getClient().getPreferences().getDefaultCalendarPath();
 
     if ((prefPath != null) && prefPath.equals(col.getPath())) {
       emitElement(out, indent, "default-scheduling-collection", null);

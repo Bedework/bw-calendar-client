@@ -18,8 +18,8 @@
 */
 package org.bedework.webcommon.search;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -57,7 +57,7 @@ public class Search extends BwAbstractAction {
     String userStr = null;
     String query = request.getReqPar("query");
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     if (getPublicAdmin(form) || form.getGuest()) {
       publick = true;
@@ -77,15 +77,15 @@ public class Search extends BwAbstractAction {
       if ("none".equals(lim)) {
         // no limits
       } else if ("beforeToday".equals(lim)) {
-        limits = svci.getIndexingHandler().beforeToday();
+        limits = cl.beforeToday();
       } else if ("fromToday".equals(lim)) {
-        limits = svci.getIndexingHandler().fromToday();
+        limits = cl.fromToday();
       }
     }
 
     String principal = null;
     if (!publick && (userStr != null)) {
-      BwPrincipal p = svci.getUsersHandler().getUser(userStr);
+      BwPrincipal p = cl.getUser(userStr);
       if (p == null) {
         // Ignore the request - probing for users?
         return forwardNoAction;
@@ -94,9 +94,8 @@ public class Search extends BwAbstractAction {
       principal = p.getPrincipalRef();
     }
 
-    int rsize = svci.getIndexingHandler().search(publick, principal,
-                                                 query, limits);
-    int pageSize = svci.getPrefsHandler().get().getPageSize();
+    int rsize = cl.search(publick, principal, query, limits);
+    int pageSize = cl.getPreferences().getPageSize();
 
     form.setResultSize(rsize);
     form.setResultStart(0);

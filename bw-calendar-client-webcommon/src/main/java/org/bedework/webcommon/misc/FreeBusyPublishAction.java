@@ -27,7 +27,6 @@ import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.icalendar.VFreeUtil;
@@ -71,7 +70,6 @@ public class FreeBusyPublishAction extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     BwPrincipal principal = null;
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
 
     gotoDateView(form, form.getDate(), form.getViewTypeI());
@@ -100,7 +98,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
 
     String calPath = request.getReqPar("calPath");
     if (calPath != null) {
-      cal = svci.getCalendarsHandler().get(calPath);
+      cal = cl.getCollection(calPath);
       if (cal == null) {
         request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND,
                                         calPath);
@@ -112,7 +110,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
 
     int max = 0;
 
-    if (!svci.getSuperUser()) {
+    if (!cl.isSuperUser()) {
       max = sysp.getMaxFBPeriod();
     }
 
@@ -145,13 +143,13 @@ public class FreeBusyPublishAction extends BwAbstractAction {
       BwOrganizer org = new BwOrganizer();
       org.setOrganizerUri(orgUri);
 
-      BwEvent fb = svci.getScheduler().getFreeBusy(cals,
-                                                   principal,
-                                                   tr.getStart(),
-                                                   tr.getEnd(),
-                                                   org,
-                                                   null, // uid
-                                                   null);
+      BwEvent fb = cl.getFreeBusy(cals,
+                                  principal,
+                                  tr.getStart(),
+                                  tr.getEnd(),
+                                  org,
+                                  null, // uid
+                                  null);
 
       VFreeBusy vfreeBusy = VFreeUtil.toVFreeBusy(fb);
       net.fortuna.ical4j.model.Calendar ical = null;

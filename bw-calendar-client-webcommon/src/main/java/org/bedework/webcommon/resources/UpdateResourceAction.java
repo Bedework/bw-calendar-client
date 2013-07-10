@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,11 +20,10 @@
 package org.bedework.webcommon.resources;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.CalSuitesI.ResourceClass;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -47,13 +46,12 @@ import org.apache.struts.upload.FormFile;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class UpdateResourceAction extends BwAbstractAction {
-  
   /**
    * Constructor.
    */
   public UpdateResourceAction() {
   }
-  
+
   /* (non-Javadoc)
    * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
    */
@@ -68,14 +66,14 @@ public class UpdateResourceAction extends BwAbstractAction {
       return forwardCancelled;
     }
 
-    CalSvcI svc = form.fetchSvci();
+    Client cl = form.fetchClient();
     String name = request.getReqPar("name");
-    String class_ = request.getReqPar("class");
+    String type = request.getReqPar("class");
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
-    if (class_ == null) {
+    if (type == null) {
       form.getErr().emit(ValidationError.missingClass);
       return forwardRetry;
     }
@@ -83,8 +81,7 @@ public class UpdateResourceAction extends BwAbstractAction {
     String update = request.getReqPar("update");
     String remove = request.getReqPar("remove");
 
-    ResourceClass rclass = ResourceClass.valueOf(class_);
-    BwResource r = svc.getCalSuitesHandler().getResource(form.getCurrentCalSuite(), name, rclass);
+    BwResource r = cl.getCSResource(form.getCurrentCalSuite(), name, type);
     if (r == null) {
       form.getErr().emit(ClientError.unknownResource, name);
       return forwardNotFound;
@@ -103,7 +100,7 @@ public class UpdateResourceAction extends BwAbstractAction {
         byte[] bytes = content.getBytes("UTF-8");
         resContent.setContent(bytes);
         r.setContentLength(bytes.length);
-        svc.getResourcesHandler().update(r, true);
+        cl.updateResource(r, true);
       } else if (formFile != null) {
         BwResourceContent resContent = r.getContent();
         if (resContent == null) {
@@ -113,7 +110,7 @@ public class UpdateResourceAction extends BwAbstractAction {
         byte[] bytes = formFile.getFileData();
         resContent.setContent(bytes);
         r.setContentLength(bytes.length);
-        svc.getResourcesHandler().update(r, true);
+        cl.updateResource(r, true);
       } else {
         form.getErr().emit(ClientError.unknownResource, name);
         return forwardNotFound;

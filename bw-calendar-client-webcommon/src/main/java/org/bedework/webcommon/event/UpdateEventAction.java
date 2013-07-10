@@ -600,17 +600,6 @@ public class UpdateEventAction extends EventActionBase {
         notifyEventReg(ei, form);
       }
 
-      Collection<BwCategory> evcats = ev.getCategories();
-      if (evcats != null) {
-        for (BwCategory cat: evcats) {
-          cl.updateAdminPrefs(false, null, cat, null, null);
-        }
-      }
-
-      cl.updateAdminPrefs(false, evCol, null,
-                          ev.getLocation(),
-                          ev.getContact());
-
       resetEvent(form);
     } else {
       form.refreshIsNeeded();

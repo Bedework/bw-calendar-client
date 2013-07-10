@@ -22,8 +22,6 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.NotificationsI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -57,11 +55,9 @@ public class RemoveAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    CalSvcI svci = form.fetchSvci();
     Client cl = form.fetchClient();
-    NotificationsI notes = svci.getNotificationsHandler();
 
-    NotificationType note = notes.find(request.getReqPar("name"));
+    NotificationType note = cl.findNotification(request.getReqPar("name"));
 
     if (note == null) {
       return forwardNotFound;
@@ -70,7 +66,7 @@ public class RemoveAction extends BwAbstractAction {
     int forward;
 
     try {
-      notes.remove(note);
+      cl.removeNotification(note);
       forward = forwardSuccess;
     } catch (CalFacadeAccessException ca) {
       form.getErr().emit(ca.getMessage());

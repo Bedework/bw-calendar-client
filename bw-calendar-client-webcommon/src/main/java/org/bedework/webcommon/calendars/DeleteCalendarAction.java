@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,12 +20,11 @@ package org.bedework.webcommon.calendars;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.BwPreferences;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwView;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.CalendarsI;
+import org.bedework.calfacade.BwPreferences;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -52,17 +51,16 @@ public class DeleteCalendarAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defense
     }
 
-    CalSvcI svci = form.fetchSvci();
-    CalendarsI cals = svci.getCalendarsHandler();
+    Client cl = form.fetchClient();
 
     String calPath = form.getCalendarPath();
-    BwCalendar cal = cals.get(calPath);
+    BwCalendar cal = cl.getCollection(calPath);
     if (cal == null) {
       form.getErr().emit(ClientError.unknownCalendar, calPath);
       return forwardNotFound;
     }
 
-    if (cal.equals(cals.getHome())) {
+    if (cal.equals(cl.getHome())) {
       form.getErr().emit(ClientError.cannotDeleteHome, calPath);
       return forwardInUse;
     }
@@ -78,15 +76,15 @@ public class DeleteCalendarAction extends BwAbstractAction {
 
     boolean reffed = false;
     boolean autoRemove = !getPublicAdmin(form) &&
-      (svci.getPrefsHandler().get().getUserMode() == BwPreferences.basicMode);
+      (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
 
-    for (BwView v:  svci.getViewsHandler().getAll()) {
+    for (BwView v: cl.getAllViews()) {
       List<String> paths = v.getCollectionPaths();
 
       if ((paths != null) && paths.contains(cal.getPath())) {
         if (autoRemove) {
-          if (!svci.getViewsHandler().removeCollection(v.getName(),
-                                                       cal.getPath())) {
+          if (!cl.removeViewCollection(v.getName(),
+                                       cal.getPath())) {
             form.getErr().emit(ClientError.unknownView, v.getName());
             return forwardError;
           }
@@ -102,8 +100,8 @@ public class DeleteCalendarAction extends BwAbstractAction {
     }
 
     try {
-      if (!cals.delete(cal,
-                       request.getBooleanReqPar("deleteContent", false))) {
+      if (!cl.deleteCollection(cal,
+                               request.getBooleanReqPar("deleteContent", false))) {
         form.getErr().emit(ClientError.unknownCalendar, calPath);
         return forwardNotFound;
       }

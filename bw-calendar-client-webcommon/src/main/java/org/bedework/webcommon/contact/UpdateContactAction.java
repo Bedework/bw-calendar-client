@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,8 +20,8 @@ package org.bedework.webcommon.contact;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwContact;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -50,7 +50,7 @@ public class UpdateContactAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    CalSvcI svci = form.fetchSvci();
+    Client cl = form.fetchClient();
 
     String reqpar = request.getReqPar("delete");
 
@@ -59,8 +59,6 @@ public class UpdateContactAction extends BwAbstractAction {
     }
 
     boolean add = form.getAddingContact();
-
-    boolean added = false;
 
     /** We are just updating from the current form values.
      */
@@ -78,24 +76,16 @@ public class UpdateContactAction extends BwAbstractAction {
 
     if (add) {
       c.setPublick(getPublicAdmin(form));
-      if (svci.getContactsHandler().find(c.getName(), null) != null) {
+      if (cl.findContact(c.getName()) != null) {
         form.getErr().emit(ClientError.duplicateContact, c.getName());
         return forwardDuplicate;
       }
-      added = svci.getContactsHandler().ensureExists(c, null).added;
+      c = cl.ensureContactExists(c, null).getEntity();
     } else { // CHGTBL if (vr.changed) {
-      svci.getContactsHandler().update(c);
+      cl.updateContact(c);
     }
 
     form.assignAddingContact(false);
-
-    if ((add && added) | (!add)) {
-      svci.getPrefsHandler().updateAdminPrefs(false,
-                                              null,
-                                              null,
-                                              null,
-                                              c);
-    }
 
     if (add) {
       form.getMsg().emit(ClientMessage.addedContact);

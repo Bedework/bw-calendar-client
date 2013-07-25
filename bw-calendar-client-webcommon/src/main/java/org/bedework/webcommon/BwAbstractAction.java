@@ -141,6 +141,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     BwActionFormBase form = (BwActionFormBase)request.getForm();
     String adminUserId = null;
 
+    BwCallback cb = getCb(request, form);
+
+    int status = cb.in();
+    if (status != HttpServletResponse.SC_OK) {
+      request.getResponse().setStatus(status);
+      getLogger().error("Callback.in status=" + status);
+      return forwards[forwardError];
+    }
+
     setConfig(request, form);
 
     boolean guestMode = form.getConfig().getGuestMode();
@@ -167,15 +176,50 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     BwSession s = getState(request, form, messages, adminUserId);
 
-    // We need to have set the current locale before we do this.
-    form.setCalInfo(CalendarInfo.getInstance());
-
     if (s == null) {
       /* An error should have been emitted.*/
       return forwards[forwardError];
     }
 
     form.setSession(s);
+
+    Collection<Locale> reqLocales = request.getLocales();
+    String reqLoc = request.getReqPar("locale");
+
+    if (reqLoc != null) {
+      if ("default".equals(reqLoc)) {
+        form.setRequestedLocale(null);
+      } else {
+        try {
+          Locale loc = BwLocale.makeLocale(reqLoc);
+          form.setRequestedLocale(loc); // Make it stick
+        } catch (Throwable t) {
+          // Ignore bad parameter?
+        }
+      }
+    }
+
+    Locale loc = form.fetchClient().getUserLocale(reqLocales,
+                                      form.getRequestedLocale());
+
+    if (loc != null) {
+      BwLocale.setLocale(loc);
+      Locale cloc = form.getCurrentLocale();
+      if ((cloc == null) | (!cloc.equals(loc))) {
+        form.setRefreshNeeded(true);
+      }
+      form.setCurrentLocale(loc);
+    }
+
+    BwPrincipal pr = form.fetchClient().getCurrentPrincipal();
+
+    if (form.fetchClient().getPublicAdmin()) {
+      form.assignCurrentAdminUser(pr.getAccount());
+    }
+
+    // We need to have set the current locale before we do this.
+    form.setCalInfo(CalendarInfo.getInstance());
+
     form.setGuest(s.isGuest());
 
     if (form.getGuest()) {
@@ -200,7 +244,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         traceConfig(request);
       }
 
-      reload(bwreq);
+      form.resetFilters();
 
       if (!getPublicAdmin(form)) {
         String viewType = request.getReqPar("viewType");
@@ -406,18 +450,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return forwardNoAction;
   }
 
-  /** Called to reload lists and reset the session. Can be used to force update
-   * of cached lists etc.
-   *
-   * @param request
-   * @throws Throwable
-   */
-  public void reload(final Request request) throws Throwable {
-    BwActionFormBase form = (BwActionFormBase)request.getForm();
-
-    form.setFilters(form.fetchClient().getAllFilters());
-  }
-
   /** Set the config object.
    *
    * @param request
@@ -595,7 +627,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       if (cats != null) {
         for (String catStr: cats) {
-          BwCategory cat = cl.getCategoryByName(catStr);
+          BwCategory cat = cl.getCategoryByName(new BwString(null, catStr));
           if (cat != null) {
             filter = addor(filter, cat);
           }
@@ -1967,45 +1999,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           debugOut("No calsuite found");
         }
       }
-    }
-
-    /** Do some checks first
-     */
-    String authUser = String.valueOf(form.getCurrentUser());
-
-    if (!publicAdmin) {
-      /* We're never allowed to switch identity as a user client.
+    } else {
+      /* !publicAdmin: We're never allowed to switch identity as a user client.
        */
-      if (!authUser.equals(String.valueOf(user))) {
+      if (!user.equals(form.getCurrentUser())) {
         return false;
       }
-    } else if (user == null) {
-      throw new CalFacadeException("Null user parameter for public admin.");
     }
 
-    HttpSession hsess = request.getRequest().getSession();
-    BwCallback cb = (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
-    if (cb == null) {
-      /* create a call back object so the filter can open the service
-      interface */
-
-      cb = new Callback(form, request.getMapping());
-      hsess.setAttribute(BwCallback.cbAttrName, cb);
-    }
-
-    if (debug) {
-      debugMsg("checkSvci-- set req in cb - form action path = " +
-               form.getActionPath() +
-               " conv-type = " + request.getConversationType());
-    }
-    ((Callback)cb).req = request;
-
-    int status = cb.in();
-    if (status != HttpServletResponse.SC_OK) {
-      request.getResponse().setStatus(status);
-      getLogger().error("Callback.in status=" + status);
-      return false;
-    }
+    BwCallback cb = getCb(request, form);
 
     Client client = BwWebUtil.getClient(request.getRequest());
 
@@ -2035,12 +2037,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
           String curUser = pr.getAccount();
 
-          if (!canSwitch && !user.equals(curUser)) {
-            /** Trying to switch but not allowed */
-            return false;
-          }
-
           if (!user.equals(curUser)) {
+            if (!canSwitch) {
+              /** Trying to switch but not allowed */
+              return false;
+            }
+
             /** Switching user */
             client.endTransaction();
             client.close();
@@ -2080,8 +2082,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         form.setClient(client);
         BwWebUtil.setClient(request.getRequest(), client);
 
-        cb.in();
-        reload(request);
+        client.requestIn(request.getConversationType());
+        form.resetFilters();
       }
     } catch (CalFacadeException cfe) {
       throw cfe;
@@ -2089,103 +2091,30 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       throw new CalFacadeException(t);
     }
 
-    Collection<Locale> reqLocales = request.getLocales();
-    String reqLoc = request.getReqPar("locale");
-
-    if (reqLoc != null) {
-      if ("default".equals(reqLoc)) {
-        form.setRequestedLocale(null);
-      } else {
-        try {
-          Locale loc = BwLocale.makeLocale(reqLoc);
-          form.setRequestedLocale(loc); // Make it stick
-        } catch (Throwable t) {
-          // Ignore bad parameter?
-        }
-      }
-    }
-
-    Locale loc = client.getUserLocale(reqLocales,
-                                      form.getRequestedLocale());
-
-    if (loc != null) {
-      BwLocale.setLocale(loc);
-      Locale cloc = form.getCurrentLocale();
-      if ((cloc == null) | (!cloc.equals(loc))) {
-        form.setRefreshNeeded(true);
-      }
-      form.setCurrentLocale(loc);
-    }
-
-    BwPrincipal pr = form.fetchClient().getCurrentPrincipal();
-
-    if (publicAdmin) {
-      form.assignCurrentAdminUser(pr.getAccount());
-    }
-
     return true;
   }
 
-  /* * This method determines the access rights of the current user based on
-   * their assigned roles. There are two sections to this which appear to do
-   * the same thing.
-   *
-   * <p>They are there because at some time servlet containers (jetty for one)
-   * appeared to be broken. Role mapping did not appear to work reliably.
-   * This seems to have something to do with jetty doing internal redirects
-   * to handle login. In the process it seems to lose the appropriate servlet
-   * context and with it the mapping of roles.
-   *
-   * @param req        HttpServletRequest
-   * @param messages   MessageResources
-   * @return int access
-   * @throws CalFacadeException
-   * /
-  private int getAccess(HttpServletRequest req,
-                        MessageResources messages) throws CalFacadeException {
-    int access = 0;
+  private BwCallback getCb(final Request request,
+                           final BwActionFormBase form) throws Throwable {
+    HttpSession hsess = request.getRequest().getSession();
+    BwCallback cb = (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
+    if (cb == null) {
+      /* create a call back object so the filter can open the service
+      interface */
 
-    /** This form works with broken containers.
-     * /
-    if (req.isUserInRole(
-          getMessages().getMessage("org.bedework.role.admin"))) {
-      access += UserAuth.superUser;
+      cb = new Callback(form, request.getMapping());
+      hsess.setAttribute(BwCallback.cbAttrName, cb);
     }
 
-    if (req.isUserInRole(
-          getMessages().getMessage("org.bedework.role.contentadmin"))) {
-      access += UserAuth.contentAdminUser;
+    if (debug) {
+      debugMsg("checkSvci-- set req in cb - form action path = " +
+                       form.getActionPath() +
+                       " conv-type = " + request.getConversationType());
     }
+    ((Callback)cb).req = request;
 
-    if (req.isUserInRole(
-          getMessages().getMessage("org.bedework.role.alert"))) {
-      access += UserAuth.alertUser;
-    }
-
-    if (req.isUserInRole(
-          getMessages().getMessage("org.bedework.role.owner"))) {
-      access += UserAuth.publicEventUser;
-    }
-
-    /** This is how it ought to look
-    if (req.isUserInRole("admin")) {
-      access += UserAuth.superUser;
-    }
-
-    if (req.isUserInRole("contentadmin")) {
-      access += UserAuth.contentAdminUser;
-    }
-
-    if (req.isUserInRole("alert")) {
-      access += UserAuth.alertUser;
-    }
-
-    if (req.isUserInRole("owner")) {
-      access += UserAuth.publicEventUser;
-    } * /
-
-    return access;
-  }*/
+    return cb;
+  }
 
   private void checkRefresh(final BwActionFormBase form) {
     if (!form.isRefreshNeeded()){

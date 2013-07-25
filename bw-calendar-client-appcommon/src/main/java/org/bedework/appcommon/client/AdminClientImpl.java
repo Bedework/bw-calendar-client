@@ -20,6 +20,7 @@ package org.bedework.appcommon.client;
 
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwSystem;
@@ -28,7 +29,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.UserAuth;
-import org.bedework.calfacade.svc.prefs.BwPreferences;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcIPars;

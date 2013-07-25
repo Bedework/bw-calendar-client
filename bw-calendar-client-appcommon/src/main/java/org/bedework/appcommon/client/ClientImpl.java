@@ -126,7 +126,15 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public void updateCategory(final BwCategory val)
           throws CalFacadeException {
-    svci.getCategoriesHandler().update(val);
+    BwCategory pval = svci.getCategoriesHandler().getPersistent(val.getUid());
+
+    if (pval == null) {
+      throw new CalFacadeException("No such category");
+    }
+
+    if (pval.updateFrom(val)) {
+      svci.getCategoriesHandler().update(pval);
+    }
   }
 
   private static class ClDeleteReffedEntityResult implements

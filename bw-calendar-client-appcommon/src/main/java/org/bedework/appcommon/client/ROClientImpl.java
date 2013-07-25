@@ -55,7 +55,6 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.svc.prefs.BwPreferences;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvc.indexing.BwIndexer;
@@ -76,6 +75,7 @@ import org.bedework.webcommon.search.SearchResultEntry;
 
 import edu.rpi.cct.misc.indexing.SearchLimits;
 import edu.rpi.cmt.access.Ace;
+import edu.rpi.cmt.access.Acl;
 import edu.rpi.sss.util.DateTimeUtil;
 import edu.rpi.sss.util.Util;
 import edu.rpi.sss.util.jsp.Request;
@@ -113,6 +113,18 @@ public class ROClientImpl implements Client {
   private ClientState cstate;
 
   private transient CollectionCollator<BwCalendar> calendarCollator;
+
+  protected class AccessChecker implements BwIndexer.AccessChecker {
+    @Override
+    public Acl.CurrentAccess checkAccess(final BwShareableDbentity ent,
+                                         final int desiredAccess,
+                                         final boolean returnResult)
+            throws CalFacadeException {
+      return svci.checkAccess(ent, desiredAccess, returnResult);
+    }
+  }
+
+  protected AccessChecker accessChecker = new AccessChecker();
 
   public ROClientImpl(final String authUser,
                       final String runAsUser,
@@ -183,15 +195,19 @@ public class ROClientImpl implements Client {
     svci.postNotification(new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
                                            reqTimeMillis));
 
+    if (!isOpen()) {
+      return;
+    }
+
     if (conversationType == Request.conversationTypeUnknown) {
       if (actionType != Request.actionTypeAction) {
-        svci.flushAll();
+        flushAll();
       }
     } else {
       // Conversations
       if ((conversationType == Request.conversationTypeEnd) ||
               (conversationType == Request.conversationTypeOnly)) {
-        svci.flushAll();
+        flushAll();
       }
     }
 
@@ -329,12 +345,12 @@ public class ROClientImpl implements Client {
 
   @Override
   public String getCurrentPrincipalHref() throws CalFacadeException {
-    return currentPrincipal.getPrincipalRef();
+    return getCurrentPrincipal().getPrincipalRef();
   }
 
   @Override
   public String getCurrentAccount() throws CalFacadeException {
-    return currentPrincipal.getAccount();
+    return getCurrentPrincipal().getAccount();
   }
 
   public String getCurrentCalendarAddress() throws CalFacadeException {
@@ -744,12 +760,6 @@ public class ROClientImpl implements Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwCategory getCategoryByName(final String name)
-          throws CalFacadeException {
-    return getCategoryByName(new BwString(null, name));
-  }
-
-  @Override
   public BwCategory getCategoryByName(final BwString name)
           throws CalFacadeException {
     return svci.getCategoriesHandler().find(name);
@@ -1017,7 +1027,8 @@ public class ROClientImpl implements Client {
                              to,
                              resSz,
                              pos,
-                             pageSize);
+                             pageSize,
+                             accessChecker);
 
       ger.count = resSz.value;
       ger.paged = true;

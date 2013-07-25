@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.filter;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -37,8 +36,7 @@ public class GetFiltersAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
-    form.setFilters(cl.getAllFilters());
+    form.resetFilters();
     return forwardSuccess;
   }
 }

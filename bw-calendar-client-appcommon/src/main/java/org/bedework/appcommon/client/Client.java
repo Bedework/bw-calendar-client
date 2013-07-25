@@ -34,6 +34,7 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwOrganizer;
+import org.bedework.calfacade.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwString;
@@ -51,7 +52,6 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.svc.prefs.BwPreferences;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.SchedulingI;
@@ -721,14 +721,6 @@ public interface Client extends Serializable {
   /* ------------------------------------------------------------
    *                     Categories
    * ------------------------------------------------------------ */
-
-  /**
-   * @param name unique (for current user) value for the category -
-   *             current default language assumed.
-   * @return category entity or null.
-   * @throws CalFacadeException
-   */
-  BwCategory getCategoryByName(String name) throws CalFacadeException;
 
   /**
    * @param name unique (for current user) value for the category -

@@ -693,16 +693,23 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @param val
    */
-  public void setFilters(final Collection<BwFilterDef> val) {
-    filters = val;
+  public void resetFilters() {
+    filters = null;
   }
 
   /**
    * @return Collection of BwFilterDef
    */
   public Collection<BwFilterDef> getFilters() {
+    if (filters == null) {
+      try {
+        filters = fetchClient().getAllFilters();
+      } catch (Throwable t) {
+        getErr().emit(t);
+      }
+    }
+
     return filters;
   }
 

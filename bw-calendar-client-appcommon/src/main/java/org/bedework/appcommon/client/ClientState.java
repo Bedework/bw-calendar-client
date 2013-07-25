@@ -21,6 +21,7 @@ package org.bedework.appcommon.client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.ColorMap;
 import org.bedework.calfacade.filter.FilterBuilder;
@@ -366,7 +367,7 @@ public class ClientState implements Serializable {
 
     @Override
     public BwCategory getCategoryByName(final String name) throws CalFacadeException {
-      return cl.getCategoryByName(name);
+      return cl.getCategoryByName(new BwString(null, name));
     }
 
     @Override

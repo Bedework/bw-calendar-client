@@ -70,7 +70,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     BwPrincipal principal = null;
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     gotoDateView(form, form.getDate(), form.getViewTypeI());
 

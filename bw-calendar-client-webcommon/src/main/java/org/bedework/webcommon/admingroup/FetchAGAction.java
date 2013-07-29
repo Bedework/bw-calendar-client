@@ -40,13 +40,15 @@ public class FetchAGAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /** Check access
      */
-    if (!form.getCurUserSuperUser()) {
+    if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
 
-    form.assignChoosingGroup(false); // reset
+    cl.setChoosingGroup(false); // reset
 
     /** User requested an admin group from the list or by entering the name.
      */
@@ -54,8 +56,6 @@ public class FetchAGAction extends BwAbstractAction {
     if (account == null) {
       return forwardNotFound;
     }
-
-    Client cl = form.fetchClient();
 
     BwAdminGroup ag = cl.findAdminGroup(account);
 

@@ -77,12 +77,12 @@ public class UpdatePrefsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     BwPreferences prefs;
     boolean tzChanged = false;
 
     /* Refetch the prefs */
-    if (getPublicAdmin(form) && (request.getReqPar("user") != null)) {
+    if (cl.getPublicAdmin() && (request.getReqPar("user") != null)) {
       /* Fetch a given users preferences */
       if (!form.getCurUserSuperUser()) {
         return forwardNoAccess; // First line of defence

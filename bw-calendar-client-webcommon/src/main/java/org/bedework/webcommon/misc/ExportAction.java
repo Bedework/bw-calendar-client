@@ -66,7 +66,7 @@ public class ExportAction extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     String calPath = request.getReqPar("calPath");
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     EventInfo ev = null;
     Collection<EventInfo> evs = null;

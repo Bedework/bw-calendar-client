@@ -58,7 +58,7 @@ public class SetAlarmAction extends BwAbstractAction {
       return forwardNoAction;
     }
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     BwAlarm alarm = new BwAlarm();
 

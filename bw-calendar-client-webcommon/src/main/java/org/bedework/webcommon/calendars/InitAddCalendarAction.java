@@ -19,6 +19,7 @@
 
 package org.bedework.webcommon.calendars;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -45,7 +46,9 @@ public class InitAddCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
 
@@ -59,7 +62,7 @@ public class InitAddCalendarAction extends BwAbstractAction {
 
     /* We need the synch info to get information about connectors
      */
-    form.setSynchInfo(form.fetchClient().getSynchInfo());
+    form.setSynchInfo(cl.getSynchInfo());
 
     /** Set the objects to null so we get new ones.
      */

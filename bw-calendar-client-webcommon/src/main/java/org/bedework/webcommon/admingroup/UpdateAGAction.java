@@ -61,9 +61,11 @@ public class UpdateAGAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /* Check access
      */
-    if (!form.getCurUserSuperUser()) {
+    if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
 
@@ -71,9 +73,7 @@ public class UpdateAGAction extends BwAbstractAction {
       return forwardDelete;
     }
 
-    Client cl = form.fetchClient();
-
-    form.assignChoosingGroup(false); // reset
+    cl.setChoosingGroup(false); // reset
     boolean add = form.getAddingAdmingroup();
 
     BwAdminGroup updgrp = form.getUpdAdminGroup();
@@ -166,7 +166,7 @@ public class UpdateAGAction extends BwAbstractAction {
           updgrp.removeGroupMember(oldMbr);
         }
       } else if (add) {
-        if (!validateNewAdminGroup(form)) {
+        if (!validateNewAdminGroup(cl, form)) {
           return forwardRetry;
         }
 
@@ -174,7 +174,7 @@ public class UpdateAGAction extends BwAbstractAction {
 
         form.assignAddingAdmingroup(false);
       } else {
-        if (!validateAdminGroup(form)) {
+        if (!validateAdminGroup(cl, form)) {
           return forwardRetry;
         }
 
@@ -211,9 +211,9 @@ public class UpdateAGAction extends BwAbstractAction {
     return forwardContinue;
   }
 
-  private boolean validateNewAdminGroup(final BwActionFormBase form) throws Throwable {
+  private boolean validateNewAdminGroup(final Client cl,
+                                        final BwActionFormBase form) throws Throwable {
     boolean ok = true;
-    Client cl = form.fetchClient();
 
     BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
 
@@ -277,9 +277,9 @@ public class UpdateAGAction extends BwAbstractAction {
     return ok;
   }
 
-  private boolean validateAdminGroup(final BwActionFormBase form) throws Throwable {
+  private boolean validateAdminGroup(final Client cl,
+                                     final BwActionFormBase form) throws Throwable {
     boolean ok = true;
-    Client cl = form.fetchClient();
 
     BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
 

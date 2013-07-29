@@ -56,7 +56,6 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.webcommon.search.SearchResultEntry;
 
 import edu.rpi.cct.misc.indexing.SearchLimits;
 import edu.rpi.cmt.access.Ace;
@@ -73,6 +72,14 @@ import java.util.Locale;
  * @author  Mike Douglass douglm  rpi.edu
  */
 public interface Client extends Serializable {
+  /**
+   * @return a copy of this client which can be used for an asynchronous
+   * action. Client copies should be discarded on completion of the request
+   * cycle.
+   * @throws CalFacadeException
+   */
+  Client copy() throws CalFacadeException;
+
   /** Call on the way in once we have a client object.
    *
    * @param conversationType
@@ -241,6 +248,12 @@ public interface Client extends Serializable {
   boolean isSuperUser();
 
   /**
+   *
+   * @return true for guest (read-only) mode.
+   */
+  boolean isGuest();
+
+  /**
    * @return public entity owner
    * @throws CalFacadeException
    */
@@ -274,13 +287,6 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   String getCurrentPrincipalHref() throws CalFacadeException;
-
-  /**
-   *
-   * @return current principal account
-   * @throws CalFacadeException
-   */
-  String getCurrentAccount() throws CalFacadeException;
 
   /** Find the user with the given account name.
    *
@@ -1565,6 +1571,55 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   FilterBase getViewFilter(BwCalendar col) throws CalFacadeException;
+
+  /* ------------------------------------------------------------
+   *                     State of current admin group
+   * ------------------------------------------------------------ */
+
+  /**
+   * @param val
+   * @throws CalFacadeException
+   */
+  void setGroupSet(final boolean val) throws CalFacadeException;
+
+  /**
+   * @return true for group set
+   */
+  boolean getGroupSet();
+
+  /**
+   * @param val
+   * @throws CalFacadeException
+   */
+  void setChoosingGroup(final boolean val) throws CalFacadeException;
+
+  /**
+   * @return true for choosing group
+   */
+  public boolean getChoosingGroup();
+
+  /**
+   * @param val
+   * @throws CalFacadeException
+   */
+  void setOneGroup(final boolean val) throws CalFacadeException;
+
+  /**
+   * @return true if there is only one group
+   */
+  boolean getOneGroup();
+
+  /** Current admin group name, or null for none
+   *
+   * @param val      BwAdminGroup representing users group or null
+   * @throws CalFacadeException
+   */
+  void setAdminGroupName(final String val) throws CalFacadeException;
+
+  /**
+   * @return String admin group name
+   */
+  String getAdminGroupName();
 
   /* ------------------------------------------------------------
    *                     Misc

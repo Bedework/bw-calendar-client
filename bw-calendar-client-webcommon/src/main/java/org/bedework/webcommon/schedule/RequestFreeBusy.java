@@ -76,7 +76,7 @@ public class RequestFreeBusy extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     try {
-      Client cl = form.fetchClient();
+      Client cl = request.getClient();
 
       Collection<String> attendees = request.getReqPars("attendeeUri");
       Set<String> attendeeUris = new TreeSet<String>();

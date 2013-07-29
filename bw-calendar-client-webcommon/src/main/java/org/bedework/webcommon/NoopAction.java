@@ -34,7 +34,7 @@ public class NoopAction extends BwAbstractAction {
     if (form.getNewSession()) {
       form.refreshIsNeeded();
 
-      Client cl = form.fetchClient();
+      Client cl = request.getClient();
 
       String defViewMode = cl.getPreferences().getDefaultViewMode();
 

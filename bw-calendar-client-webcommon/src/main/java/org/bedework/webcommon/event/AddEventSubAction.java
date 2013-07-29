@@ -74,11 +74,14 @@ public class AddEventSubAction extends EventActionBase {
    */
   private int addEventSub(final BwRequest request,
                           final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
-      return forwardNoAction;
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
+      return forwardNoAccess; // First line of defence
     }
 
-    Client cl = form.fetchClient();
     EventKey ekey = form.getEventKey();
 
     if (ekey == null) {

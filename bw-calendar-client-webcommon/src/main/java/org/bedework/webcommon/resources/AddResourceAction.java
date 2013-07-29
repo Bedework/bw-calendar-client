@@ -58,11 +58,14 @@ public class AddResourceAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    Client cl = form.fetchClient();
     String rclass = request.getReqPar("class");
     String name = request.getReqPar("name");
     String contentType = request.getReqPar("ct");

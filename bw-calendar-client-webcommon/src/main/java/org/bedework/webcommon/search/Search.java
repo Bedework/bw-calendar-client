@@ -57,9 +57,9 @@ public class Search extends BwAbstractAction {
     String userStr = null;
     String query = request.getReqPar("query");
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
-    if (getPublicAdmin(form) || form.getGuest()) {
+    if (cl.getPublicAdmin() || cl.isGuest()) {
       publick = true;
     } else {
       publick = request.getReqPar("public") != null;

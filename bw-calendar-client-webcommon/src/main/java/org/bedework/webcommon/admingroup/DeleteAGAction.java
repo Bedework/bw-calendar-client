@@ -56,7 +56,7 @@ public class DeleteAGAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     // Ensure group is not a calendar suite admin group.
     BwCalSuiteWrapper csw = cl.getCalSuite(updgrp);
@@ -67,7 +67,7 @@ public class DeleteAGAction extends BwAbstractAction {
       return forwardContinue;
     }
 
-    form.assignChoosingGroup(false); // reset
+    cl.setChoosingGroup(false); // reset
 
     cl.removeAdminGroup(updgrp);
     form.setUpdAdminGroup(null);

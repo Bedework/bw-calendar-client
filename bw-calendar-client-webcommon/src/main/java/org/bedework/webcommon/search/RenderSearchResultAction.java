@@ -41,7 +41,7 @@ public class RenderSearchResultAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     int start = form.getResultStart();
     int count = form.getResultCt();

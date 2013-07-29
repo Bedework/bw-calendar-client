@@ -47,11 +47,11 @@ public class AdminUtil implements ForwardDefs {
    * @return int foward index
    * @throws Throwable
    */
-  public static int actionSetup(final Request request) throws Throwable {
+  public static int actionSetup(final BwRequest request) throws Throwable {
     boolean debug = getLogger().isDebugEnabled();
 
     BwActionFormBase form = (BwActionFormBase)request.getForm();
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     BwAuthUser au = cl.getAuthUser(form.getCurrentUser());
 
@@ -76,11 +76,8 @@ public class AdminUtil implements ForwardDefs {
     }
 
     if (debug) {
-      logIt("form.getGroupSet()=" + form.getGroupSet());
+      logIt("form.getGroupSet()=" + cl.getGroupSet());
     }
-
-    /** Show the owner we are administering */
-    form.setAdminUserId(cl.getCurrentAccount());
 
     if (debug) {
       logIt("-------- isSuperUser: " + form.getCurUserSuperUser());
@@ -90,7 +87,7 @@ public class AdminUtil implements ForwardDefs {
 
     if (temp != forwardNoAction) {
       if (debug) {
-        logIt("form.getGroupSet()=" + form.getGroupSet());
+        logIt("form.getGroupSet()=" + cl.getGroupSet());
       }
       return temp;
     }
@@ -110,17 +107,18 @@ public class AdminUtil implements ForwardDefs {
    * @return int   forward index
    * @throws Throwable
    */
-  public static int checkGroup(final Request request,
+  public static int checkGroup(final BwRequest request,
                                final boolean initCheck) throws Throwable {
     BwActionFormBase form = (BwActionFormBase)request.getForm();
-    if (form.getGroupSet()) {
+
+    Client cl = request.getClient();
+
+    if (cl.getGroupSet()) {
       return forwardNoAction;
     }
 
-    Client cl = form.fetchClient();
-
     try {
-      if (form.retrieveChoosingGroup()) {
+      if (cl.getChoosingGroup()) {
         /** This should be the response to presenting a list of groups.
             We handle it here rather than in a separate action to ensure our
             client is not trying to bypass the group setting.
@@ -171,16 +169,17 @@ public class AdminUtil implements ForwardDefs {
         boolean noGroupAllowed =
           ((AdminConfig)form.getConfig()).getNoGroupAllowed();
         if (cl.isSuperUser() || noGroupAllowed) {
-          form.assignAdminGroupName(null);
+          cl.setAdminGroupName(null);
+          cl.setGroupSet(true);
           return forwardNoAction;
         }
 
         return forwardNoGroupAssigned;
       }
 
-      form.setOneGroup(false);
+      cl.setOneGroup(false);
       if (adgs.size() == 1) {
-        form.setOneGroup(true);
+        cl.setOneGroup(true);
         return setGroup(request,
                         (BwAdminGroup)adgs.iterator().next());
       }
@@ -188,7 +187,7 @@ public class AdminUtil implements ForwardDefs {
       /** Go ahead and present the possible groups
        */
       form.setUserAdminGroups(adgs);
-      form.assignChoosingGroup(true); // reset
+      cl.setChoosingGroup(true); // reset
 
       return forwardChooseGroup;
     } catch (Throwable t) {
@@ -210,7 +209,8 @@ public class AdminUtil implements ForwardDefs {
       logIt("Set admin group to " + adg);
     }
 
-    form.assignAdminGroupName(adg.getAccount());
+    cl.setAdminGroupName(adg.getAccount());
+    cl.setGroupSet(true);
 
     //int access = getAccess(request, getMessages());
 
@@ -222,8 +222,6 @@ public class AdminUtil implements ForwardDefs {
                                                            isMember(adg, form))) {
       return forwardNoAccess;
     }
-
-    form.setAdminUserId(form.fetchClient().getCurrentAccount());
 
     return forwardNoAction;
   }
@@ -241,20 +239,22 @@ public class AdminUtil implements ForwardDefs {
    *
    * <p>If none is found we return null.
    *
-   * @param form
+   * @param request
+   * @param cl
    * @param groupName
    * @return calendar suite wrapper
    * @throws Throwable
    */
-  public static BwCalSuiteWrapper findCalSuite(final BwActionFormBase form,
+  public static BwCalSuiteWrapper findCalSuite(final Request request,
+                                               final Client cl,
                                                final String groupName) throws Throwable {
     if (groupName == null) {
       return null;
     }
 
-    BwAdminGroup adg = (BwAdminGroup)form.fetchClient().findGroup(groupName);
+    BwAdminGroup adg = (BwAdminGroup)cl.findGroup(groupName);
 
-    return findCalSuite(form, adg);
+    return findCalSuite(request, cl, adg);
   }
 
   /** For an administrative user this is how we determine the calendar suite
@@ -265,18 +265,18 @@ public class AdminUtil implements ForwardDefs {
    *
    * <p>If none is found we return null.
    *
-   * @param form
+   * @param request
+   * @param cl
    * @param adg
    * @return calendar suite wrapper
    * @throws Throwable
    */
-  private static BwCalSuiteWrapper findCalSuite(final BwActionFormBase form,
+  private static BwCalSuiteWrapper findCalSuite(final Request request,
+                                                final Client cl,
                                                 final BwAdminGroup adg) throws Throwable {
     if (adg == null) {
       return null;
     }
-
-    Client cl = form.fetchClient();
 
     /* At this point we still require at least authenticated read access to
      * the target calendar suite
@@ -289,14 +289,14 @@ public class AdminUtil implements ForwardDefs {
       }
 
       for (BwGroup parent: cl.findGroupParents(adg)) {
-        cs = findCalSuite(form, (BwAdminGroup)parent);
+        cs = findCalSuite(request, cl, (BwAdminGroup)parent);
         if (cs != null) {
           return cs;
         }
       }
     } catch (CalFacadeAccessException cfe) {
       // Access is set incorrectly
-      form.getErr().emit(ClientError.noCalsuiteAccess, adg.getPrincipalRef());
+      request.getErr().emit(ClientError.noCalsuiteAccess, adg.getPrincipalRef());
     }
 
     return null;

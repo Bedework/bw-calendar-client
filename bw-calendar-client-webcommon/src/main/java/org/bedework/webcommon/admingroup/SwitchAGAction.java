@@ -19,6 +19,7 @@
 package org.bedework.webcommon.admingroup;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.AdminUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -46,8 +47,10 @@ public class SwitchAGAction extends BwAbstractAction {
     }
     */
 
-    form.assignGroupSet(false);
-    form.assignChoosingGroup(false);
+    Client cl = request.getClient();
+
+    cl.setGroupSet(false);
+    cl.setChoosingGroup(false);
 
     // Back to main menu. Abstract action will do the rest.
 

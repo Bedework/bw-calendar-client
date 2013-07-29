@@ -50,7 +50,7 @@ public class FixTimezonesAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     boolean checkOnly = request.present("check") ;
 
     UpdateFromTimeZonesInfo info = null;

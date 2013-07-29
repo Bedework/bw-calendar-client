@@ -49,7 +49,9 @@ public class PatchCalendarAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
@@ -58,7 +60,6 @@ public class PatchCalendarAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    Client cl = form.fetchClient();
     boolean changed = false;
 
     BwCalendar cal = request.getCalendar(false);

@@ -57,7 +57,11 @@ public class RemoveResourceAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
@@ -65,8 +69,6 @@ public class RemoveResourceAction extends BwAbstractAction {
     if (cancel != null) {
       return forwardCancelled;
     }
-
-    Client cl = form.fetchClient();
 
     String name = request.getReqPar("name");
     if (name == null) {

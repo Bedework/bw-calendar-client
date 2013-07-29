@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.Attendees;
@@ -41,7 +42,9 @@ public class FetchEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (getPublicAdmin(form) && !form.getAuthorisedUser()) {
+    Client cl = request.getClient();
+
+    if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
       return forwardNoAccess;
     }
 

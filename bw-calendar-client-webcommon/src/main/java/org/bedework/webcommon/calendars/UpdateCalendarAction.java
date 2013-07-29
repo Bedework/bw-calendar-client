@@ -67,7 +67,9 @@ public class UpdateCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
@@ -82,7 +84,6 @@ public class UpdateCalendarAction extends BwAbstractAction {
       return forwardDelete;
     }
 
-    Client cl = form.fetchClient();
     boolean add = form.getAddingCalendar();
 
     BwCalendar cal = form.getCalendar();
@@ -266,7 +267,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
 
     /* If non-null will set the calType */
     if (!Util.equalsString(aliasUri, cal.getAliasUri())) {
-      cal.setAliasUri(Util.buildPath(true, aliasUri));
+      cal.setAliasUri(aliasUri);
     }
 
     int refreshRate = 15 * 60; // 15 mins refresh

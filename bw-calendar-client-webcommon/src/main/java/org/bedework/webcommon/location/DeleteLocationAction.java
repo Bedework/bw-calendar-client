@@ -44,8 +44,12 @@ public class DeleteLocationAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest() ||
-        (getPublicAdmin(form) && !form.getAuthorisedUser())) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest() ||
+        (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
 
@@ -57,8 +61,6 @@ public class DeleteLocationAction extends BwAbstractAction {
     }
 
     form.setPropRefs(null);
-
-    Client cl = form.fetchClient();
 
     BwLocation loc = cl.getLocation(uid);
 

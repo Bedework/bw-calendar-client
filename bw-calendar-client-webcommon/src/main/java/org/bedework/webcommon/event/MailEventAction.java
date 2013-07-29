@@ -20,6 +20,7 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.mail.Message;
@@ -61,7 +62,7 @@ public class MailEventAction extends BwAbstractAction {
 
     String recipient = form.getLastEmail();
     if (recipient == null) {
-      form.getErr().emit(ClientError.mailNoRecipient, 1);
+      request.getErr().emit(ClientError.mailNoRecipient, 1);
       return forwardRetry;
     }
 
@@ -76,11 +77,13 @@ public class MailEventAction extends BwAbstractAction {
     emsg.setMailTo(to);
     emsg.setSubject(ev.getSummary());
 
-    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(form.fetchClient()));
+    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(request.getClient()));
 
     Calendar cal = trans.toIcal(ei, Icalendar.methodTypePublish);
     mailMessage(emsg, cal.toString(),
-                "event.ics", "text/calendar", form);
+                "event.ics", "text/calendar",
+                form.getSyspars().getSystemid(),
+                request.getClient());
 
     form.getMsg().emit(ClientMessage.mailedEvent);
 
@@ -97,14 +100,16 @@ public class MailEventAction extends BwAbstractAction {
    * @param att      String val to attach - e.g event, todo
    * @param name     name for attachment
    * @param type     mimetype for attachment
-   * @param form
+   * @param systemid
+   * @param cl
    * @throws Throwable
    */
   private void mailMessage(final Message val,
                            final String att,
                            final String name,
                            final String type,
-                           final BwActionFormBase form) throws Throwable {
+                           final String systemid,
+                           final Client cl) throws Throwable {
     ObjectAttachment oa = new ObjectAttachment();
 
     oa.setOriginalName(name);
@@ -115,9 +120,9 @@ public class MailEventAction extends BwAbstractAction {
 
     if (val.getFrom() == null) {
       // This should be a property
-      val.setFrom("donotreply-" + form.getSyspars().getSystemid());
+      val.setFrom("donotreply-" + systemid);
     }
 
-    form.fetchClient().postMessage(val);
+    cl.postMessage(val);
   }
 }

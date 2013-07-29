@@ -43,10 +43,12 @@ public class DeleteCategoryAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /** Check access
      */
-    if (form.getGuest() ||
-        (getPublicAdmin(form) && !form.getAuthorisedUser())) {
+    if (cl.isGuest() ||
+        (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
 
@@ -54,7 +56,7 @@ public class DeleteCategoryAction extends BwAbstractAction {
 
     BwCategory key = form.getCategory();
 
-    Client.DeleteReffedEntityResult drer = form.fetchClient().deleteCategory(key);
+    Client.DeleteReffedEntityResult drer = cl.deleteCategory(key);
 
     if (drer == null) {
       form.getErr().emit(ClientError.unknownCategory, key);

@@ -46,7 +46,7 @@ public class SearchResultParams extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    Client cl =form.fetchClient();
+    Client cl = request.getClient();
 
     int pageNum = request.getIntReqPar("pageNum", -1);
     int start;

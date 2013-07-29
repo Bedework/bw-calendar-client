@@ -17,24 +17,57 @@
     under the License.
 */
 
-package org.bedework.appcommon;
+package org.bedework.webcommon;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
+import org.bedework.appcommon.client.Client;
 
-/** After hours of attempting to access the init parameters via the request
- * (jboss + jetty 4.2.11 I've created this class to get access to the
- * servlet.
- * <p>I'll return to this later
+import java.io.Serializable;
+
+/** A module represents a client and its associated state. A module
+ * subclass may have fields visible to jsp.
+ *
+ * @author Mike Douglass   douglm  rpi.edu
  */
-public class UserAuthPar {
+public class BwModule implements Serializable {
+  private String moduleName;
+  private Client cl;
+
+  public BwModule(String moduleName,
+                  Client cl) {
+    this.moduleName = moduleName;
+    this.cl = cl;
+  }
+
+  /**
+   * @param val
+   */
+  public void assignModuleName(final String val) {
+    moduleName = val;
+  }
+
+  /**
+   * @return String
+   */
+  public String fetchModuleName() {
+    return moduleName;
+  }
+
+  /** Avoid any access via requests
+   *
+   * @param val
+   */
+  public void assignClient(Client val) {
+    cl = val;
+  }
+
   /**
    *
+   * @return the client object
    */
-  public HttpServlet svlt;
-  /**
-   *
-   */
-  public HttpServletRequest req;
+  public Client fetchClient() {
+    return cl;
+  }
+
+
 }
 

@@ -90,7 +90,8 @@ public class AttendeeAction extends EventActionBase {
           if (debug) {
             debugMsg(att.toString());
           }
-          res = doAttendee(form, request.present("delete"),
+          res = doAttendee(request,
+                           form, request.present("delete"),
                            request.present("update"),
                            false,            // recipient
                            true,             // attendee
@@ -116,7 +117,8 @@ public class AttendeeAction extends EventActionBase {
       String uri = request.getReqPar("uri");
 
       if (uri != null) {
-        res = doAttendee(form, request.present("delete"),
+        res = doAttendee(request,
+                         form, request.present("delete"),
                          request.present("update"),
                          request.present("recipient"),
                          request.present("attendee"),
@@ -145,6 +147,9 @@ public class AttendeeAction extends EventActionBase {
     String intunitStr = request.getReqPar("intunit");
     int interval = request.getIntReqPar("interval", 1);
 
-    return doFreeBusy(form, form.getAttendees(), st, et, intunitStr, interval);
+    return doFreeBusy(request,
+                      form,
+                      form.getAttendees(),
+                      st, et, intunitStr, interval);
   }
 }

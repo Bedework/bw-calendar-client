@@ -74,7 +74,7 @@ public class WebCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     gotoDateView(form, form.getDate(), form.getViewTypeI());
 

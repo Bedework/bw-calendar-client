@@ -56,7 +56,7 @@ public class RenderCalendarAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    BwCalendar calendar = form.fetchClient().getCollection(calPath);
+    BwCalendar calendar = request.getClient().getCollection(calPath);
 
     if (debug) {
       if (calendar == null) {

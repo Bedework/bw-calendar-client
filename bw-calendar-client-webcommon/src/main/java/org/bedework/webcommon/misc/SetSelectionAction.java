@@ -80,7 +80,7 @@ public class SetSelectionAction extends BwAbstractAction {
       return forwardNoAction;
     }
 
-    if (!form.fetchClient().setVirtualPath(vpath)) {
+    if (!request.getClient().setVirtualPath(vpath)) {
       form.getErr().emit(ClientError.badVpath, vpath);
       return forwardNoAction;
     }
@@ -102,7 +102,7 @@ public class SetSelectionAction extends BwAbstractAction {
       view.setName("--temp--");
       view.setCollectionPaths(vpaths);
       view.setConjunction(request.getBooleanReqPar("conjunction", false));
-      form.fetchClient().setCurrentView(view);
+      request.getClient().setCurrentView(view);
 
       form.setSelectionType(BedeworkDefs.selectionTypeView);
       form.refreshIsNeeded();
@@ -110,7 +110,7 @@ public class SetSelectionAction extends BwAbstractAction {
       return forwardSuccess;
     }
 
-    if (!setView(request.getReqPar("viewName"), form)) {
+    if (!setView(request, request.getReqPar("viewName"))) {
       return forwardNoViewDefined;
     }
 

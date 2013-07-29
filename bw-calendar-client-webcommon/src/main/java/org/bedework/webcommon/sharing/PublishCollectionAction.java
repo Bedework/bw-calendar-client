@@ -56,7 +56,7 @@ public class PublishCollectionAction extends BwAbstractAction {
   //    return forwardNoAccess; // First line of defence
     //}
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     BwCalendar col = request.getCollection(false);
     if (col == null) {

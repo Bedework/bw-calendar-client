@@ -643,13 +643,15 @@ public abstract class EventActionBase extends BwAbstractAction {
     }
   }
 
-  protected boolean setEventLocation(final EventInfo ei,
+  protected boolean setEventLocation(final BwRequest request,
+                                     final EventInfo ei,
                                      final BwActionFormBase form,
                                      final boolean webSubmit) throws Throwable {
     BwEvent ev = ei.getEvent();
     ChangeTable changes = ei.getChangeset(form.fetchClient().getCurrentPrincipalHref());
 
-    BwLocation loc = getLocation(form, ev.getOwnerHref(), webSubmit);
+    BwLocation loc = getLocation(request.getClient(),
+                                 form, ev.getOwnerHref(), webSubmit);
     BwLocation eloc = ev.getLocation();
 
     if ((eloc == null) && (loc == null)) {
@@ -748,6 +750,7 @@ public abstract class EventActionBase extends BwAbstractAction {
    * then update the event list when we're finished. This may be triggering
    * multiple db updates.
    *
+   * @param request
    * @param form
    * @param delete
    * @param update
@@ -764,7 +767,8 @@ public abstract class EventActionBase extends BwAbstractAction {
    * @return int
    * @throws Throwable
    */
-  public int doAttendee(final BwActionFormBase form,
+  public int doAttendee(final BwRequest request,
+                        final BwActionFormBase form,
                         final boolean delete,
                         final boolean update,
                         final boolean recipient,
@@ -777,10 +781,10 @@ public abstract class EventActionBase extends BwAbstractAction {
                         final String lang,
                         final String cutype,
                         final String dir) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     if (uri == null) {
-      form.getErr().emit(ValidationError.invalidUser, "null");
+      request.getErr().emit(ValidationError.invalidUser, "null");
       return forwardNoAction;
     }
 
@@ -803,7 +807,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     if (!initializing &&
         ((ev.getOrganizer() == null) ||
         (form.getAttendees() == null))) {
-      initMeeting(form, false);
+      initMeeting(request, form, false);
     }
 
     Attendees atts = form.getAttendees();
@@ -891,14 +895,16 @@ public abstract class EventActionBase extends BwAbstractAction {
 
   /** Make an event into a valid meeting object
    *
+   * @param request
    * @param form
    * @param freebusy - true to do the freebusy thing.
    * @return int
    * @throws Throwable
    */
-  public int initMeeting(final BwActionFormBase form,
+  public int initMeeting(final BwRequest request,
+                         final BwActionFormBase form,
                          final boolean freebusy) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     BwEvent ev = form.getEvent();
 
     if (ev.getScheduleMethod() == ScheduleMethods.methodTypeNone) {
@@ -934,7 +940,8 @@ public abstract class EventActionBase extends BwAbstractAction {
       // Add ourselves as an attendee
       String uri = cl.getCurrentCalendarAddress();
 
-      int res = doAttendee(form,
+      int res = doAttendee(request,
+                           form,
                            false, false, true, true,
                            true, // Initializing
                            IcalDefs.partstats[IcalDefs.partstatAccepted],
@@ -955,7 +962,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       return forwardSuccess;
     }
 
-    return doFreeBusy(form, form.getAttendees(),
+    return doFreeBusy(request, form, form.getAttendees(),
                       null, null, null, 1);
   }
 

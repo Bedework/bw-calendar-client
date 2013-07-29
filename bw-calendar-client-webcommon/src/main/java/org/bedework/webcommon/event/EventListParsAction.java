@@ -78,7 +78,7 @@ public class EventListParsAction extends EventActionBase {
         return forwardNull;
       }
 
-      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(form.fetchClient()));
+      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(request.getClient()));
 
       Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
 

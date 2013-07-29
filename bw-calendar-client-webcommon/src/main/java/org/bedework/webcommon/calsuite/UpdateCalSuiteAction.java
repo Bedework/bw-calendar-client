@@ -55,11 +55,11 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
-
-    Client cl = form.fetchClient();
 
     BwCalSuiteWrapper csw = form.getCalSuite();
 

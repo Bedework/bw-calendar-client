@@ -46,7 +46,7 @@ public class RenderEventListAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    form.setFormattedEvents(new FormattedEvents(form.fetchClient(), eis));
+    form.setFormattedEvents(new FormattedEvents(request.getClient(), eis));
 
     return forwardContinue;
   }

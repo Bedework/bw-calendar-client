@@ -53,11 +53,11 @@ public class MoveCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
-
-    Client cl = form.fetchClient();
 
     boolean contents = request.present("contents");
 
@@ -82,7 +82,7 @@ public class MoveCalendarAction extends BwAbstractAction {
     cl.flushState();
 
     if (!contents) {
-      return moveCollection(cal, newCal, form);
+      return moveCollection(cl, cal, newCal, form);
     }
 
     cl.moveContents(cal, newCal);
@@ -90,17 +90,16 @@ public class MoveCalendarAction extends BwAbstractAction {
     return forwardContinue;
   }
 
-  private int moveCollection(final BwCalendar cal,
+  private int moveCollection(final Client cl,
+                             final BwCalendar cal,
                              final BwCalendar newCal,
                              final BwActionFormBase form) throws Throwable {
     /* Check for references in views. For user extra simple mode only we will
      * automatically remove the subscription. For others we list the references
      */
 
-    Client cl = form.fetchClient();
-
     boolean reffed = false;
-    boolean autoRemove = !getPublicAdmin(form) &&
+    boolean autoRemove = !cl.getPublicAdmin() &&
       (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
 
     for (BwView v:  cl.getAllViews()) {

@@ -59,16 +59,19 @@ public class DeleteEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
-      return forwardNoAction;
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
+      return forwardNoAccess; // First line of defence
     }
 
-    boolean publicAdmin = getPublicAdmin(form);
+    boolean publicAdmin = cl.getPublicAdmin();
     boolean submitApp = form.getSubmitApp();
     boolean publicEvents = publicAdmin || submitApp;
 
     String submitterEmail = null;
-    Client cl = form.fetchClient();
 
     EventInfo ei = findEvent(request, Rmode.entityOnly);
 

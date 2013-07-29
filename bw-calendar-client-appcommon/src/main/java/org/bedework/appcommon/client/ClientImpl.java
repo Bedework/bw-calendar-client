@@ -56,28 +56,49 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     this();
 
-    CalSvcIPars pars = new CalSvcIPars(authUser,
-                                       runAsUser,
-                                       null,  // calSuiteName,
-                                       false, // publicAdmin,
-                                       false, // Allow non-admin super user
-                                       false, // service
-                                       false, // adminCanEditAllPublicCategories,
-                                       false, // adminCanEditAllPublicLocations,
-                                       false, // adminCanEditAllPublicSponsors,
-                                       false);    // sessionless
-
-    svci = new CalSvcFactoryDefault().getSvc(pars);
-    publicView = false;
+    reinit(authUser, runAsUser);
   }
 
   protected ClientImpl() {
     super();
   }
 
+  public void reinit(final String authUser,
+                     final String runAsUser)
+          throws CalFacadeException {
+    pars = new CalSvcIPars(authUser,
+                           runAsUser,
+                           null,  // calSuiteName,
+                           false, // publicAdmin,
+                           false, // Allow non-admin super user
+                           false, // service
+                           false, // adminCanEditAllPublicCategories,
+                           false, // adminCanEditAllPublicLocations,
+                           false, // adminCanEditAllPublicSponsors,
+                           false);    // sessionless
+
+    svci = new CalSvcFactoryDefault().getSvc(pars);
+  }
+
+  @Override
+  public Client copy() throws CalFacadeException {
+    ClientImpl cl = new ClientImpl();
+
+    cl.pars = (CalSvcIPars)pars.clone();
+
+    cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
+
+    return cl;
+  }
+
   /* ------------------------------------------------------------
    *                     Principals
    * ------------------------------------------------------------ */
+
+  @Override
+  public boolean isGuest() {
+    return false;
+  }
 
   @Override
   public BwPrincipal getOwner() throws CalFacadeException {

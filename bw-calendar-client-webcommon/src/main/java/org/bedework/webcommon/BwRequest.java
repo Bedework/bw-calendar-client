@@ -68,6 +68,10 @@ public class BwRequest extends Request {
     return sess;
   }
 
+  public Client getClient() {
+    return getBwForm().fetchClient();
+  }
+
   /**
    * @return BwActionFormBase
    */
@@ -137,7 +141,7 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public BwFilterDef getFilterDef() throws Throwable {
-    Client cl = getBwForm().fetchClient();
+    Client cl = getClient();
     String name = getReqPar("filterName");
     String fexpr = getReqPar("fexpr");
 
@@ -276,8 +280,6 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public BwCalendar getNewCal(final boolean required) throws Throwable {
-    Client cl = getBwForm().fetchClient();
-
     String newCalPath = getReqPar("newCalPath");
     BwCalendar newCal = null;
 
@@ -288,7 +290,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    newCal = cl.getCollection(newCalPath);
+    newCal = getClient().getCollection(newCalPath);
     if (newCal == null) {
       getErr().emit(ClientError.unknownCalendar, newCalPath);
       return null;
@@ -342,8 +344,6 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public Collection<BwCalendar> getCalendars() throws Throwable {
-    Client cl = getBwForm().fetchClient();
-
     Collection<String> calPaths = getReqPars("calPath");
     Collection<BwCalendar> cals = new ArrayList<>();
 
@@ -352,7 +352,7 @@ public class BwRequest extends Request {
     }
 
     for (String calPath: calPaths) {
-      BwCalendar cal = cl.getCollection(calPath);
+      BwCalendar cal = getClient().getCollection(calPath);
 
       if (cal != null) {
         cals.add(cal);
@@ -408,8 +408,6 @@ public class BwRequest extends Request {
    */
   public BwCalendar getCalendar(final String reqParName,
                                 final boolean required) throws Throwable {
-    Client cl = getBwForm().fetchClient();
-
     String calPath = getReqPar(reqParName);
 
     if (calPath == null) {
@@ -420,7 +418,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    BwCalendar cal = cl.getCollection(calPath);
+    BwCalendar cal = getClient().getCollection(calPath);
 
     if (cal == null) {
       getErr().emit(ClientError.unknownCalendar, calPath);
@@ -475,8 +473,6 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public EventKey makeEventKey(boolean forExport) throws Throwable {
-    Client cl = getBwForm().fetchClient();
-
     String calPath = getReqPar("calPath");
 
     if (calPath == null) {
@@ -485,7 +481,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    BwCalendar cal = cl.getCollection(calPath);
+    BwCalendar cal = getClient().getCollection(calPath);
 
     if (cal == null) {
       // Assume no access

@@ -47,11 +47,11 @@ public class DeleteCalendarAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
-
-    Client cl = form.fetchClient();
 
     String calPath = form.getCalendarPath();
     BwCalendar cal = cl.getCollection(calPath);
@@ -75,7 +75,7 @@ public class DeleteCalendarAction extends BwAbstractAction {
      */
 
     boolean reffed = false;
-    boolean autoRemove = !getPublicAdmin(form) &&
+    boolean autoRemove = !cl.getPublicAdmin() &&
       (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
 
     for (BwView v: cl.getAllViews()) {

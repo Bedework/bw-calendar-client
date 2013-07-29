@@ -35,6 +35,7 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwOrganizer;
+import org.bedework.calfacade.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.BwResource;
@@ -71,7 +72,6 @@ import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.webcommon.CollectionCollator;
-import org.bedework.webcommon.search.SearchResultEntry;
 
 import edu.rpi.cct.misc.indexing.SearchLimits;
 import edu.rpi.cmt.access.Ace;
@@ -96,6 +96,8 @@ import javax.xml.ws.Holder;
  */
 public class ROClientImpl implements Client {
   protected boolean debug;
+
+  protected CalSvcIPars pars;
 
   protected CalSvcI svci;
 
@@ -133,23 +135,43 @@ public class ROClientImpl implements Client {
           throws CalFacadeException {
     this();
 
-    CalSvcIPars pars = new CalSvcIPars(authUser,
-                                       runAsUser,
-                                       calSuiteName,
-                                       false, // publicAdmin,
-                                       false, // Allow non-admin super user
-                                       false, // service
-                                       false, // adminCanEditAllPublicCategories,
-                                       false, // adminCanEditAllPublicLocations,
-                                       false, // adminCanEditAllPublicSponsors,
-                                       false);    // sessionless
+    reinit(authUser, runAsUser, calSuiteName, publicView);
+  }
+
+  protected ROClientImpl() {
+    cstate = new ClientState(this);
+  }
+
+  public void reinit(final String authUser,
+                     final String runAsUser,
+                     final String calSuiteName,
+                     final boolean publicView)
+          throws CalFacadeException {
+    pars = new CalSvcIPars(authUser,
+                           runAsUser,
+                           calSuiteName,
+                           false, // publicAdmin,
+                           false, // Allow non-admin super user
+                           false, // service
+                           false, // adminCanEditAllPublicCategories,
+                           false, // adminCanEditAllPublicLocations,
+                           false, // adminCanEditAllPublicSponsors,
+                           false);    // sessionless
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
   }
 
-  protected ROClientImpl() {
-    cstate = new ClientState(this);
+  @Override
+  public Client copy() throws CalFacadeException {
+    ROClientImpl cl = new ROClientImpl();
+
+    cl.pars = (CalSvcIPars)pars.clone();
+
+    cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
+    cl.publicView = publicView;
+
+    return cl;
   }
 
   @Override
@@ -325,6 +347,11 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public boolean isGuest() {
+    return true;
+  }
+
+  @Override
   public BwPrincipal getPublicUser() throws CalFacadeException {
     return svci.getUsersHandler().getPublicUser();
   }
@@ -346,11 +373,6 @@ public class ROClientImpl implements Client {
   @Override
   public String getCurrentPrincipalHref() throws CalFacadeException {
     return getCurrentPrincipal().getPrincipalRef();
-  }
-
-  @Override
-  public String getCurrentAccount() throws CalFacadeException {
-    return getCurrentPrincipal().getAccount();
   }
 
   public String getCurrentCalendarAddress() throws CalFacadeException {
@@ -1380,6 +1402,50 @@ public class ROClientImpl implements Client {
   public FilterBase getViewFilter(final BwCalendar col)
           throws CalFacadeException {
     return cstate.getViewFilter(col);
+  }
+
+  /* ------------------------------------------------------------
+   *                     State of current admin group
+   * ------------------------------------------------------------ */
+
+  @Override
+  public void setGroupSet(final boolean val) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public boolean getGroupSet() {
+    return false;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public void setChoosingGroup(final boolean val) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public boolean getChoosingGroup() {
+    return false;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public void setOneGroup(final boolean val) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public boolean getOneGroup() {
+    return false;
+  }
+
+  @Override
+  public void setAdminGroupName(final String val) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public String getAdminGroupName() {
+    return null;
   }
 
   /* ------------------------------------------------------------

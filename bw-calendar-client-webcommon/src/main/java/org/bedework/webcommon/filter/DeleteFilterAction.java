@@ -47,11 +47,14 @@ public class DeleteFilterAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    Client cl = form.fetchClient();
     String name = request.getReqPar("name");
 
     if (name == null) {

@@ -84,7 +84,6 @@ import edu.rpi.sss.util.jsp.UtilActionForm;
 import edu.rpi.sss.util.servlets.PresentationState;
 
 import net.fortuna.ical4j.model.Dur;
-
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
@@ -157,20 +156,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (guestMode) {
       form.assignCurrentUser(null);
     } else {
-      adminUserId = form.getCurrentAdminUser();
+      adminUserId = form.fetchCurrentAdminUser();
       if (adminUserId == null) {
         adminUserId = form.getCurrentUser();
-      }
-    }
-
-    if (getPublicAdmin(form)) {
-      /** We may want to masquerade as a different user
-       */
-
-      String temp = request.getReqPar("adminUserId");
-
-      if (temp != null) {
-        adminUserId = temp;
       }
     }
 
@@ -182,6 +170,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     form.setSession(s);
+
+    BwRequest bwreq = new BwRequest(request, s, this);
 
     Collection<Locale> reqLocales = request.getLocales();
     String reqLoc = request.getReqPar("locale");
@@ -199,8 +189,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    Locale loc = form.fetchClient().getUserLocale(reqLocales,
-                                      form.getRequestedLocale());
+    Client cl = form.fetchClient();
+
+    Locale loc = cl.getUserLocale(reqLocales,
+                                  form.getRequestedLocale());
 
     if (loc != null) {
       BwLocale.setLocale(loc);
@@ -211,9 +203,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setCurrentLocale(loc);
     }
 
-    BwPrincipal pr = form.fetchClient().getCurrentPrincipal();
+    BwPrincipal pr = cl.getCurrentPrincipal();
 
-    if (form.fetchClient().getPublicAdmin()) {
+    if (cl.getPublicAdmin()) {
       form.assignCurrentAdminUser(pr.getAccount());
     }
 
@@ -234,10 +226,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       req.setAttribute("org.bedework.action.appbase", appBase);
     }
 
-    Client cl = form.fetchClient();
     BwPreferences prefs = cl.getPreferences();
-
-    BwRequest bwreq = new BwRequest(request, s, this);
 
     if (form.getNewSession()) {
       if (debug) {
@@ -246,7 +235,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       form.resetFilters();
 
-      if (!getPublicAdmin(form)) {
+      if (!cl.getPublicAdmin()) {
         String viewType = request.getReqPar("viewType");
         if (viewType != null) {
           form.setCurViewPeriod(form.getViewTypeI());
@@ -257,9 +246,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         // Set to default view or view in request.
         String viewName = request.getReqPar("viewName");
 
-        if (!setView(viewName, form) && (viewName != null)) {
+        if (!setView(bwreq, viewName) && (viewName != null)) {
           // try default
-          setView(null, form);
+          setView(bwreq, null);
         }
       }
     }
@@ -273,7 +262,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /* Set up ready for the action - may reset svci */
 
-    int temp = actionSetup(request, form);
+    int temp = actionSetup(bwreq, form);
     if (temp != forwardNoAction) {
       return forwards[temp];
     }
@@ -308,14 +297,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       form.setHour24(form.getConfig().getHour24());
-      if (!getPublicAdmin(form) &&
-          !form.getSubmitApp() &&
-          !form.getGuest()) {
+      if (!cl.getPublicAdmin() &&
+              !form.getSubmitApp() &&
+              !form.getGuest()) {
         form.setHour24(prefs.getHour24());
       }
 
       form.setEndDateType(BwPreferences.preferredEndTypeDuration);
-      if (!getPublicAdmin(form) && !form.getGuest()) {
+      if (!cl.getPublicAdmin() && !form.getGuest()) {
         form.setEndDateType(prefs.getPreferredEndType());
       }
     }
@@ -335,7 +324,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardCancelled];
     }
 
-    if (!getPublicAdmin(form) && !form.getGuest()) {
+    if (!cl.getPublicAdmin() && !form.getGuest()) {
       InOutBoxInfo ib = form.getInBoxInfo();
       if (ib == null) {
         ib = new InOutBoxInfo(cl, true);
@@ -372,7 +361,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       forward = forwards[doAction(bwreq, form)];
 
-      if (!getPublicAdmin(form)) {
+      if (!cl.getPublicAdmin()) {
         /* See if we need to refresh */
         checkRefresh(form);
       }
@@ -402,9 +391,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @return int foward index
    * @throws Throwable
    */
-  public int actionSetup(final Request request,
+  public int actionSetup(final BwRequest request,
                          final BwActionFormBase form) throws Throwable {
-    if (getPublicAdmin(form)) {
+    Client cl = request.getClient();
+
+    if (cl.getPublicAdmin()) {
       return AdminUtil.actionSetup(request);
     }
 
@@ -544,13 +535,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return;
   }
 
-  protected void initFields(final BwActionFormBase form) {
-  }
-
   protected int setEventListPars(final BwRequest request,
-                                      final EventListPars elpars) throws Throwable {
+                                 final EventListPars elpars) throws Throwable {
     BwActionFormBase form = request.getBwForm();
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
@@ -578,11 +566,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       BwTimeRange tr = BwDateTimeUtil.getPeriod(request.getReqPar("start"),
-                                              request.getReqPar("end"),
-                                              java.util.Calendar.DATE,
-                                              days,
-                                              java.util.Calendar.DATE,
-                                              max);
+                                                request.getReqPar("end"),
+                                                java.util.Calendar.DATE,
+                                                days,
+                                                java.util.Calendar.DATE,
+                                                max);
 
       if (tr == null) {
         form.getErr().emit(ClientError.badRequest, "dates");
@@ -606,7 +594,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     BwCalendar cal = request.getCalendar(false);
 
-    if ((cal == null) && (getPublicAdmin(form))) {
+    if ((cal == null) && (cl.getPublicAdmin())) {
       BwCalSuite cs = cl.getCalSuite();
       if (cs != null) {
         cal = cl.getCollection(cs.getRootCollectionPath());
@@ -646,7 +634,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
 
-      if (!getPublicAdmin(form)) {
+      if (!cl.getPublicAdmin()) {
         String creatorHref = request.getReqPar("creator");
 
         if (creatorHref != null) {
@@ -658,11 +646,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    if (getPublicAdmin(form)) {
+    if (cl.getPublicAdmin()) {
       boolean ignoreCreator = false;
 
       if ((cal != null) &&
-          (cal.getPath().startsWith(form.getUnencodedSubmissionsRoot()))) {
+              (cal.getPath().startsWith(form.getUnencodedSubmissionsRoot()))) {
         ignoreCreator = true;
       } else if (form.getCurUserSuperUser()) {
         ignoreCreator = "yes".equals(request.getReqPar("ignoreCreator"));
@@ -685,9 +673,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   protected BwDateTime todaysDateTime(final BwActionFormBase form) throws Throwable {
     return BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
-                                    true,
-                                    false,   // floating
-                                    null);   // tzid
+                                      true,
+                                      false,   // floating
+                                      null);   // tzid
   }
 
   protected FilterBase addor(FilterBase filter, final BwCategory cat) {
@@ -744,9 +732,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @return false for not found
    */
-  protected boolean setView(String name,
-                            final BwActionFormBase form) throws CalFacadeException {
-    Client cl = form.fetchClient();
+  protected boolean setView(final BwRequest request,
+                            String name) throws CalFacadeException {
+    BwActionFormBase form = request.getBwForm();
+    Client cl = request.getClient();
 
     if (name == null) {
       BwPreferences prefs = cl.getPreferences();
@@ -754,12 +743,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (name == null) {
-      form.getErr().emit(ClientError.noDefaultView);
+      request.getErr().emit(ClientError.noDefaultView);
       return false;
     }
 
     if (!cl.setCurrentView(name)) {
-      form.getErr().emit(ClientError.unknownView, name);
+      request.getErr().emit(ClientError.unknownView, name);
       return false;
     }
 
@@ -770,22 +759,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /** Find a principal object given a "user" request parameter.
    *
-   * @param request     HttpServletRequest for parameters
-   * @param form
+   * @param request     BwRequest for parameters
    * @return BwPrincipal     null if not found. Messages emitted
    * @throws Throwable
    */
-  protected BwPrincipal findPrincipal(final BwRequest request,
-                                      final BwActionFormBase form) throws Throwable {
+  protected BwPrincipal findPrincipal(final BwRequest request) throws Throwable {
     String str = request.getReqPar("user");
     if (str == null) {
-      form.getErr().emit(ClientError.unknownUser, "null");
+      request.getErr().emit(ClientError.unknownUser, "null");
       return null;
     }
 
-    BwPrincipal p = form.fetchClient().getUser(str);
+    BwPrincipal p = request.getClient().getUser(str);
     if (p == null) {
-      form.getErr().emit(ClientError.unknownUser, str);
+      request.getErr().emit(ClientError.unknownUser, str);
       return null;
     }
 
@@ -856,7 +843,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return secr;
     }
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     Set<BwCategory> cats = new TreeSet<>();
 
     if (extraCats != null) {
@@ -985,6 +972,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   /**
+   * @param request
    * @param form
    * @param atts
    * @param st
@@ -994,13 +982,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @return int
    * @throws Throwable
    */
-  public int doFreeBusy(final BwActionFormBase form,
+  public int doFreeBusy(final BwRequest request,
+                        final BwActionFormBase form,
                         final Attendees atts,
                         final String st,
                         final String et,
                         final String intunitStr,
                         final int interval) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     /*  Start of getting date/time - make a common method? */
 
@@ -1049,8 +1038,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
-                                       fbreq.getScheduleMethod(),
-                                       null, null, false);
+                                    fbreq.getScheduleMethod(),
+                                    null, null, false);
     if (debug) {
       debugMsg(sr.toString());
     }
@@ -1127,7 +1116,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   protected EventInfo findEvent(final BwRequest request,
                                 final Rmode mode) throws Throwable {
-    Client cl = request.getBwForm().fetchClient();
+    Client cl = request.getClient();
     EventInfo ev = null;
 
     BwCalendar cal = request.getCalendar(true);
@@ -1181,10 +1170,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return ev;
   }
 
-  protected BwLocation getLocation(final BwActionFormBase form,
+  protected BwLocation getLocation(final Client cl,
+                                   final BwActionFormBase form,
                                    final String owner,
                                    final boolean webSubmit) throws Throwable {
-    Client cl = form.fetchClient();
     BwLocation loc = null;
 
     if (!webSubmit) {
@@ -1228,13 +1217,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return loc;
   }
 
-  protected BwCalendar findCalendar(final String url,
-                             final BwActionFormBase form) throws CalFacadeException {
+  protected BwCalendar findCalendar(final BwRequest request,
+                                    final String url) throws CalFacadeException {
     if (url == null) {
       return null;
     }
 
-    return form.fetchClient().getCollection(url);
+    return request.getClient().getCollection(url);
   }
 
   /** An image processed to produce a thumbnail and storeable resources
@@ -1264,15 +1253,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   protected ProcessedImage processImage(final BwRequest request,
                                         final FormFile file) {
-    BwActionFormBase form = request.getBwForm();
     ProcessedImage pi = new ProcessedImage();
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     try {
       long maxSize = cl.getUserMaxEntitySize();
 
       if (file.getFileSize() > maxSize) {
-        form.getErr().emit(ValidationError.tooLarge, file.getFileSize(), maxSize);
+        request.getErr().emit(ValidationError.tooLarge, file.getFileSize(), maxSize);
         pi.retry = true;
         return pi;
       }
@@ -1307,7 +1295,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       } else {
         imageCol = cl.getCollection(imagecolPath);
         if (imageCol == null) {
-          form.getErr().emit(ClientError.missingImageDirectory);
+          request.getErr().emit(ClientError.missingImageDirectory);
           return pi;
         }
       }
@@ -1326,7 +1314,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       if (pi.image != null) {
         if (!request.getBooleanReqPar("replaceImage", false)) {
-          form.getErr().emit(ClientError.duplicateImage);
+          request.getErr().emit(ClientError.duplicateImage);
           pi.retry = true;
           return pi;
         }
@@ -1356,7 +1344,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           error(t);
         }
 
-        form.getErr().emit(ClientError.imageError);
+        request.getErr().emit(ClientError.imageError);
         pi.retry = true;
         return pi;
       }
@@ -1407,7 +1395,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     } catch (Throwable t) {
       if (debug) {
         error(t);
-        form.getErr().emit(t);
+        request.getErr().emit(t);
       }
     }
 
@@ -1426,16 +1414,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return thumbFn + "." + thumbType;
-  }
-
-  /** Is this an admin client?
-   *
-   * @param frm
-   * @return boolean  true for a public events admin client
-   * @throws Throwable
-   */
-  public boolean getPublicAdmin(final BwActionFormBase frm) throws Throwable {
-    return frm.getConfig().getPublicAdmin();
   }
 
   /* We should probably return false for a portlet
@@ -1476,7 +1454,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @throws Throwable
    */
   protected String checkLogOut(final Request request)
-               throws Throwable {
+          throws Throwable {
     String temp = request.getReqPar(requestLogout);
     if (temp != null) {
       HttpSession sess = request.getRequest().getSession(false);
@@ -1584,9 +1562,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     /** Close the session.
-    *
-    * @throws Throwable
-    */
+     *
+     * @throws Throwable
+     */
     @Override
     public void close() throws Throwable {
       boolean unlocked = false;
@@ -1891,10 +1869,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       String raddr = request.getRemoteAddr();
       String rhost = request.getRemoteHost();
       info("===============" + appName + ": New session (" +
-                       s.getSessionNum() + ") from " +
-                       rhost + "(" + raddr + ")");
+                   s.getSessionNum() + ") from " +
+                   rhost + "(" + raddr + ")");
 
-      if (!getPublicAdmin(form)) {
+      if (!form.getConfig().getPublicAdmin()) {
         /** Ensure the session timeout interval is longer than our refresh period
          */
         //  Should come from db -- int refInt = s.getRefreshInterval();
@@ -1971,20 +1949,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                     final String user,
                     boolean canSwitch) throws Throwable {
     BwActionFormBase form = (BwActionFormBase)request.getForm();
-    boolean publicAdmin = getPublicAdmin(form);
+    boolean publicAdmin = form.getConfig().getPublicAdmin();
+    boolean guestMode = form.getConfig().getGuestMode();
     String calSuiteName = null;
-    boolean readOnly = false;
 
-    if (user == null) {
+    if (guestMode) {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
       calSuiteName = form.getConfig().getCalSuite();
-      readOnly = true;
     } else if (publicAdmin) {
       /* Calendar suite we are administering is the one we find attached to a
        * group as we proceed up the tree
        */
-      BwCalSuiteWrapper cs = AdminUtil.findCalSuite(form,
+      BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
+                                                    form.fetchClient(),
                                                     form.getAdminGroupName());
       form.setCurrentCalSuite(cs);
 
@@ -2010,6 +1988,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     BwCallback cb = getCb(request, form);
 
     Client client = BwWebUtil.getClient(request.getRequest());
+    boolean reinitClient = false;
 
     try {
       /** Make some checks to see if this is an old - restarted session.
@@ -2022,7 +2001,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         if (!client.isOpen()) {
           //svci.flushAll();
-          client = null;
+          reinitClient = true;
           info("Client interface discarded from old session");
           ((Callback)cb).closeNow(); // So we're not waiting for ourself
         } else if (publicAdmin) {
@@ -2033,7 +2012,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           }
 
           canSwitch = canSwitch || form.getCurUserContentAdminUser() ||
-                      form.getCurUserSuperUser();
+                  form.getCurUserSuperUser();
 
           String curUser = pr.getAccount();
 
@@ -2046,7 +2025,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             /** Switching user */
             client.endTransaction();
             client.close();
-            client = null;
+            reinitClient = true;
             ((Callback)cb).closeNow(); // So we're not waiting for ourself
           }
         }
@@ -2059,12 +2038,35 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                            client.getCurrentPrincipalHref());
         }
 
+        if (reinitClient) {
+          if (debug) {
+            debugMsg("Client-- reinit for user " + user);
+          }
+
+          if (guestMode) {
+            ((ROClientImpl)client).reinit(form.getCurrentUser(),
+                                          user,
+                                          calSuiteName,
+                                          true);
+          } else if (publicAdmin) {
+            ((AdminClientImpl)client).reinit(form.getCurrentUser(),
+                                             user,
+                                             calSuiteName,
+                                             (AdminConfig)form.getConfig());
+          } else {
+            ((ClientImpl)client).reinit(form.getCurrentUser(),
+                                        user);
+          }
+
+          client.requestIn(request.getConversationType());
+          form.resetFilters();
+        }
       } else {
         if (debug) {
           debugMsg("Client-- getResource new object for user " + user);
         }
 
-        if (readOnly) {
+        if (guestMode) {
           client = new ROClientImpl(form.getCurrentUser(),
                                     user,
                                     calSuiteName,
@@ -2120,7 +2122,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (!form.isRefreshNeeded()){
       try {
         // Always returned false; if (!form.fetchSvci().refreshNeeded()) {
-          return;
+        return;
         //}
       } catch (Throwable t) {
         // Not much we can do here

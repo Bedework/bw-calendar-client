@@ -76,11 +76,13 @@ public class AddEventRefAction extends EventActionBase {
    */
   private int addEventRef(final BwRequest request,
                           final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
-      return forwardNoAction;
-    }
+    Client cl = request.getClient();
 
-    Client cl = form.fetchClient();
+    /** Check access
+     */
+    if (cl.isGuest()) {
+      return forwardNoAccess; // First line of defence
+    }
 
 //    EventInfo ei = findEvent(request, Rmode.masterOnly);
 

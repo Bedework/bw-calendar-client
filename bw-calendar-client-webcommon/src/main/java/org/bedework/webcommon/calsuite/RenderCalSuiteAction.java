@@ -50,7 +50,7 @@ public class RenderCalSuiteAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     String name = form.getCalSuiteName();
 

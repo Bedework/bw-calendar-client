@@ -50,11 +50,11 @@ public class RenderResourceAction extends RenderAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     String name = form.getResourceName();
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
     String rclass = form.getResourceClass();
@@ -71,7 +71,7 @@ public class RenderResourceAction extends RenderAction {
 
     BwResource resource = cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
     if (resource == null) {
-      form.getErr().emit(ClientError.unknownResource, name);
+      request.getErr().emit(ClientError.unknownResource, name);
       return forwardRetry;
     }
 

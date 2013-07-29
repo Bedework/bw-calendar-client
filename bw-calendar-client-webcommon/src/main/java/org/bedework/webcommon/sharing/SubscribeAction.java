@@ -67,7 +67,7 @@ public class SubscribeAction extends BwAbstractAction {
       return forwardError;
     }
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     String href = request.getReqPar("colHref");
     String extUrl = null;

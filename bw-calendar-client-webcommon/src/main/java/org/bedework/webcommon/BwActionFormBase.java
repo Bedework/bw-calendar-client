@@ -65,7 +65,7 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.webcommon.config.ConfigCommon;
-import org.bedework.webcommon.search.SearchResultEntry;
+import org.bedework.appcommon.client.SearchResultEntry;
 
 import edu.rpi.cmt.timezones.TimeZoneName;
 import edu.rpi.cmt.timezones.Timezones;
@@ -163,9 +163,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   private boolean showYearData;
 
-  /** Id doing administration, May be a group id */
-  private String adminUserId;
-
   /** Auth prefs for the currently logged in user
    */
   private BwAuthUserPrefs curAuthUserPrefs;
@@ -226,21 +223,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* ....................................................................
    *                       Admin Groups
    * .................................................................... */
-
-  /** True if we have set the user's group.
-   */
-  private boolean groupSet;
-
-  /** True if user is in only one group
-   */
-  private boolean oneGroup;
-
-  /** True if we are choosing the user's group.
-   */
-  private boolean choosingGroup;
-
-  /** User's current group or null. */
-  private String adminGroupName;
 
   /** The groups of which our user is a member
    */
@@ -1329,20 +1311,22 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return config != null;
   }
 
-  /** This will default to the current user. Superusers will be able to
-   * specify a creator.
-   *
-   * @param val    String creator used to limit searches
-   */
-  public void setAdminUserId(final String val) {
-    adminUserId = val;
-  }
-
   /**
    * @return admin userid
    */
   public String getAdminUserId() {
-    return adminUserId;
+    BwPrincipal pr = null;
+    try {
+      pr = fetchClient().getCurrentPrincipal();
+    } catch (CalFacadeException e) {
+      return null;
+    }
+
+    if (pr == null) {
+      return null;
+    }
+
+    return pr.getAccount();
   }
 
   /* ====================================================================
@@ -1609,61 +1593,22 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * ==================================================================== */
 
   /**
-   * @param val
-   */
-  public void assignGroupSet(final boolean val) {
-    groupSet = val;
-  }
-
-  /**
-   * @return true for group set
-   */
-  public boolean getGroupSet() {
-    return groupSet;
-  }
-
-  /**
-   * @param val
-   */
-  public void setOneGroup(final boolean val) {
-    oneGroup = val;
-  }
-
-  /**
    * @return true if there is only one group
    */
   public boolean getOneGroup() {
-    return oneGroup;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignChoosingGroup(final boolean val) {
-    choosingGroup = val;
-  }
-
-  /**
-   * @return true for choosing group
-   */
-  public boolean retrieveChoosingGroup() {
-    return choosingGroup;
-  }
-
-  /** Current admin group name, or null for none
-   *
-   * @param val      BwAdminGroup representing users group or null
-   */
-  public void assignAdminGroupName(final String val) {
-    adminGroupName = val;
-    assignGroupSet(true);
+    return fetchClient().getOneGroup();
   }
 
   /**
    * @return String admin group name
    */
   public String getAdminGroupName() {
-    return adminGroupName;
+    if (fetchClient() == null) {
+      // Not set up yet
+      return null;
+    }
+
+    return fetchClient().getAdminGroupName();
   }
 
   /** The groups of which our user is a member
@@ -1734,7 +1679,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /** This should not be setCurrentAdminUser as that exposes it to the incoming
-   * request.
+   * request. This holds whatever account we are running as. We may be running
+   * as something other than the authenticated account - e.g. public admin
+   * of a calendar suite. We need this to hold that cvalue as we may
+   * not have a client embedded on entry.
    *
    * @param val      String user id
    */
@@ -1745,7 +1693,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /**
    * @return admin user id
    */
-  public String getCurrentAdminUser() {
+  public String fetchCurrentAdminUser() {
     return currentAdminUser;
   }
 

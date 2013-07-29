@@ -143,9 +143,9 @@ public class TimeView implements Serializable {
       FieldPosition f = new FieldPosition(DateFormat.MONTH_FIELD);
 
       DateFormat df = DateFormat.
-              getDateTimeInstance(DateFormat.LONG,
-                                  DateFormat.LONG,
-                                  BwLocale.getLocale());
+          getDateTimeInstance(DateFormat.LONG,
+                              DateFormat.LONG,
+                              BwLocale.getLocale());
       try {
         df.setTimeZone(Timezones.getDefaultTz());
       } catch (Throwable t) {
@@ -380,7 +380,7 @@ public class TimeView implements Serializable {
       BwEvent ev = ei.getEvent();
 
       if ((ev.getEntityType() == IcalDefs.entityTypeTodo)  &&
-              ev.getNoStart()) {
+           ev.getNoStart()) {
         if (today) {
           al.add(ei);
         }
@@ -394,8 +394,8 @@ public class TimeView implements Serializable {
       String evEnd;
 
 //      if (floating) {
-      //      evStart = ev.getDtstart().getDtval();
-      //    evEnd = ev.getDtend().getDtval();
+  //      evStart = ev.getDtstart().getDtval();
+    //    evEnd = ev.getDtend().getDtval();
       //} else {
         evStart = ev.getDtstart().getDate();
         evEnd = ev.getDtend().getDate();
@@ -415,10 +415,10 @@ public class TimeView implements Serializable {
 
       int evstSt;
 
-      //    if (floating) {
-      //    evstSt = evStart.compareTo(endLocal);
+  //    if (floating) {
+    //    evstSt = evStart.compareTo(endLocal);
       //} else {
-      evstSt = evStart.compareTo(end);
+        evstSt = evStart.compareTo(end);
 //      }
 
       if (evstSt >= 0) {
@@ -429,13 +429,13 @@ public class TimeView implements Serializable {
       int evendSt;
 
 //      if (floating) {
-      //      evendSt = evEnd.compareTo(startLocal);
-      //  } else {
-      evendSt = evEnd.compareTo(start);
+  //      evendSt = evEnd.compareTo(startLocal);
+    //  } else {
+        evendSt = evEnd.compareTo(start);
       //}
 
       if ((evendSt > 0) ||
-              (evStart.equals(evEnd) && (evendSt >= 0))) {
+          (evStart.equals(evEnd) && (evendSt >= 0))) {
         // Passed the tests.
 
         /*

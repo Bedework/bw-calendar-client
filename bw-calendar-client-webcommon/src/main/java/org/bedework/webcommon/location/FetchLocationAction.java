@@ -20,6 +20,7 @@
 package org.bedework.webcommon.location;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -41,9 +42,11 @@ public class FetchLocationAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /** Check access
      */
-    if (getPublicAdmin(form) && !form.getAuthorisedUser()) {
+    if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
       return forwardNoAccess;
     }
 
@@ -54,7 +57,7 @@ public class FetchLocationAction extends BwAbstractAction {
 
     BwLocation location = null;
     if (uid != null) {
-      location = form.fetchClient().getLocation(uid);
+      location = cl.getLocation(uid);
     }
 
     if (debug) {

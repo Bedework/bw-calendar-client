@@ -50,28 +50,30 @@ public class DeleteViewAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
-
-    Client cl = form.fetchClient();
 
     String name = request.getReqPar("name");
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
 
     BwView view = cl.findView(name);
 
     if (view == null) {
-      form.getErr().emit(ClientError.unknownView, name);
+      request.getErr().emit(ClientError.unknownView, name);
       return forwardNotFound;
     }
 
     cl.removeView(view);
-    form.getMsg().emit(ClientMessage.deletedView);
+    request.getMsg().emit(ClientMessage.deletedView);
     return forwardSuccess;
   }
 }

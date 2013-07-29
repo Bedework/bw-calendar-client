@@ -52,6 +52,21 @@ public class AdminClientImpl extends ClientImpl {
    */
   private Collection<BwAuthUser> authUsers;
 
+  /** True if we have set the user's group.
+   */
+  private boolean groupSet;
+
+  /** True if user is in only one group
+   */
+  private boolean oneGroup;
+
+  /** True if we are choosing the user's group.
+   */
+  private boolean choosingGroup;
+
+  /** User's current group or null. */
+  private String adminGroupName;
+
   public AdminClientImpl(final String authUser,
                          final String runAsUser,
                          final String calSuiteName,
@@ -59,21 +74,61 @@ public class AdminClientImpl extends ClientImpl {
           throws CalFacadeException {
     super();
 
-    CalSvcIPars pars = new CalSvcIPars(authUser,
-                                       runAsUser,
-                                       calSuiteName,
-                                       true,
-                                       false, // Allow non-admin super user
-                                       false, // service
-                                       conf.getAllowEditAllCategories(),
-                                       conf.getAllowEditAllLocations(),
-                                       conf.getAllowEditAllContacts(),
-                                       false);    // sessionless
+    reinit(authUser, runAsUser, calSuiteName, conf);
+  }
+
+  protected AdminClientImpl() {
+    super();
+  }
+
+  public void reinit(final String authUser,
+                     final String runAsUser,
+                     final String calSuiteName,
+                     final AdminConfig conf)
+          throws CalFacadeException {
+    pars = new CalSvcIPars(authUser,
+                           runAsUser,
+                           calSuiteName,
+                           true,
+                           false, // Allow non-admin super user
+                           false, // service
+                           conf.getAllowEditAllCategories(),
+                           conf.getAllowEditAllLocations(),
+                           conf.getAllowEditAllContacts(),
+                           false);    // sessionless
     svci = new CalSvcFactoryDefault().getSvc(pars);
 
-    this.superUser = svci.getSuperUser();
+    superUser = svci.getSuperUser();
     publicAdmin = true;
     publicView = false;
+  }
+
+  @Override
+  public Client copy() throws CalFacadeException {
+    AdminClientImpl cl = new AdminClientImpl();
+
+    cl.pars = (CalSvcIPars)pars.clone();
+
+    cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
+
+    cl.superUser = svci.getSuperUser();
+    cl.publicAdmin = true;
+
+    cl.setGroupSet(getGroupSet());
+    cl.setChoosingGroup(getChoosingGroup());
+    cl.setOneGroup(getOneGroup());
+    cl.setAdminGroupName(getAdminGroupName());
+
+    return cl;
+  }
+
+  /* ------------------------------------------------------------
+   *                     Principals
+   * ------------------------------------------------------------ */
+
+  @Override
+  public boolean isGuest() {
+    return false;
   }
 
   @Override
@@ -300,5 +355,49 @@ public class AdminClientImpl extends ClientImpl {
     }
 
     return resCol.getPath();
+  }
+
+  /* ------------------------------------------------------------
+   *                     State of current admin group
+   * ------------------------------------------------------------ */
+
+  @Override
+  public void setGroupSet(final boolean val) throws CalFacadeException {
+    groupSet = val;
+  }
+
+  @Override
+  public boolean getGroupSet() {
+    return groupSet;
+  }
+
+  @Override
+  public void setChoosingGroup(final boolean val) throws CalFacadeException {
+    choosingGroup = val;
+  }
+
+  @Override
+  public boolean getChoosingGroup() {
+    return choosingGroup;
+  }
+
+  @Override
+  public void setOneGroup(final boolean val) throws CalFacadeException {
+    oneGroup = val;
+  }
+
+  @Override
+  public boolean getOneGroup() {
+    return oneGroup;
+  }
+
+  @Override
+  public void setAdminGroupName(final String val) throws CalFacadeException {
+    adminGroupName = val;
+  }
+
+  @Override
+  public String getAdminGroupName() {
+    return adminGroupName;
   }
 }

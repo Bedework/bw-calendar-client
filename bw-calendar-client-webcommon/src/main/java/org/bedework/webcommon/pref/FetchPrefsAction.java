@@ -47,7 +47,7 @@ public class FetchPrefsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     String str = request.getReqPar("user");
     if (str != null) {

@@ -72,7 +72,7 @@ public class ProcessInboxEvent extends EventActionBase {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     boolean preserveInbox = request.present("preserveInbox");
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     form.assignAddingEvent(false);
 
     Rmode mode;

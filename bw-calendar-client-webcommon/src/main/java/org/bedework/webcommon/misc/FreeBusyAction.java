@@ -64,7 +64,7 @@ public class FreeBusyAction extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     String uri = null;
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     gotoDateView(form, form.getDate(), form.getViewTypeI());
 
@@ -97,6 +97,6 @@ public class FreeBusyAction extends BwAbstractAction {
     att.setPartstat(IcalDefs.partstatValAccepted);
     atts.addAttendee(att);
 
-    return doFreeBusy(form, atts, st, et, intunitStr, interval);
+    return doFreeBusy(request, form, atts, st, et, intunitStr, interval);
   }
 }

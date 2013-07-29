@@ -41,13 +41,13 @@ public class FetchAuthAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /** Check access
      */
-    if (!form.getCurUserSuperUser()) {
+    if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
-
-    Client cl = form.fetchClient();
 
     /** User requested a user from the list or by entering the id.
      */

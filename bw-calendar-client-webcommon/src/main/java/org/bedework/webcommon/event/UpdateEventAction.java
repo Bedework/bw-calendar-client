@@ -104,8 +104,9 @@ public class UpdateEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
-    boolean publicAdmin = getPublicAdmin(form);
+    Client cl = request.getClient();
+
+    boolean publicAdmin = cl.getPublicAdmin();
     boolean submitApp = form.getSubmitApp();
 
     String submitterEmail = null;
@@ -255,7 +256,7 @@ public class UpdateEventAction extends EventActionBase {
     /* ----------------------- Change attendee list ------------------------- */
 
     if (request.present("editEventAttendees")) {
-      int res = initMeeting(form, true);
+      int res = initMeeting(request, form, true);
 
       if (res != forwardSuccess) {
         return res;
@@ -267,7 +268,7 @@ public class UpdateEventAction extends EventActionBase {
     /* -------------------- Turn event into meeting ------------------------- */
 
     if (request.present("makeEventIntoMeeting")) {
-      int res = initMeeting(form, true);
+      int res = initMeeting(request, form, true);
 
       if (res != forwardSuccess) {
         return res;
@@ -383,7 +384,7 @@ public class UpdateEventAction extends EventActionBase {
       return res;
     }
 
-    if (!BwWebUtil.validateEventDates(form, ei)) {
+    if (!BwWebUtil.validateEventDates(request, ei)) {
       return forwardRetry;
     }
 
@@ -394,7 +395,7 @@ public class UpdateEventAction extends EventActionBase {
         return forwardRetry;
       }
     } else {
-      if (setEventLocation(ei, form, submitApp)) {
+      if (setEventLocation(request, ei, form, submitApp)) {
         // RFC says maybe for this.
         //incSequence = true;
       }
@@ -645,7 +646,9 @@ public class UpdateEventAction extends EventActionBase {
    */
   private Set<BwCategory> setEventAliases(final BwRequest request,
                                           final BwEvent ev) throws Throwable {
-    if (!getPublicAdmin(request.getBwForm()) &&
+    Client cl = request.getClient();
+
+    if (!cl.getPublicAdmin() &&
         !request.getBwForm().getSubmitApp()) {
       return null;
     }
@@ -658,8 +661,6 @@ public class UpdateEventAction extends EventActionBase {
     if (Util.isEmpty(aliases)) {
       return cats;
     }
-
-    Client cl = request.getBwForm().fetchClient();
 
     for (BwXproperty alias: aliases) {
       Collection<BwCalendar> cols = null;
@@ -990,7 +991,7 @@ public class UpdateEventAction extends EventActionBase {
     sb.append("END:VEVENT\n" +
               "END:VCALENDAR\n");
 
-    Client cl = request.getBwForm().fetchClient();
+    Client cl = request.getClient();
     IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
     Icalendar c = trans.fromIcal(null, new StringReader(sb.toString()));
 

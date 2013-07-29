@@ -42,17 +42,18 @@ public class DeleteContactAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /** Check access
      */
-    if (form.getGuest() ||
-        (getPublicAdmin(form) && !form.getAuthorisedUser())) {
+    if (cl.isGuest() ||
+            (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
 
     form.setPropRefs(null);
 
     String uid = form.getContact().getUid();
-    Client cl = form.fetchClient();
 
     Client.DeleteReffedEntityResult drer = cl.deleteContact(form.getContact());
 

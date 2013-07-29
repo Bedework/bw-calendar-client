@@ -45,12 +45,14 @@ public class UpdateContactAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest() ||
-        (getPublicAdmin(form) && !form.getAuthorisedUser())) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest() ||
+            (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
-
-    Client cl = form.fetchClient();
 
     String reqpar = request.getReqPar("delete");
 
@@ -75,7 +77,7 @@ public class UpdateContactAction extends BwAbstractAction {
     BwContact c = form.getContact();
 
     if (add) {
-      c.setPublick(getPublicAdmin(form));
+      c.setPublick(cl.getPublicAdmin());
       if (cl.findContact(c.getName()) != null) {
         form.getErr().emit(ClientError.duplicateContact, c.getName());
         return forwardDuplicate;

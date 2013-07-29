@@ -41,13 +41,13 @@ public class UpdateAuthAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /** Check access
      */
-    if (!form.getCurUserSuperUser()) {
+    if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
-
-    Client cl = form.fetchClient();
 
     /** We are just updating from the current form values.
      */

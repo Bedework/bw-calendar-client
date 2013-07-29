@@ -45,12 +45,14 @@ public class UpdateCategoryAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest() ||
-        (getPublicAdmin(form) && !form.getAuthorisedUser())) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest() ||
+            (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
-
-    Client cl = form.fetchClient();
 
     String reqpar = request.getReqPar("delete");
 
@@ -77,7 +79,7 @@ public class UpdateCategoryAction extends BwAbstractAction {
     BwCategory cat = form.getCategory();
 
     if (add) {
-      cat.setPublick(getPublicAdmin(form));
+      cat.setPublick(cl.getPublicAdmin());
 
       if (!cl.categoryExists(cat)) {
         cl.addCategory(cat);

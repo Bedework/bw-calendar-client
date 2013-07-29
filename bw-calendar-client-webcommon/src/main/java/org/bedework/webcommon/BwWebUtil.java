@@ -258,12 +258,12 @@ public class BwWebUtil {
 
   /** Validate the date properties of the event.
    *
-   * @param form
+   * @param request
    * @param ei
    * @return boolean true for ok
    * @throws CalFacadeException
    */
-  public static boolean validateEventDates(final BwActionFormBase form,
+  public static boolean validateEventDates(final BwRequest request,
                                            final EventInfo ei) throws CalFacadeException {
     BwEvent ev = ei.getEvent();
     boolean ok = true;
@@ -282,7 +282,7 @@ public class BwWebUtil {
       BwDateTime evend = ev.getDtend();
 
       if (evstart.after(evend)) {
-        form.getErr().emit(ValidationError.startAfterEnd);
+        request.getErr().emit(ValidationError.startAfterEnd);
         ok = false;
       } else {
         end = evend.makeDtEnd();
@@ -290,7 +290,7 @@ public class BwWebUtil {
     } else if (endType == StartEndComponent.endTypeDuration) {
       dur = new Duration(new Dur(ev.getDuration()));
     } else {
-      form.getErr().emit(ValidationError.invalidEndtype);
+      request.getErr().emit(ValidationError.invalidEndtype);
       ok = false;
     }
 
@@ -298,7 +298,7 @@ public class BwWebUtil {
       /* This calculates the duration etc. We need to merge this in with the
        * EventDates stuff as we are setting things twice
        */
-      IcalUtil.setDates(form.fetchClient().getCurrentPrincipalHref(),
+      IcalUtil.setDates(request.getClient().getCurrentPrincipalHref(),
                         ei, start, end, dur);
     }
 

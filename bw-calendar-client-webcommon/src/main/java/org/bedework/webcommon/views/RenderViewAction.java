@@ -41,7 +41,7 @@ public class RenderViewAction extends RenderAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     String name = form.getViewName();
 

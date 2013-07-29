@@ -68,7 +68,7 @@ public class InitAddEventAction extends EventActionBase {
 
     EventInfo ei = form.getEventInfo();
     BwEvent ev = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(form.fetchClient().getCurrentPrincipalHref());
+    ChangeTable changes = ei.getChangeset(request.getClient().getCurrentPrincipalHref());
 
     form.assignAddingEvent(true);
     form.setAttendees(new Attendees());
@@ -84,7 +84,7 @@ public class InitAddEventAction extends EventActionBase {
     }
 
     if (sched == ScheduleMethods.methodTypeRequest) {
-      int res = initMeeting(form, true);
+      int res = initMeeting(request, form, true);
 
       if (res != forwardSuccess) {
         return res;

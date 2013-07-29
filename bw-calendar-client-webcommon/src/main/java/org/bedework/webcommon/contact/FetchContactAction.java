@@ -19,6 +19,7 @@
 package org.bedework.webcommon.contact;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwString;
 import org.bedework.webcommon.BwAbstractAction;
@@ -41,9 +42,11 @@ public class FetchContactAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
+    Client cl = request.getClient();
+
     /** Check access
      */
-    if (getPublicAdmin(form) && !form.getAuthorisedUser()) {
+    if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
       return forwardNoAccess;
     }
 
@@ -54,7 +57,7 @@ public class FetchContactAction extends BwAbstractAction {
 
     BwContact contact = null;
     if (uid != null) {
-      contact = form.fetchClient().getContact(uid);
+      contact = cl.getContact(uid);
     }
 
     if (debug) {

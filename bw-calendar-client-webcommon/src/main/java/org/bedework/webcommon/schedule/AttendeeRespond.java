@@ -91,11 +91,13 @@ public class AttendeeRespond extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
-
-    Client cl = form.fetchClient();
 
     if (request.present("initUpdate")) {
 //      ei = sched.initAttendeeUpdate(ei);
@@ -139,7 +141,7 @@ public class AttendeeRespond extends EventActionBase {
 
     if ("COUNTER".equals(methStr)) {
       /* Update the event from the incoming request parameters */
-      boolean publicAdmin = getPublicAdmin(form);
+      boolean publicAdmin = cl.getPublicAdmin();
 
       /* ------------------------ Text fields ------------------------------ */
       setEventText(request, ev, true, null);
@@ -160,7 +162,7 @@ public class AttendeeRespond extends EventActionBase {
           return forwardValidationError;
         }
       } else {
-        if (setEventLocation(ei, form, false)) {
+        if (setEventLocation(request, ei, form, false)) {
           // RFC says maybe for this.
           //incSequence = true;
         }
@@ -205,7 +207,7 @@ public class AttendeeRespond extends EventActionBase {
 
     String partStat = request.getReqPar("partstat");
 
-    setupAttendeeRespond(form.fetchClient(),
+    setupAttendeeRespond(cl,
                          ei,
                          request.getReqPar("delegate"),        // delegate
                          methStr,      // method

@@ -65,7 +65,7 @@ public class RenderEventAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     BwEvent ev = ei.getEvent();
 
     // Not export - just set up for display

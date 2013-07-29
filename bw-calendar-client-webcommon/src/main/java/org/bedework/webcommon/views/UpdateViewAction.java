@@ -52,15 +52,18 @@ public class UpdateViewAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    /** Check access
+     */
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    Client cl = form.fetchClient();
     String name = request.getReqPar("name");
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
 
@@ -69,19 +72,19 @@ public class UpdateViewAction extends BwAbstractAction {
 
     if (add != null) {
       if (!cl.collectionExists(add)) {
-        form.getErr().emit(ClientError.unknownCalendar, add);
+        request.getErr().emit(ClientError.unknownCalendar, add);
         return forwardNotFound;
       }
 
       if (!cl.addViewCollection(name, add)) {
-        form.getErr().emit(ClientError.unknownView, name);
+        request.getErr().emit(ClientError.unknownView, name);
         return forwardNotFound;
       }
     }
 
     if (remove != null) {
       if (!cl.removeViewCollection(name, remove)) {
-        form.getErr().emit(ClientError.unknownView, name);
+        request.getErr().emit(ClientError.unknownView, name);
         return forwardNotFound;
       }
     }
@@ -105,7 +108,7 @@ public class UpdateViewAction extends BwAbstractAction {
     BwView view = cl.findView(name);
 
     if (view == null) {
-      form.getErr().emit(ClientError.unknownView, name);
+      request.getErr().emit(ClientError.unknownView, name);
       return forwardNotFound;
     }
 

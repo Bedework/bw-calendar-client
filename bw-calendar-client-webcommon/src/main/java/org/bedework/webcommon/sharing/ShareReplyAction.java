@@ -55,11 +55,11 @@ public class ShareReplyAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
+    Client cl = request.getClient();
+
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
-
-    Client cl = form.fetchClient();
 
     NotificationType note = cl.findNotification(request.getReqPar("name"));
 
@@ -68,7 +68,7 @@ public class ShareReplyAction extends BwAbstractAction {
     }
 
     if (!(note.getNotification() instanceof InviteNotificationType)) {
-      form.getErr().emit(ClientError.badRequest, "Not an invite");
+      request.getErr().emit(ClientError.badRequest, "Not an invite");
       return forwardError;
     }
 
@@ -76,7 +76,7 @@ public class ShareReplyAction extends BwAbstractAction {
 
     Boolean accept = request.getBooleanReqPar("accept");
     if (accept == null) {
-      form.getErr().emit(ClientError.badRequest, "Missing accept");
+      request.getErr().emit(ClientError.badRequest, "Missing accept");
       return forwardError;
     }
 
@@ -84,7 +84,7 @@ public class ShareReplyAction extends BwAbstractAction {
     if (accept) {
       colName = request.getReqPar("colName");
       if (colName == null) {
-        form.getErr().emit(ClientError.badRequest, "Missing colName");
+        request.getErr().emit(ClientError.badRequest, "Missing colName");
         return forwardError;
       }
     }
@@ -102,7 +102,7 @@ public class ShareReplyAction extends BwAbstractAction {
     try {
       cl.sharingReply(reply);
     } catch (CalFacadeForbidden cf) {
-      form.getErr().emit(cf.getMessage());
+      request.getErr().emit(cf.getMessage());
       error = true;
     }
 

@@ -87,7 +87,7 @@ public class UploadAction extends BwAbstractAction {
 
     boolean stripAlarms = request.getBooleanReqPar("stripAlarms", false);
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     BwCalendar col = null;
 
     String newCalPath = request.getReqPar("newCalPath");
@@ -131,11 +131,11 @@ public class UploadAction extends BwAbstractAction {
 
       int method = ic.getMethodType();
 
-      if (!getPublicAdmin(form) &&
+      if (!cl.getPublicAdmin() &&
           (method != ScheduleMethods.methodTypePublish) &&
           (Icalendar.itipReplyMethodType(method) ||
            Icalendar.itipRequestMethodType(method))) {
-        return importScheduleMessage(form, ic, col, stripAlarms);
+        return importScheduleMessage(request, ic, col, stripAlarms);
       }
 
       Collection<AddEventResult> aers = new ArrayList<AddEventResult>();
@@ -220,16 +220,16 @@ public class UploadAction extends BwAbstractAction {
     return forwardSuccess;
   }
 
-  private int importScheduleMessage(final BwActionFormBase form,
+  private int importScheduleMessage(final BwRequest request,
                                     final Icalendar ic,
                                     final BwCalendar cal,
                                     final boolean stripAlarms) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
 
     // Scheduling method - should contain a single entity
 
     if (ic.size() != 1) {
-      form.getErr().emit(ValidationError.invalidSchedData);
+      request.getErr().emit(ValidationError.invalidSchedData);
       return forwardRetry;
     }
 
@@ -249,7 +249,7 @@ public class UploadAction extends BwAbstractAction {
       BwOrganizer org = ev.getOrganizer();
 
       if (org == null) {
-        form.getErr().emit(ValidationError.missingOrganizer);
+        request.getErr().emit(ValidationError.missingOrganizer);
         return forwardRetry;
       }
 
@@ -279,7 +279,7 @@ public class UploadAction extends BwAbstractAction {
 
       cl.addEvent(ei, false, false, true);
 
-      form.getMsg().emit(ClientMessage.addedEvents, 1);
+      request.getMsg().emit(ClientMessage.addedEvents, 1);
     }
 
     return forwardSuccess;

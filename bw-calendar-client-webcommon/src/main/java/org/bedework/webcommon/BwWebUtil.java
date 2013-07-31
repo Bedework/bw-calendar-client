@@ -33,7 +33,6 @@ import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calsvci.CalSvcI;
 import org.bedework.icalendar.IcalUtil;
 
 import edu.rpi.cmt.access.AccessPrincipal;
@@ -43,7 +42,6 @@ import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Duration;
-
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -117,73 +115,6 @@ public class BwWebUtil {
 
     if (sess != null) {
       sess.setAttribute(sessStateAttr, s);
-    } else {
-      noSession();
-    }
-  }
-
-  /** Try to get the CalSvcI object  embedded in
-   *  the current session.
-   *
-   * @param request  Needed to locate session
-   * @return CalSvcI  null on failure
-   */
-  public static CalSvcI getCalSvcI(final HttpServletRequest request) {
-    return getCalSvcI(request.getSession(false));
-  }
-
-  /** Drop the CalSvcI object  embedded in
-   *  the current session.
-   *
-   * @param request  Needed to locate session
-   */
-  public static void dropCalSvcI(final HttpServletRequest request) {
-    dropCalSvcI(request.getSession(false));
-  }
-
-  /** Try to get the CalSvcI object  embedded in
-   *  the given session.
-   *
-   * @param sess
-   * @return CalSvcI  null on failure
-   */
-  public static CalSvcI getCalSvcI(final HttpSession sess) {
-    if (sess == null) {
-      noSession();
-    }
-
-    Object o = sess.getAttribute(sessCalSvcIAttr);
-    if ((o != null) && (o instanceof CalSvcI)) {
-      return (CalSvcI)o;
-    }
-
-    return null;
-  }
-
-  /** Drop the CalSvcI object embedded in
-   *  the given session.
-   *
-   * @param sess
-   */
-  public static void dropCalSvcI(final HttpSession sess) {
-    if (sess == null) {
-      return;
-    }
-
-    sess.removeAttribute(sessCalSvcIAttr);
-  }
-
-  /** Set the CalSvcI object into the current session.
-   *
-   * @param request        HttpServletRequest Needed to locate session
-   * @param svci           CalSvcI object
-   */
-  public static void setCalSvcI(final HttpServletRequest request,
-                                final CalSvcI svci) {
-    HttpSession sess = request.getSession(false);
-
-    if (sess != null) {
-      sess.setAttribute(sessCalSvcIAttr, svci);
     } else {
       noSession();
     }

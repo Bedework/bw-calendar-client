@@ -35,6 +35,7 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.WeekView;
 import org.bedework.appcommon.YearView;
 import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.SearchResultEntry;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
@@ -65,7 +66,6 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.webcommon.config.ConfigCommon;
-import org.bedework.appcommon.client.SearchResultEntry;
 
 import edu.rpi.cmt.timezones.TimeZoneName;
 import edu.rpi.cmt.timezones.Timezones;
@@ -82,6 +82,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -93,6 +94,8 @@ import javax.servlet.http.HttpServletRequest;
  * @author  Mike Douglass     douglm - rpi.edu
  */
 public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
+  private Map<String, BwModule> modules = new HashMap<>();
+
   private DateTimeFormatter today;
 
   private BwSynchInfo synchInfo;
@@ -129,8 +132,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private boolean newSession;
 
   private BwSession sess;
-
-  private long timeIn;
 
   /** true if this is a guest (unauthenticated) user
    */
@@ -580,6 +581,60 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* ====================================================================
    *                   Property methods
    * ==================================================================== */
+
+  /* ....................................................................
+   *                       Modules
+   * .................................................................... */
+
+  public void setModule(String name, BwModule module) {
+    modules.put(name, module);
+  }
+
+  public synchronized BwModule fetchModule(final String name) {
+    String n = name;
+    boolean defModule = false;
+
+    if (n == null) {
+      n = BwModule.defaultModuleName;
+      defModule = true;
+    } else {
+      defModule = n.equals(BwModule.defaultModuleName);
+    }
+
+    BwModule m = modules.get(n);
+
+    if (m == null) {
+      m = new BwModule(n, null);
+      modules.put(n, m);
+    }
+
+    if (!defModule && (m.getClient() == null)) {
+      try {
+        m.setClient(m.getClient().copy());
+      } catch (CalFacadeException e) {
+        err.emit(e);
+      }
+    }
+
+    return m;
+  }
+
+  /** Called when we change the default client state enough to need
+   * to ditch the other clients.
+   */
+  public void flushModules() {
+    for (String s: modules.keySet()) {
+      if (s.equals(BwModule.defaultModuleName)) {
+        continue;
+      }
+
+      modules.remove(s);
+    }
+  }
+
+  public BwModule.ModuleState getModuleState(String name) {
+    return fetchModule(name).getState();
+  }
 
   /**
    * @return String
@@ -1648,20 +1703,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       getErr().emit(t);
       return "**error**";
     }
-  }
-
-  /**
-   * @param val - entry time - millisecs
-   */
-  public void setTimeIn(final long val) {
-    timeIn = val;
-  }
-
-  /**
-   * @return long  - entry time - millisecs
-   */
-  public long getTimeIn() {
-    return timeIn;
   }
 
   /**

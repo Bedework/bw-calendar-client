@@ -1512,34 +1512,31 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      */
     @Override
     public int in() throws Throwable {
+      /* On the way in we set up the client from the default client
+         embedded in the form.
+       */
       synchronized (form) {
         //System.out.println("cb.in - action path = " + form.getActionPath() +
         //                   " conv-type = " + req.getConversationType());
-        if (req.getConversationType() == Request.conversationTypeTransactionless) {
-          /* I'd really like to be able to log these
-           */
-          return HttpServletResponse.SC_OK;
-        }
 
         Client cl = form.fetchClient();
         if (cl == null) {
           return HttpServletResponse.SC_OK;
         }
 
-        if (form.getInuse()) {
+        BwModule module = form.fetchModule(req.getModuleName());
+
+        if (module.getInuse()) {
           // double-clicking on our links eh?
-          if (form.getWaiters() > 10) {
+          if (module.getWaiters() > 10) {
             return HttpServletResponse.SC_SERVICE_UNAVAILABLE;
           }
-          form.incWaiters();
-          form.wait();
+          module.incWaiters();
+          module.wait();
         }
 
-        form.decWaiters();
-        form.assignInuse(true);
-        form.setTimeIn(System.currentTimeMillis());
-
-        cl.requestIn(req.getConversationType());
+        module.setRequest(req);
+        module.requestIn();
 
         return HttpServletResponse.SC_OK;
       }
@@ -1551,14 +1548,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      */
     @Override
     public void out() throws Throwable {
-      Client cl = form.fetchClient();
-      if (cl == null) {
-        return;
-      }
+      BwModule module = form.fetchModule(req.getModuleName());
 
-      cl.requestOut(req.getConversationType(),
-                    req.getActionType(),
-                    System.currentTimeMillis() - form.getTimeIn());
+      module.requestOut();
     }
 
     /** Close the session.
@@ -1567,30 +1559,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      */
     @Override
     public void close() throws Throwable {
-      boolean unlocked = false;
-
-      try {
-        if (req.getConversationType() == Request.conversationTypeUnknown) {
-          if (req.getActionType() != Request.actionTypeAction) {
-            closeNow();
-            unlocked = true;
-          }
-        } else {
-          // Conversations
-          if ((req.getConversationType() == Request.conversationTypeEnd) ||
-              (req.getConversationType() == Request.conversationTypeOnly)) {
-            closeNow();
-            unlocked = true;
-          }
-        }
-      } finally {
-        if (!unlocked) {
-          synchronized (form) {
-            form.assignInuse(false);
-            form.notify();
-          }
-        }
-      }
+      form.fetchModule(req.getModuleName()).close();
     }
 
     /* (non-Javadoc)
@@ -1628,25 +1597,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     void closeNow() throws Throwable {
-      Throwable t = null;
+      BwModule module = form.fetchModule(req.getModuleName());
 
-      try {
-        Client cl = form.fetchClient();
-        if (cl != null) {
-          cl.close();
-        }
-      } catch (Throwable t1) {
-        t = t1;
-      } finally {
-        synchronized (form) {
-          form.assignInuse(false);
-          form.notify();
-        }
-      }
-
-      if (t != null) {
-        throw t;
-      }
+      module.closeNow();
 
       /* Try to release storage we won't need because next request will
        * refresh
@@ -1986,8 +1939,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     BwCallback cb = getCb(request, form);
+    BwModule module = form.fetchModule(null);
 
-    Client client = BwWebUtil.getClient(request.getRequest());
+//    Client client = BwWebUtil.getClient(request.getRequest());
+    Client client = module.getClient();
     boolean reinitClient = false;
 
     try {
@@ -2043,6 +1998,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             debugMsg("Client-- reinit for user " + user);
           }
 
+          form.flushModules();
+
           if (guestMode) {
             ((ROClientImpl)client).reinit(form.getCurrentUser(),
                                           user,
@@ -2082,9 +2039,21 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
 
         form.setClient(client);
+        module.setClient(client);
+        module.setRequest(request);
+
+        /* For the time being - at least - we embed the default client
+           only in the session. We have jsp which requires a client to
+           function. Much of this needs replacing with something that
+           uses the appropriate client for the request.
+
+           This probably means that the action MUST place the objects
+           to be rendered into the module state object.
+         */
+
         BwWebUtil.setClient(request.getRequest(), client);
 
-        client.requestIn(request.getConversationType());
+        module.requestIn();
         form.resetFilters();
       }
     } catch (CalFacadeException cfe) {

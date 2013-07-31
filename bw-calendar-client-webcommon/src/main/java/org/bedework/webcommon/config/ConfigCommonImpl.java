@@ -18,6 +18,8 @@
 */
 package org.bedework.webcommon.config;
 
+import org.bedework.appcommon.ConfigCommon;
+
 import edu.rpi.cmt.config.ConfInfo;
 import edu.rpi.cmt.config.ConfigBase;
 

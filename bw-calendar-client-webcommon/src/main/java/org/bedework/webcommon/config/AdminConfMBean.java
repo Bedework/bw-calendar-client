@@ -18,10 +18,12 @@
 */
 package org.bedework.webcommon.config;
 
+import org.bedework.appcommon.AdminConfig;
 
 /** Properties for Admin client
  *
  * @author douglm
  */
-public interface AdminConfMBean extends ClientConfMBean, AdminConfig  {
+public interface AdminConfMBean extends ClientConfMBean,
+        AdminConfig {
 }

@@ -18,11 +18,13 @@
 */
 package org.bedework.webcommon.config;
 
+import org.bedework.appcommon.ConfigCommon;
+
 import edu.rpi.cmt.jmx.ConfBaseMBean;
 
 /** Configure a connector for the Bedework synch engine service
  *
  * @author douglm
  */
-public interface ClientConfMBean extends ConfBaseMBean, ConfigCommon  {
+public interface ClientConfMBean extends ConfBaseMBean, ConfigCommon {
 }

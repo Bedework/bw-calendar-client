@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAuthUser;
@@ -28,7 +29,6 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.webcommon.config.AdminConfig;
 
 import edu.rpi.sss.util.jsp.Request;
 

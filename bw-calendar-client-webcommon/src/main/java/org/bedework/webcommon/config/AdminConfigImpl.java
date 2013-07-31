@@ -19,13 +19,14 @@
 
 package org.bedework.webcommon.config;
 
-
+import org.bedework.appcommon.AdminConfig;
 
 /**
  * @author douglm
  *
  */
-public class AdminConfigImpl extends ConfigCommonImpl implements AdminConfig {
+public class AdminConfigImpl extends ConfigCommonImpl implements
+        AdminConfig {
   /* True if categories are optional.
    */
   private boolean categoryOptional = true;

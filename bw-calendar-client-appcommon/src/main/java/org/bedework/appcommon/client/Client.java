@@ -755,6 +755,17 @@ public interface Client extends Serializable {
    */
   Collection<BwCategory> getCategories() throws CalFacadeException;
 
+  /** Return the listed categories The
+   * returned objects will be non-persistent copies of the database
+   * entities. The returned list may be shorter than the supplied
+   * list of uids.
+   *
+   * @param uids       Collection of String uid
+   * @return Collection of BwCategory objects.
+   * @throws CalFacadeException
+   */
+  Collection<BwCategory> getCategories(Collection<String> uids) throws CalFacadeException;
+
   /** Return all entities for the given owner and to which the current
    * user has access.
    *

@@ -18,10 +18,12 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.MyCalendarVO;
@@ -69,9 +71,7 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.SchedulingI.FbResponses;
-import org.bedework.webcommon.config.AdminConfig;
 import org.bedework.webcommon.config.ClientConfigurations;
-import org.bedework.webcommon.config.ConfigCommon;
 
 import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
 import edu.rpi.cmt.calendar.ScheduleStates;

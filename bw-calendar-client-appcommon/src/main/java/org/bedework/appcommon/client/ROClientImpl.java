@@ -18,6 +18,7 @@
 */
 package org.bedework.appcommon.client;
 
+import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
@@ -71,7 +72,6 @@ import org.bedework.icalendar.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
 import org.bedework.sysevents.events.SysEventBase;
-import org.bedework.webcommon.CollectionCollator;
 
 import edu.rpi.cct.misc.indexing.SearchLimits;
 import edu.rpi.cmt.access.Ace;
@@ -88,6 +88,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.ws.Holder;
 
@@ -800,6 +801,12 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public Collection<BwCategory> getCategories(final Collection<String> uids)
+          throws CalFacadeException {
+    return svci.getCategoriesHandler().get(uids);
+  }
+
+  @Override
   public Collection<BwCategory> getCategories(final String ownerHref)
           throws CalFacadeException {
     return svci.getCategoriesHandler().get(ownerHref, null);
@@ -1074,7 +1081,7 @@ public class ROClientImpl implements Client {
         for (EventInfo ei: ger.events) {
           BwEvent ev = ei.getEvent();
 
-          List<String> catUids = ev.getCategoryUids();
+          Set<String> catUids = ev.getCategoryUids();
 
           if (catUids != null) {
             for (String uid: catUids) {

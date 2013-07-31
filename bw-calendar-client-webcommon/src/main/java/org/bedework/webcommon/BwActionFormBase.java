@@ -22,6 +22,8 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.CollectionCollator;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.EventFormatter;
@@ -65,7 +67,6 @@ import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.icalendar.RecurRuleComponents;
-import org.bedework.webcommon.config.ConfigCommon;
 
 import edu.rpi.cmt.timezones.TimeZoneName;
 import edu.rpi.cmt.timezones.Timezones;
@@ -2802,16 +2803,13 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return Collection  preferred categories
    */
   public Collection<BwCategory> getPreferredCategories() {
-    return getCurAuthUserPrefs().getCategoryPrefs().getPreferred();
-    /* XXX Need to return a cached set of these
     try {
-      return fetchSvci().getCategoriesHandler().getCached(
+      return fetchClient().getCategories(
                              getCurAuthUserPrefs().getCategoryPrefs().getPreferred());
     } catch (Throwable t) {
       getErr().emit(t);
       return new ArrayList<BwCategory>();
     }
-*/
   }
 
   /** Get the list of categories for this owner. Return a null list for

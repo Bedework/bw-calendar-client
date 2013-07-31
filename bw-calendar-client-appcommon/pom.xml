@@ -33,6 +33,11 @@
 			<groupId>org.bedework</groupId>
 			<artifactId>bw-calendar-engine-ical</artifactId>
 		</dependency>
+    <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-calendar-engine-sysevents</artifactId>
+      <version>${bw-calendar-engine.version}</version>
+    </dependency>
 		<!-- Third Party -->
 		<dependency>
 			<groupId>org.apache.struts</groupId>

@@ -18,6 +18,7 @@
 */
 package org.bedework.appcommon.client;
 
+import org.bedework.appcommon.AdminConfig;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwPreferences;
@@ -32,7 +33,6 @@ import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcIPars;
-import org.bedework.webcommon.config.AdminConfig;
 
 import edu.rpi.cmt.access.Access;
 import edu.rpi.cmt.access.AccessException;

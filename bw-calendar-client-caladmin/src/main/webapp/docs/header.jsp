@@ -17,7 +17,7 @@ try {
     <bean:define id="fmtnow" name="calForm" property="today.formatted" />
     <date><bean:write name="fmtnow" property="date"/></date><%-- Value: YYYYMMDD --%>
   </now>
-  
+
   <bean:define id="ctView" name="calForm" property="curTimeView"/>
   <currentdate><%-- The current user-selected date --%>
     <date><bean:write name="ctView" property="curDayFmt.dateDigits"/></date><%--
@@ -30,7 +30,7 @@ try {
     <monthname><bean:write name="ctView" property="curDayFmt.monthName"/></monthname><%--
       Value (example): January - full month name --%>
   </currentdate>
-  
+
   <%-- get the default number of days for event lists --%>
   <bean:define id="bwsyspars" name="calForm" property="syspars" toScope="session" />
   <defaultdays><bean:write name="bwsyspars" property="defaultWebCalPeriod"/></defaultdays>
@@ -57,13 +57,13 @@ try {
   </logic:iterate>
 
   <%-- global variables --%>
-  <approot><bean:write name="calForm" property="config.appRoot"/></approot><%--
+  <approot><bean:write name="calForm" property="presentationState.appRoot"/></approot><%--
         Value: URI - the location of web resources used by the code to find the
         XSLT files.  This element is defined prior to build in
         ../../../../clones/democal.properties
         as pubevents.app.root and personal.app.root. Note that references to
         html web resources such as images are set in the xsl stylesheets. --%>
-  <browserResourceRoot><bean:write name="calForm" property="config.browserResourceRoot"/></browserResourceRoot>
+  <browserResourceRoot><bean:write name="calForm" property="presentationState.browserResourceRoot"/></browserResourceRoot>
   <urlprefix><bean:write name="calForm" property="urlPrefix"/></urlprefix><%--
         Value: URI - this is prefix of the calendar application.
         e.g. http://localhost:8080/cal
@@ -317,7 +317,7 @@ try {
       <bw:emitText name="dir" property="venuePrincipalRoot" />
     </logic:present>
   </syspars>
-  
+
   <logic:present name="calForm" property="imageUploadDirectory" >
     <bw:emitText name="calForm" property="imageUploadDirectory" />
   </logic:present>

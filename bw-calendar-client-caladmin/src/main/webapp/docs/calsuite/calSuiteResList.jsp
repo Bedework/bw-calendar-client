@@ -13,7 +13,7 @@
   <logic:iterate id="csres" name="calForm" property="calSuiteResources" >
   <calSuiteResource>
     <bw:emitText name="csres" property="name" />
-    <bw:emitText name="csres" property="resourceClass" />
+    <bw:emitText name="csres" property="rclass" />
     <bw:emitText name="csres" property="type" />
     <bw:emitText name="csres" property="path" />
     <bw:emitText name="csres" property="contentType" />

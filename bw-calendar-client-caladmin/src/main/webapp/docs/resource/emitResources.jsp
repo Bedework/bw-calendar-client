@@ -6,7 +6,7 @@
     <resource>
       <name><bean:write name="resource" property="name" /></name>
       <content-type><bean:write name="resource" property="contentType" /></content-type>
-      <class><bean:write name="resource" property="resourceClass" /></class>
+      <class><bean:write name="resource" property="rclass" /></class>
       <type><bean:write name="resource" property="type" /></type>
       <path><bean:write name="resource" property="path" /></path>
     </resource>

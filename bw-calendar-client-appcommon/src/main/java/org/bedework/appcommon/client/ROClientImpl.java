@@ -48,6 +48,7 @@ import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
@@ -271,6 +272,12 @@ public class ROClientImpl implements Client {
   public void updateSyspars(final BwSystem val)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public AuthProperties getAuthProperties()
+          throws CalFacadeException {
+    return svci.getAuthProperties();
   }
 
   @Override

@@ -24,7 +24,7 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.base.BwTimeRange;
-import org.bedework.calfacade.configs.SystemProperties;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.icalendar.IcalTranslator;
@@ -106,18 +106,18 @@ public class FreeBusyPublishAction extends BwAbstractAction {
       }
     }
 
-    SystemProperties sysp = form.getSyspars();
+    AuthProperties authp = form.getAuthpars();
 
     int max = 0;
 
     if (!cl.isSuperUser()) {
-      max = sysp.getMaxFBPeriod();
+      max = authp.getMaxFBPeriod();
     }
 
     BwTimeRange tr = BwDateTimeUtil.getPeriod(request.getReqPar("start"),
                                             request.getReqPar("end"),
                                             Calendar.DATE,
-                                            sysp.getDefaultFBPeriod(),
+                                            authp.getDefaultFBPeriod(),
                                             java.util.Calendar.DATE,
                                             max);
 

@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.schedule;
 
-
 import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.ParseUtil;
 import org.bedework.caldav.util.TimeRange;
@@ -29,7 +28,7 @@ import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwFreeBusyComponent;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
-import org.bedework.calfacade.configs.SystemProperties;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -91,18 +90,18 @@ public class RequestFreeBusy extends BwAbstractAction {
         orgUri = cl.getCurrentCalendarAddress();
       }
 
-      SystemProperties sysp = form.getSyspars();
+      AuthProperties authp = form.getAuthpars();
 
       int max = 0;
 
       if (!cl.isSuperUser()) {
-        max = sysp.getMaxFBPeriod();
+        max = authp.getMaxFBPeriod();
       }
 
       TimeRange tr = ParseUtil.getPeriod(request.getReqPar("start"),
                                          request.getReqPar("end"),
                                          Calendar.DATE,
-                                         sysp.getDefaultFBPeriod(),
+                                         authp.getDefaultFBPeriod(),
                                          Calendar.DATE,
                                          max);
 

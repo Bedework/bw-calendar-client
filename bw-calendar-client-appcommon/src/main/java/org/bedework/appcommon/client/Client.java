@@ -45,6 +45,7 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.mail.Message;
@@ -152,6 +153,13 @@ public interface Client extends Serializable {
    * @throws CalFacadeException if not admin
    */
   void updateSyspars(BwSystem val) throws CalFacadeException;
+
+  /** Return authentication relevant properties.
+   *
+   * @return AuthProperties object - never null.
+   * @throws CalFacadeException
+   */
+  AuthProperties getAuthProperties() throws CalFacadeException;
 
   /** Return properties about the system.
    *

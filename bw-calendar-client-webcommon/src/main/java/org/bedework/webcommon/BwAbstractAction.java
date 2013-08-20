@@ -57,7 +57,7 @@ import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.base.CategorisedEntity;
-import org.bedework.calfacade.configs.SystemProperties;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
@@ -309,10 +309,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    if (form.getSyspars() == null) {
-      form.setSyspars(cl.getSystemProperties());
-    }
-
     /* see if we got cancelled */
 
     String reqpar = request.getReqPar("cancelled");
@@ -543,11 +539,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
 
-    SystemProperties sysp = cl.getSystemProperties();
+    AuthProperties authp = cl.getAuthProperties();
 
     int days = request.getIntReqPar("days", -32767);
     if (days < 0) {
-      days = sysp.getDefaultWebCalPeriod();
+      days = authp.getDefaultWebCalPeriod();
     }
 
     if ((startStr == null) && (endStr == null)) {
@@ -562,7 +558,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       int max = 0;
 
       if (!cl.isSuperUser()) {
-        max = sysp.getMaxWebCalPeriod();
+        max = authp.getMaxWebCalPeriod();
       }
 
       BwTimeRange tr = BwDateTimeUtil.getPeriod(request.getReqPar("start"),

@@ -54,6 +54,7 @@ import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -118,6 +119,9 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   /* This should be a cloned copy only */
   private SystemProperties syspars;
+
+  /* This should be a cloned copy only */
+  private AuthProperties authpars;
 
   /* This should be a cloned copy only */
   private DirectoryInfo dirInfo;
@@ -781,7 +785,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public int getMaxDescriptionLength() {
     try {
-      return getSyspars().getMaxPublicDescriptionLength();
+      return getAuthpars().getMaxPublicDescriptionLength();
     } catch (Throwable t) {
       err.emit(t);
       return 0;
@@ -1317,26 +1321,34 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return updGroupMember;
   }
 
-  /** Set a (cloned) copy of the system parameters
-   * @param val
-   */
-  public void setSyspars(final SystemProperties val) {
-    syspars = val.cloneIt();
-  }
-
   /**
-   * @return BwSystem object
+   * @return SystemProperties object
    */
   public SystemProperties getSyspars() {
     if (syspars == null) {
       try {
-        syspars = fetchClient().getSystemProperties();
+        syspars = fetchClient().getSystemProperties().cloneIt();
       } catch (Throwable t) {
         getErr().emit(t);
       }
     }
 
     return syspars;
+  }
+
+  /**
+   * @return SystemProperties object
+   */
+  public AuthProperties getAuthpars() {
+    if (authpars == null) {
+      try {
+        authpars = fetchClient().getAuthProperties().cloneIt();
+      } catch (Throwable t) {
+        getErr().emit(t);
+      }
+    }
+
+    return authpars;
   }
 
   /** Set a copy of the config parameters

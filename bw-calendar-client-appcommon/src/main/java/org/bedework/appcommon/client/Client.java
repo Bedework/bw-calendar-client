@@ -1701,7 +1701,7 @@ public interface Client extends Serializable {
    *                                -1 means indeterminate
    * @throws CalFacadeException
    */
-  int search(boolean publick,
+  long search(boolean publick,
              String principal,
              String query,
              SearchLimits limits) throws CalFacadeException;

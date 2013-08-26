@@ -1056,7 +1056,7 @@ public class ROClientImpl implements Client {
         to = end.getDate();
       }
 
-      Holder<Integer> resSz = new Holder<>();
+      Holder<Long> resSz = new Holder<>();
 
       ger.events = idx.fetch(f,
                              from,
@@ -1488,10 +1488,10 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public int search(final boolean publick,
-                    final String principal,
-                    final String query,
-                    final SearchLimits limits)
+  public long search(final boolean publick,
+                     final String principal,
+                     final String query,
+                     final SearchLimits limits)
           throws CalFacadeException {
     return svci.getIndexingHandler().search(publick, principal,
                                             query, limits);

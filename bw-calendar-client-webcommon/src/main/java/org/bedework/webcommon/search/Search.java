@@ -94,10 +94,10 @@ public class Search extends BwAbstractAction {
       principal = p.getPrincipalRef();
     }
 
-    int rsize = cl.search(publick, principal, query, limits);
+    long rsize = cl.search(publick, principal, query, limits);
     int pageSize = cl.getPreferences().getPageSize();
 
-    form.setResultSize(rsize);
+    form.setResultSize((int)rsize);
     form.setResultStart(0);
     form.setResultCt(pageSize);
     form.setQuery(query);
@@ -107,7 +107,7 @@ public class Search extends BwAbstractAction {
       form.setNumPages(0);
     } else {
       form.setCurPage(1);
-      form.setNumPages(((rsize + pageSize) - 1) / pageSize);
+      form.setNumPages((((int)rsize + pageSize) - 1) / pageSize);
     }
 
     return forwardSuccess;

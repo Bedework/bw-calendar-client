@@ -32,9 +32,9 @@ try {
   </currentdate>
 
   <%-- get the default number of days for event lists --%>
-  <bean:define id="bwsyspars" name="calForm" property="syspars" toScope="session" />
-  <defaultdays><bean:write name="bwsyspars" property="defaultWebCalPeriod"/></defaultdays>
-  <maxdays><bean:write name="bwsyspars" property="maxWebCalPeriod"/></maxdays>
+  <bean:define id="bwauthpars" name="calForm" property="authpars" toScope="session" />
+  <defaultdays><bean:write name="bwauthpars" property="defaultWebCalPeriod"/></defaultdays>
+  <maxdays><bean:write name="bwauthpars" property="maxWebCalPeriod"/></maxdays>
 
   <%-- messages --%>
   <logic:iterate id="msg" name="calForm" property="msg.msgList">

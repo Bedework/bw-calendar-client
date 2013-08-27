@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server>
   <!--  guarantee separate classloader -->
-  <loader-repository> 
-    org.bedework:archive=indexer-service 
-  </loader-repository> 
-  
-  <mbean code="org.bedework.indexer.BwIndexer"
+  <loader-repository>
+    org.bedework:archive=indexer-service
+  </loader-repository>
+
+  <mbean code="org.bedework.indexer.BwIndexCtl"
          name="org.bedework:service=Indexer">
     <attribute name="Account">admin</attribute>
     <attribute name="SkipPaths">/public/unbrowsable:/public/aliases</attribute>
 
-    <!-- We need activemq -->    
+    <!-- We need activemq -->
     <depends>jboss.jca:service=ConnectionFactoryBinding,name=activemq/QueueConnectionFactory</depends>
-    
+
     <!-- We also need the bedework database -->
     <depends>jboss.jca:service=DataSourceBinding,name=CalendarDS</depends>
   </mbean>

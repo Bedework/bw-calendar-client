@@ -18,7 +18,7 @@
     <bw:emitText name="calForm" property="event.ownerHref" tagName="owner"/>
     <bw:emitText name="calForm" property="event.name" tagName="name"/>
   </logic:equal>
-  <bw:emitText name="bwsyspars" property="eventregAdminToken"/>
+  <bw:emitText name="calForm" property="syspars.eventregAdminToken"/>
 
   <genurl:form action="event/update" >
     <title><html:text property="summary" size="40" styleId="iTitle" styleClass="edit"/></title>

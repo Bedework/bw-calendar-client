@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<synch-connector>
-  <name>read-only-file</name>
-  <className>org.bedework.synch.cnctrs.file.FileConnector</className>
-  <readOnly type="java.lang.Boolean">true</readOnly>
-  <trustLastmod type="java.lang.Boolean">false</trustLastmod>
-  <minPoll type="java.lang.Integer">15</minPoll>
-</synch-connector>

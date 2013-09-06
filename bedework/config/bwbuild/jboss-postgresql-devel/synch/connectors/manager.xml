@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<synch-connector>
-  <name>manager</name>
-  <className>org.bedework.synch.cnctrs.manager.SynchConnector</className>
-              
-  <readOnly type="java.lang.Boolean">false</readOnly>
-
-  <trustLastmod type="java.lang.Boolean">true</trustLastmod>
-</synch-connector>

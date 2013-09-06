@@ -57,13 +57,11 @@ import edu.rpi.sss.util.Util;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Recur;
-
 import org.apache.struts.upload.FormFile;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -853,12 +851,10 @@ public class UpdateEventAction extends EventActionBase {
 
     List<BwXproperty> xprops = null;
 
-    List<BwXproperty> evxprops;
+    List<BwXproperty> evxprops = new ArrayList<BwXproperty>();
 
-    if (event.getXproperties() == null) {
-      evxprops = new ArrayList<BwXproperty>();
-    } else {
-      evxprops = Collections.unmodifiableList(event.getXproperties());
+    if (!Util.isEmpty(event.getXproperties())) {
+      evxprops.addAll(event.getXproperties());
     }
 
     /* When the xproperties get emitted we don't emit the set marked for skipping

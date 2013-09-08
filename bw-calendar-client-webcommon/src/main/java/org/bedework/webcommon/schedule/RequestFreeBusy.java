@@ -30,11 +30,10 @@ import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.util.json.JsonUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.sss.util.Util;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -303,7 +302,7 @@ public class RequestFreeBusy extends BwAbstractAction {
                                final boolean multi) throws Throwable {
     indented(wtr, indent, "\"");
 
-    wtr.write(Util.jsonName(name));
+    wtr.write(JsonUtil.jsonName(name));
 
     if (multi) {
       wtr.write("\" : [");
@@ -333,9 +332,9 @@ public class RequestFreeBusy extends BwAbstractAction {
     wtr.write("\"value\" : ");
 
     if (val == null) {
-      wtr.write(Util.jsonEncode(""));
+      wtr.write(JsonUtil.jsonEncode(""));
     } else {
-      wtr.write(Util.jsonEncode(val));
+      wtr.write(JsonUtil.jsonEncode(val));
     }
     if (withComma) {
       wtr.write("},\n");

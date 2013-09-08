@@ -22,8 +22,8 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 
 import edu.rpi.cct.webdav.servlet.shared.WebdavException;
-import edu.rpi.sss.util.xml.XmlUtil;
-import edu.rpi.sss.util.xml.tagdefs.AppleServerTags;
+import org.bedework.util.xml.XmlUtil;
+import org.bedework.util.xml.tagdefs.AppleServerTags;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;

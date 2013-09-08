@@ -29,8 +29,7 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-
-import edu.rpi.sss.util.jsp.Request;
+import org.bedework.util.struts.Request;
 
 import org.apache.log4j.Logger;
 

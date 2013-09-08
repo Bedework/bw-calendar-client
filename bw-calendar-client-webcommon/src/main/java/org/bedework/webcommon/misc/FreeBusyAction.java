@@ -21,12 +21,11 @@ package org.bedework.webcommon.misc;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
+import org.bedework.util.calendar.IcalDefs;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.cmt.calendar.IcalDefs;
 
 import net.fortuna.ical4j.model.parameter.Role;
 

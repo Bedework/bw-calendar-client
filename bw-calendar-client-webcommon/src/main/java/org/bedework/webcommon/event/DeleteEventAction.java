@@ -26,10 +26,9 @@ import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.sss.util.Util;
 
 import java.util.List;
 

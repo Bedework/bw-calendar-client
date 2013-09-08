@@ -20,11 +20,11 @@ package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
+import org.bedework.util.indexing.SearchLimits;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-import edu.rpi.cct.misc.indexing.SearchLimits;
 
 /**
  * Action to carry out a search.

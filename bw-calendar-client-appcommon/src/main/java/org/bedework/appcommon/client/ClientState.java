@@ -27,8 +27,7 @@ import org.bedework.calfacade.filter.ColorMap;
 import org.bedework.calfacade.filter.FilterBuilder;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
-
-import edu.rpi.sss.util.Util;
+import org.bedework.util.misc.Util;
 
 import org.apache.log4j.Logger;
 

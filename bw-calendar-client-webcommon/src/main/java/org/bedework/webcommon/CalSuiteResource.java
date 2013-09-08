@@ -20,10 +20,9 @@ package org.bedework.webcommon;
 
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
-
-import edu.rpi.sss.util.Util;
-import edu.rpi.sss.util.servlets.ContentType;
-import edu.rpi.sss.util.servlets.ContentType.Param;
+import org.bedework.util.misc.Util;
+import org.bedework.util.servlet.ContentType;
+import org.bedework.util.servlet.ContentType.Param;
 
 import java.io.Serializable;
 import java.util.List;
@@ -101,7 +100,8 @@ public class CalSuiteResource implements Serializable {
    * @return path
    */
   public String getPath() {
-    return Util.buildPath(false, resource.getColPath(), "/", resource.getName());
+    return Util.buildPath(false, resource.getColPath(), "/",
+                          resource.getName());
   }
 
   /**

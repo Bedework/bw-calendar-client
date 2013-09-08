@@ -29,12 +29,11 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
-
-import edu.rpi.cmt.calendar.IcalDefs;
-import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
-import edu.rpi.sss.util.DateTimeUtil;
-import edu.rpi.sss.util.Util;
-import edu.rpi.sss.util.log.MessageEmit;
+import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
+import org.bedework.util.misc.Util;
+import org.bedework.util.servlet.MessageEmit;
+import org.bedework.util.timezones.DateTimeUtil;
 
 /** The dates (and/or duration which define when an event happens. These are
  * stored in objects which allow manipulation of indiviual date and time

@@ -25,7 +25,7 @@ import edu.rpi.cmt.access.AccessException;
 import edu.rpi.cmt.access.AccessPrincipal;
 import edu.rpi.cmt.access.Acl;
 import edu.rpi.cmt.access.PrivilegeSet;
-import edu.rpi.sss.util.xml.XmlEmit;
+import org.bedework.util.xml.XmlEmit;
 
 import org.apache.struts.taglib.TagUtils;
 

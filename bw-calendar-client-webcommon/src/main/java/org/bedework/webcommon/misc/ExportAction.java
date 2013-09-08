@@ -29,11 +29,10 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
+import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.sss.util.DateTimeUtil;
 
 import net.fortuna.ical4j.model.Calendar;
 
@@ -114,7 +113,8 @@ public class ExportAction extends BwAbstractAction {
 
       if (dl != null) {
         if (dl.equals("active")) {
-          tr = new BwTimeRange(BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
+          tr = new BwTimeRange(BwDateTimeUtil.getDateTime(
+                  DateTimeUtil.isoDate(),
                                                           true, false,
                                                           null),   // tzid
                                                           null);

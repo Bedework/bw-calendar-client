@@ -25,11 +25,10 @@ import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.sss.util.Util;
 
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.parameter.Related;

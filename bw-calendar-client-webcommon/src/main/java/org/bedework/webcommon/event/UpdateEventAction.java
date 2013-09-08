@@ -42,6 +42,11 @@ import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
+import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
+import org.bedework.util.misc.Util;
+import org.bedework.util.timezones.DateTimeUtil;
+import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -49,11 +54,6 @@ import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.TimeDateComponents;
 
 import edu.rpi.cmt.access.Acl;
-import edu.rpi.cmt.calendar.IcalDefs;
-import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
-import edu.rpi.cmt.timezones.Timezones;
-import edu.rpi.sss.util.DateTimeUtil;
-import edu.rpi.sss.util.Util;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Recur;

@@ -57,8 +57,8 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
+import org.bedework.util.indexing.SearchLimits;
 
-import edu.rpi.cct.misc.indexing.SearchLimits;
 import edu.rpi.cmt.access.Ace;
 
 import java.io.Serializable;

@@ -27,13 +27,13 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.util.misc.Util;
+import org.bedework.util.xml.tagdefs.WebdavTags;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import edu.rpi.cmt.access.Acl;
-import edu.rpi.sss.util.Util;
-import edu.rpi.sss.util.xml.tagdefs.WebdavTags;
 
 /** This action updates a calendar.
  *

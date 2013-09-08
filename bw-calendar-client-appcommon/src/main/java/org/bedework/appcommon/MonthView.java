@@ -22,8 +22,7 @@ package org.bedework.appcommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.exc.CalFacadeException;
-
-import edu.rpi.sss.util.log.MessageEmit;
+import org.bedework.util.servlet.MessageEmit;
 
 /** This class represents a month of events. The firstDay and lastDay are set
  * to be the latest and earliest including the curDay.

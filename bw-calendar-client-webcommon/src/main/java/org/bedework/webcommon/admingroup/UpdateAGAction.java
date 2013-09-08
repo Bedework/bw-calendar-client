@@ -28,12 +28,12 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.UserAuth;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 
-import edu.rpi.sss.util.Util;
 
 /** This action updates an admin group
  *
@@ -222,7 +222,8 @@ public class UpdateAGAction extends BwAbstractAction {
       return false;
     }
 
-    updAdminGroup.setAccount(Util.checkNull(updAdminGroup.getAccount()));
+    updAdminGroup.setAccount(Util.checkNull(
+            updAdminGroup.getAccount()));
 
     if (updAdminGroup.getAccount() == null) {
       form.getErr().emit(ValidationError.missingName);
@@ -237,14 +238,16 @@ public class UpdateAGAction extends BwAbstractAction {
       updAdminGroup.setPrincipalRef(href + updAdminGroup.getAccount());
     }
 
-    updAdminGroup.setDescription(Util.checkNull(updAdminGroup.getDescription()));
+    updAdminGroup.setDescription(Util.checkNull(
+            updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
       form.getErr().emit(ValidationError.missingDescription);
       ok = false;
     }
 
-    String adminGroupGroupOwner = Util.checkNull(form.getAdminGroupGroupOwner());
+    String adminGroupGroupOwner = Util.checkNull(
+            form.getAdminGroupGroupOwner());
     if (adminGroupGroupOwner == null) {
       form.getErr().emit(ValidationError.missingGroupOwner);
       ok = false;
@@ -252,7 +255,8 @@ public class UpdateAGAction extends BwAbstractAction {
       updAdminGroup.setGroupOwnerHref(cl.getUserAlways(adminGroupGroupOwner).getPrincipalRef());
     }
 
-    String adminGroupEventOwner = Util.checkNull(form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = Util.checkNull(
+            form.getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       adminGroupEventOwner = updAdminGroup.getAccount();
     }
@@ -290,14 +294,16 @@ public class UpdateAGAction extends BwAbstractAction {
 
     /* We should see if somebody tried to change the name of the group */
 
-    updAdminGroup.setDescription(Util.checkNull(updAdminGroup.getDescription()));
+    updAdminGroup.setDescription(Util.checkNull(
+            updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
       form.getErr().emit(ValidationError.missingDescription);
       ok = false;
     }
 
-    String adminGroupGroupOwner = Util.checkNull(form.getAdminGroupGroupOwner());
+    String adminGroupGroupOwner = Util.checkNull(
+            form.getAdminGroupGroupOwner());
     BwPrincipal updAgowner = cl.getPrincipal(updAdminGroup.getGroupOwnerHref());
 
     if ((adminGroupGroupOwner != null) &&
@@ -312,7 +318,8 @@ public class UpdateAGAction extends BwAbstractAction {
       updAdminGroup.setGroupOwnerHref(aggo.getPrincipalRef());
     }
 
-    String adminGroupEventOwner = Util.checkNull(form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = Util.checkNull(
+            form.getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       // no change
       return ok;

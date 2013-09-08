@@ -21,11 +21,10 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
+import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.EventListPars;
-
-import edu.rpi.cmt.calendar.ScheduleMethods;
 
 import net.fortuna.ical4j.model.Calendar;
 

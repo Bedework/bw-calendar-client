@@ -21,7 +21,7 @@ package org.bedework.webcommon.config;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.calfacade.exc.CalFacadeException;
 
-import edu.rpi.cmt.jmx.ConfBase;
+import org.bedework.util.jmx.ConfBase;
 
 import java.util.HashMap;
 import java.util.List;

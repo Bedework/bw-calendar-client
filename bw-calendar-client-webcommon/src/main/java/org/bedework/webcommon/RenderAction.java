@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon;
 
-import edu.rpi.sss.util.jsp.UtilActionForm;
+import org.bedework.util.struts.UtilActionForm;
 
 /** This is a no-op action
  *
@@ -39,7 +39,7 @@ public class RenderAction extends BwAbstractAction {
   }
 
   /* (non-Javadoc)
-   * @see edu.rpi.sss.util.jsp.UtilAbstractAction#getContentName(edu.rpi.sss.util.jsp.UtilActionForm)
+   * @see org.bedework.util.struts.UtilAbstractAction#getContentName(org.bedework.util.struts.UtilActionForm)
    */
   public String getContentName(UtilActionForm form) {
     String contentName = form.getPresentationState().getContentName();

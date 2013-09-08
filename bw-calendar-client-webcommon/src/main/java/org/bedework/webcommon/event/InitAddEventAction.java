@@ -26,14 +26,13 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
+import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.DurationBean;
 import org.bedework.webcommon.EventDates;
-
-import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
-import edu.rpi.cmt.calendar.ScheduleMethods;
 
 /** Set up for addition of new event.
  *

@@ -31,7 +31,7 @@
 
   <filter>
     <filter-name>XSLT Filter</filter-name>
-    <filter-class>edu.rpi.sss.util.servlets.ConfiguredXSLTFilter</filter-class>
+    <filter-class>org.bedework.util.servlet.filters.ConfiguredXSLTFilter</filter-class>
     <init-param>
       <param-name>directoryBrowsingDisallowed</param-name>
       <param-value>true</param-value>
@@ -105,7 +105,7 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>edu.rpi.sss.util.jsp.SessionListener</listener-class>
+    <listener-class>org.bedework.util.struts.SessionListener</listener-class>
   </listener>
 
   <!-- Do not alter or move  the following comment -->

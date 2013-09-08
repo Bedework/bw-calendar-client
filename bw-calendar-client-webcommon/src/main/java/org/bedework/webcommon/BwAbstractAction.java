@@ -71,17 +71,16 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.SchedulingI.FbResponses;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
+import org.bedework.util.calendar.ScheduleStates;
+import org.bedework.util.misc.Util;
+import org.bedework.util.servlet.filters.PresentationState;
+import org.bedework.util.struts.Request;
+import org.bedework.util.struts.UtilAbstractAction;
+import org.bedework.util.struts.UtilActionForm;
+import org.bedework.util.timezones.DateTimeUtil;
+import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.config.ClientConfigurations;
-
-import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
-import edu.rpi.cmt.calendar.ScheduleStates;
-import edu.rpi.cmt.timezones.Timezones;
-import edu.rpi.sss.util.DateTimeUtil;
-import edu.rpi.sss.util.Util;
-import edu.rpi.sss.util.jsp.Request;
-import edu.rpi.sss.util.jsp.UtilAbstractAction;
-import edu.rpi.sss.util.jsp.UtilActionForm;
-import edu.rpi.sss.util.servlets.PresentationState;
 
 import net.fortuna.ical4j.model.Dur;
 import org.apache.struts.action.ActionForward;
@@ -116,7 +115,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /*
    *  (non-Javadoc)
-   * @see edu.rpi.sss.util.jsp.UtilAbstractAction#getId()
+   * @see org.bedework.util.struts.UtilAbstractAction#getId()
    */
   @Override
   public String getId() {
@@ -1414,7 +1413,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /* We should probably return false for a portlet
    *  (non-Javadoc)
-   * @see edu.rpi.sss.util.jsp.UtilAbstractAction#logOutCleanup(javax.servlet.http.HttpServletRequest)
+   * @see org.bedework.util.struts.UtilAbstractAction#logOutCleanup(javax.servlet.http.HttpServletRequest)
    */
   @Override
   protected boolean logOutCleanup(final HttpServletRequest request,

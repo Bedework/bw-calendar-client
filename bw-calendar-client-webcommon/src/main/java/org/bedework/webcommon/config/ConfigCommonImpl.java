@@ -20,8 +20,8 @@ package org.bedework.webcommon.config;
 
 import org.bedework.appcommon.ConfigCommon;
 
-import edu.rpi.cmt.config.ConfInfo;
-import edu.rpi.cmt.config.ConfigBase;
+import org.bedework.util.config.ConfInfo;
+import org.bedework.util.config.ConfigBase;
 
 /** Common configuration properties for the web clients
  *

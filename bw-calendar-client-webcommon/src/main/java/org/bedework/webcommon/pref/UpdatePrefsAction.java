@@ -22,13 +22,12 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.BwPreferences;
+import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.cmt.timezones.Timezones;
 
 import java.util.Collection;
 import java.util.Set;

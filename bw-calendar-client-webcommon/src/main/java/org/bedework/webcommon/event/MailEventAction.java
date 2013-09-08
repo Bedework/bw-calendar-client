@@ -28,11 +28,10 @@ import org.bedework.calfacade.mail.ObjectAttachment;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.sss.util.Util;
 
 import net.fortuna.ical4j.model.Calendar;
 

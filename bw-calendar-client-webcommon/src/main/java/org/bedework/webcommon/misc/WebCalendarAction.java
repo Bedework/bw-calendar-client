@@ -36,8 +36,8 @@ import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
-import edu.rpi.sss.util.DateTimeUtil;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
+import org.bedework.util.timezones.DateTimeUtil;
 
 import java.util.Calendar;
 import java.util.Collection;

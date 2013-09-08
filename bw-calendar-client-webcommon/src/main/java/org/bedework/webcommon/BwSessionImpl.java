@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon;
 
-import edu.rpi.sss.util.servlets.PresentationState;
+import org.bedework.util.servlet.filters.PresentationState;
 
 import org.apache.struts.util.MessageResources;
 

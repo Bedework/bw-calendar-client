@@ -28,13 +28,12 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
-
-import edu.rpi.cmt.calendar.IcalDefs;
-import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
-import edu.rpi.cmt.calendar.ScheduleMethods;
-import edu.rpi.cmt.timezones.Timezones;
-import edu.rpi.sss.util.Util;
-import edu.rpi.sss.util.jsp.Request;
+import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
+import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.util.misc.Util;
+import org.bedework.util.struts.Request;
+import org.bedework.util.timezones.Timezones;
 
 import org.apache.struts.action.Action;
 

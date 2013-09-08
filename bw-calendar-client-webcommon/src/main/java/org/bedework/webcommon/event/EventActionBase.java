@@ -44,6 +44,10 @@ import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
+import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
+import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -52,11 +56,6 @@ import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.BwWebUtil.ValidateResult;
 import org.bedework.webcommon.EventKey;
 import org.bedework.webcommon.EventListPars;
-
-import edu.rpi.cmt.calendar.IcalDefs;
-import edu.rpi.cmt.calendar.PropertyIndex.PropertyInfoIndex;
-import edu.rpi.cmt.calendar.ScheduleMethods;
-import edu.rpi.sss.util.Util;
 
 import net.fortuna.ical4j.model.parameter.Role;
 

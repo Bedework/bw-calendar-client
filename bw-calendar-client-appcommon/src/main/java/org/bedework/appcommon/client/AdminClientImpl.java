@@ -33,13 +33,13 @@ import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcIPars;
+import org.bedework.util.misc.Util;
 
 import edu.rpi.cmt.access.Access;
 import edu.rpi.cmt.access.AccessException;
 import edu.rpi.cmt.access.Ace;
 import edu.rpi.cmt.access.AceWho;
 import edu.rpi.cmt.access.Privilege;
-import edu.rpi.sss.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collection;

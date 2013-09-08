@@ -28,14 +28,13 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.icalendar.Icalendar;
+import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.EventKey;
 import org.bedework.webcommon.event.EventActionBase;
-
-import edu.rpi.cmt.calendar.IcalDefs;
-import edu.rpi.cmt.calendar.ScheduleMethods;
 
 import java.util.Collection;
 

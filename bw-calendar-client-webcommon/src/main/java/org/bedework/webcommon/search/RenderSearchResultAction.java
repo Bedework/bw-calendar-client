@@ -20,11 +20,11 @@
 package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.util.indexing.SearchLimits;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
 
-import edu.rpi.cct.misc.indexing.SearchLimits;
 
 /** Implant the search result in the form.
  *

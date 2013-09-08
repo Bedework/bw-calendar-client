@@ -20,8 +20,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.client.Client;
-
-import edu.rpi.sss.util.jsp.Request;
+import org.bedework.util.struts.Request;
 
 import java.io.Serializable;
 

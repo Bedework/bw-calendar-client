@@ -18,7 +18,7 @@
 */
 package org.bedework.appcommon;
 
-import edu.rpi.cmt.jmx.MBeanInfo;
+import org.bedework.util.jmx.MBeanInfo;
 
 import java.io.Serializable;
 

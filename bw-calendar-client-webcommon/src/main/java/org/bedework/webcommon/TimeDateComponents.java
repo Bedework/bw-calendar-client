@@ -23,11 +23,10 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.exc.CalFacadeBadDateException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-
-import edu.rpi.cmt.timezones.TimeZoneName;
-import edu.rpi.cmt.timezones.Timezones;
-import edu.rpi.sss.util.DateTimeUtil;
-import edu.rpi.sss.util.DateTimeUtil.BadDateException;
+import org.bedework.util.timezones.DateTimeUtil;
+import org.bedework.util.timezones.DateTimeUtil.BadDateException;
+import org.bedework.util.timezones.TimeZoneName;
+import org.bedework.util.timezones.Timezones;
 
 import java.io.Serializable;
 import java.util.Collection;

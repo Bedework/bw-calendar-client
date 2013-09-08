@@ -25,13 +25,12 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
+import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.util.timezones.DateTimeUtil;
+import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.EventKey;
-
-import edu.rpi.cmt.calendar.ScheduleMethods;
-import edu.rpi.cmt.timezones.Timezones;
-import edu.rpi.sss.util.DateTimeUtil;
 
 import java.util.Collection;
 import java.util.Date;

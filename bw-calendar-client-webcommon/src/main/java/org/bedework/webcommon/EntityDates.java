@@ -20,8 +20,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.CalendarInfo;
-
-import edu.rpi.sss.util.log.MessageEmit;
+import org.bedework.util.servlet.MessageEmit;
 
 import java.io.Serializable;
 

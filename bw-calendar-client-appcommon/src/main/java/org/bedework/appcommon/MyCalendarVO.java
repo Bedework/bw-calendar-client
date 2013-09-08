@@ -20,10 +20,9 @@
 package org.bedework.appcommon;
 
 import org.bedework.calfacade.locale.BwLocale;
-
-import edu.rpi.cmt.timezones.Timezones;
-import edu.rpi.cmt.timezones.TimezonesException;
-import edu.rpi.sss.util.DateTimeUtil;
+import org.bedework.util.timezones.DateTimeUtil;
+import org.bedework.util.timezones.Timezones;
+import org.bedework.util.timezones.TimezonesException;
 
 import java.io.Serializable;
 import java.text.DateFormat;

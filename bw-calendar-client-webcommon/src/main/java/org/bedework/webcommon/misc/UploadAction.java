@@ -33,12 +33,11 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
+import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.AddEventResult;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.cmt.calendar.ScheduleMethods;
 
 import org.apache.struts.upload.FormFile;
 

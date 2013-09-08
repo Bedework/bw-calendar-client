@@ -31,7 +31,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.event.EventActionBase;
 
-import edu.rpi.sss.util.DateTimeUtil;
+import org.bedework.util.timezones.DateTimeUtil;
 
 import java.util.Collection;
 import java.util.Date;

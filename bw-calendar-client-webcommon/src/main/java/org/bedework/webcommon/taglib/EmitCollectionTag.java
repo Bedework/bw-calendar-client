@@ -21,8 +21,8 @@ package org.bedework.webcommon.taglib;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.wrappers.CalendarWrapper;
 
-import edu.rpi.sss.util.xml.tagdefs.AppleServerTags;
-import edu.rpi.sss.util.xml.tagdefs.NamespaceAbbrevs;
+import org.bedework.util.xml.tagdefs.AppleServerTags;
+import org.bedework.util.xml.tagdefs.NamespaceAbbrevs;
 
 import java.net.URLEncoder;
 

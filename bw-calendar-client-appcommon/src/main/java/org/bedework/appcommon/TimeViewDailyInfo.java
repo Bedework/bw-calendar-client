@@ -19,8 +19,7 @@
 package org.bedework.appcommon;
 
 import org.bedework.calfacade.svc.EventInfo;
-
-import edu.rpi.sss.util.log.MessageEmit;
+import org.bedework.util.servlet.MessageEmit;
 
 import org.apache.log4j.Logger;
 

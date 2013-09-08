@@ -18,8 +18,8 @@
 */
 package org.bedework.webcommon.config;
 
-import edu.rpi.cmt.config.ConfigurationStore;
-import edu.rpi.cmt.jmx.ConfBase;
+import org.bedework.util.config.ConfigurationStore;
+import org.bedework.util.jmx.ConfBase;
 
 /**
  * @author douglm

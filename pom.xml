@@ -57,7 +57,7 @@
 	<modules>
 		<module>bw-calendar-client-appcommon</module>
     <module>bw-calendar-client-webcommon</module>
-    <!-- 
+    <!--
 		<module>bw-calendar-client-caladmin</module>
 		<module>bw-calendar-client-cal</module>
 		<module>bw-calendar-client-feeder</module>
@@ -82,7 +82,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!-- Only needed for JBoss 5 dependencies. We should remove this when we 
+		<!-- Only needed for JBoss 5 dependencies. We should remove this when we
 			move Bedework off of JBoss 5. -->
 		<repository>
 			<id>jboss-deprecated</id>
@@ -112,11 +112,41 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- Bedework Project Dependencies -->
-			<dependency>
-				<groupId>org.bedework</groupId>
-				<artifactId>bw-util</artifactId>
-				<version>${bw-util.version}</version>
-			</dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-calendar</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-config</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-indexing</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-json</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-misc</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-struts</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-timezones</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
 			<dependency>
 				<groupId>org.bedework</groupId>
 				<artifactId>bw-access</artifactId>

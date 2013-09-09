@@ -32,7 +32,7 @@ import java.io.Serializable;
  * <p>A module will be single threaded with respect to requests. The
  * filter enforces this by checking to see if the module is in use.</p>
  *
- * @author Mike Douglass   douglm  rpi.edu
+ * @author Mike Douglass   douglm  bedework.edu
  */
 public class BwModule implements Serializable {
   /** This class will be exposed to JSP via the form. Do not expose the

@@ -33,7 +33,7 @@ import java.util.Collection;
 
 /** Class to hold info about a user's inbox or outbox.
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  *  @version 1.0
  */
 public class InOutBoxInfo implements Serializable {

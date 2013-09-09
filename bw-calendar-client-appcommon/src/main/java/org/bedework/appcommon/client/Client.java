@@ -70,7 +70,7 @@ import java.util.Locale;
  * This interface defines the interactions with the back end system
  * for a client.
  *
- * @author  Mike Douglass douglm  rpi.edu
+ * @author  Mike Douglass douglm  bedework.edu
  */
 public interface Client extends Serializable {
   /**

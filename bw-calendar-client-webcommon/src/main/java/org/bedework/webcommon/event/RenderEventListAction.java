@@ -33,7 +33,7 @@ import java.util.Collection;
  *      <li>"continue"     continue to list page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class RenderEventListAction extends EventActionBase {
   /* (non-Javadoc)

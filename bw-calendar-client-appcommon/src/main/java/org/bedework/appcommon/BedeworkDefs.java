@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /** This interface defines some values for the Bedework web interface.
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public interface BedeworkDefs extends Serializable {
   /** These names are internal

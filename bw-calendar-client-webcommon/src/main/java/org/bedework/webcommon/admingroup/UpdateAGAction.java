@@ -52,7 +52,7 @@ import org.bedework.webcommon.BwWebUtil;
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class UpdateAGAction extends BwAbstractAction {
   /* (non-Javadoc)

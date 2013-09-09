@@ -30,7 +30,7 @@ import java.util.Map;
 
 /** Class to hold info about a user's notifications.
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  *  @version 1.0
  */
 public class NotificationInfo implements Serializable {

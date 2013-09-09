@@ -30,7 +30,7 @@ import javax.imageio.ImageIO;
 /** Some image processing code -makes use of the library from
  * http://www.thebuzzmedia.com/software/imgscalr-java-image-scaling-library/
  *
- * @author  Mike Douglass douglm  rpi.edu
+ * @author  Mike Douglass douglm  bedework.edu
  */
 public class ImageProcessing {
   private ImageProcessing() {}

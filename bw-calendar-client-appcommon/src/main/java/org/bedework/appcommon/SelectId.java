@@ -27,7 +27,7 @@ import java.io.Serializable;
  *
  * <p>We have two values, A and B
  *
- * @author  Mike Douglass douglm @ rpi.edu
+ * @author  Mike Douglass douglm @ bedework.edu
  *
  * @param <T>
  */

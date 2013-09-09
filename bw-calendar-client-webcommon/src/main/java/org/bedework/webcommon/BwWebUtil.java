@@ -53,7 +53,7 @@ import javax.servlet.http.HttpSession;
 
 /** Useful shared web utility routines
  *
- * @author  Mike Douglass  douglm@rpi.edu
+ * @author  Mike Douglass  douglm@bedework.edu
  */
 public class BwWebUtil {
   /** Name of the session attribute holding our session state
@@ -551,7 +551,7 @@ public class BwWebUtil {
   }
 
   private static void noSession() {
-    Logger.getLogger("edu.rpi.cct.uwcal.webcommon.UWCalWebUtil").warn(
+    Logger.getLogger("edu.bedework.cct.uwcal.webcommon.UWCalWebUtil").warn(
             "No session!!!!!!!");
   }
 }

@@ -30,7 +30,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>forwardContinue     continue on to next page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class GetAuthUsersAction extends BwAbstractAction {
   /* (non-Javadoc)

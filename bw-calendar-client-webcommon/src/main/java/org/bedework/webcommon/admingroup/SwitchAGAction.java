@@ -27,7 +27,7 @@ import org.bedework.webcommon.BwRequest;
 
 /** This action switches the users Admin Groups.
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class SwitchAGAction extends BwAbstractAction {
   /* (non-Javadoc)

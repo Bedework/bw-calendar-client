@@ -67,7 +67,7 @@ import java.util.TreeSet;
  *      <li>"delete"       for confirmation.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class UpdatePrefsAction extends BwAbstractAction {
   /* (non-Javadoc)

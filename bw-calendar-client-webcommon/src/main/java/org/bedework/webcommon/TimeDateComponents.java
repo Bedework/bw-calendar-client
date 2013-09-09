@@ -35,7 +35,7 @@ import java.util.TreeSet;
 
 /** A wrapper around date/time objects that is used to generate form elements
 
-   @author   Mike Douglass douglm@rpi.edu
+   @author   Mike Douglass douglm@bedework.edu
    @author   Greg Barnes
  */
 /* Note:  because this is commonly (exclusively) used as a Struts bean,

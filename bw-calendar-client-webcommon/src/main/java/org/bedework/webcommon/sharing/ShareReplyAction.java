@@ -46,7 +46,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      all done.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class ShareReplyAction extends BwAbstractAction {
   /* (non-Javadoc)

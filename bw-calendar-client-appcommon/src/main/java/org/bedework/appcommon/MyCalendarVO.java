@@ -37,7 +37,7 @@ import java.util.Date;
  * calendar back end. It does not represent the internal stored structure of a
  * MyCalendar object.
  *
- *   @author Mike Douglass douglm rpi.edu
+ *   @author Mike Douglass douglm bedework.edu
  *  @version 1.0
  */
 public class MyCalendarVO implements Serializable {

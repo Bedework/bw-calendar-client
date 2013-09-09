@@ -70,7 +70,7 @@ import java.util.TimeZone;
  * <p>The getXXX value and the getTZXXX will only differ if the timezone is
  * not the local timezone.
  *
- * @author Mike Douglass   douglm - rpi.edu
+ * @author Mike Douglass   douglm - bedework.edu
  *  @version 1.0
  */
 public class DateTimeFormatter implements Comparable, Comparator, Serializable {

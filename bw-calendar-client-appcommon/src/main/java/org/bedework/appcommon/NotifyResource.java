@@ -20,8 +20,6 @@ package org.bedework.appcommon;
 
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
-
-import edu.rpi.cct.webdav.servlet.shared.WebdavException;
 import org.bedework.util.xml.XmlUtil;
 import org.bedework.util.xml.tagdefs.AppleServerTags;
 
@@ -42,7 +40,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 /** Class to hold info about a notification.
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  *  @version 1.0
  */
 public class NotifyResource implements Serializable {
@@ -141,7 +139,7 @@ public class NotifyResource implements Serializable {
   /**
    * @param rdr
    * @return parsed Document
-   * @throws WebdavException
+   * @throws Throwable
    */
   private Document parseXml(final Reader rdr) throws Throwable {
     if (rdr == null) {

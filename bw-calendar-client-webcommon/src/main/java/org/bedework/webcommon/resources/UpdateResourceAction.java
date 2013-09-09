@@ -43,7 +43,7 @@ import org.apache.struts.upload.FormFile;
  *      <li>"success"      content updated - back to resource list.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class UpdateResourceAction extends BwAbstractAction {
   /**

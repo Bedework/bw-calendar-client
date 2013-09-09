@@ -41,7 +41,7 @@ import javax.servlet.http.HttpSession;
  * deliver the response. This filter uses a callback object stored as an
  * attribute in the session.
  *
- * @author Mike Douglass douglm@rpi.edu
+ * @author Mike Douglass douglm@bedework.edu
  */
 public class BwSvciFilter implements Filter {
   protected ServletContext ctx;

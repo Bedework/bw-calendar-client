@@ -46,7 +46,7 @@ import org.bedework.access.Acl;
  *      <li>"success"      subscribed ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class UpdateCalSuiteAction extends BwAbstractAction {
   /* (non-Javadoc)

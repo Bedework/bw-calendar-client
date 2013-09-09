@@ -36,7 +36,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      processed.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class FixTimezonesAction extends BwAbstractAction {
   /* (non-Javadoc)

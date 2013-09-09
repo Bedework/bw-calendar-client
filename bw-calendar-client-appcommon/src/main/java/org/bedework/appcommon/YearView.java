@@ -27,7 +27,7 @@ import org.bedework.util.servlet.MessageEmit;
 /** This class represents a year of events. The firstDay and lastDay are set
  * to be the latest and earliest including the curDay.
  *
- * @author  Mike Douglass douglm@rpi.edu
+ * @author  Mike Douglass douglm@bedework.edu
  */
 public class YearView extends TimeView {
   /** Constructor:

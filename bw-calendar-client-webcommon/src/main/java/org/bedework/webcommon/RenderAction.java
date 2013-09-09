@@ -22,7 +22,7 @@ import org.bedework.util.struts.UtilActionForm;
 
 /** This is a no-op action
  *
- * @author Mike Douglass  douglm - rpi.edu
+ * @author Mike Douglass  douglm - bedework.edu
  */
 public class RenderAction extends BwAbstractAction {
   /* (non-Javadoc)

@@ -57,7 +57,7 @@ import java.util.Date;
  * <p>The calendar is represented as a sequence of, possibly overlapping,
  * events which must be rendered in some manner by the display.
  *
- * @author  Mike Douglass douglm  rpi.edu
+ * @author  Mike Douglass douglm  bedework.edu
  */
 public class TimeView implements Serializable {
   protected boolean debug;

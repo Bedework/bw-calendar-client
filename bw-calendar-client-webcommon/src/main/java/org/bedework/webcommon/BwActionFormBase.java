@@ -92,7 +92,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /** Base for action form used by bedework web applications
  *
- * @author  Mike Douglass     douglm - rpi.edu
+ * @author  Mike Douglass     douglm - bedework.edu
  */
 public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private Map<String, BwModule> modules = new HashMap<>();

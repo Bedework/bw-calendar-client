@@ -26,7 +26,7 @@ import java.util.Calendar;
 /** A class to check various data fields for consistency and correctness
  * Based on DataChecker class by Greg Barnes
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  * @author Greg Barnes
  * @version 1.2
  */

@@ -37,7 +37,7 @@ import java.util.Date;
 
 /** Fetch an event for rendering. We previously set the key fields.
  *
- * @author Mike Douglass  douglm - rpi.edu
+ * @author Mike Douglass  douglm - bedework.edu
  */
 public class RenderEventAction extends EventActionBase {
   /* (non-Javadoc)

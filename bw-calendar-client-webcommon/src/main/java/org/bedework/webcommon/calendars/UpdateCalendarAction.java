@@ -58,7 +58,7 @@ import org.bedework.access.Acl;
  *      <li>"delete"       for confirmation.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class UpdateCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)

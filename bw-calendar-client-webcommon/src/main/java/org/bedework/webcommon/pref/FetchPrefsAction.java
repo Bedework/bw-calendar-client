@@ -38,7 +38,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class FetchPrefsAction extends BwAbstractAction {
   /* (non-Javadoc)

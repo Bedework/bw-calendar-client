@@ -26,7 +26,7 @@ import java.io.Serializable;
 
 /** Parameters for fetching a bunch of events.
  *
- * @author Mike Douglass douglm - rpi.edu
+ * @author Mike Douglass douglm - bedework.edu
  */
 public class EventListPars implements Serializable {
   /* null if times not limited. */

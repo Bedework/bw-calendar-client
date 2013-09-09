@@ -28,7 +28,7 @@ import java.io.Serializable;
  * We also provide a number of methods which act as the interface between
  * the web world and the calendar world.
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public interface BwSession extends Serializable {
   /** ===================================================================

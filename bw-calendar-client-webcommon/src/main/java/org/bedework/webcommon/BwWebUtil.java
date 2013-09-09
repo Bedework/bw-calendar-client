@@ -36,7 +36,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalUtil;
 import org.bedework.util.misc.Util;
 
-import edu.rpi.cmt.access.AccessPrincipal;
+import org.bedework.access.AccessPrincipal;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.property.DtEnd;

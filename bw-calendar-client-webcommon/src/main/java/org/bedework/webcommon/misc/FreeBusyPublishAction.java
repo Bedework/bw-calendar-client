@@ -60,7 +60,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * <p>If no period is given return this week.
  *
- * @author Mike Douglass douglm - rpi.edu
+ * @author Mike Douglass douglm - bedework.edu
  */
 public class FreeBusyPublishAction extends BwAbstractAction {
   /* (non-Javadoc)

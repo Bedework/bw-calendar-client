@@ -59,7 +59,7 @@ import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.util.indexing.SearchLimits;
 
-import edu.rpi.cmt.access.Ace;
+import org.bedework.access.Ace;
 
 import java.io.Serializable;
 import java.util.Collection;

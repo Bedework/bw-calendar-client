@@ -49,7 +49,7 @@ import javax.servlet.jsp.JspException;
  *
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @author <a href="mailto:satish@mun.ca">Satish Sekharan</a>
- * @author Mike Douglass    douglm at rpi.edu
+ * @author Mike Douglass    douglm at bedework.edu
  * @author Dave Brondsema
  * @version $Id: RewriteTag.java 2005-10-25 12:31:13Z satish $
  */

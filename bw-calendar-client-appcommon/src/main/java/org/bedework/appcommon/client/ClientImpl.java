@@ -43,7 +43,7 @@ import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.EventProperties;
 import org.bedework.calsvci.SharingI;
 
-import edu.rpi.cmt.access.Ace;
+import org.bedework.access.Ace;
 
 import java.util.Collection;
 

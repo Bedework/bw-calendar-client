@@ -78,8 +78,8 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
 import org.bedework.util.timezones.DateTimeUtil;
 
-import edu.rpi.cmt.access.Ace;
-import edu.rpi.cmt.access.Acl;
+import org.bedework.access.Ace;
+import org.bedework.access.Acl;
 
 import org.apache.log4j.Logger;
 

@@ -33,7 +33,7 @@ import java.util.Collection;
  * <p>This information is always returned as a hierarchical set of these
  * entries with the top being years, containing months, weeks and days.
  *
- * @author  Mike Douglass douglm@rpi.edu
+ * @author  Mike Douglass douglm@bedework.edu
  */
 public class TimeViewDailyInfo implements Serializable {
   /** The view that created this.

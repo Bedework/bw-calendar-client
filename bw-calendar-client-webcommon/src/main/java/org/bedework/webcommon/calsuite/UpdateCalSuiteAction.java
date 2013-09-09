@@ -26,7 +26,7 @@ import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-import edu.rpi.cmt.access.Acl;
+import org.bedework.access.Acl;
 
 /** Update a calendar suite for a user.
  *

@@ -65,7 +65,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>If no period is given return this week. If no interval and intunit is
  * supplied default to 1 hour intervals during the workday.
  *
- * @author Mike Douglass douglm @ rpi.edu
+ * @author Mike Douglass douglm @ bedework.edu
  */
 public class WebCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)

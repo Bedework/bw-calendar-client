@@ -106,7 +106,7 @@ import javax.servlet.http.HttpSession;
 /** This abstract action performs common setup actions before the real
  * action method is called.
  *
- * @author  Mike Douglass  douglm@rpi.edu
+ * @author  Mike Douglass  douglm@bedework.edu
  */
 public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {

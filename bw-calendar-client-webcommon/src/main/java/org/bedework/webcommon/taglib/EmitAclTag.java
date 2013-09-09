@@ -23,7 +23,7 @@ import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwWebUtil;
 
-import edu.rpi.cmt.access.Acl.CurrentAccess;
+import org.bedework.access.Acl.CurrentAccess;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;

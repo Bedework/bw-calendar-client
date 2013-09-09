@@ -33,7 +33,7 @@ import java.util.TimeZone;
 
 /** Class to hold localized calendar info.
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  *  @version 1.0
  */
 public class CalendarInfo implements Serializable {

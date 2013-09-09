@@ -6,9 +6,9 @@
     Version 2.0 (the "License"); you may not use this file
     except in compliance with the License. You may obtain a
     copy of the License at:
-        
+
     http://www.apache.org/licenses/LICENSE-2.0
-        
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on
     an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,11 +22,11 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.ValidationError;
 
-import edu.rpi.cmt.access.Ace;
-import edu.rpi.cmt.access.AceWho;
-import edu.rpi.cmt.access.Privilege;
-import edu.rpi.cmt.access.PrivilegeDefs;
-import edu.rpi.cmt.access.Privileges;
+import org.bedework.access.Ace;
+import org.bedework.access.AceWho;
+import org.bedework.access.Privilege;
+import org.bedework.access.PrivilegeDefs;
+import org.bedework.access.Privileges;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class AccessSetter implements ForwardDefs, Serializable {
   /**
    * <p>Request parameters:<ul>
    *      <li>  how:                   concatenated String of schedule access rights
-   *                                   @see edu.rpi.cmt.access.PrivilegeDefs
+   *                                   @see org.bedework.cmt.access.PrivilegeDefs
    *                                   Each flag can be refixed with "-" for denial
    *                                   e.g. R-W allow read, deny write</li>.
    *      <li>  whoType:               "user" (default), "group",
@@ -88,7 +88,7 @@ public class AccessSetter implements ForwardDefs, Serializable {
    *      <li>  calSuiteName:          name of calendar suite</li>.
    *      <li>  how:                   "default" or concatenated String of
    *                                   desired access rights
-   *                                   @see edu.rpi.cmt.access.PrivilegeDefs </li>.
+   *                                   @see org.bedework.cmt.access.PrivilegeDefs </li>.
    *      <li>  whoType:               user (default), group</li>.
    *      <li>  who:                   name of principal - default to owner</li>.
    * @param request

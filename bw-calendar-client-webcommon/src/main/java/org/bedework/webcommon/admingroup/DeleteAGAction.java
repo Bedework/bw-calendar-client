@@ -35,7 +35,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class DeleteAGAction extends BwAbstractAction {
   /* (non-Javadoc)

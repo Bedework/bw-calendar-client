@@ -39,7 +39,7 @@ import java.util.List;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm rpi.edu
+ * @author Mike Douglass   douglm bedework.edu
  */
 public class DeleteCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)

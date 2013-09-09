@@ -53,7 +53,7 @@ import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.TimeDateComponents;
 
-import edu.rpi.cmt.access.Acl;
+import org.bedework.access.Acl;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Recur;

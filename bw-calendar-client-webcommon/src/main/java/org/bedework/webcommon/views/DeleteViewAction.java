@@ -42,7 +42,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      subscribed ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class DeleteViewAction extends BwAbstractAction {
   /* (non-Javadoc)

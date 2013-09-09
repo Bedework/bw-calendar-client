@@ -37,7 +37,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"continue"      continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm@bedework.edu
  */
 public class InitAddCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)

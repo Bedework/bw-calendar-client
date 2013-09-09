@@ -21,10 +21,10 @@ package org.bedework.appcommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeException;
 
-import edu.rpi.cmt.access.AccessException;
-import edu.rpi.cmt.access.AccessPrincipal;
-import edu.rpi.cmt.access.Acl;
-import edu.rpi.cmt.access.PrivilegeSet;
+import org.bedework.access.AccessException;
+import org.bedework.access.AccessPrincipal;
+import org.bedework.access.Acl;
+import org.bedework.access.PrivilegeSet;
 import org.bedework.util.xml.XmlEmit;
 
 import org.apache.struts.taglib.TagUtils;
@@ -39,7 +39,7 @@ import javax.xml.namespace.QName;
  *
  *  @author Mike Douglass   douglm @ rpi.edu
  */
-public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
+public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
   /**
    */
   public static class Cb implements AccessXmlCb, Serializable {
@@ -54,7 +54,7 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
     }
 
     /* (non-Javadoc)
-     * @see edu.rpi.cmt.access.AccessXmlUtil.AccessXmlCb#makeHref(java.lang.String, int)
+     * @see AccessXmlUtil.AccessXmlCb#makeHref(java.lang.String, int)
      */
     public String makeHref(final String id, final int whoType) throws AccessException {
       try {
@@ -65,7 +65,7 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
     }
 
     /* (non-Javadoc)
-     * @see edu.rpi.cmt.access.AccessXmlUtil.AccessXmlCb#getPrincipal()
+     * @see AccessXmlUtil.AccessXmlCb#getPrincipal()
      */
     public AccessPrincipal getPrincipal() throws AccessException {
       try {
@@ -76,7 +76,7 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
     }
 
     /* (non-Javadoc)
-     * @see edu.rpi.cmt.access.AccessXmlUtil.AccessXmlCb#getPrincipal(java.lang.String)
+     * @see AccessXmlUtil.AccessXmlCb#getPrincipal(java.lang.String)
      */
     public AccessPrincipal getPrincipal(final String href) throws AccessException {
       try {
@@ -87,28 +87,28 @@ public class AccessXmlUtil extends edu.rpi.cmt.access.AccessXmlUtil {
     }
 
     /* (non-Javadoc)
-     * @see edu.rpi.cmt.access.AccessXmlUtil.AccessXmlCb#setErrorTag(edu.rpi.sss.util.xml.QName)
+     * @see AccessXmlUtil.AccessXmlCb#setErrorTag(edu.rpi.sss.util.xml.QName)
      */
     public void setErrorTag(final QName tag) throws AccessException {
       errorTag = tag;
     }
 
     /* (non-Javadoc)
-     * @see edu.rpi.cmt.access.AccessXmlUtil.AccessXmlCb#getErrorTag()
+     * @see AccessXmlUtil.AccessXmlCb#getErrorTag()
      */
     public QName getErrorTag() throws AccessException {
       return errorTag;
     }
 
     /* (non-Javadoc)
-     * @see edu.rpi.cmt.access.AccessXmlUtil.AccessXmlCb#setErrorMsg(java.lang.String)
+     * @see AccessXmlUtil.AccessXmlCb#setErrorMsg(java.lang.String)
      */
     public void setErrorMsg(final String val) throws AccessException {
       errorMsg = val;
     }
 
     /* (non-Javadoc)
-     * @see edu.rpi.cmt.access.AccessXmlUtil.AccessXmlCb#getErrorMsg()
+     * @see AccessXmlUtil.AccessXmlCb#getErrorMsg()
      */
     public String getErrorMsg() throws AccessException {
       return errorMsg;

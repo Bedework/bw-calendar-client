@@ -106,7 +106,7 @@ import javax.servlet.http.HttpSession;
 /** This abstract action performs common setup actions before the real
  * action method is called.
  *
- * @author  Mike Douglass  douglm@bedework.edu
+ * @author  Mike Douglass  douglm@rpi.edu
  */
 public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
@@ -1519,7 +1519,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           return HttpServletResponse.SC_OK;
         }
 
-        BwModule module = form.fetchModule(req.getModuleName());
+        BwModule module = form.fetchModule(req.getClientName());
 
         if (module.getInuse()) {
           // double-clicking on our links eh?
@@ -1543,7 +1543,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      */
     @Override
     public void out() throws Throwable {
-      BwModule module = form.fetchModule(req.getModuleName());
+      BwModule module = form.fetchModule(req.getClientName());
 
       module.requestOut();
     }
@@ -1554,7 +1554,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      */
     @Override
     public void close() throws Throwable {
-      form.fetchModule(req.getModuleName()).close();
+      form.fetchModule(req.getClientName()).close();
     }
 
     /* (non-Javadoc)
@@ -1592,7 +1592,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     void closeNow() throws Throwable {
-      BwModule module = form.fetchModule(req.getModuleName());
+      BwModule module = form.fetchModule(req.getClientName());
 
       module.closeNow();
 

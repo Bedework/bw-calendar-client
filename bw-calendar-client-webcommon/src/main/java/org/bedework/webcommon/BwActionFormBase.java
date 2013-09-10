@@ -92,7 +92,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /** Base for action form used by bedework web applications
  *
- * @author  Mike Douglass     douglm - bedework.edu
+ * @author  Mike Douglass     douglm - rpi.edu
  */
 public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private Map<String, BwModule> modules = new HashMap<>();
@@ -614,7 +614,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
     if (!defModule && (m.getClient() == null)) {
       try {
-        m.setClient(m.getClient().copy());
+        BwModule def = modules.get(BwModule.defaultModuleName);
+        m.setClient(def.getClient().copy());
       } catch (CalFacadeException e) {
         err.emit(e);
       }

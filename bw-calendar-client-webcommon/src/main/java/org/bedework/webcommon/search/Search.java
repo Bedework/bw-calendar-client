@@ -110,6 +110,9 @@ public class Search extends BwAbstractAction {
       form.setNumPages((((int)rsize + pageSize) - 1) / pageSize);
     }
 
+    /* Ensure we have categories embedded in session */
+    embedCategories(request);
+
     return forwardSuccess;
   }
 }

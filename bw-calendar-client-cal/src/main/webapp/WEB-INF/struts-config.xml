@@ -179,7 +179,7 @@
       <forward name="success" path="/main/showMain.rdo" redirect="true" />
       <forward name="noViewDef" path="/main/showMain.rdo" redirect="true" />
     </action>
-    
+
     <action    path="/main/setSelectionList"
                type="org.bedework.webcommon.misc.SetSelectionAction"
                name="calForm"
@@ -540,7 +540,7 @@
                validate="false">
       <forward name="success" path="/schedule/showInbox.rdo" redirect="true" />
     </action>
-    
+
     <action    path="/schedule/clearReply"
                type="org.bedework.webcommon.event.DeleteEventAction"
                name="calForm"
@@ -620,7 +620,7 @@
       <forward name="continue" path="/schedule/showAttendeeRespond.rdo" redirect="true" />
       <forward name="success" path="/schedule/showAttendeeRespond.rdo" redirect="true" />
     </action>
-    
+
     <action    path="/schedule/changeStatus"
                type="org.bedework.webcommon.schedule.AttendeeRespond"
                name="calForm"
@@ -691,8 +691,8 @@
                parameter="actionType=render;conversation=only"
                validate="false">
       <forward name="success" path="/docs/showPage.jsp" />
-    </action>    
-    
+    </action>
+
     <!-- an action for setting values into the form asynchronously -->
     <action    path="/misc/async"
                type="org.bedework.webcommon.RenderAction"
@@ -772,7 +772,7 @@
        ............................................................... -->
 
     <action    path="/category/initUpdate"
-               type="org.bedework.webcommon.NoopAction"
+               type="org.bedework.webcommon.category.FetchCategoriesAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
@@ -1247,7 +1247,7 @@
       <forward name="continue" path="/calendar/showUpdateList.rdo" redirect="true" />
       <forward name="success" path="/calendar/showUpdateList.rdo" redirect="true" />
     </action>
-    
+
     <action    path="/sharing/initAddSubscription"
                type="org.bedework.webcommon.calendars.InitAddCalendarAction"
                name="calForm"
@@ -1256,7 +1256,7 @@
                validate="false">
       <forward name="continue" path="/sharing/showAddSubForm.rdo" redirect="true" />
     </action>
-    
+
     <action    path="/sharing/showAddSubForm"
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
@@ -1269,10 +1269,10 @@
     <!-- ===============================================================
                        Notifications
          =============================================================== -->
-    
+
     <!-- The following two actions do the same thing, and differ only by their
-         conversation= parameter. The first action is used when no 
-         transaction is running; the second is used in the middle of a transaction 
+         conversation= parameter. The first action is used when no
+         transaction is running; the second is used in the middle of a transaction
          (e.g. a form is being filled). -->
     <action    path="/notify/remove"
                type="org.bedework.webcommon.notifications.RemoveAction"
@@ -1283,7 +1283,7 @@
       <forward name="notFound" path="/widget/ajaxTerminator.rdo" redirect="true" />
       <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
     </action>
-    
+
     <action    path="/notify/removeTrans"
                type="org.bedework.webcommon.notifications.RemoveAction"
                name="calForm"
@@ -1297,7 +1297,7 @@
     <!-- ===============================================================
                        Subscriptions
                        Not any more - supported through add collection code
-         =============================================================== 
+         ===============================================================
 
     <action    path="/subs/showSubsMenu"
                type="org.bedework.webcommon.RenderAction"
@@ -1580,29 +1580,6 @@
     </action>
 
     <!-- ===============================================================
-                     System Statistics
-     =============================================================== -->
-
-    <action    path="/stats/showStats"
-               type="org.bedework.webcommon.RenderAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render"
-               validate="false">
-      <forward name="success" path="/docs/showSysStats.jsp" />
-    </action>
-
-    <action    path="/stats/stats"
-               type="org.bedework.webcommon.misc.StatisticsAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="continue"  path="/stats/showStats.rdo" redirect="true" />
-      <forward name="success"  path="/stats/showStats.rdo" redirect="true" />
-    </action>
-
-    <!-- ===============================================================
                           Monitor
          =============================================================== -->
 
@@ -1654,7 +1631,7 @@
                validate="false">
       <forward name="success" path="/widget/showGroups.rdo" redirect="true" />
     </action>
-    
+
     <!-- Update the attendee list and recalculate freebusy -->
     <action    path="/widget/attendees"
                type="org.bedework.webcommon.event.AttendeeAction"
@@ -1665,7 +1642,7 @@
       <forward name="success" path="/widget/showAttendees.rdo" redirect="true" />
       <forward name="listAttendees" path="/widget/showAttendees.rdo" redirect="true" />
     </action>
-    
+
     <action    path="/widget/showAttendees"
                type="org.bedework.webcommon.RenderAction"
                name="calForm"

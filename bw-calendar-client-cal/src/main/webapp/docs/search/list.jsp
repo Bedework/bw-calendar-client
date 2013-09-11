@@ -13,6 +13,14 @@ try {
 
 <page>searchResult</page>
 
+<categories>
+  <logic:present name="bw_categories_list" scope="session">
+    <logic:iterate id="category" name="bw_categories_list" scope="session">
+      <%@include file="/docs/category/emitCategory.jsp"%>
+    </logic:iterate>
+  </logic:present>
+</categories>
+
 <searchResults>
   <bw:emitText name="calForm" property="query"/>
   <bw:emitText name="calForm" property="resultSize" />
@@ -48,7 +56,7 @@ try {
             </end>
             <bw:emitText name="event" property="creatorHref" tagName="creator"/>
             <bw:emitText name="event" property="ownerHref" tagName="owner"/>
-        
+
             <id><bean:write name="event" property="id"/></id><%--
               Value: integer - event id --%>
             <bw:emitText name="event" property="uid" tagName="guid" />
@@ -74,7 +82,7 @@ try {
             <bw:emitContainer name="event" indent="    " tagName="calendar" />
             <bw:emitText name="event" property="status" /><%-- Status
                   Value: string, only one of CONFIRMED, TENTATIVE, or CANCELLED --%>
-        
+
             <!-- always produce the xproperties, if they exist -->
             <logic:present name="event" property="xproperties">
               <xproperties>
@@ -102,16 +110,16 @@ try {
                 </logic:iterate>
               </xproperties>
             </logic:present>
-        
+
             <logic:present  name="event" property="percentComplete">
               <bw:emitText name="event" property="percentComplete"/>
             </logic:present>
-        
+
             <logic:present  name="event" property="geo">
               <bw:emitText name="event" property="geo.latitude" tagName="latitude"/>
               <bw:emitText name="event" property="geo.longitude" tagName="longitude"/>
-            </logic:present>     
-            
+            </logic:present>
+
             <logic:present  name="event" property="location">
               <bean:define id="location" name="event" property="location"/>
               <location>
@@ -128,7 +136,7 @@ try {
                 <address></address>
               </location>
             </logic:notPresent>
-        
+
           </event>
 
 

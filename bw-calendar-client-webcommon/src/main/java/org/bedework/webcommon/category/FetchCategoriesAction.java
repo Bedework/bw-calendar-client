@@ -16,60 +16,27 @@
     specific language governing permissions and limitations
     under the License.
 */
+package org.bedework.webcommon.category;
 
-package org.bedework.webcommon.pref;
-
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwPreferences;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-/** Delete a view.
- *
- * <p>Parameters are:<ul>
- *      <li>"user"            User whos prefs we're changing - superuser only</li>
- * </ul>
+/** This action fetches all categories and embeds them in the session.
  *
  * <p>Forwards to:<ul>
- *      <li>"error"        some form of fatal error.</li>
- *      <li>"noAccess"     user not authorised.</li>
- *      <li>"notFound"     no such user.</li>
- *      <li>"success"     continue on to update page.</li>
+ *      <li>"success"      ok.</li>
  * </ul>
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class FetchPrefsAction extends BwAbstractAction {
+public class FetchCategoriesAction extends BwAbstractAction {
   /* (non-Javadoc)
    * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
    */
-  @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    String str = request.getReqPar("user");
-    if (str != null) {
-      /* Fetch a given users preferences */
-      if (!form.getCurUserSuperUser()) {
-        return forwardNoAccess; // First line of defence
-      }
-
-      embedCategories(request);
-
-      BwPreferences prefs = cl.getPreferences(str);
-      if (prefs == null) {
-        return forwardNoAccess;
-      }
-
-      form.setUserPreferences(prefs);
-
-      return forwardSuccess;
-    }
-
-    /* Just set this users prefs */
-    form.setUserPreferences(cl.getPreferences());
+  public int doAction(BwRequest request,
+                      BwActionFormBase form) throws Throwable {
+    embedCategories(request);
 
     return forwardSuccess;
   }

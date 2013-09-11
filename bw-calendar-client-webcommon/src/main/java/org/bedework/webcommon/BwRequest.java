@@ -49,6 +49,9 @@ public class BwRequest extends Request {
 
   private Request req;
 
+  /** category list stored in session */
+  public final static String bwCategoriesListName = "bw_categories_list";
+
   /**
    * @param request
    * @param sess

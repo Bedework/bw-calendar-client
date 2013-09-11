@@ -752,6 +752,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return true;
   }
 
+  protected void embedCategories(final BwRequest request) throws Throwable {
+    if (request.getSessionAttr(BwRequest.bwCategoriesListName) == null) {
+      request.setSessionAttr(BwRequest.bwCategoriesListName,
+                             request.getClient().getCategories());
+    }
+  }
+
   /** Find a principal object given a "user" request parameter.
    *
    * @param request     BwRequest for parameters

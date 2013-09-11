@@ -434,7 +434,7 @@ try {
     </logic:present>
   </views>
 
-  <%-- List of categories for menuing --%>
+  <%-- List of categories for menuing
   <categories>
     <logic:present name="calForm" property="categories">
       <logic:iterate id="category" name="calForm" property="categories">
@@ -442,6 +442,7 @@ try {
       </logic:iterate>
     </logic:present>
   </categories>
+   --%>
 
   <%-- List of filters for menuing --%>
   <filters>

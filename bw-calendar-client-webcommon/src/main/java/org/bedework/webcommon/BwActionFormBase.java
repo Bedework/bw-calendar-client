@@ -1765,6 +1765,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return client;
   }
 
+  /**
+   * @param name - the client name or null
+   * @return a named client object
+   */
+  public Client fetchClient(final String name) {
+    BwModule m = fetchModule(name);
+
+    if (m == null) {
+      return null;
+    }
+
+    return m.getClient();
+  }
+
   /** Set flag to show if this user has any admin rights.
    *
    * @param val   boolean true if admin user

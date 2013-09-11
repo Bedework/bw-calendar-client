@@ -47,6 +47,8 @@ import java.util.Collection;
 public class BwRequest extends Request {
   private BwSession sess;
 
+  private Request req;
+
   /**
    * @param request
    * @param sess
@@ -57,6 +59,7 @@ public class BwRequest extends Request {
                    final Action action) {
     super(request.getRequest(), request.getResponse(), request.getForm(),
           action);
+    this.req = request;
     this.sess = sess;
   }
 
@@ -68,7 +71,7 @@ public class BwRequest extends Request {
   }
 
   public Client getClient() {
-    return getBwForm().fetchClient();
+    return getBwForm().fetchClient(req.getClientName());
   }
 
   /**

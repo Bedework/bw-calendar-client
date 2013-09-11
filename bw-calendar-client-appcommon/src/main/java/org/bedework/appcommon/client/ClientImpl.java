@@ -145,6 +145,12 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
+  public void addCategory(final BwCategory val)
+          throws CalFacadeException {
+    svci.getCategoriesHandler().add(val);
+  }
+
+  @Override
   public void updateCategory(final BwCategory val)
           throws CalFacadeException {
     BwCategory pval = svci.getCategoriesHandler().getPersistent(val.getUid());

@@ -56,7 +56,8 @@ public class FetchPrefsAction extends BwAbstractAction {
         return forwardNoAccess; // First line of defence
       }
 
-      embedCategories(request);
+      embedCategories(request, false);
+      embedDefaultCategories(request, false);
 
       BwPreferences prefs = cl.getPreferences(str);
       if (prefs == null) {

@@ -23,6 +23,7 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.InOutBoxInfo;
@@ -112,6 +113,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "rpiappname";
+
+  private transient CollectionCollator<BwCategory> categoryCollator;
 
   /*
    *  (non-Javadoc)
@@ -471,7 +474,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 //    conf = (ConfigCommon)conf.clone();
     form.setConfig(conf); // So we can get an svci object and set defaults
 
-    form.assignAppType(appType);
     form.assignSubmitApp(BedeworkDefs.appTypeWebsubmit.equals(appType));
 
     if (!conf.getGuestMode()) {
@@ -488,6 +490,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     SubContext sub = null;
     BwSystem sys = cl.getSyspars();
 
+    cl.setAppType(appType);
     String path = request.getRequest().getServletPath();
 
     if (path != null) {
@@ -752,11 +755,124 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return true;
   }
 
-  protected void embedCategories(final BwRequest request) throws Throwable {
-    if (request.getSessionAttr(BwRequest.bwCategoriesListName) == null) {
-      request.setSessionAttr(BwRequest.bwCategoriesListName,
-                             request.getClient().getCategories());
+  /** Embed the list of categories for this owner. Return a null list for
+   * exceptions or no categories. For guest mode or public admin this is the
+   * same as getPublicCategories. This is the method to call unless you
+   * specifically want a list of public categories (for search of public events
+   * perhaps.)
+   *
+   */
+  protected void embedCategories(final BwRequest request,
+                                 final boolean refresh) throws Throwable {
+    if (!refresh &&
+            request.getSessionAttr(BwRequest.bwCategoriesListName) != null) {
+      return;
     }
+
+    request.setSessionAttr(BwRequest.bwCategoriesListName,
+                           getCategoryCollection(request,
+                                                 ownersEntity, true));
+  }
+
+  /** Embed the list of editable categories for this user. Return a null list for
+   * exceptions or no categories.
+   *
+   */
+  public void embedEditableCategories(final BwRequest request,
+                                      final boolean refresh) throws Throwable {
+    if (!refresh &&
+            request.getSessionAttr(BwRequest.bwEditableCategoriesListName) != null) {
+      return;
+    }
+
+    request.setSessionAttr(BwRequest.bwEditableCategoriesListName,
+                           getCategoryCollection(request,
+                                                 editableEntity, false));
+  }
+
+  protected Set<BwCategory> embedDefaultCategories(final BwRequest request,
+                                                   final boolean refresh) throws Throwable {
+    Set<BwCategory> cats;
+
+    if (!refresh) {
+      cats = (Set<BwCategory>)request.getSessionAttr(BwRequest.bwDefaultCategoriesListName);
+      if (cats != null) {
+        return cats;
+      }
+    }
+
+    cats = new TreeSet<>();
+
+    Client cl = request.getClient();
+
+    Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
+
+    for (String uid: catuids) {
+      BwCategory cat = cl.getCategory(uid);
+
+      if (cat != null) {
+        cats.add(cat);
+      }
+    }
+
+    request.setSessionAttr(BwRequest.bwDefaultCategoriesListName,
+                           cats);
+
+    return cats;
+  }
+
+  /* Kind of entity we are referring to */
+
+  private static int ownersEntity = 1;
+  private static int editableEntity = 2;
+
+  private Collection<BwCategory> getCategoryCollection(final BwRequest request,
+                                                       final int kind,
+                                                       final boolean forEventUpdate) throws Throwable {
+    Client cl = request.getClient();
+    Collection<BwCategory> vals = null;
+
+    if (kind == ownersEntity) {
+
+      String appType = cl.getAppType();
+      if (BedeworkDefs.appTypeWebsubmit.equals(appType) ||
+              BedeworkDefs.appTypeWebpublic.equals(appType) ||
+              BedeworkDefs.appTypeFeeder.equals(appType)) {
+        // Use public
+        vals = cl.getCategories(cl.getPublicUser().getPrincipalRef());
+      } else {
+        // Current owner
+        vals = cl.getCategories();
+
+        BwEvent ev = request.getBwForm().getEvent();
+
+        if (!request.getBwForm().publicAdmin() && forEventUpdate &&
+                (ev != null) &&
+                (ev.getCategories() != null)) {
+          for (BwCategory cat: ev.getCategories()) {
+            if (!cat.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
+              vals.add(cat);
+            }
+          }
+        }
+      }
+    } else if (kind == editableEntity) {
+      vals = cl.getEditableCategories();
+    }
+
+    if (vals == null) {
+      return null;
+    }
+
+    return getCategoryCollator().getCollatedCollection(vals);
+  }
+
+  private CollectionCollator<BwCategory> getCategoryCollator() {
+    if (categoryCollator == null) {
+      categoryCollator = new CollectionCollator<BwCategory>();
+    }
+
+    return categoryCollator;
   }
 
   /** Find a principal object given a "user" request parameter.
@@ -821,7 +937,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /* categories already set in event */
     Set<BwCategory> evcats = ent.getCategories();
 
-    Set<BwCategory> defCats = form.getDefaultCategories();
+    Set<BwCategory> defCats = embedDefaultCategories(request, false);
 
     /* Get the uids */
     Collection<String> strCatUids = request.getReqPars("catUid");
@@ -853,7 +969,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (!Util.isEmpty(defCats)) {
-      cats.addAll(defCats);
+      for (BwCategory defcat: defCats) {
+        cats.add(cl.getPersistentCategory(defcat.getUid()));
+      }
     }
 
     if (!Util.isEmpty(strCatUids)) {
@@ -871,7 +989,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           }
         }
 
-        BwCategory cat = cl.getCategory(catUid);
+        BwCategory cat = cl.getPersistentCategory(catUid);
 
         if (cat != null) {
           cats.add(cat);

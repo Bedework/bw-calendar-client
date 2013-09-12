@@ -264,13 +264,6 @@ try {
       <bw:emitText name="calForm" property="currentCalSuite.group.account" tagName="group" />
       <bw:emitText name="calForm" property="currentCalSuite.resourcesHome" tagName="resourcesHome" />
       <bw:emitCurrentPrivs name="calForm" property="currentCalSuite.currentAccess" tagName="currentAccess"/>
-      <logic:present name="calForm" property="defaultCategories">
-        <defaultCategories>
-          <logic:iterate id="category" name="calForm" property="defaultCategories">
-            <%@include file="/docs/category/emitCategory.jsp"%>
-          </logic:iterate>
-        </defaultCategories>
-      </logic:present>
     </currentCalSuite>
   </logic:present>
 

@@ -36,7 +36,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
 public class UpdateCategoryAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -100,6 +100,10 @@ public class UpdateCategoryAction extends BwAbstractAction {
     } else if (vcr.changed) {
       form.getMsg().emit(ClientMessage.updatedCategory);
     }
+
+    /* refresh lists */
+    embedCategories(request, true);
+    embedDefaultCategories(request, true);
 
     return forwardContinue;
   }

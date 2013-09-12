@@ -186,7 +186,8 @@
         </preferred>
       </logic:present>
       <all>
-        <logic:iterate id="category" name="calForm" property="categories">
+        <logic:iterate id="category" name="bw_categories_list"
+                       scope="session">
           <%@include file="/docs/category/emitCategory.jsp"%>
         </logic:iterate>
       </all>

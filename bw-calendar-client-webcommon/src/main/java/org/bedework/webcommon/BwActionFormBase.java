@@ -89,12 +89,16 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /** Base for action form used by bedework web applications
  *
  * @author  Mike Douglass     douglm - rpi.edu
  */
 public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
+  /* Kind of entity we are referring to */
+
+  private static int ownersEntity = 1;
+  private static int editableEntity = 2;
+
   private Map<String, BwModule> modules = new HashMap<>();
 
   private DateTimeFormatter today;
@@ -113,7 +117,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private Locale requestedLocale;
 
   private transient CollectionCollator<BwContact> contactCollator;
-  private transient CollectionCollator<BwCategory> categoryCollator;
   private transient CollectionCollator<BwLocation> locationCollator;
 
   /* This should be a cloned copy only */
@@ -127,11 +130,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   /* Transient result that only needs to stick around till the next action URL */
   private Object lastResult;
-
-  /* Kind of entity we are referring to */
-
-  private static int ownersEntity = 1;
-  private static int editableEntity = 2;
 
   private boolean newSession;
 
@@ -149,8 +147,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /** True if this user has more than the default rights
    */
   private boolean authorisedUser;
-
-  private String appType;
 
   private boolean submitApp;
 
@@ -1477,14 +1473,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return boolean
    */
   public String getAppType() {
-    return appType;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignAppType(final String val) {
-    appType = val;
+    return fetchClient().getAppType();
   }
 
   /** True for submitApp
@@ -2836,51 +2825,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       getErr().emit(t);
       return new ArrayList<BwCategory>();
     }
-  }
-
-  /** Get the list of categories for this owner. Return a null list for
-   * exceptions or no categories. For guest mode or public admin this is the
-   * same as getPublicCategories. This is the method to call unless you
-   * specifically want a list of public categories (for search of public events
-   * perhaps.)
-   *
-   * @return Collection    of BwCategory
    */
-  public Collection<BwCategory> getCategories() {
-    return getCategoryCollection(ownersEntity, true);
-  }
-
-  /** Get the list of editable categories for this user. Return a null list for
-   * exceptions or no categories.
-   *
-   * @return Collection    of BwCategory
-   */
-  public Collection<BwCategory> getEditableCategories() {
-    return getCategoryCollection(editableEntity, false);
-  }
-
-  /** Get the default categories for the current user
-   *
-   * @return Set  default categories
-   */
-  public Set<BwCategory> getDefaultCategories() {
-    Set<BwCategory> cats = new TreeSet<BwCategory>();
-
-    try {
-      Set<String> catuids = fetchClient().getPreferences().getDefaultCategoryUids();
-
-      for (String uid: catuids) {
-        BwCategory cat = fetchClient().getCategory(uid);
-
-        if (cat != null) {
-          cats.add(cat);
-        }
-      }
-    } catch (Throwable t) {
-      getErr().emit(t);
-    }
-
-    return cats;
   }
 
   /* ====================================================================
@@ -4051,54 +3996,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private BwPrincipal getPublicUser() throws Throwable {
     return fetchClient().getPublicUser();
-  }
-
-  // ENUM
-  private Collection<BwCategory> getCategoryCollection(final int kind,
-                                                       final boolean forEventUpdate) {
-    try {
-      Collection<BwCategory> vals = null;
-
-      if (kind == ownersEntity) {
-
-        String appType = getAppType();
-        if (appTypeWebsubmit.equals(appType) ||
-            appTypeWebpublic.equals(appType) ||
-            appTypeFeeder.equals(appType)) {
-          // Use public
-          vals = fetchClient().getCategories(
-                  getPublicUser().getPrincipalRef());
-        } else {
-          // Current owner
-          vals = fetchClient().getCategories();
-
-          if (!publicAdmin() && forEventUpdate &&
-              (getEvent() != null) &&
-              (getEvent().getCategories() != null)) {
-            for (BwCategory cat: getEvent().getCategories()) {
-              if (!cat.getOwnerHref().equals(client.getCurrentPrincipalHref())) {
-                vals.add(cat);
-              }
-            }
-          }
-        }
-      } else if (kind == editableEntity) {
-        vals = fetchClient().getEditableCategories();
-      }
-
-      if (vals == null) {
-        // Won't need this with 1.5
-        throw new Exception("Software error - bad kind " + kind);
-      }
-
-      return getCategoryCollator().getCollatedCollection(vals);
-    } catch (Throwable t) {
-      if (debug) {
-        t.printStackTrace();
-      }
-      err.emit(t);
-      return new ArrayList<BwCategory>();
-    }
   }
 
   private Collection<BwLocation> getLocations(final int kind,

@@ -36,9 +36,12 @@
 
   <%-- List of categories  --%>
   <categories>
-    <logic:iterate id="category" name="calForm" property="categories">
-      <%@include file="/docs/category/emitCategory.jsp"%>
-    </logic:iterate>
+    <logic:present name="bw_categories_list" scope="session">
+      <logic:iterate id="category" name="bw_categories_list"
+                     scope="session">
+        <%@include file="/docs/category/emitCategory.jsp"%>
+      </logic:iterate>
+    </logic:present>
   </categories>
 </bedework>
 

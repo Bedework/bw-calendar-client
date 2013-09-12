@@ -117,6 +117,7 @@ public class ROClientImpl implements Client {
   private ClientState cstate;
 
   private transient CollectionCollator<BwCalendar> calendarCollator;
+  private String appType;
 
   protected class AccessChecker implements BwIndexer.AccessChecker {
     @Override
@@ -261,6 +262,16 @@ public class ROClientImpl implements Client {
   @Override
   public boolean getPublicAdmin() {
     return publicAdmin;
+  }
+
+  @Override
+  public void setAppType(final String val) {
+    appType = val;
+  }
+
+  @Override
+  public String getAppType() {
+    return appType;
   }
 
   @Override
@@ -799,6 +810,12 @@ public class ROClientImpl implements Client {
   public BwCategory getCategory(final String uid)
           throws CalFacadeException {
     return svci.getCategoriesHandler().get(uid);
+  }
+
+  @Override
+  public BwCategory getPersistentCategory(final String uid)
+          throws CalFacadeException {
+    return svci.getCategoriesHandler().getPersistent(uid);
   }
 
   @Override

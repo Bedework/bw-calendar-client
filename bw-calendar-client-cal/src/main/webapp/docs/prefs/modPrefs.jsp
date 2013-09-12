@@ -38,8 +38,9 @@
   <bw:emitText name="userPrefs" property="defaultTzid"/>
 
   <defaultCategories>
-    <logic:present name="calForm" property="defaultCategories">
-      <logic:iterate id="category" name="calForm" property="defaultCategories">
+    <logic:present name="bw_default_categories_list" scope="session">
+      <logic:iterate id="category" name="bw_default_categories_list"
+                     scope="session">
         <%@include file="/docs/category/emitCategory.jsp"%>
       </logic:iterate>
     </logic:present>

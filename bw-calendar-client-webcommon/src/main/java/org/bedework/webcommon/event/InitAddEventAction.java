@@ -140,6 +140,8 @@ public class InitAddEventAction extends EventActionBase {
       ev.setColPath(cal.getPath());
     }
 
+    embedCategories(request, false);
+
     //if (!request.setEventCalendar(ev)) {
     //  return forwardValidationError;
     //}

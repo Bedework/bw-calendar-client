@@ -176,10 +176,10 @@ try {
          for an advanced (perhaps) approach to creating events. --%>
     <categories>
       <all>
-        <logic:iterate id="category" name="calForm" property="categories">
+        <logic:iterate id="category" name="bw_categories_list" scope="session">
           <category>
-            <keyword><bean:write name="category" property="word.value"/></keyword>
-            <creator><bean:write name="category" property="creatorHref"/></creator>
+            <bw:emitText name="category" property="word.value" tagName="value" />
+            <bw:emitText name="category" property="uid" tagName="uid" />
           </category>
         </logic:iterate>
       </all>

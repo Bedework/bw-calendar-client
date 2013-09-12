@@ -62,7 +62,7 @@ public class Search extends BwAbstractAction {
     if (cl.getPublicAdmin() || cl.isGuest()) {
       publick = true;
     } else {
-      publick = request.getReqPar("public") != null;
+      publick = request.present("public");
       userStr = request.getReqPar("user");
     }
 
@@ -111,7 +111,7 @@ public class Search extends BwAbstractAction {
     }
 
     /* Ensure we have categories embedded in session */
-    embedCategories(request);
+    embedCategories(request, false);
 
     return forwardSuccess;
   }

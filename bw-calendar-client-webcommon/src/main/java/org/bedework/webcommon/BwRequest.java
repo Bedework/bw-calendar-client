@@ -52,6 +52,12 @@ public class BwRequest extends Request {
   /** category list stored in session */
   public final static String bwCategoriesListName = "bw_categories_list";
 
+  /** default category list stored in session */
+  public final static String bwDefaultCategoriesListName = "bw_default_categories_list";
+
+  /** editable category list stored in session */
+  public final static String bwEditableCategoriesListName = "bw_editable_categories_list";
+
   /**
    * @param request
    * @param sess

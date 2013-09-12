@@ -70,7 +70,7 @@ import java.util.Locale;
  * This interface defines the interactions with the back end system
  * for a client.
  *
- * @author  Mike Douglass douglm  bedework.edu
+ * @author  Mike Douglass douglm  rpi.edu
  */
 public interface Client extends Serializable {
   /**
@@ -139,6 +139,17 @@ public interface Client extends Serializable {
    * @return true if we are doing public admin.
    */
   boolean getPublicAdmin();
+
+  /** apptype
+   *
+   * @return boolean
+   */
+  String getAppType();
+
+  /**
+   * @param val
+   */
+  void setAppType(final String val);
 
   /** Get the (possibly cached) system pars using name supplied at init
    *
@@ -750,6 +761,13 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   BwCategory getCategory(String uid) throws CalFacadeException;
+
+  /**
+   * @param uid of the category
+   * @return category entity or null.
+   * @throws CalFacadeException
+   */
+  BwCategory getPersistentCategory(String uid) throws CalFacadeException;
 
   /** Return all current user entities.
    *

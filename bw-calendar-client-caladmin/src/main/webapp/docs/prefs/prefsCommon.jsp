@@ -22,7 +22,7 @@
   <bw:emitText name="userPrefs" property="preferredEndType"/>
   <defaultImageDirectory><bean:write name="userPrefs" property="defaultImageDirectory"/></defaultImageDirectory>
   <maxEntitySize><bean:write name="userPrefs" property="maxEntitySize"/></maxEntitySize>
-  
+
   <bw:emitText name="userPrefs" property="pageSize"/>
   <bw:emitText name="userPrefs" property="adminResourcesDirectory"/>
   <bw:emitText name="userPrefs" property="suiteResourcesDirectory"/>
@@ -30,13 +30,14 @@
 
 <categories>
   <all>
-    <logic:iterate id="category" name="calForm" property="categories">
+    <logic:iterate id="category" name="bw_categories_list" scope="session">
       <%@include file="/docs/category/emitCategory.jsp"%>
     </logic:iterate>
   </all>
   <current>
-    <logic:present name="calForm" property="defaultCategories">
-      <logic:iterate id="category" name="calForm" property="defaultCategories">
+    <logic:present name="bw_default_categories_list" scope="session">
+      <logic:iterate id="category" name="bw_default_categories_list"
+                     scope="session">
       <%@include file="/docs/category/emitCategory.jsp"%>
       </logic:iterate>
     </logic:present>

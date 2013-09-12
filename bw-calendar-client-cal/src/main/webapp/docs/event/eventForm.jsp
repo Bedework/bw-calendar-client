@@ -151,7 +151,7 @@ try {
 
     <categories>
       <all>
-        <logic:iterate id="category" name="calForm" property="categories">
+        <logic:iterate id="category" name="bw_categories_list" scope="session">
           <category>
             <bw:emitText name="category" property="word.value" tagName="value" />
             <bw:emitText name="category" property="uid" tagName="uid" />

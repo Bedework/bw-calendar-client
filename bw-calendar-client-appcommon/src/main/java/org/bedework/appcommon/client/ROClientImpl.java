@@ -60,8 +60,9 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
-import org.bedework.calsvc.indexing.BwIndexer;
-import org.bedework.calsvci.BwIndexSearchResultEntry;
+import org.bedework.calsvci.indexing.BwIndexer;
+import org.bedework.calsvci.indexing.SearchResult;
+import org.bedework.calsvci.indexing.SearchResultEntry;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
@@ -118,6 +119,10 @@ public class ROClientImpl implements Client {
 
   private transient CollectionCollator<BwCalendar> calendarCollator;
   private String appType;
+
+  private BwIndexer publicIndexer;
+  private BwIndexer userIndexer;
+  private SearchResult lastSearch;
 
   protected class AccessChecker implements BwIndexer.AccessChecker {
     @Override
@@ -1055,8 +1060,8 @@ public class ROClientImpl implements Client {
 
     BwIndexer idx = null;
     if (publicView) {
-      idx = svci.getIndexingHandler().getIndexer(publicView,
-                                                 getCurrentPrincipalHref());
+      idx = svci.getIndexer(publicView,
+                            getCurrentPrincipalHref());
     }
 
     if (publicView && idx.isFetchEnabled()) {
@@ -1505,13 +1510,14 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public long search(final boolean publick,
-                     final String principal,
-                     final String query,
-                     final SearchLimits limits)
+  public SearchResult search(final boolean publick,
+                             final String query,
+                             final String filter,
+                             final SearchLimits limits)
           throws CalFacadeException {
-    return svci.getIndexingHandler().search(publick, principal,
-                                            query, limits);
+    lastSearch = getIndexer(publick).search(query, filter, limits);
+
+    return lastSearch;
   }
 
   @Override
@@ -1533,26 +1539,30 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public Collection<SearchResultEntry> getSearchResult(final int start,
-                                                       final int num,
-                                                       final SearchLimits limits)
-          throws CalFacadeException {
-    Collection<BwIndexSearchResultEntry> sr =
-            svci.getIndexingHandler().getSearchResult(start, num, limits);
-    Collection<SearchResultEntry> sres = new ArrayList<>();
+  public SearchResult getSearchResult(final int start,
+                                      final int num) throws CalFacadeException {
+    if (lastSearch == null) {
+      return null;
+    }
+
+    lastSearch.getIndexer().getSearchResult(lastSearch, start, num);
 
     IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(this));
 
-    for (BwIndexSearchResultEntry sre: sr) {
-      if (sre.getEvent() != null) {
-        EventFormatter ev = new EventFormatter(this, trans, sre.getEvent());
-        sres.add(new SearchResultEntry(ev, sre.getScore()));
-      } else {
-        sres.add(new SearchResultEntry(sre.getCal(), sre.getScore()));
+    for (SearchResultEntry sre: lastSearch.getSearchResult()) {
+      Object o = sre.getEntity();
+
+      if (!(o instanceof EventInfo)) {
+        continue;
       }
+
+      EventFormatter ev = new EventFormatter(this,
+                                             trans,
+                                             (EventInfo)sre.getEntity());
+      sre.setEntity(ev);
     }
 
-    return sres;
+    return lastSearch;
   }
 
   @Override

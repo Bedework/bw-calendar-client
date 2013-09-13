@@ -55,9 +55,9 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
+import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.util.indexing.SearchLimits;
 
 import org.bedework.access.Ace;
 
@@ -1707,21 +1707,17 @@ public interface Client extends Serializable {
   /** Called to search an index. If publick is false use the principal to
    * identify the index.
    *
-   * XXX Security implications here. We should probably not return a count for
-   * searching another users entries - or we should getResource an accurate count of
-   * entries this user has access to.
    *
-   * @param publick true for public indec
-   * @param principal ignored if publick is true
+   * @param publick true for public index - otherwise current principal
    * @param   query    Query string
+   * @param   filter   Filter expression
    * @param   limits   limits or null
-   * @return  int      Number found. 0 means none found,
-   *                                -1 means indeterminate
+   * @return  SearchResult   never null
    * @throws CalFacadeException
    */
-  long search(boolean publick,
-             String principal,
-             String query,
+  SearchResult search(boolean publick,
+                      String query,
+                      String filter,
              SearchLimits limits) throws CalFacadeException;
 
   /** Convenience method to limit to now onwards.
@@ -1736,18 +1732,16 @@ public interface Client extends Serializable {
    */
   SearchLimits beforeToday();
 
-  /** Called to retrieve results after a search of the index.
+  /** Called to retrieve results after a search of the index. Updates
+   * the current search result.
    *
    * @param start in result set
    * @param num of entries
-   * @param   limits   limits or null
-   * @return  Collection of BwIndexSearchResultEntry
+   * @return  SearchResult
    * @throws CalFacadeException
    */
-  Collection<SearchResultEntry> getSearchResult(int start,
-                                                int num,
-                                                SearchLimits limits)
-          throws CalFacadeException;
+  SearchResult getSearchResult(int start,
+                               int num) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                   Access

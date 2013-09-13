@@ -19,7 +19,7 @@
 package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.util.indexing.SearchLimits;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -54,8 +54,8 @@ public class Search extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     boolean publick;
-    String userStr = null;
     String query = request.getReqPar("query");
+    String filter = request.getReqPar("filter");
 
     Client cl = request.getClient();
 
@@ -63,7 +63,6 @@ public class Search extends BwAbstractAction {
       publick = true;
     } else {
       publick = request.present("public");
-      userStr = request.getReqPar("user");
     }
 
     if (query == null) {
@@ -83,31 +82,21 @@ public class Search extends BwAbstractAction {
       }
     }
 
-    String principal = null;
-    if (!publick && (userStr != null)) {
-      BwPrincipal p = cl.getUser(userStr);
-      if (p == null) {
-        // Ignore the request - probing for users?
-        return forwardNoAction;
-      }
+    SearchResult sres = cl.search(publick, query, filter, limits);
 
-      principal = p.getPrincipalRef();
-    }
-
-    long rsize = cl.search(publick, principal, query, limits);
     int pageSize = cl.getPreferences().getPageSize();
 
-    form.setResultSize((int)rsize);
+    form.setResultSize((int)sres.getFound());
     form.setResultStart(0);
     form.setResultCt(pageSize);
     form.setQuery(query);
 
-    if (rsize == 0) {
+    if (sres.getFound() == 0) {
       form.setCurPage(0);
       form.setNumPages(0);
     } else {
       form.setCurPage(1);
-      form.setNumPages((((int)rsize + pageSize) - 1) / pageSize);
+      form.setNumPages((((int)sres.getFound() + pageSize) - 1) / pageSize);
     }
 
     /* Ensure we have categories embedded in session */

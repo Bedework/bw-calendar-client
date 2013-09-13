@@ -37,7 +37,6 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.WeekView;
 import org.bedework.appcommon.YearView;
 import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.SearchResultEntry;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
@@ -67,6 +66,7 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.SchedulingI.FbResponses;
+import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.UtilActionForm;
@@ -560,7 +560,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private String query;
 
-  private Collection<SearchResultEntry> searchResult;
+  private SearchResult searchResult;
 
   private String searchLimits = "fromToday";
 
@@ -3787,14 +3787,14 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *
    * @param val
    */
-  public void setSearchResult(final Collection<SearchResultEntry> val) {
+  public void setSearchResult(final SearchResult val) {
     searchResult = val;
   }
 
   /**
    * @return last search result
    */
-  public Collection<SearchResultEntry> getSearchResult() {
+  public SearchResult getSearchResult() {
     return searchResult;
   }
 
@@ -4080,14 +4080,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return contactCollator;
   }
 
-  private CollectionCollator<BwCategory> getCategoryCollator() {
-    if (categoryCollator == null) {
-      categoryCollator = new CollectionCollator<BwCategory>();
-    }
-
-    return categoryCollator;
-  }
-
   private CollectionCollator<BwLocation> getLocationCollator() {
     if (locationCollator == null) {
       locationCollator = new CollectionCollator<BwLocation>();
@@ -4096,7 +4088,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return locationCollator;
   }
 
-  private boolean publicAdmin() {
+  public boolean publicAdmin() {
     try {
       return getConfig().getPublicAdmin();
     } catch (Throwable t) {

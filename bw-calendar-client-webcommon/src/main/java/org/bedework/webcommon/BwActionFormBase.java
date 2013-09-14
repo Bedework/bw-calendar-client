@@ -2825,7 +2825,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       getErr().emit(t);
       return new ArrayList<BwCategory>();
     }
-   */
   }
 
   /* ====================================================================

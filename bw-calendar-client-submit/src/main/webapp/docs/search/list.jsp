@@ -21,15 +21,15 @@ try {
   <bw:emitText name="calForm" property="searchLimits"/>
 
   <logic:present name="calForm" property="searchResult" >
-    <logic:iterate id="sre" name="calForm" property="searchResult" >
+    <logic:iterate id="sre" name="calForm" property="searchResult.searchResult" >
       <searchResult>
         <bw:emitText name="sre" property="score" />
-        <logic:present name="sre" property="event" >
-          <bean:define id="eventFmt" name="sre" property="event" toScope="request"  />
+        <logic:equal name="sre" property="docType" value="event">
+          <bean:define id="eventFmt" name="sre" property="entity" toScope="request"  />
           <bean:define id="eventInfo" name="eventFmt" property="eventInfo" toScope="request"  />
           <bean:define id="event" name="eventFmt" property="event" toScope="request"  />
           <%@ include file="/docs/event/emitEventCommon.jsp" %>
-        </logic:present>
+        </logic:equal>
       </searchResult>
     </logic:iterate>
   </logic:present>

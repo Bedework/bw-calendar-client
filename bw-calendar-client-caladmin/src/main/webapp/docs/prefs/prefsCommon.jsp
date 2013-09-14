@@ -38,7 +38,7 @@
     <logic:present name="bw_default_categories_list" scope="session">
       <logic:iterate id="category" name="bw_default_categories_list"
                      scope="session">
-      <%@include file="/docs/category/emitCategory.jsp"%>
+        <%@include file="/docs/category/emitCategory.jsp"%>
       </logic:iterate>
     </logic:present>
   </current>

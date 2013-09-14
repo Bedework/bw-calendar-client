@@ -18,6 +18,7 @@
 */
 package org.bedework.appcommon.client;
 
+import org.bedework.access.Ace;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
@@ -55,11 +56,10 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
-import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-
-import org.bedework.access.Ace;
+import org.bedework.calsvci.indexing.SearchResult;
+import org.bedework.util.indexing.SearchLimits;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -1718,7 +1718,7 @@ public interface Client extends Serializable {
   SearchResult search(boolean publick,
                       String query,
                       String filter,
-             SearchLimits limits) throws CalFacadeException;
+                      SearchLimits limits) throws CalFacadeException;
 
   /** Convenience method to limit to now onwards.
    *

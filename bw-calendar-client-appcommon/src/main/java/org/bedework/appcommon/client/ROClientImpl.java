@@ -1802,6 +1802,22 @@ public class ROClientImpl implements Client {
     return calendarCollator;
   }
 
+  protected BwIndexer getIndexer(boolean publick) throws CalFacadeException {
+    if (publick) {
+      if (publicIndexer == null) {
+        publicIndexer = svci.getIndexer(true, getCurrentPrincipalHref());
+      }
+
+      return publicIndexer;
+    }
+
+    if (userIndexer == null) {
+      userIndexer = svci.getIndexer(false, getCurrentPrincipalHref());
+    }
+
+    return userIndexer;
+  }
+
   /* ------------------------------------------------------------
    *                   private methods
    * ------------------------------------------------------------ */

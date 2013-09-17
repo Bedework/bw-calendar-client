@@ -88,7 +88,7 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>org.bedework.util.struts.SessionListener</listener-class>
+    <listener-class>org.bedework.util.servlet.SessionListener</listener-class>
   </listener>
 
   <!-- Do not alter or move  the following comment -->

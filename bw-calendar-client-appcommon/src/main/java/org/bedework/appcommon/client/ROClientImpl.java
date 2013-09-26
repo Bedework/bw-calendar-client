@@ -593,15 +593,9 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public String getPreferredCollectionPath()
+  public String getPreferredCollectionPath(final String compName)
           throws CalFacadeException {
-    BwCalendar col = svci.getCalendarsHandler().getPreferred();
-
-    if (col == null) {
-      return null;
-    }
-
-    return col.getPath();
+    return svci.getCalendarsHandler().getPreferred(compName);
   }
 
   /** Set false to inhibit lastLocale stuff */

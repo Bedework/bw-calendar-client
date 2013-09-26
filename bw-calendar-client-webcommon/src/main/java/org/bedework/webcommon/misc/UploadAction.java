@@ -33,6 +33,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
+import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.AddEventResult;
 import org.bedework.webcommon.BwAbstractAction;
@@ -45,7 +46,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -87,19 +90,10 @@ public class UploadAction extends BwAbstractAction {
     boolean stripAlarms = request.getBooleanReqPar("stripAlarms", false);
 
     Client cl = request.getClient();
-    BwCalendar col = null;
+
+    Map<String, String> paths = new HashMap<>();
 
     String newCalPath = request.getReqPar("newCalPath");
-
-    if (newCalPath == null) {
-      newCalPath = cl.getPreferredCollectionPath();
-    }
-
-    col = cl.getCollection(newCalPath);
-
-    if (col == null) {
-      form.getErr().emit(ValidationError.missingCalendar);
-    }
 
     FormFile upFile = form.getUploadFile();
 
@@ -119,6 +113,8 @@ public class UploadAction extends BwAbstractAction {
     int numEventsUpdated = 0;
     int numFailedOverrides = 0;
 
+    BwCalendar col = null;
+
     try {
       // To catch some of the parser errors
 
@@ -126,7 +122,7 @@ public class UploadAction extends BwAbstractAction {
 
       IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
-      Icalendar ic = trans.fromIcal(col, new InputStreamReader(is));
+      Icalendar ic = trans.fromIcal(null, new InputStreamReader(is));
 
       int method = ic.getMethodType();
 
@@ -134,7 +130,7 @@ public class UploadAction extends BwAbstractAction {
           (method != ScheduleMethods.methodTypePublish) &&
           (Icalendar.itipReplyMethodType(method) ||
            Icalendar.itipRequestMethodType(method))) {
-        return importScheduleMessage(request, ic, col, stripAlarms);
+        return importScheduleMessage(request, ic, null, stripAlarms);
       }
 
       Collection<AddEventResult> aers = new ArrayList<AddEventResult>();
@@ -170,8 +166,41 @@ public class UploadAction extends BwAbstractAction {
           }
         }
 
+        if (newCalPath != null) {
+          if (col == null) {
+            col = cl.getCollection(newCalPath);
+
+            if (col == null) {
+              form.getErr().emit(ValidationError.missingCalendar);
+            }
+          }
+
+          ev.setColPath(col.getPath());
+        } else {
+          String icalName = IcalDefs.entityTypeIcalNames[ev.getEntityType()];
+
+          String path = paths.get(icalName);
+
+          if (path == null) {
+            path = cl.getPreferredCollectionPath(icalName);
+
+            if (path == null) {
+              form.getErr().emit(ValidationError.missingCalendar);
+            }
+          }
+
+          paths.put(icalName, path);
+
+          ev.setColPath(path);
+        }
+
+        col = cl.getCollection(newCalPath);
+
+        if (col == null) {
+          form.getErr().emit(ValidationError.missingCalendar);
+        }
+
         ev.setScheduleMethod(ScheduleMethods.methodTypeNone);
-        ev.setColPath(col.getPath());
 
         if (ei.getNewEvent()) {
           try {

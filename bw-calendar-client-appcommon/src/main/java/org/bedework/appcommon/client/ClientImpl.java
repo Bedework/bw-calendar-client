@@ -333,7 +333,8 @@ public class ClientImpl extends ROClientImpl {
                                          final boolean scheduling,
                                          final boolean rollbackOnError)
           throws CalFacadeException {
-    return svci.getEventsHandler().add(ei, noInvites, scheduling, rollbackOnError);
+    return svci.getEventsHandler().add(ei, noInvites, scheduling,
+                                       false, rollbackOnError);
   }
 
   @Override

@@ -554,10 +554,11 @@ public interface Client extends Serializable {
 
   /** Get the default calendar path for the current user.
    *
+   * @param compName - name of component - "VEVENT" etc
    * @return String path or null for no preference
    * @throws CalFacadeException
    */
-  public String getPreferredCollectionPath() throws CalFacadeException;
+  public String getPreferredCollectionPath(String compName) throws CalFacadeException;
 
   /** Given a (possibly null) list of locales, and/or an explicitly requested locale,
    * figure out what locale to use based on user preferences and system defaults.

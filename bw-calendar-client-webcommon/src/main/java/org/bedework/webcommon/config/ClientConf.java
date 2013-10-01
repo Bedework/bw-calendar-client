@@ -270,4 +270,9 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
   public String getPortalPlatform() {
     return getConfig().getPortalPlatform();
   }
+
+  @Override
+  public String loadConfig() {
+    return null;
+  }
 }

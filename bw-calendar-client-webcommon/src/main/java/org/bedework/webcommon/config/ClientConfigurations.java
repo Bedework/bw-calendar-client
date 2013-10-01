@@ -63,6 +63,11 @@ public final class ClientConfigurations extends ConfBase {
     }
   }
 
+  @Override
+  public String loadConfig() {
+    return null;
+  }
+
   /**
    * @throws CalFacadeException
    */

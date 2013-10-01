@@ -27,6 +27,7 @@ import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.util.calendar.IcalDefs;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.EventKey;
@@ -112,7 +113,9 @@ public class AddEventRefAction extends EventActionBase {
     String calPath = getReqPar(request.getRequest(), "newCalPath");
 
     if (calPath == null) {
-      calPath = cl.getPreferredCollectionPath();
+      String icalName = IcalDefs.entityTypeIcalNames[proxy.getEntityType()];
+
+      calPath = cl.getPreferredCollectionPath(icalName);
     }
     proxy.setOwnerHref(cl.getCurrentPrincipalHref());
 

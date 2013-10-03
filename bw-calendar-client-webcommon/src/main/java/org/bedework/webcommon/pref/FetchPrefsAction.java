@@ -49,6 +49,9 @@ public class FetchPrefsAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();
 
+    embedCategories(request, false);
+    embedDefaultCategories(request, false);
+
     String str = request.getReqPar("user");
     if (str != null) {
       /* Fetch a given users preferences */
@@ -56,21 +59,16 @@ public class FetchPrefsAction extends BwAbstractAction {
         return forwardNoAccess; // First line of defence
       }
 
-      embedCategories(request, false);
-      embedDefaultCategories(request, false);
-
       BwPreferences prefs = cl.getPreferences(str);
       if (prefs == null) {
         return forwardNoAccess;
       }
 
       form.setUserPreferences(prefs);
-
-      return forwardSuccess;
+    } else {
+      /* Just set this users prefs */
+      form.setUserPreferences(cl.getPreferences());
     }
-
-    /* Just set this users prefs */
-    form.setUserPreferences(cl.getPreferences());
 
     return forwardSuccess;
   }

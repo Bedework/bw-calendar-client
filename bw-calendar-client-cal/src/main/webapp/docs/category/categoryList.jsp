@@ -9,15 +9,13 @@
 <page>categoryList</page>
 
 <categories>
-  <logic:present name="bw_categories_list" scope="session">
-    <logic:iterate id="category" name="bw_categories_list" scope="session">
+  <logic:present name="bw_editable_categories_list" scope="session">
+    <logic:iterate id="category" name="bw_editable_categories_list"
+                       scope="session">
       <%@include file="/docs/category/emitCategory.jsp"%>
     </logic:iterate>
   </logic:present>
 </categories>
-
-<%-- categories with creators are output in the header;
-     we needn't reproduce them here. --%>
 
 <%@include file="/docs/footer.jsp"%>
 

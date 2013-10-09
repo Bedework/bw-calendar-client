@@ -16,6 +16,12 @@
   <logic:notPresent name="category" property="word" >
     <value></value>
   </logic:notPresent>
+  <logic:present name="category" property="colPath" >
+      <bw:emitText name="category" property="colPath" />
+  </logic:present>
+  <logic:present name="category" property="name" >
+      <bw:emitText name="category" property="name" />
+  </logic:present>
   <%-- description of the category  --%>
   <logic:present name="category" property="description" >
     <logic:present name="category" property="description.value" >

@@ -1423,7 +1423,7 @@
     </action>
 
     <action    path="/category/initUpdate"
-               type="org.bedework.webcommon.NoopAction"
+               type="org.bedework.webcommon.category.FetchCategoriesAction"
                name="calForm"
                scope="session"
                parameter="actionType=action"

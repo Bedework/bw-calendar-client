@@ -63,6 +63,30 @@ public final class ClientConfigurations extends ConfBase {
     }
   }
 
+  /** Start up (load) the config mbeans.
+   *
+   * @throws CalFacadeException
+   */
+  public static void startConfigs() throws CalFacadeException {
+    getConfigs();
+  }
+
+  /** Shut down the config jmx bean(s)
+   *
+   * @throws CalFacadeException
+   */
+  public static void stopConfigs() throws CalFacadeException {
+    synchronized (lock) {
+      if (configs == null) {
+        return;
+      }
+
+      configs.stop();
+
+      configs = null;
+    }
+  }
+
   @Override
   public String loadConfig() {
     return null;

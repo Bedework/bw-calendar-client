@@ -91,6 +91,10 @@
     <listener-class>org.bedework.util.servlet.SessionListener</listener-class>
   </listener>
 
+  <listener>
+    <listener-class>org.bedework.webcommon.ServletListener</listener-class>
+  </listener>
+
   <!-- Do not alter or move  the following comment -->
   <!-- add listeners here -->
 

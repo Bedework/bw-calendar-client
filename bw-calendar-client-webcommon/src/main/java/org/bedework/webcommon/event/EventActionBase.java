@@ -72,14 +72,15 @@ import java.util.TreeSet;
 public abstract class EventActionBase extends BwAbstractAction {
   /** Get events based on EventListPars
    *
-   * @param form
+   * @param req
    * @return Collection of events or nul
    * @throws Throwable
    */
-  public Collection<EventInfo> getEventsList(final BwActionFormBase form) throws Throwable {
-    form.assignAddingEvent(false);
-    Client cl = form.fetchClient();
+  public Collection<EventInfo> getEventsList(final BwRequest req) throws Throwable {
+    BwActionFormBase form = req.getBwForm();
+    Client cl = req.getClient();
 
+    form.assignAddingEvent(false);
     EventListPars elpars = form.getEventListPars();
     if (elpars == null) {
       return null;

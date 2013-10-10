@@ -72,7 +72,7 @@ public class EventListParsAction extends EventActionBase {
 
     if ((elpars.getFormat() != null) &&
         (elpars.getFormat().equals("text/calendar"))) {
-      Collection<EventInfo> eis = getEventsList(form);
+      Collection<EventInfo> eis = getEventsList(request);
       if (eis == null) {
         return forwardNull;
       }

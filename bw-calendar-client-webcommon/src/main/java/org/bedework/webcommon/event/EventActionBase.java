@@ -125,21 +125,21 @@ public abstract class EventActionBase extends BwAbstractAction {
 
   /** Given the EventInfo object refresh the information in the form.
    *
-   * @param ei
    * @param request
+   * @param ei
    * @return int forward.
    * @throws Throwable
    */
-  protected int refreshEvent(final EventInfo ei,
-                             final BwRequest request) throws Throwable {
+  protected int refreshEvent(final BwRequest request,
+                             final EventInfo ei) throws Throwable {
     BwActionFormBase form = request.getBwForm();
 
     if (ei == null) {
-      form.getErr().emit(ClientError.unknownEvent);
+      request.getErr().emit(ClientError.unknownEvent);
       return forwardNotFound;
     }
 
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
     BwEvent ev = ei.getEvent();
 
     form.setEventInfo(ei);
@@ -238,12 +238,13 @@ public abstract class EventActionBase extends BwAbstractAction {
    *
    * @return false for not found
    */
-  protected void copyEvent(final BwEvent ev,
-                           final BwActionFormBase form) throws Throwable {
+  protected void copyEvent(final BwRequest request,
+                           final BwEvent ev) throws Throwable {
     /* Refetch the event and switch it for a cloned copy.
      * guid and name must be set to null to avoid dup guid.
      */
-    EventInfo ei = fetchEvent(ev, form);
+    BwActionFormBase form = request.getBwForm();
+    EventInfo ei = fetchEvent(request, ev);
     BwEvent evcopy = (BwEvent)ei.getEvent().clone();
 
     /* Ensure new attendee set is in form */
@@ -257,12 +258,13 @@ public abstract class EventActionBase extends BwAbstractAction {
     ei = new EventInfo(evcopy);
 
     form.setEventInfo(ei);
-    resetEvent(form);
+    resetEvent(request);
     form.assignAddingEvent(true);
   }
 
   /* Mostly for admin use at the moment. */
-  protected void resetEvent(final BwActionFormBase form) throws Throwable {
+  protected void resetEvent(final BwRequest request) throws Throwable {
+    BwActionFormBase form = request.getBwForm();
     //form.setEventInfo(null);
 
     BwEvent event = form.getEvent();
@@ -289,7 +291,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     form.retrieveLocId().reset(uid, SelectId.AHasPrecedence);
 
-    BwCalendar c = form.fetchClient().getCollection(event.getColPath());
+    BwCalendar c = request.getClient().getCollection(event.getColPath());
     String path = null;
     if (c != null) {
       path = c.getPath();
@@ -299,15 +301,15 @@ public abstract class EventActionBase extends BwAbstractAction {
     form.retrieveCalendarId().reset(path, SelectId.AHasPrecedence);
   }
 
-  protected EventInfo findEvent(final EventKey ekey,
-                                final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+  protected EventInfo findEvent(final BwRequest request,
+                                final EventKey ekey) throws Throwable {
+    Client cl = request.getClient();
     EventInfo ev = null;
     BwCalendar cal = null;
 
     if (ekey.getColPath() == null) {
       // bogus request
-      form.getErr().emit(ValidationError.missingCalendarPath);
+      request.getErr().emit(ValidationError.missingCalendarPath);
       return null;
     }
 
@@ -315,7 +317,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     if (cal == null) {
       // Assume no access
-      form.getErr().emit(ClientError.noAccess);
+      request.getErr().emit(ClientError.noAccess);
       return null;
     }
 
@@ -360,7 +362,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     }
 
     if (ev == null) {
-      form.getErr().emit(ClientError.unknownEvent, key);
+      request.getErr().emit(ClientError.unknownEvent, key);
       return null;
     } else if (debug) {
       debugMsg("Get event found " + ev.getEvent());
@@ -372,21 +374,21 @@ public abstract class EventActionBase extends BwAbstractAction {
   /** Refetch an event given a copy of that event. Collection path, uid and possibly
    * recurrence id must be set.
    *
+   * @param request
    * @param event   BwEvent to refetch
-   * @param form
    * @return EventInfo or null if not found
    * @throws Throwable
    */
-  protected EventInfo fetchEvent(final BwEvent event,
-                                 final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+  protected EventInfo fetchEvent(final BwRequest request,
+                                 final BwEvent event) throws Throwable {
+    Client cl = request.getClient();
     EventInfo ei = null;
 
     BwCalendar cal = cl.getCollection(event.getColPath());
 
     if (cal == null) {
       // Assume no access
-      form.getErr().emit(ClientError.noAccess);
+      request.getErr().emit(ClientError.noAccess);
       return null;
     }
 
@@ -405,7 +407,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
       if (uid == null) {
         // Assume no access
-        form.getErr().emit(ClientError.noAccess);
+        request.getErr().emit(ClientError.noAccess);
         return null;
       }
 
@@ -426,7 +428,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     }
 
     if (ei == null) {
-      form.getErr().emit(ClientError.unknownEvent, key);
+      request.getErr().emit(ClientError.unknownEvent, key);
       return null;
     } else if (debug) {
       debugMsg("Fetch event found " + ei.getEvent());
@@ -435,15 +437,15 @@ public abstract class EventActionBase extends BwAbstractAction {
     return ei;
   }
 
-  protected EventInfo refetchEvent(final BwActionFormBase form) throws Throwable {
-    EventInfo ei = form.getEventInfo();
+  protected EventInfo refetchEvent(final BwRequest request) throws Throwable {
+    EventInfo ei = request.getBwForm().getEventInfo();
 
     if (ei == null) {
       return null;
     }
 
     // Refetch
-    return fetchEvent(ei.getEvent(), form);
+    return fetchEvent(request, ei.getEvent());
   }
 
   /** Set the event text fields
@@ -582,14 +584,15 @@ public abstract class EventActionBase extends BwAbstractAction {
   /** Validate the location provided for an event and embed it in the event and
    * the form.
    *
-   * @param form the struts form
+   * @param req the request
    * @param ei event object
    * @return boolean  true OK, false not OK and message(s) emitted.
    * @throws Throwable
    */
-  protected boolean adminEventLocation(final BwActionFormBase form,
+  protected boolean adminEventLocation(final BwRequest req,
                                        final EventInfo ei) throws Throwable {
-    Client cl = form.fetchClient();
+    BwActionFormBase form = req.getBwForm();
+    Client cl = req.getClient();
     BwEvent event = ei.getEvent();
     ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
@@ -647,10 +650,11 @@ public abstract class EventActionBase extends BwAbstractAction {
                                      final EventInfo ei,
                                      final BwActionFormBase form,
                                      final boolean webSubmit) throws Throwable {
+    Client cl = request.getClient();
     BwEvent ev = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(form.fetchClient().getCurrentPrincipalHref());
+    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
-    BwLocation loc = getLocation(request.getClient(),
+    BwLocation loc = getLocation(cl,
                                  form, ev.getOwnerHref(), webSubmit);
     BwLocation eloc = ev.getLocation();
 
@@ -673,15 +677,16 @@ public abstract class EventActionBase extends BwAbstractAction {
    *
    * <p>XXX We need to change this to handle multiple contacts.
    *
-   * @param form
+   * @param request
    * @param svci
    * @param event
    * @return boolean  true OK, false not OK and message(s) emitted.
    * @throws Throwable
    */
-  protected boolean setEventContact(final BwActionFormBase form,
+  protected boolean setEventContact(final BwRequest request,
                                     final boolean webSubmit) throws Throwable {
-    Client cl = form.fetchClient();
+    Client cl = request.getClient();
+    BwActionFormBase form = request.getBwForm();
     EventInfo ei = form.getEventInfo();
     BwEvent event = ei.getEvent();
     ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
@@ -966,9 +971,9 @@ public abstract class EventActionBase extends BwAbstractAction {
                       null, null, null, 1);
   }
 
-  protected boolean notifySubmitter(final EventInfo ei,
-                                    final String submitterEmail,
-                                    final BwActionFormBase form) throws Throwable {
+  protected boolean notifySubmitter(final BwRequest request,
+                                    final EventInfo ei,
+                                    final String submitterEmail) throws Throwable {
     if (submitterEmail == null) {
       return false;
     }
@@ -978,18 +983,20 @@ public abstract class EventActionBase extends BwAbstractAction {
     String[] to = new String[]{submitterEmail};
     emsg.setMailTo(to);
 
+    BwActionFormBase form = request.getBwForm();
+
     emsg.setFrom(form.getSnfrom());
     emsg.setSubject(form.getSnsubject());
     emsg.setContent(form.getSntext());
 
-    form.fetchClient().postMessage(emsg);
+    request.getClient().postMessage(emsg);
 
     return true;
   }
 
-  protected boolean notifyEventReg(final EventInfo ei,
-                                   final BwActionFormBase form) throws Throwable {
-    Client cl = form.fetchClient();
+  protected boolean notifyEventReg(final BwRequest request,
+                                   final EventInfo ei) throws Throwable {
+    Client cl = request.getClient();
     ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     String evregToken = cl.getSystemProperties().getEventregAdminToken();

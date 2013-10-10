@@ -111,7 +111,7 @@ public class AttendeeRespond extends EventActionBase {
       return forwardSuccess;
     }
 
-    EventInfo ei = refetchEvent(form);
+    EventInfo ei = refetchEvent(request);
     if (ei == null) {
       // It's gone!!
       return forwardNoAction;
@@ -157,7 +157,7 @@ public class AttendeeRespond extends EventActionBase {
 
       /* -------------------------- Location ------------------------------ */
       if (publicAdmin) {
-        if (!adminEventLocation(form, ei)) {
+        if (!adminEventLocation(request, ei)) {
           return forwardValidationError;
         }
       } else {
@@ -169,7 +169,7 @@ public class AttendeeRespond extends EventActionBase {
 
       /* -------------------------- Contact ------------------------------ */
       if (publicAdmin) {
-        if (!setEventContact(form, false)) {
+        if (!setEventContact(request, false)) {
           return forwardValidationError;
         }
       }

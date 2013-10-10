@@ -159,7 +159,7 @@ public class UpdateEventAction extends EventActionBase {
 
     if (request.hasCopy()) {
       /* XXX I don't think we ever get here */
-      copyEvent(ev, form);
+      copyEvent(request, ev);
 
       return forwardCopy;
     }
@@ -389,7 +389,7 @@ public class UpdateEventAction extends EventActionBase {
     /* -------------------------- Location ------------------------------ */
 
     if (publicAdmin) {
-      if (!adminEventLocation(form, ei)) {
+      if (!adminEventLocation(request, ei)) {
         return forwardRetry;
       }
     } else {
@@ -401,7 +401,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Contact ------------------------------ */
 
-    if (!setEventContact(form, submitApp)) {
+    if (!setEventContact(request, submitApp)) {
       return forwardRetry;
     }
 
@@ -587,7 +587,7 @@ public class UpdateEventAction extends EventActionBase {
 
     if ((publishEvent || updateSubmitEvent) &&
         request.getBooleanReqPar("submitNotification", false)) {
-      notifySubmitter(ei, submitterEmail, form);
+      notifySubmitter(request, ei, submitterEmail);
     }
 
     if (publicAdmin) {
@@ -596,10 +596,10 @@ public class UpdateEventAction extends EventActionBase {
 
       if (evregprop != null) {
         // Registerable event
-        notifyEventReg(ei, form);
+        notifyEventReg(request, ei);
       }
 
-      resetEvent(form);
+      resetEvent(request);
     } else {
       form.refreshIsNeeded();
     }

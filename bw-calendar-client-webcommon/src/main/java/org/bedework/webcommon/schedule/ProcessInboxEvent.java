@@ -92,7 +92,7 @@ public class ProcessInboxEvent extends EventActionBase {
     EventInfo colEi = cl.getStoredMeeting(einf.getEvent());
     if (colEi == null) {
       // Copy the inbox copy - will embed it in form
-      copyEvent(einf.getEvent(), form);
+      copyEvent(request, einf.getEvent());
 
       if (!preserveInbox) {
         // Delete the inbox copy

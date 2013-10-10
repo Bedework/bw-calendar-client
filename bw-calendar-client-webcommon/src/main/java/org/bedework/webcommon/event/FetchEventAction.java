@@ -58,18 +58,18 @@ public class FetchEventAction extends EventActionBase {
     }
     EventInfo einf = findEvent(request, mode);
 
-    int fwd = refreshEvent(einf, request);
+    int fwd = refreshEvent(request, einf);
     form.setAttendees(new Attendees());
     form.setFbResponses(null);
     form.setFormattedFreeBusy(null);
     if (fwd == forwardContinue) {
       if (request.hasCopy()) {
-        copyEvent(einf.getEvent(), form);
+        copyEvent(request, einf.getEvent());
 
         return forwardCopy;
       }
 
-      resetEvent(form);
+      resetEvent(request);
     }
 
     embedCategories(request, false);

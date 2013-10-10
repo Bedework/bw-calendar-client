@@ -119,7 +119,7 @@ public class DeleteEventAction extends EventActionBase {
 
     if (publicAdmin &&
         request.getBooleanReqPar("submitNotification", false)) {
-      notifySubmitter(ei, submitterEmail, form);
+      notifySubmitter(request, ei, submitterEmail);
     }
 
     form.getMsg().emit(ClientMessage.deletedEvents, 1);

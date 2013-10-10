@@ -37,7 +37,7 @@ import java.util.Date;
 
 /** Fetch an event for rendering. We previously set the key fields.
  *
- * @author Mike Douglass  douglm - bedework.edu
+ * @author Mike Douglass  douglm - rpi.edu
  */
 public class RenderEventAction extends EventActionBase {
   /* (non-Javadoc)
@@ -57,7 +57,7 @@ public class RenderEventAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    EventInfo ei = findEvent(ekey, form);
+    EventInfo ei = findEvent(request, ekey);
     form.setEventInfo(ei);
 
     if (ei == null) {

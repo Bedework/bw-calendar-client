@@ -116,10 +116,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   private transient CollectionCollator<BwCategory> categoryCollator;
 
-  /*
-   *  (non-Javadoc)
-   * @see org.bedework.util.struts.UtilAbstractAction#getId()
-   */
   @Override
   public String getId() {
     return getClass().getName();
@@ -191,7 +187,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    Client cl = form.fetchClient();
+    Client cl = bwreq.getClient();
 
     Locale loc = cl.getUserLocale(reqLocales,
                                   form.getRequestedLocale());
@@ -1536,10 +1532,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return thumbFn + "." + thumbType;
   }
 
-  /* We should probably return false for a portlet
-   *  (non-Javadoc)
-   * @see org.bedework.util.struts.UtilAbstractAction#logOutCleanup(javax.servlet.http.HttpServletRequest)
-   */
   @Override
   protected boolean logOutCleanup(final HttpServletRequest request,
                                   final UtilActionForm form) {

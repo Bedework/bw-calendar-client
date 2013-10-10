@@ -195,10 +195,10 @@ public class AdminUtil implements ForwardDefs {
     }
   }
 
-  private static int setGroup(final Request request,
+  private static int setGroup(final BwRequest request,
                               final BwAdminGroup adg) throws Throwable {
-    BwActionFormBase form = (BwActionFormBase)request.getForm();
-    Client cl = form.fetchClient();
+    BwActionFormBase form = request.getBwForm();
+    Client cl = request.getClient();
 
     boolean debug = getLogger().isDebugEnabled();
 

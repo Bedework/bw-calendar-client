@@ -88,7 +88,7 @@ public class AddEventSubAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    EventInfo ei = findEvent(ekey, form);
+    EventInfo ei = findEvent(request, ekey);
 
     if (ei == null) {
       // Do nothing

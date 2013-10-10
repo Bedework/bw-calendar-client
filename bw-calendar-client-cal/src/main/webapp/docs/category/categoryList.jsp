@@ -11,7 +11,7 @@
 <categories>
   <logic:present name="bw_editable_categories_list" scope="session">
     <logic:iterate id="category" name="bw_editable_categories_list"
-                       scope="session">
+                   scope="session">
       <%@include file="/docs/category/emitCategory.jsp"%>
     </logic:iterate>
   </logic:present>

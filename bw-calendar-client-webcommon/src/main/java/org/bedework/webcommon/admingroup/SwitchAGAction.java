@@ -21,18 +21,14 @@ package org.bedework.webcommon.admingroup;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.AdminUtil;
-import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action switches the users Admin Groups.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
-public class SwitchAGAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+public class SwitchAGAction extends FetchAGsAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -51,6 +47,9 @@ public class SwitchAGAction extends BwAbstractAction {
 
     cl.setGroupSet(false);
     cl.setChoosingGroup(false);
+
+    forceRefresh();
+    super.doAction(request, form);
 
     // Back to main menu. Abstract action will do the rest.
 

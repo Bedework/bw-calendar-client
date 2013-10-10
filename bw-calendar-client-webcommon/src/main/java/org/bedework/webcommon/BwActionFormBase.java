@@ -229,15 +229,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   private Collection<BwGroup> userAdminGroups;
 
-  /* The list of admin groups displayed for the use of the user client
-   */
-  private static Collection<BwGroup> adminGroupsInfo;
-
-  private static long lastAdminGroupsInfoRefresh;
-  private static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
-
-  private static volatile Object locker = new Object();
-
   /* ....................................................................
    *           Event date and time fields
    * .................................................................... */
@@ -1176,64 +1167,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    } catch (Throwable t) {
       err.emit(t);
       return false;
-    }
-  }
-
-  /**
-   * @return groups
-   */
-  public Collection<BwGroup> getAdminGroups() {
-    try {
-      return fetchClient().getAdminGroups(showAgMembers);
-   } catch (Throwable t) {
-      err.emit(t);
-      return new ArrayList<BwGroup>();
-    }
-  }
-
-  /**
-   * @return groups information
-   */
-  public Collection<BwGroup> getAdminGroupsInfo() {
-    try {
-      refreshAdminGroupsInfo: {
-        if (System.currentTimeMillis() > (lastAdminGroupsInfoRefresh +
-                           adminGroupsInfoRefreshInterval)) {
-          synchronized (locker) {
-            if (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
-                adminGroupsInfoRefreshInterval)) {
-              // Somebody else got there
-              break refreshAdminGroupsInfo;
-            }
-
-            adminGroupsInfo = new ArrayList<BwGroup>();
-
-            Collection<BwGroup> ags = fetchClient().getAdminGroups(
-                    false);
-
-            for (BwGroup g: ags) {
-              BwGroup cg = (BwGroup)g.clone();
-
-              Collection<BwGroup> mgs = fetchClient().getAllAdminGroups(g);
-
-              for (BwGroup mg: mgs) {
-                BwGroup cmg = (BwGroup)mg.clone();
-
-                cg.addGroup(cmg);
-              }
-
-              adminGroupsInfo.add(cg);
-            }
-
-            lastAdminGroupsInfoRefresh = System.currentTimeMillis();
-          }
-        }
-      }
-
-      return adminGroupsInfo;
-    } catch (Throwable t) {
-      err.emit(t);
-      return new ArrayList<BwGroup>();
     }
   }
 

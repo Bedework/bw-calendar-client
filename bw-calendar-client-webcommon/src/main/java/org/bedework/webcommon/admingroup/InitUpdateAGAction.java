@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.admingroup;
 
-import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -29,12 +28,10 @@ import org.bedework.webcommon.BwRequest;
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
-public class InitUpdateAGAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+public class InitUpdateAGAction extends FetchAGsAction {
+  @Override
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
     /** Check access
@@ -42,6 +39,9 @@ public class InitUpdateAGAction extends BwAbstractAction {
     if (!form.getCurUserSuperUser()) {
       return forwardNoAccess;
     }
+
+    forceRefresh();
+    super.doAction(request, form);
 
     /** Set the objects to null so we get new ones.
      */

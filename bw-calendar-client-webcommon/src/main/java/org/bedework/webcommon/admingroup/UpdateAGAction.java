@@ -52,7 +52,7 @@ import org.bedework.webcommon.BwWebUtil;
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
 public class UpdateAGAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -183,6 +183,8 @@ public class UpdateAGAction extends BwAbstractAction {
         }
         cl.updateAdminGroup(updgrp);
       }
+
+      FetchAGsAction.forceRefresh();
     } catch (CalFacadeException cfe) {
       String msg = cfe.getMessage();
 

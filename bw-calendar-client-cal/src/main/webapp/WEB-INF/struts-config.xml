@@ -1624,7 +1624,7 @@
     </action>
 
     <action    path="/widget/groups"
-               type="org.bedework.webcommon.NoopAction"
+               type="org.bedework.webcommon.admingroup.FetchAGsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=only"

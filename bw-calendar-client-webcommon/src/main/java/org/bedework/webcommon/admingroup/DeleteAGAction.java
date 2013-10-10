@@ -35,7 +35,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
 public class DeleteAGAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -72,6 +72,8 @@ public class DeleteAGAction extends BwAbstractAction {
     cl.removeAdminGroup(updgrp);
     form.setUpdAdminGroup(null);
     form.getMsg().emit(ClientMessage.deletedGroup);
+    FetchAGsAction.forceRefresh();
+
     return forwardContinue;
   }
 }

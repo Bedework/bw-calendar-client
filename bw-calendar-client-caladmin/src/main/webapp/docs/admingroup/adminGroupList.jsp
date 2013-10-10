@@ -8,7 +8,7 @@
 
 <groups>
   <showMembers><bean:write name="calForm" property="showAgMembers"/></showMembers>
-  <logic:iterate id="adminGroup" name="calForm" property="adminGroups" >
+  <logic:iterate id="adminGroup" name="bw_admin_groups" scope="session" >
     <group>
       <name><bean:write name="adminGroup" property="account" /></name>
       <desc><bean:write name="adminGroup" property="description" /></desc>

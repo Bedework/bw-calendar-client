@@ -274,26 +274,9 @@ try {
     </logic:equal>
   </urlPrefixes>
 
-  <%-- Begin Duke additions --%>
-  <groups>
-    <logic:iterate id="adminGroup" name="calForm" property="adminGroupsInfo" >
-      <group>
-        <eventOwner><bean:write name="adminGroup" property="ownerHref" /></eventOwner>
-        <name><bean:write name="adminGroup" property="account" /></name>
-        <description><bean:write name="adminGroup" property="description" /></description>
-        <logic:iterate id="ancestorGroup" name="adminGroup" property="groups" >
-          <memberof>
-            <name><bean:write name="ancestorGroup" property="account" /></name>
-          </memberof>
-        </logic:iterate>
-      </group>
-    </logic:iterate>
-  </groups>
-  <%-- End Duke additions --%>
-
   <confirmationid><bean:write name="calForm" property="confirmationId"/></confirmationid><%--
         Value: String - a 16 character random string used to allow users to confirm
-        additions to thier private calendar.  DEPRECATED. --%>
+        additions to their private calendar.  DEPRECATED. --%>
 
   <logic:iterate id="appvar" name="calForm" property="appVars">
     <appvar><%--

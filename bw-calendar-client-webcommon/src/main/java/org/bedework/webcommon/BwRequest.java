@@ -52,6 +52,9 @@ public class BwRequest extends Request {
   /** search result stored in session */
   public final static String bwSearchResultName = "bw_search";
 
+  /** admin group info list stored in session */
+  public final static String bwAdminGroupsInfoName = "bw_admin_groups";
+
   /** category list stored in session */
   public final static String bwCategoriesListName = "bw_categories_list";
 

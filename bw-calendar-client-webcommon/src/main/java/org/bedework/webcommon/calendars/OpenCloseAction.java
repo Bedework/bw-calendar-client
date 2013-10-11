@@ -38,7 +38,7 @@ import java.util.Set;
  *      <li>"success"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm - bedework.edu
+ * @author Mike Douglass   douglm - rpi.edu
  */
 public class OpenCloseAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -71,7 +71,7 @@ public class OpenCloseAction extends BwAbstractAction {
     }
 
     if (cos == null) {
-      cos = new HashSet<String>();
+      cos = new HashSet<>();
       form.setCalendarsOpenState(cos);
     }
 
@@ -82,6 +82,8 @@ public class OpenCloseAction extends BwAbstractAction {
     } else if (cos.contains(path)) {
       cos.remove(path);
     }
+
+    embedCategories(request, false);
 
     return forwardSuccess;
   }

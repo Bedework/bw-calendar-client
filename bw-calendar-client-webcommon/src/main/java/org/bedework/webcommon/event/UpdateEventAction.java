@@ -523,6 +523,8 @@ public class UpdateEventAction extends EventActionBase {
     if (publishEvent) {
       copyEntities(ev);
       changeOwner(ev, cl);
+      changes.changed(PropertyInfoIndex.CREATOR.getPname(), null,
+                      ev.getCreatorHref());
 
       // Do the same for any overrides
 

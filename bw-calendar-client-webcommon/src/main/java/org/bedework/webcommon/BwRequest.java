@@ -55,6 +55,12 @@ public class BwRequest extends Request {
   /** admin group info list stored in session */
   public final static String bwAdminGroupsInfoName = "bw_admin_groups";
 
+  /** Event list pars stored in session */
+  public final static String bwEventListParsName = "bw_event_list_pars";
+
+  /** Formatted event list stored in session */
+  public final static String bwEventListName = "bw_event_list";
+
   /** category list stored in session */
   public final static String bwCategoriesListName = "bw_categories_list";
 

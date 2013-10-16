@@ -20,6 +20,7 @@ package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -53,13 +54,17 @@ public class SetSelectionAction extends BwAbstractAction {
     /* Set up the event list parameters */
 
     EventListPars elpars = new EventListPars();
-    int forward = setEventListPars(request, elpars);
+    Client cl = request.getClient();
 
+    int forward = setEventListPars(request, elpars);
     if (forward != forwardSuccess) {
       return forward;
     }
 
-    form.setEventListPars(elpars);
+    elpars.setForExport(request.getBooleanReqPar("forExport", false));
+    elpars.setUseDbSearch(request.getBooleanReqPar("useDbSearch", false));
+
+    cl.setEventListPars(elpars);
 
     forward = tryCal(request, form);
 

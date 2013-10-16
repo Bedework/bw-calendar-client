@@ -1006,6 +1006,16 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public void setEventListPars(final EventListPars val) {
+    cstate.setEventListPars(val);
+  }
+
+  @Override
+  public EventListPars getEventListPars() {
+    return cstate.getEventListPars();
+  }
+
+  @Override
   public EventInfo getEvent(final String colPath,
                             final String name,
                             final RecurringRetrievalMode recurRetrieval)
@@ -1032,6 +1042,47 @@ public class ROClientImpl implements Client {
     public Collection<EventInfo> getEvents() {
       return events;
     }
+  }
+
+  @Override
+  public GetEventsResult getEvents() throws CalFacadeException {
+    EventListPars elpars = getEventListPars();
+    if (elpars == null) {
+      return null;
+    }
+
+    int pos = 0;
+    int pageSize = -1;    // Give me all
+
+    if (elpars.getPaged()) {
+      pos = elpars.getCurPage() - 1;
+      if (pos < 0) {
+        pos = 0;
+      }
+
+      pageSize = elpars.getPageSize();
+      pos *= pageSize;
+    }
+
+    GetEventsResult ger = getEvents(elpars.getFromDate(),
+                                    elpars.getToDate(),
+                                    elpars.getFilter(),
+                                    elpars.getForExport(),
+                                    elpars.getUseDbSearch(),
+                                    pos,
+                                    pageSize);
+
+    elpars.setResultSize((int)ger.getCount());
+
+    if (ger.getPaged()) {
+      elpars.setNumPages(
+              (int)(((ger.getCount() + pageSize) - 1) / pageSize));
+    } else {
+      elpars.setNumPages(0);
+      elpars.setPaged(false);
+    }
+
+    return ger;
   }
 
   @Override

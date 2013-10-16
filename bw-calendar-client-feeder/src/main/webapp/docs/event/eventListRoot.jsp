@@ -7,8 +7,8 @@
 <%--  Generate events --%>
 <bean:define id="detailView" value="true" toScope="request"/>
 <events>
-  <logic:present name="calForm" property="formattedEvents">
-    <logic:iterate id="eventFormatter" name="calForm" property="formattedEvents">
+  <logic:present name="bw_event_list" scope="request">
+    <logic:iterate id="eventFormatter" name="bw_event_list" scope="request">
       <%@include file="/docs/event/emitEventForList.jsp"%>
     </logic:iterate>
   </logic:present>

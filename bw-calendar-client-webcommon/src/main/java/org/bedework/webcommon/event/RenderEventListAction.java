@@ -19,6 +19,7 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.FormattedEvents;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -46,7 +47,15 @@ public class RenderEventListAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    form.setFormattedEvents(new FormattedEvents(request.getClient(), eis));
+    Client cl = request.getClient();
+
+    request.setRequestAttr(BwRequest.bwEventListParsName,
+                           cl.getEventListPars());
+
+    request.setRequestAttr(BwRequest.bwEventListName,
+                           new FormattedEvents(cl, eis));
+
+    //form.setFormattedEvents(new FormattedEvents(cl, eis));
 
     return forwardContinue;
   }

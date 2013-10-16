@@ -56,9 +56,9 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
+import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.util.indexing.SearchLimits;
 
 import java.io.Serializable;
@@ -1100,6 +1100,17 @@ public interface Client extends Serializable {
                      RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException;
 
+  /** Event key for getEvents
+   *
+   * @param val
+   */
+  void setEventListPars(final EventListPars val);
+
+  /**
+   * @return EventListPars
+   */
+  EventListPars getEventListPars();
+
   public interface GetEventsResult {
     /**
      * @return true if result is paged
@@ -1116,6 +1127,14 @@ public interface Client extends Serializable {
      */
     Collection<EventInfo> getEvents();
   }
+
+  /** Get events specified by current EventListPars object
+   *
+   * @return events and information
+   * @throws CalFacadeException
+   */
+  GetEventsResult getEvents() throws CalFacadeException;
+
   /** Get events that lie in the given range and are constrained by the
    * given filter. The current view filter will be ANDed
    *

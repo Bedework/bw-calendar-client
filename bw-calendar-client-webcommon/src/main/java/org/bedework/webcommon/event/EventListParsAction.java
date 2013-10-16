@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
@@ -59,16 +60,17 @@ public class EventListParsAction extends EventActionBase {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     EventListPars elpars = new EventListPars();
+    Client cl = request.getClient();
 
     int forward = setEventListPars(request, elpars);
     if (forward != forwardSuccess) {
       return forward;
     }
 
-    elpars.setForExport("yes".equals(request.getReqPar("forExport")));
+    elpars.setForExport(request.getBooleanReqPar("forExport", false));
     elpars.setUseDbSearch(request.getBooleanReqPar("useDbSearch", false));
 
-    form.setEventListPars(elpars);
+    cl.setEventListPars(elpars);
 
     if ((elpars.getFormat() != null) &&
         (elpars.getFormat().equals("text/calendar"))) {

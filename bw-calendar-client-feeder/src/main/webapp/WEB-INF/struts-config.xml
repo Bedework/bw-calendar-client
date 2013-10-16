@@ -207,7 +207,7 @@
        ............................................................... -->
 
     <action    path="/main/listEvents"
-               type="org.bedework.webcommon.event.EventListParsAction"
+               type="org.bedework.webcommon.misc.SetSelectionAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"

@@ -22,7 +22,7 @@ import org.bedework.appcommon.client.Client;
 
 /** This is a no-op action
  *
- * @author Mike Douglass  douglm - bedework.edu
+ * @author Mike Douglass  douglm - rpi.edu
  */
 public class NoopAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -48,7 +48,7 @@ public class NoopAction extends BwAbstractAction {
           return forward;
         }
 
-        form.setEventListPars(elpars);
+        cl.setEventListPars(elpars);
 
         return forwardListEvents;
       }

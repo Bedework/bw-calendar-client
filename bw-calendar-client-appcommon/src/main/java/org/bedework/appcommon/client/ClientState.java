@@ -28,6 +28,7 @@ import org.bedework.calfacade.filter.FilterBuilder;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.util.misc.Util;
+import org.bedework.webcommon.EventListPars;
 
 import org.apache.log4j.Logger;
 
@@ -54,6 +55,8 @@ public class ClientState implements Serializable {
 
   /* The current virtual path target */
   private String vpathTarget;
+
+  private EventListPars eventListPars;
 
   /* Filter resulting from the view or vpath */
   private FilterBase filter;
@@ -267,6 +270,21 @@ public class ClientState implements Serializable {
    */
   public String getVirtualPath() throws CalFacadeException {
     return vpath;
+  }
+
+  /** Event key for next action
+   *
+   * @param val
+   */
+  public void setEventListPars(final EventListPars val) {
+    eventListPars = val;
+  }
+
+  /**
+   * @return EventListPars
+   */
+  public EventListPars getEventListPars() {
+    return eventListPars;
   }
 
   /**

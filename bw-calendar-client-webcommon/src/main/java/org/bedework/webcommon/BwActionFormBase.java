@@ -251,8 +251,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private EventKey eventKey;
 
-  private EventListPars eventListPars;
-
   /* ....................................................................
    *           Fields for creating or editing objects
    * .................................................................... */
@@ -3148,21 +3146,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public EventKey getEventKey() {
     return eventKey;
-  }
-
-  /** Event key for next action
-   *
-   * @param val
-   */
-  public void setEventListPars(final EventListPars val) {
-    eventListPars = val;
-  }
-
-  /**
-   * @return EventListPars
-   */
-  public EventListPars getEventListPars() {
-    return eventListPars;
   }
 
   /**

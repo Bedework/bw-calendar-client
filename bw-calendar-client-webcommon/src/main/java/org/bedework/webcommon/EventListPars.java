@@ -26,7 +26,7 @@ import java.io.Serializable;
 
 /** Parameters for fetching a bunch of events.
  *
- * @author Mike Douglass douglm - bedework.edu
+ * @author Mike Douglass douglm - rpi.edu
  */
 public class EventListPars implements Serializable {
   /* null if times not limited. */
@@ -34,6 +34,8 @@ public class EventListPars implements Serializable {
 
   /* null if times not limited. */
   private BwDateTime toDate;
+
+  private String query;
 
   private FilterBase filter;
 
@@ -82,6 +84,21 @@ public class EventListPars implements Serializable {
    */
   public BwDateTime getToDate() {
     return toDate;
+  }
+
+  /** if null no query
+   * @param val
+   */
+  public void setQuery(final String val) {
+    query = val;
+  }
+
+
+  /** if null no query
+   * @return query string or null
+   */
+  public String getQuery() {
+    return query;
   }
 
   /** if null no filtering

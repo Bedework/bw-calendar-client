@@ -559,8 +559,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         max = authp.getMaxWebCalPeriod();
       }
 
-      BwTimeRange tr = BwDateTimeUtil.getPeriod(request.getReqPar("start"),
-                                                request.getReqPar("end"),
+      BwTimeRange tr = BwDateTimeUtil.getPeriod(startStr,
+                                                endStr,
                                                 java.util.Calendar.DATE,
                                                 days,
                                                 java.util.Calendar.DATE,

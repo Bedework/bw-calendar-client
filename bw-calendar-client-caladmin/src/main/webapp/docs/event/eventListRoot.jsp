@@ -9,7 +9,7 @@
 
 <events>
   <bw:emitText name="calForm" property="syspars.eventregAdminToken"/>
-  <logic:iterate id="eventFormatter" name="calForm" property="formattedEvents">
+  <logic:iterate id="eventFormatter" name="bw_event_list" scope="request">
     <%@include file="/docs/event/emitEvent.jsp"%>
   </logic:iterate>
 </events>

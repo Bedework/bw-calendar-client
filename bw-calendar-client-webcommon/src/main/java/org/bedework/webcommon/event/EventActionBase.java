@@ -81,41 +81,13 @@ public abstract class EventActionBase extends BwAbstractAction {
     Client cl = req.getClient();
 
     form.assignAddingEvent(false);
-    EventListPars elpars = form.getEventListPars();
-    if (elpars == null) {
+
+    Client.GetEventsResult ger = cl.getEvents();
+    if (ger == null) {
       return null;
     }
 
-    int pos = 0;
-    int pageSize = -1;    // Give me all
-
-    if (elpars.getPaged()) {
-      pos = elpars.getCurPage() - 1;
-      if (pos < 0) {
-        pos = 0;
-      }
-
-      pageSize = elpars.getPageSize();
-      pos *= pageSize;
-    }
-
-    Client.GetEventsResult ger = cl.getEvents(elpars.getFromDate(),
-                                              elpars.getToDate(),
-                                              elpars.getFilter(),
-                                              elpars.getForExport(),
-                                              elpars.getUseDbSearch(),
-                                              pos,
-                                              pageSize);
-
-    elpars.setResultSize((int)ger.getCount());
-
-    if (ger.getPaged()) {
-      elpars.setNumPages(
-              (int)(((ger.getCount() + pageSize) - 1) / pageSize));
-    } else {
-      elpars.setNumPages(0);
-      elpars.setPaged(false);
-    }
+    EventListPars elpars = cl.getEventListPars();
 
     form.setResultSize(elpars.getResultSize());
     form.setNumPages(elpars.getNumPages());

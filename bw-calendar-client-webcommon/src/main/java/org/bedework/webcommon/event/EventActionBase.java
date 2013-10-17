@@ -55,7 +55,7 @@ import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.BwWebUtil.ValidateResult;
 import org.bedework.webcommon.EventKey;
-import org.bedework.webcommon.EventListPars;
+import org.bedework.appcommon.client.EventListPars;
 
 import net.fortuna.ical4j.model.parameter.Role;
 

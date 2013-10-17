@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.misc;
+package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
@@ -25,7 +25,7 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.EventListPars;
+import org.bedework.appcommon.client.EventListPars;
 
 import java.util.List;
 

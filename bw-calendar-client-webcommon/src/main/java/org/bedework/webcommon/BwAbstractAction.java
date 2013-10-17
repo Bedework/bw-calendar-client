@@ -33,6 +33,7 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.AdminClientImpl;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ClientImpl;
+import org.bedework.appcommon.client.EventListPars;
 import org.bedework.appcommon.client.ROClientImpl;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.filter.ObjectFilter;

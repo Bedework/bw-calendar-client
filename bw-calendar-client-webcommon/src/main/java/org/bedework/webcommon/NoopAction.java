@@ -19,6 +19,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.EventListPars;
 
 /** This is a no-op action
  *

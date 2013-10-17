@@ -25,7 +25,7 @@ import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.EventListPars;
+import org.bedework.appcommon.client.EventListPars;
 
 import net.fortuna.ical4j.model.Calendar;
 

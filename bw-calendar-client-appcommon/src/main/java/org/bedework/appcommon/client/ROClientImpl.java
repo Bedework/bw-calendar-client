@@ -18,6 +18,8 @@
 */
 package org.bedework.appcommon.client;
 
+import org.bedework.access.Ace;
+import org.bedework.access.Acl;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.caldav.util.filter.FilterBase;
@@ -52,6 +54,7 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.filter.SimpleFilterParser;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -60,9 +63,6 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
-import org.bedework.calsvci.indexing.BwIndexer;
-import org.bedework.calsvci.indexing.SearchResult;
-import org.bedework.calsvci.indexing.SearchResultEntry;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
@@ -70,17 +70,15 @@ import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.EventProperties;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
+import org.bedework.calsvci.indexing.BwIndexer;
+import org.bedework.calsvci.indexing.SearchResult;
+import org.bedework.calsvci.indexing.SearchResultEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
 import org.bedework.sysevents.events.SysEventBase;
-import org.bedework.util.indexing.SearchLimits;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
-import org.bedework.util.timezones.DateTimeUtil;
-
-import org.bedework.access.Ace;
-import org.bedework.access.Acl;
 
 import org.apache.log4j.Logger;
 
@@ -1558,29 +1556,27 @@ public class ROClientImpl implements Client {
   public SearchResult search(final boolean publick,
                              final String query,
                              final String filter,
-                             final SearchLimits limits)
-          throws CalFacadeException {
-    lastSearch = getIndexer(publick).search(query, filter, limits);
+                             final String start,
+                             final String end) throws CalFacadeException {
+    FilterBase f = null;
+
+    if (filter != null) {
+      SimpleFilterParser.ParseResult pr = svci.getFilterParser().parse(filter);
+
+      if (!pr.ok) {
+        if (pr.cfe != null) {
+          throw pr.cfe;
+        } else {
+          throw new CalFacadeException("bad expression", filter);
+        }
+      }
+
+      f = pr.filter;
+    }
+
+    lastSearch = getIndexer(publick).search(query, f, start, end);
 
     return lastSearch;
-  }
-
-  @Override
-  public SearchLimits fromToday() {
-    SearchLimits lim = new SearchLimits();
-
-    lim.fromDate = DateTimeUtil.isoDate(new java.util.Date());
-
-    return lim;
-  }
-
-  @Override
-  public SearchLimits beforeToday() {
-    SearchLimits lim = new SearchLimits();
-
-    lim.toDate = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
-
-    return lim;
   }
 
   @Override

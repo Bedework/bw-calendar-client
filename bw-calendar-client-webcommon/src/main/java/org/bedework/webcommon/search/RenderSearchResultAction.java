@@ -20,11 +20,9 @@
 package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.util.indexing.SearchLimits;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
-
 
 /** Implant the search result in the form.
  *
@@ -45,19 +43,6 @@ public class RenderSearchResultAction extends RenderAction {
 
     int start = form.getResultStart();
     int count = form.getResultCt();
-
-    SearchLimits limits = null;
-
-    String lim = form.getSearchLimits();
-    if (lim != null) {
-      if ("none".equals(lim)) {
-        // no limits
-      } else if ("beforeToday".equals(lim)) {
-        limits = cl.beforeToday();
-      } else if ("fromToday".equals(lim)) {
-        limits = cl.fromToday();
-      }
-    }
 
     form.setSearchResult(cl.getSearchResult(start, count));
 

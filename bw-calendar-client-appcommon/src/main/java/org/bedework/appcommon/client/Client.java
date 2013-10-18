@@ -1729,28 +1729,18 @@ public interface Client extends Serializable {
    *
    *
    * @param publick true for public index - otherwise current principal
-   * @param   query    Query string
-   * @param   filter   Filter expression
-   * @param   limits   limits or null
+   * @param query    Query string
+   * @param filter   Filter expression
+   * @param start - if non-null limit to this and after
+   * @param end - if non-null limit to before this
    * @return  SearchResult   never null
    * @throws CalFacadeException
    */
   SearchResult search(boolean publick,
                       String query,
                       String filter,
-                      SearchLimits limits) throws CalFacadeException;
-
-  /** Convenience method to limit to now onwards.
-   *
-   * @return SearchLimits
-   */
-  SearchLimits fromToday();
-
-  /** Convenience method to limit to before now.
-   *
-   * @return SearchLimits
-   */
-  SearchLimits beforeToday();
+                      String start,
+                      String end) throws CalFacadeException;
 
   /** Called to retrieve results after a search of the index. Updates
    * the current search result.

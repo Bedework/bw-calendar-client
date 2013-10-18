@@ -20,11 +20,10 @@ package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calsvci.indexing.SearchResult;
-import org.bedework.util.indexing.SearchLimits;
+import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
 
 /**
  * Action to carry out a search.
@@ -69,20 +68,21 @@ public class Search extends BwAbstractAction {
       return forwardNoAction;
     }
 
-    SearchLimits limits = null;
+    String start = null;
+    String end = null;
 
     String lim = form.getSearchLimits();
     if (lim != null) {
       if ("none".equals(lim)) {
         // no limits
       } else if ("beforeToday".equals(lim)) {
-        limits = cl.beforeToday();
+        end = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
       } else if ("fromToday".equals(lim)) {
-        limits = cl.fromToday();
+        start = DateTimeUtil.isoDate(new java.util.Date());
       }
     }
 
-    SearchResult sres = cl.search(publick, query, filter, limits);
+    SearchResult sres = cl.search(publick, query, filter, start, end);
 
     int pageSize = cl.getPreferences().getPageSize();
 

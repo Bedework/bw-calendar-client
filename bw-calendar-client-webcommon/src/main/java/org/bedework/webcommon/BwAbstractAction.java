@@ -51,12 +51,10 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.BwString;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
-import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.configs.AuthProperties;
@@ -444,7 +442,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   public void setConfig(final Request request,
                         final BwActionFormBase form) throws Throwable {
-    if (form.configSet() && !form.getConfig().getGuestMode()) {
+    if (form.configSet()) {
       return;
     }
 
@@ -472,63 +470,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     form.setConfig(conf); // So we can get an svci object and set defaults
 
     form.assignSubmitApp(BedeworkDefs.appTypeWebsubmit.equals(appType));
-
-    if (!conf.getGuestMode()) {
-      return;
     }
-
-    // Public client - do subcontext setup.
-
-    checkSvci(request,
-              null, // user
-              false); // canSwitch
-
-    Client cl = form.fetchClient();
-    SubContext sub = null;
-    BwSystem sys = cl.getSyspars();
-
-    cl.setAppType(appType);
-    String path = request.getRequest().getServletPath();
-
-    if (path != null) {
-      String[] pathels = path.split("/");
-
-      // First element null for "/"
-
-      if (pathels.length > 1) {
-        sub = sys.findContext(pathels[1]);
-
-        if (sub != null) {
-          BwCalSuiteWrapper curCs = cl.getCalSuite();
-
-          if ((curCs != null) && (!curCs.getName().equals(sub.getCalSuite()))) {
-            // Discard the current session
-            BwWebUtil.dropState(request.getRequest());
-          }
-
-          cl.setCalSuite(sub.getCalSuite());
-          conf.setCalSuite(sub.getCalSuite());
-          return;
-        }
-      }
-    }
-
-    // No subcontext supplied - use the named default or the one in the config
-
-    Set<SubContext> subcs = sys.getContexts();
-
-    for (SubContext subc: subcs) {
-      if (subc.getDefaultContext()) {
-        cl.setCalSuite(subc.getCalSuite());
-        conf.setCalSuite(subc.getCalSuite());
-        return;
-      }
-    }
-
-    // Just go with default in config
-    cl.setCalSuite(conf.getCalSuite());
-    return;
-  }
 
   protected int setEventListPars(final BwRequest request,
                                  final EventListPars elpars) throws Throwable {
@@ -599,6 +541,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (cal != null) {
       elpars.setCollection(cal);
     }
+
+    elpars.setQuery(request.getReqPar("query"));
 
     FilterBase filter = null;
     BwFilterDef fd = request.getFilterDef();
@@ -1632,10 +1576,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         //System.out.println("cb.in - action path = " + form.getActionPath() +
         //                   " conv-type = " + req.getConversationType());
 
-        Client cl = form.fetchClient();
-        if (cl == null) {
-          return HttpServletResponse.SC_OK;
-        }
+//        Client cl = form.fetchClient();
+  //      if (cl == null) {
+    //      return HttpServletResponse.SC_OK;
+      //  }
 
         BwModule module = form.fetchModule(req.getClientName());
 
@@ -2019,6 +1963,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     boolean guestMode = form.getConfig().getGuestMode();
     String calSuiteName = null;
 
+
+    BwCallback cb = getCb(request, form);
+    BwModule module = form.fetchModule(request.getClientName());
+
+//    Client client = BwWebUtil.getClient(request.getRequest());
+    Client client = module.getClient();
+
     if (guestMode) {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
@@ -2027,8 +1978,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       /* Calendar suite we are administering is the one we find attached to a
        * group as we proceed up the tree
        */
+
+      /* Note that we redo this once we have a group set. The first call
+         (before we have any client) has no group name set in the form
+       */
       BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
-                                                    form.fetchClient(),
+                                                    client,
                                                     form.getAdminGroupName());
       form.setCurrentCalSuite(cs);
 
@@ -2051,11 +2006,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    BwCallback cb = getCb(request, form);
-    BwModule module = form.fetchModule(null);
-
-//    Client client = BwWebUtil.getClient(request.getRequest());
-    Client client = module.getClient();
     boolean reinitClient = false;
 
     try {
@@ -2067,13 +2017,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
          * already have the authorised user's rights set in the form.
          */
 
-        if (!client.isOpen()) {
+        /* if (!client.isOpen()) {
           //svci.flushAll();
           reinitClient = true;
           info("Client interface discarded from old session");
           ((Callback)cb).closeNow(); // So we're not waiting for ourself
-        } else if (publicAdmin) {
-
+        } else */
+        if (publicAdmin) {
           BwPrincipal pr = client.getCurrentPrincipal();
           if (pr == null) {
             throw new CalFacadeException("Null user for public admin.");
@@ -2097,9 +2047,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             ((Callback)cb).closeNow(); // So we're not waiting for ourself
           }
         }
-      }
 
-      if (client != null) {
         /* Already there and already opened */
         if (debug) {
           debugMsg("Client interface -- Obtained from session for user " +
@@ -2111,7 +2059,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             debugMsg("Client-- reinit for user " + user);
           }
 
-          form.flushModules();
+          form.flushModules(request.getClientName());
 
           if (guestMode) {
             ((ROClientImpl)client).reinit(form.getCurrentUser(),

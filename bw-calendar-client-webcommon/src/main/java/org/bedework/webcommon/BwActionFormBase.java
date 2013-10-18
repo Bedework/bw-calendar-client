@@ -594,16 +594,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
     if (m == null) {
       m = new BwModule(n, null);
-      modules.put(n, m);
-    }
 
-    if (!defModule && (m.getClient() == null)) {
-      try {
-        BwModule def = modules.get(BwModule.defaultModuleName);
-        m.setClient(def.getClient().copy());
-      } catch (CalFacadeException e) {
-        err.emit(e);
+      /* clone the client from any active module */
+      if (modules.size() > 0) {
+        for (BwModule from: modules.values()) {
+          if (from.getClient() != null) {
+            try {
+              m.setClient(from.getClient().copy());
+            } catch (CalFacadeException e) {
+              err.emit(e);
+            }
+          }
+        }
       }
+      modules.put(n, m);
     }
 
     return m;
@@ -612,9 +616,11 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /** Called when we change the default client state enough to need
    * to ditch the other clients.
    */
-  public void flushModules() {
-    for (String s: modules.keySet()) {
-      if (s.equals(BwModule.defaultModuleName)) {
+  public void flushModules(String name) {
+    ArrayList<String> mnames = new ArrayList<>(modules.keySet());
+
+    for (String s: mnames) {
+      if (s.equals(name)) {
         continue;
       }
 

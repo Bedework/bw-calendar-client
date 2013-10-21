@@ -19,6 +19,8 @@
 
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwCalendar;
 import org.bedework.util.servlet.filters.PresentationState;
 
 import java.io.Serializable;
@@ -28,7 +30,7 @@ import java.io.Serializable;
  * We also provide a number of methods which act as the interface between
  * the web world and the calendar world.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm   rpi.edu
  */
 public interface BwSession extends Serializable {
   /** ===================================================================
@@ -70,5 +72,27 @@ public interface BwSession extends Serializable {
    * @return PresentationState
    */
   public PresentationState getPresentationState();
+
+  /** Prepare state of session for render
+   *
+   * @param req
+   */
+  public void prepareRender(BwRequest req);
+
+  /**
+   *
+   * @param req
+   * @throws Throwable
+   */
+  public void embedFilters(final BwRequest req) throws Throwable;
+
+  /**
+   *
+   * @param cl
+   * @param val
+   * @throws Throwable
+   */
+  public void getChildren(Client cl,
+                          BwCalendar val) throws Throwable;
 }
 

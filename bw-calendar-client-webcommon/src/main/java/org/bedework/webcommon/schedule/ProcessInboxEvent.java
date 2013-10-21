@@ -121,7 +121,6 @@ public class ProcessInboxEvent extends EventActionBase {
       form.setRruleComponents(null);
     }
 
-
     EventFormatter ef = new EventFormatter(cl,
                                            new IcalTranslator(new IcalCallbackcb(cl)),
                                            colEi);

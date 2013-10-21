@@ -25,7 +25,8 @@ try {
     <title>
       <html:text name="calForm" property="summary"/>
     </title>
-    <bw:emitContainer name="event" indent="    " tagName="calendar" />
+    <bw:emitContainer name="calForm" property="event"
+                      indent="    " tagName="calendar" />
 
     <allDay><html:checkbox property="eventStartDate.dateOnly"/></allDay>
     <storeUTC><html:checkbox property="eventStartDate.storeUTC"/></storeUTC>
@@ -197,7 +198,7 @@ try {
     <!-- return the public tree's calendars.  Will use the aliases in the tree for
          our default topical areas -->
     <calendars>
-      <bean:define id="calendar" name="calForm" property="publicCalendars"
+      <bean:define id="calendar" name="bw_public_collection_list" scope="session"
                  toScope="session" />
       <bean:define id="fullTree" toScope="request">true</bean:define>
       <bean:define id="stopDescentAtAliases" toScope="request">false</bean:define>

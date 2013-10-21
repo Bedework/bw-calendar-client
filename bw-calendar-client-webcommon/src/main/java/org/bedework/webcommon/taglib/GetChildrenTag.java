@@ -19,7 +19,6 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.wrappers.CalendarWrapper;
 
@@ -104,15 +103,14 @@ public class GetChildrenTag extends NameScopePropertyTag {
         throw e;
       }
 
-      Client cl = getClient();
-      BwCalendar cal = cl.resolveAlias((BwCalendar)o, true, false);
+      BwCalendar col = (BwCalendar)o;
 
       Collection<BwCalendar> cs;
 
-      if (cal == null) {
+      if (col == null) {
         cs = new ArrayList();
       } else {
-        cs = cl.getChildren(cal);
+        cs = col.getChildren();
       }
 
       if (cs != null) {
@@ -121,7 +119,6 @@ public class GetChildrenTag extends NameScopePropertyTag {
         if (getForm() == null) {
           // Assume always open
           for (BwCalendar c: cs) {
-            cl.resolveAlias(c, true, false);
             if (c instanceof CalendarWrapper) {
               CalendarWrapper ccw = (CalendarWrapper)c;
               ccw.setOpen(true);
@@ -133,7 +130,6 @@ public class GetChildrenTag extends NameScopePropertyTag {
 
           if (cos != null) {
             for (BwCalendar c: cs) {
-              cl.resolveAlias(c, true, false);
               if (c instanceof CalendarWrapper) {
                 CalendarWrapper ccw = (CalendarWrapper)c;
                 ccw.setOpen(cos.contains(c.getPath()));

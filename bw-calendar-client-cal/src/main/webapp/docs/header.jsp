@@ -401,8 +401,8 @@ try {
 
   <%-- List of views for menuing --%>
   <views>
-    <logic:present name="calForm" property="views">
-      <logic:iterate id="view" name="calForm" property="views" >
+    <logic:present name="bw_views_list" scope="session">
+      <logic:iterate id="view" name="bw_views_list" scope="session">
         <view>
           <name><bean:write name="view" property="name"/></name>
           <paths>
@@ -419,8 +419,8 @@ try {
 
   <%-- List of filters for menuing --%>
   <filters>
-    <logic:present name="calForm" property="filters">
-      <logic:iterate id="filter" name="calForm" property="filters" >
+    <logic:present name="bw_filters_list" scope="session">
+        <logic:iterate id="view" name="bw_filters_list" scope="session">
         <filter>
           <name><bean:write name="filter" property="name"/></name>
         </filter>

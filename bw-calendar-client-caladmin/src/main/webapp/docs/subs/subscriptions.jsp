@@ -8,7 +8,7 @@
 
 <!-- subscriptions are a subset of calendars; there is no difference to the underlying code. -->
 <calendars>
-  <bean:define id="calendar" name="calForm" property="userCalendars"
+  <bean:define id="calendar" name="bw_user_collection_list" scope="session"
              toScope="session" />
   <%@include file="/docs/calendar/emitCalendar.jsp"%>
 </calendars>

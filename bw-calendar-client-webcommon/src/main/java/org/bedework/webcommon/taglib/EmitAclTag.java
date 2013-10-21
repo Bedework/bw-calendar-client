@@ -21,7 +21,6 @@ package org.bedework.webcommon.taglib;
 
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.client.Client;
-import org.bedework.webcommon.BwWebUtil;
 
 import org.bedework.access.Acl.CurrentAccess;
 
@@ -73,7 +72,7 @@ public class EmitAclTag extends NameScopePropertyTag {
       return null;
     }
 
-    Client cl = BwWebUtil.getClient(pageContext.getSession());
+    Client cl = getClient();
     return AccessXmlUtil.getXmlAclString(ca.getAcl(), cl);
   }
 }

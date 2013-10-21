@@ -191,6 +191,29 @@
     </action>
 
   <!-- ...............................................................
+             Actions for ongoing
+         ............................................................... -->
+
+    <action    path="/main/setOngoingList"
+               type="org.bedework.webcommon.event.SetSelectionAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start;cl=ongoing"
+               validate="false">
+      <forward name="success" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="noViewDef" path="/main/showOngoingList.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/showOngoingList"
+               type="org.bedework.webcommon.event.RenderEventListAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only;cl=ongoing;refaction=/main/showEventList.rdo"
+               validate="false">
+      <forward name="continue" path="/docs/event/eventList.jsp"/>
+    </action>
+
+  <!-- ...............................................................
            Display an event
        ............................................................... -->
 

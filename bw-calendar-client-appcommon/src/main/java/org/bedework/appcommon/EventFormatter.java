@@ -35,7 +35,7 @@ import java.util.Date;
 
 /** Object to provide formatting services for a BwEvent.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
 public class EventFormatter extends EventTimeZonesRegistry
   implements TimeZoneRegistry, Serializable {
@@ -43,7 +43,7 @@ public class EventFormatter extends EventTimeZonesRegistry
    */
   private EventInfo eventInfo;
 
-  private  Client cl;
+  private Client cl;
 
   /** The view currently in place.
    */

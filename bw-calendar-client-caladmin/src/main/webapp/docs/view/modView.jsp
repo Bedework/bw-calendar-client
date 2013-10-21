@@ -20,7 +20,7 @@
 
 <%-- subscriptions are a subset of calendars --%>
 <calendars>
-  <bean:define id="calendar" name="calForm" property="userCalendars"
+  <bean:define id="calendar" name="bw_user_collection_list" scope="session"
              toScope="session" />
 
   <%-- open up the calendars to descend down the tree, but stop after the root --%>

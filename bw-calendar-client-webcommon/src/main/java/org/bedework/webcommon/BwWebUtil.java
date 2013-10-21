@@ -53,7 +53,7 @@ import javax.servlet.http.HttpSession;
 
 /** Useful shared web utility routines
  *
- * @author  Mike Douglass  douglm@bedework.edu
+ * @author  Mike Douglass  douglm    rpi.edu
  */
 public class BwWebUtil {
   /** Name of the session attribute holding our session state
@@ -63,10 +63,6 @@ public class BwWebUtil {
   /** Name of the session attribute holding our calendar interface
    */
   public static final String sessCalSvcIAttr = "org.bedework.calsvci";
-
-  /** Name of the session attribute holding our calendar interface
-   */
-  public static final String sessClientAttr = "org.bedework.client";
 
   /** Try to get the session state object  embedded in
    *  the current session.
@@ -115,73 +111,6 @@ public class BwWebUtil {
 
     if (sess != null) {
       sess.setAttribute(sessStateAttr, s);
-    } else {
-      noSession();
-    }
-  }
-
-  /** Try to get the Client object  embedded in
-   *  the current session.
-   *
-   * @param request  Needed to locate session
-   * @return Client  null on failure
-   */
-  public static Client getClient(final HttpServletRequest request) {
-    return getClient(request.getSession(false));
-  }
-
-  /** Drop the Client object  embedded in
-   *  the current session.
-   *
-   * @param request  Needed to locate session
-   */
-  public static void dropClient(final HttpServletRequest request) {
-    dropClient(request.getSession(false));
-  }
-
-  /** Try to get the Client object  embedded in
-   *  the given session.
-   *
-   * @param sess
-   * @return Client  null on failure
-   */
-  public static Client getClient(final HttpSession sess) {
-    if (sess == null) {
-      noSession();
-    }
-
-    Object o = sess.getAttribute(sessClientAttr);
-    if ((o != null) && (o instanceof Client)) {
-      return (Client)o;
-    }
-
-    return null;
-  }
-
-  /** Drop the Client object embedded in
-   *  the given session.
-   *
-   * @param sess
-   */
-  public static void dropClient(final HttpSession sess) {
-    if (sess == null) {
-      return;
-    }
-
-    sess.removeAttribute(sessClientAttr);
-  }
-
-  /** Set the Client object into the current session.
-   *
-   * @param request        HttpServletRequest Needed to locate session
-   * @param cl           Client object
-   */
-  public static void setClient(final HttpServletRequest request,
-                                final Client cl) {
-    HttpSession sess = request.getSession(false);
-
-    if (sess != null) {
-      sess.setAttribute(sessClientAttr, cl);
     } else {
       noSession();
     }

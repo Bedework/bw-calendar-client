@@ -11,7 +11,7 @@
 <%@include file="/docs/calendar/emitCalendars.jsp"%>
 
 <publicCalendars>
-  <bean:define id="calendar" name="calForm" property="publicCalendars"
+  <bean:define id="calendar" name="bw_public_collection_list" scope="session"
              toScope="session" />
   <%@include file="/docs/calendar/emitCalendar.jsp"%>
 </publicCalendars>

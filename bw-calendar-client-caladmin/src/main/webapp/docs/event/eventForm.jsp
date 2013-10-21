@@ -211,8 +211,8 @@
       <calsuite>
         <bw:emitText name="calForm" property="currentCalSuite.name" tagName="name" />
         <calendars>
-          <logic:present name="calForm" property="userCalendars">
-            <bean:define id="calendar" name="calForm" property="userCalendars"
+          <logic:present name="bw_user_collection_list" scope="session">
+            <bean:define id="calendar" name="bw_user_collection_list" scope="session"
                        toScope="session" />
             <bean:define id="fullTree" toScope="request">true</bean:define>
             <bean:define id="stopDescentAtAliases" toScope="request">false</bean:define>

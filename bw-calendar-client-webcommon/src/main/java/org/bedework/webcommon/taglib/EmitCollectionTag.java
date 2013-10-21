@@ -61,10 +61,6 @@ public class EmitCollectionTag extends EmitTextTag {
       /* Try to retrieve the object */
       BwCalendar col = (BwCalendar)getObject(false);
 
-      if (col != null) {
-        getClient().resolveAlias(col, true, false);
-      }
-
       String outerTag = null;
 
       if (!getNoTag()) {
@@ -254,7 +250,7 @@ public class EmitCollectionTag extends EmitTextTag {
       return;
     }
 
-    String prefPath = getClient().getPreferences().getDefaultCalendarPath();
+    String prefPath = getPreferences().getDefaultCalendarPath();
 
     if ((prefPath != null) && prefPath.equals(col.getPath())) {
       emitElement(out, indent, "default-scheduling-collection", null);

@@ -286,8 +286,8 @@ try {
 
   <%-- Inbox state
   <inboxState>
-    <logic:present name="calForm" property="inBoxInfoRefreshed" >
-      <bean:define id="inBoxInfo" name="calForm" property="inBoxInfoRefreshed" />
+    <logic:present name="calForm" property="inBoxInfo" >
+      <bean:define id="inBoxInfo" name="calForm" property="inBoxInfo" />
       <bw:emitText name="inBoxInfo" property="changed" />
       <bw:emitText name="inBoxInfo" property="numActive" />
       <bw:emitText name="inBoxInfo" property="numProcessed" />
@@ -340,8 +340,8 @@ try {
   </outboxState>--%>
 
   <schedulingMessages>
-    <logic:present name="calForm" property="inBoxInfoRefreshed" >
-      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfoRefreshed" />
+    <logic:present name="calForm" property="inBoxInfo" >
+      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfo" />
       <%@include file="/docs/schedule/schedMessages.jsp"%>
     </logic:present>
   </schedulingMessages>
@@ -373,8 +373,8 @@ try {
 
   <%-- List of views for menuing --%>
   <views>
-    <logic:present name="calForm" property="views">
-      <logic:iterate id="view" name="calForm" property="views" >
+    <logic:present name="bw_views_list" scope="session">
+        <logic:iterate id="view" name="bw_views_list" scope="session">
         <view>
           <name><bean:write name="view" property="name"/></name>
         </view>
@@ -384,8 +384,8 @@ try {
 
   <%-- List of filters for menuing --%>
   <filters>
-    <logic:present name="calForm" property="filters">
-      <logic:iterate id="filter" name="calForm" property="filters" >
+    <logic:present name="bw_filters_list" scope="session">
+        <logic:iterate id="view" name="bw_filters_list" scope="session">
         <filter>
           <name><bean:write name="filter" property="name"/></name>
         </filter>

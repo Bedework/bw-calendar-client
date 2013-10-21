@@ -216,6 +216,7 @@ public abstract class EventActionBase extends BwAbstractAction {
      * guid and name must be set to null to avoid dup guid.
      */
     BwActionFormBase form = request.getBwForm();
+    Client cl = request.getClient();
     EventInfo ei = fetchEvent(request, ev);
     BwEvent evcopy = (BwEvent)ei.getEvent().clone();
 
@@ -237,6 +238,7 @@ public abstract class EventActionBase extends BwAbstractAction {
   /* Mostly for admin use at the moment. */
   protected void resetEvent(final BwRequest request) throws Throwable {
     BwActionFormBase form = request.getBwForm();
+    Client cl = request.getClient();
     //form.setEventInfo(null);
 
     BwEvent event = form.getEvent();
@@ -263,11 +265,12 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     form.retrieveLocId().reset(uid, SelectId.AHasPrecedence);
 
-    BwCalendar c = request.getClient().getCollection(event.getColPath());
+    BwCalendar c = cl.getCollection(event.getColPath());
     String path = null;
     if (c != null) {
       path = c.getPath();
       form.setCalendar(c);
+      request.getSess().getChildren(cl, c);
     }
 
     form.retrieveCalendarId().reset(path, SelectId.AHasPrecedence);

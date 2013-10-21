@@ -20,7 +20,8 @@
 package org.bedework.webcommon.taglib;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.webcommon.BwWebUtil;
+import org.bedework.calfacade.BwPreferences;
+import org.bedework.webcommon.BwRequest;
 
 import org.apache.struts.taglib.TagUtils;
 
@@ -69,9 +70,13 @@ public class BaseTag extends TagSupport {
   }
 
   protected Client getClient() {
+    return (Client)pageContext.getRequest().getAttribute(BwRequest.clientNamePar);
+  }
+
+  protected BwPreferences getPreferences() {
     HttpSession sess = pageContext.getSession();
 
-    return (Client)sess.getAttribute(BwWebUtil.sessClientAttr);
+    return (BwPreferences)sess.getAttribute(BwRequest.bwPreferencesName);
   }
 
   /** Return an int value from the property of the named object in the given

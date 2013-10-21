@@ -49,6 +49,8 @@ public class BwRequest extends Request {
 
   private Request req;
 
+  private Client cl;
+
   /** search result stored in session */
   public final static String bwSearchResultName = "bw_search";
 
@@ -63,6 +65,24 @@ public class BwRequest extends Request {
 
   /** category list stored in session */
   public final static String bwCategoriesListName = "bw_categories_list";
+
+  /** filter list stored in session */
+  public final static String bwFiltersListName = "bw_filters_list";
+
+  /** collection list stored in session */
+  public final static String bwCollectionListName = "bw_collection_list";
+
+  /** public collection list stored in session */
+  public final static String bwPublicCollectionListName = "bw_public_collection_list";
+
+  /** user collection list stored in session */
+  public final static String bwUserCollectionListName = "bw_user_collection_list";
+
+  /** preferences stored in session */
+  public final static String bwPreferencesName = "bw_preferences";
+
+  /** view list stored in session */
+  public final static String bwViewsListName = "bw_views_list";
 
   /** default category list stored in session */
   public final static String bwDefaultCategoriesListName = "bw_default_categories_list";
@@ -92,7 +112,12 @@ public class BwRequest extends Request {
   }
 
   public Client getClient() {
-    return getBwForm().fetchClient(req.getClientName());
+    if (cl == null) {
+      cl = getBwForm().fetchClient(req.getClientName());
+      request.setAttribute(clientNamePar, cl);
+    }
+
+    return cl;
   }
 
   /**

@@ -21,23 +21,17 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.CheckData;
-import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
-import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.FormattedEvents;
 import org.bedework.appcommon.InOutBoxInfo;
-import org.bedework.appcommon.MonthView;
 import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.NotificationInfo;
 import org.bedework.appcommon.SelectId;
 import org.bedework.appcommon.TimeView;
-import org.bedework.appcommon.WeekView;
-import org.bedework.appcommon.YearView;
 import org.bedework.appcommon.client.Client;
-import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -174,8 +168,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private boolean curUserContentAdminUser;
 
   private BwFilterDef currentFilter;
-
-  private Collection<BwFilterDef> filters;
 
   /* ....................................................................
    *                   Alarm fields
@@ -723,27 +715,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public BwFilterDef getCurrentFilter() {
     return currentFilter;
-  }
-
-  /**
-   */
-  public void resetFilters() {
-    filters = null;
-  }
-
-  /**
-   * @return Collection of BwFilterDef
-   */
-  public Collection<BwFilterDef> getFilters() {
-    if (filters == null) {
-      try {
-        filters = fetchClient().getAllFilters();
-      } catch (Throwable t) {
-        getErr().emit(t);
-      }
-    }
-
-    return filters;
   }
 
   /**
@@ -2001,51 +1972,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return current view (day, week, month etc)
    */
   public TimeView getCurTimeView() {
-    /* We might be called before any time is set. Set a week view by
-       default
-       */
-
-    try {
-      if (curTimeView == null) {
-        /** Figure out the default from the properties
-         */
-        String vn;
-
-        try {
-          vn = fetchClient().getPreferences().getPreferredViewPeriod();
-          if (vn == null) {
-            vn = "week";
-          }
-        } catch (Throwable t) {
-          System.out.println("Exception setting current view");
-          vn = "week";
-        }
-
-        if (curViewPeriod < 0) {
-          for (int i = 1; i < BedeworkDefs.viewPeriodNames.length; i++) {
-            if (BedeworkDefs.viewPeriodNames[i].startsWith(vn)) {
-              curViewPeriod = i;
-              break;
-            }
-          }
-
-          if (curViewPeriod < 0) {
-            curViewPeriod = BedeworkDefs.weekView;
-          }
-
-          setViewMcDate(new MyCalendarVO(new Date(System.currentTimeMillis())));
-        }
-
-        refreshView();
-      }
-    } catch (Throwable t) {
-      getLog().error("Exception in getCurTimeView", t);
-    }
-
-    if (curTimeView == null) {
-      getLog().warn("Null time view!!!!!!!!!!!");
-    }
-
     return curTimeView;
   }
 
@@ -2104,97 +2030,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return refreshNeeded;
   }
 
-  /** Reset the view according to the current setting of curViewPeriod.
-   * May be called when we change the view or if we need a refresh
-   *
-   */
-  public void refreshView() {
-    if (debug) {
-      getLog().debug(" set new view to ViewTypeI=" + curViewPeriod);
-    }
-
-    try {
-      if ((curViewPeriod == BedeworkDefs.todayView) ||
-          (viewMcDate == null)) {
-        viewMcDate = new MyCalendarVO(new Date(System.currentTimeMillis()));
-      }
-
-     FilterBase filter = getFilter(null);
-
-      switch (curViewPeriod) {
-      case BedeworkDefs.todayView:
-        setCurTimeView(new DayView(fetchClient(),
-                                   getErr(),
-                                   viewMcDate,
-                                   filter));
-        break;
-      case BedeworkDefs.dayView:
-        setCurTimeView(new DayView(fetchClient(),
-                                   getErr(),
-                                   viewMcDate,
-                                   filter));
-        break;
-      case BedeworkDefs.weekView:
-        setCurTimeView(new WeekView(fetchClient(),
-                                    getErr(),
-                                    viewMcDate,
-                                    filter));
-        break;
-      case BedeworkDefs.monthView:
-        setCurTimeView(new MonthView(fetchClient(),
-                                     getErr(),
-                                     viewMcDate,
-                                     filter));
-        break;
-      case BedeworkDefs.yearView:
-        setCurTimeView(new YearView(fetchClient(),
-                                    getErr(),
-                                    viewMcDate,
-                       getShowYearData(), filter));
-        break;
-      }
-    } catch (Throwable t) {
-      // Not much we can do here
-      setException(t);
-    }
-  }
-
-  /** If a name is defined fetch it, or use the current filter if it exists
-   *
-   * @param filterName
-   * @return BwFilter or null
-   * @throws Throwable
-   */
-  private FilterBase getFilter(final String filterName) throws Throwable {
-    BwFilterDef fdef = null;
-
-    if (filterName != null) {
-      fdef = fetchClient().getFilter(filterName);
-
-      if (fdef == null) {
-        getErr().emit(ClientError.unknownFilter, filterName);
-      }
-    }
-
-    if (fdef == null) {
-      fdef = getCurrentFilter();
-    }
-
-    if (fdef == null) {
-      return null;
-    }
-
-    if (fdef.getFilters() == null) {
-      try {
-        fetchClient().parseFilter(fdef);
-      } catch (CalFacadeException cfe) {
-        getErr().emit(cfe);
-      }
-    }
-
-    return fdef.getFilters();
-  }
-
   /* ....................................................................
    *                       Selection type
    * .................................................................... */
@@ -2216,19 +2051,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* ====================================================================
    *                   Views
    * ==================================================================== */
-
-  /** Return the collection of views - named collections of subscriptions
-   *
-   * @return views
-   */
-  public Collection<BwView> getViews() {
-    try {
-      return fetchClient().getAllViews();
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
-  }
 
   /** Get the current collection from the client state
    *
@@ -2352,93 +2174,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     }
 
     return "";
-  }
-
-  /** Return the public calendars
-   *
-   * @return BwCalendar   root calendar
-   */
-  public BwCalendar getPublicCalendars() {
-    try {
-      return fetchClient().getPublicCalendars();
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
-  }
-
-  /** Return the current users calendars. For admin or guest mode this is the
-   * same as calling getPublicCalendars.
-   *
-   * <p>For the websubmit application we return the root of the submission
-   * calendars.
-   *
-   * @return BwCalendar   root of calendar tree
-   */
-  public BwCalendar getCalendars() {
-    BwCalendar calendar;
-
-    try {
-      if (getSubmitApp()) {
-        // Use submission root
-        calendar = fetchClient().getCollection(getConfig().getSubmissionRoot());
-      } else {
-        // Current owner
-        calendar = fetchClient().getHome();
-      }
-
-      if (calendar != null) {
-        Set<String> cos = getCalendarsOpenState();
-
-        if (cos != null) {
-          calendar.setOpen(cos.contains(calendar.getPath()));
-        }
-      }
-
-      fetchClient().resolveAlias(calendar, true, false);
-
-      return calendar;
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
-  }
-
-  /** Return the current users calendars.
-   *
-   * @return BwCalendar   root of calendar sub-tree
-   */
-  public BwCalendar getUserCalendars() {
-    BwCalendar calendar;
-
-    try {
-      BwPrincipal p;
-
-      if (publicAdmin()) {
-        // Use calendar suite owner
-        p = fetchClient().getPrincipal(
-                              currentCalSuite.getGroup().getOwnerHref());
-      } else {
-        p = getUserVO();
-      }
-
-      calendar = fetchClient().getHome(p, false);
-
-      if (calendar != null) {
-        Set<String> cos = getCalendarsOpenState();
-
-        if (cos != null) {
-          calendar.setOpen(cos.contains(calendar.getPath()));
-        }
-      }
-
-      fetchClient().resolveAlias(calendar, true, false);
-
-      return calendar;
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
   }
 
   /** Return a list of calendars in which calendar objects can be
@@ -3449,20 +3184,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @return InOutBoxInfo
-   */
-  public InOutBoxInfo getInBoxInfoRefreshed() {
-    if (inBoxInfo != null) {
-      try {
-        inBoxInfo.refresh(true);
-      } catch (CalFacadeException cfe) {
-        getErr().emit(cfe);
-      }
-    }
-    return inBoxInfo;
-  }
-
-  /**
    * @param val
    */
   public void setOutBoxInfo(final InOutBoxInfo val) {
@@ -3473,20 +3194,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return InOutBoxInfo
    */
   public InOutBoxInfo getOutBoxInfo() {
-    return outBoxInfo;
-  }
-
-  /**
-   * @return InOutBoxInfo
-   */
-  public InOutBoxInfo getOutBoxInfoRefreshed() {
-    if (outBoxInfo != null) {
-      try {
-        outBoxInfo.refresh(true);
-      } catch (CalFacadeException cfe) {
-        getErr().emit(cfe);
-      }
-    }
     return outBoxInfo;
   }
 

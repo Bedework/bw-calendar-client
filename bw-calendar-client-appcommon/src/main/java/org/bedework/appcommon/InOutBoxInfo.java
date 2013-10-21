@@ -33,12 +33,10 @@ import java.util.Collection;
 
 /** Class to hold info about a user's inbox or outbox.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  *  @version 1.0
  */
 public class InOutBoxInfo implements Serializable {
-  private Client cl;
-
   private boolean inbox; // false for outbox.
 
   private boolean changed; // Set true whenever the status changes.
@@ -64,18 +62,19 @@ public class InOutBoxInfo implements Serializable {
    */
   public InOutBoxInfo(final Client cl,
                       final boolean inbox) throws CalFacadeException {
-    this.cl = cl;
     this.inbox = inbox;
 
-    refresh(true);
+    refresh(cl, true);
   }
 
   /** Refresh the information
    *
+   * @param cl
    * @param all
    * @throws CalFacadeException
    */
-  public void refresh(boolean all) throws CalFacadeException {
+  public void refresh(final Client cl,
+                      boolean all) throws CalFacadeException {
     int calType;
     if (inbox) {
       calType = BwCalendar.calTypeInbox;

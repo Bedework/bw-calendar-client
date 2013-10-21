@@ -19,6 +19,7 @@
 package org.bedework.webcommon.calendars;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.wrappers.CalendarWrapper;
 import org.bedework.webcommon.BwAbstractAction;
@@ -35,7 +36,7 @@ import java.util.Set;
  *      <li>"continue"       continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
 public class RenderCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -56,7 +57,8 @@ public class RenderCalendarAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    BwCalendar calendar = request.getClient().getCollection(calPath);
+    Client cl = request.getClient();
+    BwCalendar calendar = cl.getCollection(calPath);
 
     if (debug) {
       if (calendar == null) {
@@ -76,6 +78,7 @@ public class RenderCalendarAction extends BwAbstractAction {
     form.assignAddingCalendar(false);
     form.setCalendarPath(calPath);
     form.setCalendar(calendar);
+    request.getSess().getChildren(cl, calendar);
 
     if (calendar == null) {
       form.getErr().emit(ClientError.unknownCalendar, calPath);

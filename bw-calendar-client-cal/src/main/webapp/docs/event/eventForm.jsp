@@ -26,7 +26,8 @@ try {
       <html:text name="calForm" property="summary"/>
     </title>
     <!-- current event's calendar -->
-    <bw:emitContainer name="event" indent="    " tagName="calendar" />
+    <bw:emitContainer name="calForm" property="event"
+                      indent="    " tagName="calendar" />
     <!-- user's writable calendars -->
     <calendars>
       <html:select property="calendarId">

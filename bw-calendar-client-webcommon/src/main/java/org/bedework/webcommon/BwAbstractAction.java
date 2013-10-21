@@ -159,16 +159,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    BwSession s = getState(request, form, messages, adminUserId);
+    BwSession bsess = getState(request, form, messages, adminUserId);
 
-    if (s == null) {
+    if (bsess == null) {
       /* An error should have been emitted.*/
       return forwards[forwardError];
     }
 
-    form.setSession(s);
+    form.setSession(bsess);
 
-    BwRequest bwreq = new BwRequest(request, s, this);
+    BwRequest bwreq = new BwRequest(request, bsess, this);
 
     Collection<Locale> reqLocales = request.getLocales();
     String reqLoc = request.getReqPar("locale");
@@ -209,7 +209,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     // We need to have set the current locale before we do this.
     form.setCalInfo(CalendarInfo.getInstance());
 
-    form.setGuest(s.isGuest());
+    form.setGuest(bsess.isGuest());
 
     if (form.getGuest()) {
       // force public view on - off by default
@@ -230,7 +230,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         traceConfig(request);
       }
 
-      form.resetFilters();
+      bsess.embedFilters(bwreq);
 
       if (!cl.getPublicAdmin()) {
         String viewType = request.getReqPar("viewType");
@@ -323,7 +323,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         ib = new InOutBoxInfo(cl, true);
         form.setInBoxInfo(ib);
       } else {
-        ib.refresh(false);
+        ib.refresh(cl, false);
       }
 
       InOutBoxInfo ob = form.getOutBoxInfo();
@@ -331,7 +331,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         ob = new InOutBoxInfo(cl, false);
         form.setOutBoxInfo(ob);
       } else {
-        ob.refresh(false);
+        ob.refresh(cl, false);
       }
 
       NotificationInfo ni = form.getNotificationInfo();
@@ -354,10 +354,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       forward = forwards[doAction(bwreq, form)];
 
-      if (!cl.getPublicAdmin()) {
-        /* See if we need to refresh */
-        checkRefresh(form);
-      }
+      bsess.prepareRender(bwreq);
     } catch (CalFacadeAccessException cfae) {
       form.getErr().emit(ClientError.noAccess);
       forward = forwards[forwardNoAccess];
@@ -2077,7 +2074,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           }
 
           client.requestIn(request.getConversationType());
-          form.resetFilters();
+          form.setRefreshNeeded(true);
         }
       } else {
         if (debug) {
@@ -2103,19 +2100,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         module.setClient(client);
         module.setRequest(request);
 
-        /* For the time being - at least - we embed the default client
-           only in the session. We have jsp which requires a client to
-           function. Much of this needs replacing with something that
-           uses the appropriate client for the request.
-
-           This probably means that the action MUST place the objects
-           to be rendered into the module state object.
-         */
-
-        BwWebUtil.setClient(request.getRequest(), client);
-
         module.requestIn();
-        form.resetFilters();
+        form.setRefreshNeeded(true);
       }
     } catch (CalFacadeException cfe) {
       throw cfe;
@@ -2146,22 +2132,5 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     ((Callback)cb).req = request;
 
     return cb;
-  }
-
-  private void checkRefresh(final BwActionFormBase form) {
-    if (!form.isRefreshNeeded()){
-      try {
-        // Always returned false; if (!form.fetchSvci().refreshNeeded()) {
-        return;
-        //}
-      } catch (Throwable t) {
-        // Not much we can do here
-        form.getErr().emit(t);
-        return;
-      }
-    }
-
-    form.refreshView();
-    form.setRefreshNeeded(false);
   }
 }

@@ -100,7 +100,7 @@ public class Search extends BwAbstractAction {
     }
 
     /* Ensure we have categories embedded in session */
-    embedCategories(request, false);
+    request.getSess().embedCategories(request, false);
 
     return forwardSuccess;
   }

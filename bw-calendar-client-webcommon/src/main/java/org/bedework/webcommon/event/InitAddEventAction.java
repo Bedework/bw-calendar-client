@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
@@ -60,13 +61,20 @@ public class InitAddEventAction extends EventActionBase {
                       final BwActionFormBase form) throws Throwable {
     form.refreshIsNeeded();
 
-    form.setEventInfo(null); // force reinit
+    BwEvent ev = new BwEventObj();
+    form.getEventDates().setNewEvent(ev);
+
+    TimeView tv = request.getSess().getCurTimeView(request);
+
+    form.getEventStartDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
+    form.getEventEndDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
+    EventInfo ei = new EventInfo(ev);
+
+    form.setEventInfo(ei, true);
 
     form.assignSavedEvent(new BwEventObj());
     form.resetSelectIds();
 
-    EventInfo ei = form.getEventInfo();
-    BwEvent ev = ei.getEvent();
     ChangeTable changes = ei.getChangeset(request.getClient().getCurrentPrincipalHref());
 
     form.assignAddingEvent(true);
@@ -140,7 +148,8 @@ public class InitAddEventAction extends EventActionBase {
       ev.setColPath(cal.getPath());
     }
 
-    embedCategories(request, false);
+    request.getSess().embedCategories(request, false);
+    request.getSess().embedLocations(request);
 
     //if (!request.setEventCalendar(ev)) {
     //  return forwardValidationError;

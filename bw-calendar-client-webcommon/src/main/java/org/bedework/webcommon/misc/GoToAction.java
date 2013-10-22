@@ -38,7 +38,7 @@ public class GoToAction extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
 
-    gotoDateView(form,
+    gotoDateView(request,
                  form.getDate(),
                  form.getViewTypeI());
 

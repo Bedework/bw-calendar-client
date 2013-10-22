@@ -114,7 +114,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     Client cl = request.getClient();
     BwEvent ev = ei.getEvent();
 
-    form.setEventInfo(ei);
+    form.setEventInfo(ei, false);
     form.assignSavedEvent((BwEvent)ev.clone());
     form.assignAddingEvent(false);
 
@@ -230,7 +230,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     ei = new EventInfo(evcopy);
 
-    form.setEventInfo(ei);
+    form.setEventInfo(ei, false);
     resetEvent(request);
     form.assignAddingEvent(true);
   }

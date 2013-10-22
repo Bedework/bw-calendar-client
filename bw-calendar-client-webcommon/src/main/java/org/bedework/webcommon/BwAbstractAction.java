@@ -23,7 +23,6 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.InOutBoxInfo;
@@ -112,8 +111,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "rpiappname";
-
-  private transient CollectionCollator<BwCategory> categoryCollator;
 
   @Override
   public String getId() {
@@ -257,6 +254,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }*/
 
+    bsess.prepareRender(bwreq);
+
     /* Set up ready for the action - may reset svci */
 
     int temp = actionSetup(bwreq, form);
@@ -347,14 +346,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     try {
       if (bwreq.present("viewType")) {
-        gotoDateView(form,
+        gotoDateView(bwreq,
                      form.getDate(),
                      form.getViewTypeI());
       }
 
       forward = forwards[doAction(bwreq, form)];
 
-      bsess.prepareRender(bwreq);
+//      bsess.prepareRender(bwreq);
     } catch (CalFacadeAccessException cfae) {
       form.getErr().emit(ClientError.noAccess);
       forward = forwards[forwardNoAccess];
@@ -693,126 +692,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return true;
   }
 
-  /** Embed the list of categories for this owner. Return a null list for
-   * exceptions or no categories. For guest mode or public admin this is the
-   * same as getPublicCategories. This is the method to call unless you
-   * specifically want a list of public categories (for search of public events
-   * perhaps.)
-   *
-   */
-  protected void embedCategories(final BwRequest request,
-                                 final boolean refresh) throws Throwable {
-    if (!refresh &&
-            request.getSessionAttr(BwRequest.bwCategoriesListName) != null) {
-      return;
-    }
-
-    request.setSessionAttr(BwRequest.bwCategoriesListName,
-                           getCategoryCollection(request,
-                                                 ownersEntity, true));
-  }
-
-  /** Embed the list of editable categories for this user. Return a null list for
-   * exceptions or no categories.
-   *
-   */
-  public void embedEditableCategories(final BwRequest request,
-                                      final boolean refresh) throws Throwable {
-    if (!refresh &&
-            request.getSessionAttr(BwRequest.bwEditableCategoriesListName) != null) {
-      return;
-    }
-
-    request.setSessionAttr(BwRequest.bwEditableCategoriesListName,
-                           getCategoryCollection(request,
-                                                 editableEntity, false));
-  }
-
-  protected Set<BwCategory> embedDefaultCategories(final BwRequest request,
-                                                   final boolean refresh) throws Throwable {
-    Set<BwCategory> cats;
-
-    if (!refresh) {
-      cats = (Set<BwCategory>)request.getSessionAttr(BwRequest.bwDefaultCategoriesListName);
-      if (cats != null) {
-        return cats;
-      }
-    }
-
-    cats = new TreeSet<>();
-
-    Client cl = request.getClient();
-
-    Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
-
-    for (String uid: catuids) {
-      BwCategory cat = cl.getCategory(uid);
-
-      if (cat != null) {
-        cats.add(cat);
-      }
-    }
-
-    request.setSessionAttr(BwRequest.bwDefaultCategoriesListName,
-                           cats);
-
-    return cats;
-  }
-
-  /* Kind of entity we are referring to */
-
-  private static int ownersEntity = 1;
-  private static int editableEntity = 2;
-
-  private Collection<BwCategory> getCategoryCollection(final BwRequest request,
-                                                       final int kind,
-                                                       final boolean forEventUpdate) throws Throwable {
-    Client cl = request.getClient();
-    Collection<BwCategory> vals = null;
-
-    if (kind == ownersEntity) {
-
-      String appType = cl.getAppType();
-      if (BedeworkDefs.appTypeWebsubmit.equals(appType) ||
-              BedeworkDefs.appTypeWebpublic.equals(appType) ||
-              BedeworkDefs.appTypeFeeder.equals(appType)) {
-        // Use public
-        vals = cl.getCategories(cl.getPublicUser().getPrincipalRef());
-      } else {
-        // Current owner
-        vals = cl.getCategories();
-
-        BwEvent ev = request.getBwForm().getEvent();
-
-        if (!request.getBwForm().publicAdmin() && forEventUpdate &&
-                (ev != null) &&
-                (ev.getCategories() != null)) {
-          for (BwCategory cat: ev.getCategories()) {
-            if (!cat.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
-              vals.add(cat);
-            }
-          }
-        }
-      }
-    } else if (kind == editableEntity) {
-      vals = cl.getEditableCategories();
-    }
-
-    if (vals == null) {
-      return null;
-    }
-
-    return getCategoryCollator().getCollatedCollection(vals);
-  }
-
-  private CollectionCollator<BwCategory> getCategoryCollator() {
-    if (categoryCollator == null) {
-      categoryCollator = new CollectionCollator<BwCategory>();
-    }
-
-    return categoryCollator;
-  }
-
   /** Find a principal object given a "user" request parameter.
    *
    * @param request     BwRequest for parameters
@@ -875,7 +754,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /* categories already set in event */
     Set<BwCategory> evcats = ent.getCategories();
 
-    Set<BwCategory> defCats = embedDefaultCategories(request, false);
+    Set<BwCategory> defCats = request.getSess().embedDefaultCategories(request, false);
 
     /* Get the uids */
     Collection<String> strCatUids = request.getReqPars("catUid");
@@ -1056,7 +935,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (st == null) {
       /* Set period and start from the current timeview */
-      TimeView tv = form.getCurTimeView();
+      TimeView tv = request.getSess().getCurTimeView(request);
 
       /* Clone calendar so we don't mess up time */
       start = (Calendar)tv.getFirstDay().clone();
@@ -1673,14 +1552,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * <p>newViewTypeI may be less than 0 indicating we stay with the current
    * view but switch to a new date.
    *
-   * @param form         UWCalActionForm
+   * @param request       action form
    * @param date         String yyyymmdd date or null
    * @param newViewTypeI new view index or -1
    * @throws Throwable
    */
-  protected void gotoDateView(final BwActionFormBase form,
+  protected void gotoDateView(final BwRequest request,
                               final String date,
                               int newViewTypeI) throws Throwable {
+    BwActionFormBase form = request.getBwForm();
     /* We get a new view if either the date changed or the view changed.
      */
     boolean newView = false;
@@ -1757,7 +1637,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           debugMsg("vsdate=" + vsdate);
         }
 
-        if (!(vsdate.equals(form.getCurTimeView().getFirstDayFmt().getDateDigits()))) {
+        if (!(vsdate.equals(request.getSess().getCurTimeView(request).getFirstDayFmt().getDateDigits()))) {
           newView = true;
           newViewTypeI = form.getCurViewPeriod();
           Date jdt = DateTimeUtil.fromISODate(vsdate);
@@ -1772,7 +1652,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.refreshIsNeeded();
     }
 
-    TimeView tv = form.getCurTimeView();
+    TimeView tv = request.getSess().getCurTimeView(request);
 
     /** Set first day, month and year
      */
@@ -1862,14 +1742,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       form.assignNewSession(true);
 
-      s = new BwSessionImpl(form.getCurrentUser(),
-                            suffixRoot(form,
-                                       form.getConfig().getBrowserResourceRoot()),
-                            suffixRoot(form,
-                                       form.getConfig().getAppRoot()),
+      s = new BwSessionImpl(isPortlet,
+                            form.getConfig(),
+                            form.getCurrentUser(),
                             appName,
-                            form.getPresentationState(), messages,
-                            form.getSchemeHostPort());
+                            form.getPresentationState());
 
       BwWebUtil.setState(request.getRequest(), s);
 
@@ -1902,30 +1779,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     checkSvci(request, adminUserId, false);
 
     return s;
-  }
-
-  private String suffixRoot(final BwActionFormBase form,
-                            final String val) throws Throwable {
-    StringBuilder sb = new StringBuilder(val);
-
-    /* If we're running as a portlet change the app root to point to a
-     * portlet specific directory.
-     */
-    String portalPlatform = form.getConfig().getPortalPlatform();
-
-    if (isPortlet && (portalPlatform != null)) {
-      sb.append(".");
-      sb.append(portalPlatform);
-    }
-
-    /* If calendar suite is non-null append that. */
-    String calSuite = form.getConfig().getCalSuite();
-    if (calSuite != null) {
-      sb.append(".");
-      sb.append(calSuite);
-    }
-
-    return sb.toString();
   }
 
   private String getAppName(final HttpSession sess) {
@@ -1967,39 +1820,41 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 //    Client client = BwWebUtil.getClient(request.getRequest());
     Client client = module.getClient();
 
-    if (guestMode) {
-      // A guest user using the public clients. Get the calendar suite from the
-      // configuration
-      calSuiteName = form.getConfig().getCalSuite();
-    } else if (publicAdmin) {
-      /* Calendar suite we are administering is the one we find attached to a
-       * group as we proceed up the tree
-       */
+    if (client != null) {
+      if (guestMode) {
+        // A guest user using the public clients. Get the calendar suite from the
+        // configuration
+        calSuiteName = form.getConfig().getCalSuite();
+      } else if (publicAdmin) {
+        /* Calendar suite we are administering is the one we find attached to a
+         * group as we proceed up the tree
+         */
 
-      /* Note that we redo this once we have a group set. The first call
-         (before we have any client) has no group name set in the form
-       */
-      BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
-                                                    client,
-                                                    form.getAdminGroupName());
-      form.setCurrentCalSuite(cs);
+        /* Note that we redo this once we have a group set. The first call
+           (before we have any client) has no group name set in the form
+         */
+        BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
+                                                      client,
+                                                      form.getAdminGroupName());
+        form.setCurrentCalSuite(cs);
 
-      if (cs != null) {
-        calSuiteName = cs.getName();
-      }
-
-      if (debug) {
         if (cs != null) {
-          debugOut("Found calSuite " + cs);
-        } else {
-          debugOut("No calsuite found");
+          calSuiteName = cs.getName();
         }
-      }
-    } else {
-      /* !publicAdmin: We're never allowed to switch identity as a user client.
-       */
-      if (!user.equals(form.getCurrentUser())) {
-        return false;
+
+        if (debug) {
+          if (cs != null) {
+            debugOut("Found calSuite " + cs);
+          } else {
+            debugOut("No calsuite found");
+          }
+        }
+      } else {
+        /* !publicAdmin: We're never allowed to switch identity as a user client.
+         */
+        if (!user.equals(form.getCurrentUser())) {
+          return false;
+        }
       }
     }
 

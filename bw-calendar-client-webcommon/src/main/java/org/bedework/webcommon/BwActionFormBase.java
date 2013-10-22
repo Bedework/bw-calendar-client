@@ -37,7 +37,6 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
@@ -111,7 +110,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private Locale requestedLocale;
 
   private transient CollectionCollator<BwContact> contactCollator;
-  private transient CollectionCollator<BwLocation> locationCollator;
 
   /* This should be a cloned copy only */
   private SystemProperties syspars;
@@ -213,13 +211,13 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private List<CalSuiteResource> calSuiteResources;
 
-  /* ....................................................................
-   *                       Admin Groups
-   * .................................................................... */
-
   /** The groups of which our user is a member
    */
   private Collection<BwGroup> userAdminGroups;
+
+  /** The groups of which our user is a member
+   */
+  private Collection<BwGroup> currentGroups;
 
   /* ....................................................................
    *           Event date and time fields
@@ -352,6 +350,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private TimeDateComponents viewStartDate;
 
   private String date;
+
+  private String eventRegAdminToken;
 
   /** ...................................................................
    *                   Application state
@@ -573,13 +573,9 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   public synchronized BwModule fetchModule(final String name) {
     String n = name;
-    boolean defModule = false;
 
     if (n == null) {
       n = BwModule.defaultModuleName;
-      defModule = true;
-    } else {
-      defModule = n.equals(BwModule.defaultModuleName);
     }
 
     BwModule m = modules.get(n);
@@ -609,10 +605,16 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * to ditch the other clients.
    */
   public void flushModules(String name) {
+    String n = name;
+
+    if (n == null) {
+      n = BwModule.defaultModuleName;
+    }
+
     ArrayList<String> mnames = new ArrayList<>(modules.keySet());
 
     for (String s: mnames) {
-      if (s.equals(name)) {
+      if (s.equals(n)) {
         continue;
       }
 
@@ -834,121 +836,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public boolean getAlertEvent() {
     return alertEvent;
-  }
-
-  /* ====================================================================
-   *                   Locations
-   * ==================================================================== */
-
-  /** Not set - invisible to jsp
-   */
-  /**
-   * @param val
-   */
-  public void assignAddingLocation(final boolean val) {
-    addingLocation = val;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getAddingLocation() {
-    return addingLocation;
-  }
-
-  /**
-   * @param val
-   */
-  public void setLocation(final BwLocation val) {
-    location = val;
-    if (val == null) {
-      setLocationUid(null);
-    } else {
-      setLocationUid(val.getUid());
-      if (val.getAddress() != null) {
-        setLocationAddress((BwString)val.getAddress().clone());
-      } else {
-        setLocationAddress(null);
-      }
-      if (val.getSubaddress() != null) {
-        setLocationSubaddress((BwString)val.getSubaddress().clone());
-      } else {
-        setLocationSubaddress(null);
-      }
-    }
-  }
-
-  /** If a location object exists, return that otherwise create an empty one.
-   *
-   * @return LocationVO  populated location value object
-   */
-  public BwLocation getLocation() {
-    if (location == null) {
-      location = BwLocation.makeLocation();
-    }
-
-    return location;
-  }
-
-  /**
-   * @return SelectId id object
-   */
-  public SelectId<String> retrieveLocId() {
-    return locId;
-  }
-
-  /** We have a preferred and all locations form field. One of them will be
-   * unset so we ignore negative values.
-   *
-   * @param val
-   */
-  public void setAllLocationId(final String val) {
-    if (Util.checkNull(val) != null) {
-      locId.setA(val);
-    }
-  }
-
-  /**
-   * @return String
-   */
-  public String getAllLocationId() {
-    return getLocation().getUid();
-  }
-
-  /**
-   * @return String
-   */
-  public String getOriginalLocationId() {
-    if (locId == null) {
-      return null;
-    }
-
-    return locId.getOriginalVal();
-  }
-
-  /**
-   * @param val
-   */
-  public void setPrefLocationId(final String val) {
-    if (Util.checkNull(val) != null) {
-      locId.setB(val);
-    }
-  }
-
-  /**
-   * @return String
-   */
-  public String getPrefLocationId() {
-    return getLocation().getUid();
-  }
-
-  /** Get the preferred locations for the current user
-   *
-   * @return Collection  preferred locations
-   */
-  public Collection<BwLocation> getPreferredLocations() {
-    return getLocationCollator().getCollatedCollection(
-           getCurAuthUserPrefs().getLocationPrefs().getPreferred());
   }
 
   /* ====================================================================
@@ -1226,18 +1113,17 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @return SystemProperties object
+   * @val token for event registration
    */
-  public SystemProperties getSyspars() {
-    if (syspars == null) {
-      try {
-        syspars = fetchClient().getSystemProperties().cloneIt();
-      } catch (Throwable t) {
-        getErr().emit(t);
-      }
-    }
+  public void setEventRegAdminToken(String val) {
+    eventRegAdminToken = val;
+  }
 
-    return syspars;
+  /**
+   * @return token for event registration
+   */
+  public String getEventRegAdminToken() {
+    return eventRegAdminToken;
   }
 
   /**
@@ -1591,16 +1477,19 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return userAdminGroups;
   }
 
-  /**
-   * @return BwPrincipal
+  /** The groups of which our user is a member
+   *
+   * @param val
    */
-  public BwPrincipal getUserVO() {
-    try {
-      return fetchClient().getCurrentPrincipal();
-    } catch (Throwable t) {
-      getErr().emit(t);
-      return null;
-    }
+  public void setCurrentGroups(final Collection<BwGroup> val) {
+    currentGroups = val;
+  }
+
+  /**
+   * @return user admin groups
+   */
+  public Collection<BwGroup> getCurrentGroups() {
+    return currentGroups;
   }
 
   /**
@@ -2321,58 +2210,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *                   preferences
    * ==================================================================== */
 
-  /** Last email address used
-   *
-   * @param  val   email address
-   */
-  public void setLastEmail(final String val) {
-    lastEmail = val;
-  }
-
-  /**
-   * @return last email
-   */
-  public String getLastEmail() {
-    if (lastEmail == null) {
-      if (getUserVO() != null) {
-        lastEmail = getPreferences().getEmail();
-      }
-    }
-
-    return lastEmail;
-  }
-
-  /** Last subject used
-   *
-   * @param  val   subject
-   */
-  public void setLastSubject(final String val) {
-    lastSubject = val;
-  }
-
-  /**
-   * @return last subject
-   */
-  public String getLastSubject() {
-    return lastSubject;
-  }
-
-  /** Get the preferences for the current user
-   *
-   * @return prefs
-   */
-  public BwPreferences getPreferences() {
-    if (preferences == null) {
-      try {
-        preferences = fetchClient().getPreferences();
-      } catch (Throwable t) {
-        err.emit(t);
-      }
-    }
-
-    return preferences;
-  }
-
   /** Set preferences for a given user
    *
    * @param  val   prefernces
@@ -2720,19 +2557,106 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return locationUid;
   }
 
-  /** Called by jsp when editing an event
-   *
-   * @return locations
+  /** Not set - invisible to jsp
    */
-  public Collection<BwLocation> getLocations() {
-    return getLocations(ownersEntity, true);
+  /**
+   * @param val
+   */
+  public void assignAddingLocation(final boolean val) {
+    addingLocation = val;
   }
 
   /**
-   * @return editable locations
+   * @return bool
    */
-  public Collection<BwLocation> getEditableLocations() {
-    return getLocations(editableEntity, false);
+  public boolean getAddingLocation() {
+    return addingLocation;
+  }
+
+  /**
+   * @param val
+   */
+  public void setLocation(final BwLocation val) {
+    location = val;
+    if (val == null) {
+      setLocationUid(null);
+    } else {
+      setLocationUid(val.getUid());
+      if (val.getAddress() != null) {
+        setLocationAddress((BwString)val.getAddress().clone());
+      } else {
+        setLocationAddress(null);
+      }
+      if (val.getSubaddress() != null) {
+        setLocationSubaddress((BwString)val.getSubaddress().clone());
+      } else {
+        setLocationSubaddress(null);
+      }
+    }
+  }
+
+  /** If a location object exists, return that otherwise create an empty one.
+   *
+   * @return LocationVO  populated location value object
+   */
+  public BwLocation getLocation() {
+    if (location == null) {
+      location = BwLocation.makeLocation();
+    }
+
+    return location;
+  }
+
+  /**
+   * @return SelectId id object
+   */
+  public SelectId<String> retrieveLocId() {
+    return locId;
+  }
+
+  /** We have a preferred and all locations form field. One of them will be
+   * unset so we ignore negative values.
+   *
+   * @param val
+   */
+  public void setAllLocationId(final String val) {
+    if (Util.checkNull(val) != null) {
+      locId.setA(val);
+    }
+  }
+
+  /**
+   * @return String
+   */
+  public String getAllLocationId() {
+    return getLocation().getUid();
+  }
+
+  /**
+   * @return String
+   */
+  public String getOriginalLocationId() {
+    if (locId == null) {
+      return null;
+    }
+
+    return locId.getOriginalVal();
+  }
+
+  /**
+   * @param val
+   */
+  public void setPrefLocationId(final String val) {
+    if (Util.checkNull(val) != null) {
+      locId.setB(val);
+    }
+  }
+
+  /**
+   * @return String
+   */
+  public String getPrefLocationId() {
+    return getLocation().getUid();
   }
 
   /* ====================================================================
@@ -2899,20 +2823,13 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /**
    * @param val
    */
-  public void setEventInfo(final EventInfo val) {
+  public void setEventInfo(final EventInfo val,
+                           final boolean newEvent) {
     try {
-      if (val == null) {
-        event = new BwEventObj();
-        getEventDates().setNewEvent(event);
-        eventInfo = new EventInfo(event);
+      event = val.getEvent();
+      eventInfo = val;
 
-        TimeView tv = getCurTimeView();
-
-        getEventStartDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
-        getEventEndDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
-     } else {
-        event = val.getEvent();
-        eventInfo = val;
+      if (!newEvent) {
         getEventDates().setFromEvent(event);
       }
 
@@ -3626,48 +3543,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return fetchClient().getPublicUser();
   }
 
-  private Collection<BwLocation> getLocations(final int kind,
-                                              final boolean forEventUpdate) {
-    try {
-      Collection<BwLocation> vals = null;
-
-      if (kind == ownersEntity) {
-        if (getSubmitApp()) {
-          // Use public
-          vals = fetchClient().getLocations(
-                  getPublicUser().getPrincipalRef());
-        } else {
-          // Current owner
-          vals = fetchClient().getLocations();
-
-          if (!publicAdmin() && forEventUpdate && (getEvent() != null)) {
-            BwLocation loc = getEvent().getLocation();
-
-            if ((loc != null) &&
-                (!loc.getOwnerHref().equals(client.getCurrentPrincipalHref()))) {
-              vals.add(loc);
-            }
-          }
-        }
-      } else if (kind == editableEntity) {
-        vals = fetchClient().getEditableLocations();
-      }
-
-      if (vals == null) {
-        // Won't need this with 1.5
-        throw new Exception("Software error - bad kind " + kind);
-      }
-
-      return getLocationCollator().getCollatedCollection(vals);
-    } catch (Throwable t) {
-      if (debug) {
-        t.printStackTrace();
-      }
-      err.emit(t);
-      return new ArrayList<BwLocation>();
-    }
-  }
-
   private Collection<BwContact> getContactCollection(final int kind) {
     try {
       Collection<BwContact> vals = null;
@@ -3706,14 +3581,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     }
 
     return contactCollator;
-  }
-
-  private CollectionCollator<BwLocation> getLocationCollator() {
-    if (locationCollator == null) {
-      locationCollator = new CollectionCollator<BwLocation>();
-    }
-
-    return locationCollator;
   }
 
   public boolean publicAdmin() {

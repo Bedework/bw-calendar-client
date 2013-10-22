@@ -8,7 +8,7 @@
 <bean:define id="detailView" value="true" toScope="request"/>
 
 <events>
-  <bw:emitText name="calForm" property="syspars.eventregAdminToken"/>
+  <bw:emitText name="calForm" property="eventRegAdminToken"/>
   <logic:iterate id="eventFormatter" name="bw_event_list" scope="request">
     <%@include file="/docs/event/emitEvent.jsp"%>
   </logic:iterate>

@@ -139,10 +139,12 @@ try {
     <status><bean:write name="event" property="status"/></status>
     <transparency><bean:write name="event" property="transparency"/></transparency>
     <link><html:text name="event" property="link"/></link>
+    <bean:define id="locations"
+                 name="bw_locations_list" scope="session" />
     <location>
       <locationmenu>
         <html:select property="locationUid">
-          <html:optionsCollection property="locations"
+          <html:optionsCollection name="locations"
                                   label="address.value"
                                   value="uid"/>
         </html:select>

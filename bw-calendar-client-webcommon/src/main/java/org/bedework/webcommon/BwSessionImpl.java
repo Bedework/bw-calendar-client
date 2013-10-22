@@ -21,6 +21,8 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.CollectionCollator;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.MonthView;
 import org.bedework.appcommon.MyCalendarVO;
@@ -30,18 +32,25 @@ import org.bedework.appcommon.YearView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
+import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.util.servlet.filters.PresentationState;
+import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 
-import org.apache.struts.util.MessageResources;
+import edu.rpi.sss.util.servlets.PresentationState;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
 
 /** This ought to be made pluggable. We need a session factory which uses
  * CalEnv to figure out which implementation to use.
@@ -63,6 +72,14 @@ public class BwSessionImpl implements BwSession {
     long totalSessions = 0;
   }
 
+  private final boolean isPortlet;
+
+  private final ConfigCommon config;
+
+  private boolean publicAdmin;
+
+  private BwAuthUserPrefs curAuthUserPrefs;
+
   private static volatile HashMap<String, Counts> countsMap =
     new HashMap<String, Counts>();
   private long sessionNum = 0;
@@ -83,28 +100,32 @@ public class BwSessionImpl implements BwSession {
    */
   private PresentationState ps;
 
+  private SystemProperties syspars;
+
+  private transient CollectionCollator<BwCategory> categoryCollator;
+  private transient CollectionCollator<BwLocation> locationCollator;
+
   /** Constructor for a Session
    *
+   * @param isPortlet
+   * @param config
    * @param user       String user id
-   * @param browserResourceRoot
-   * @param appRoot
    * @param appName    String identifying particular application
    * @param ps
-   * @param messages
-     @param schemeHostPort The prefix for generated urls referring to this server
    * @throws Throwable
    */
-  public BwSessionImpl(final String user,
-                       final String browserResourceRoot,
-                       final String appRoot,
+  public BwSessionImpl(final boolean isPortlet,
+                       final ConfigCommon config,
+                       final String user,
                        final String appName,
-                       final PresentationState ps,
-                       final MessageResources messages,
-                       final String schemeHostPort) throws Throwable {
+                       final PresentationState ps) throws Throwable {
+    this.isPortlet = isPortlet;
+    this.config = config;
     this.user = user;
-
     this.appName = appName;
     this.ps = ps;
+
+    publicAdmin = config.getPublicAdmin();
 
     if (ps != null) {
       /*
@@ -116,8 +137,8 @@ public class BwSessionImpl implements BwSession {
         ps.setBrowserResourceRoot(prefixUri(schemeHostPort, browserResourceRoot));
       }
       */
-      ps.setAppRoot(appRoot);
-      ps.setBrowserResourceRoot(browserResourceRoot);
+      ps.setAppRoot(suffixRoot(config.getAppRoot()));
+      ps.setBrowserResourceRoot(suffixRoot(config.getBrowserResourceRoot()));
     }
 
     setSessionNum(appName);
@@ -206,6 +227,7 @@ public class BwSessionImpl implements BwSession {
   @Override
   public void prepareRender(final BwRequest req) {
     BwActionFormBase form = req.getBwForm();
+    Client cl = req.getClient();
 
     try {
       Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
@@ -220,6 +242,11 @@ public class BwSessionImpl implements BwSession {
         embedUserCollections(req);
         embedPrefs(req);
         embedViews(req);
+
+        syspars = cl.getSystemProperties();
+        form.setEventRegAdminToken(syspars.getEventregAdminToken());
+
+        form.setCurrentGroups(cl.getCurrentPrincipal().getGroups());
 
         req.setSessionAttr(refreshTimeAttr, now);
       }
@@ -248,11 +275,219 @@ public class BwSessionImpl implements BwSession {
                        req.getClient().getAllFilters());
   }
 
-  /** Reset the view according to the current setting of curViewPeriod.
-   * May be called when we change the view or if we need a refresh
+  public TimeView getCurTimeView(final BwRequest req) {
+    BwActionFormBase form = req.getBwForm();
+
+    if (form.getCurTimeView() == null) {
+      refreshView(req);
+    }
+
+    return form.getCurTimeView();
+  }
+
+  @Override
+  public void getChildren(final Client cl,
+                          final BwCalendar val) throws Throwable {
+    cl.resolveAlias(val, true, false);
+
+    val.setChildren(cl.getChildren(val));
+
+    if (val.getChildren() != null) {
+      for (BwCalendar c: val.getChildren()) {
+        cl.resolveAlias(c, true, false);
+
+        getChildren(cl, c);
+      }
+    }
+  }
+
+  /** Embed the current users calendars. For admin or guest mode this is the
+   * same as calling embedPublicCalendars.
    *
+   * <p>For the websubmit application we embed the root of the submission
+   * calendars.
+   *
+   * @param request
    */
-  public void refreshView(final BwRequest req) {
+  protected void embedCollections(final BwRequest request) throws Throwable {
+    BwCalendar calendar = null;
+    BwActionFormBase form = request.getBwForm();
+    Client cl = request.getClient();
+
+    try {
+      if (form.getSubmitApp()) {
+        // Use submission root
+        calendar = cl.getCollection(
+                form.getConfig().getSubmissionRoot());
+      } else {
+        // Current owner
+        calendar = cl.getHome();
+      }
+
+      if (calendar != null) {
+        Set<String> cos = form.getCalendarsOpenState();
+
+        if (cos != null) {
+          calendar.setOpen(cos.contains(calendar.getPath()));
+        }
+      }
+
+      getChildren(cl, calendar);
+    } catch (Throwable t) {
+      request.getErr().emit(t);
+    }
+
+    request.setSessionAttr(BwRequest.bwCollectionListName,
+                           calendar);
+  }
+
+  protected void embedPublicCollections(final BwRequest request) throws Throwable {
+    Client cl = request.getClient();
+    BwCalendar calendar = cl.getPublicCalendars();
+
+    getChildren(cl, calendar);
+
+    request.setSessionAttr(BwRequest.bwPublicCollectionListName,
+                           calendar);
+  }
+
+  protected void embedUserCollections(final BwRequest request) throws Throwable {
+    BwCalendar calendar = null;
+    BwActionFormBase form = request.getBwForm();
+    Client cl = request.getClient();
+    boolean publicAdmin = form.getConfig().getPublicAdmin();
+
+    try {
+      BwPrincipal p;
+
+      if ((publicAdmin) && (form.getCurrentCalSuite() != null)) {
+        // Use calendar suite owner
+        p = cl.getPrincipal(
+                form.getCurrentCalSuite().getGroup().getOwnerHref());
+      } else {
+        p = cl.getCurrentPrincipal();
+      }
+
+      calendar = cl.getHome(p, false);
+
+      if (calendar != null) {
+        Set<String> cos = form.getCalendarsOpenState();
+
+        if (cos != null) {
+          calendar.setOpen(cos.contains(calendar.getPath()));
+        }
+      }
+
+      getChildren(cl, calendar);
+    } catch (Throwable t) {
+      request.getErr().emit(t);
+    }
+
+    request.setSessionAttr(BwRequest.bwUserCollectionListName,
+                           calendar);
+  }
+
+  /* ====================================================================
+   *                   Categories
+   * ==================================================================== */
+
+  @Override
+  public void embedCategories(final BwRequest request,
+                              final boolean refresh) throws Throwable {
+    if (!refresh &&
+            request.getSessionAttr(BwRequest.bwCategoriesListName) != null) {
+      return;
+    }
+
+    request.setSessionAttr(BwRequest.bwCategoriesListName,
+                           getCategoryCollection(request,
+                                                 ownersEntity, true));
+  }
+
+  @Override
+  public void embedEditableCategories(final BwRequest request,
+                                      final boolean refresh) throws Throwable {
+    if (!refresh &&
+            request.getSessionAttr(BwRequest.bwEditableCategoriesListName) != null) {
+      return;
+    }
+
+    request.setSessionAttr(BwRequest.bwEditableCategoriesListName,
+                           getCategoryCollection(request,
+                                                 editableEntity, false));
+  }
+
+  @Override
+  public Set<BwCategory> embedDefaultCategories(final BwRequest request,
+                                                final boolean refresh) throws Throwable {
+    Set<BwCategory> cats;
+
+    if (!refresh) {
+      cats = (Set<BwCategory>)request.getSessionAttr(BwRequest.bwDefaultCategoriesListName);
+      if (cats != null) {
+        return cats;
+      }
+    }
+
+    cats = new TreeSet<>();
+
+    Client cl = request.getClient();
+
+    Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
+
+    for (String uid: catuids) {
+      BwCategory cat = cl.getCategory(uid);
+
+      if (cat != null) {
+        cats.add(cat);
+      }
+    }
+
+    request.setSessionAttr(BwRequest.bwDefaultCategoriesListName,
+                           cats);
+
+    return cats;
+  }
+
+  /* ====================================================================
+   *                   Locations
+   * ==================================================================== */
+
+  @Override
+  public void embedLocations(final BwRequest request) {
+    request.setSessionAttr(BwRequest.bwLocationsListName,
+                           getLocations(request, ownersEntity, true));
+  }
+
+  @Override
+  public void embedEditableLocations(final BwRequest request) {
+    request.setSessionAttr(BwRequest.bwEditableLocationsListName,
+                           getLocations(request, editableEntity, false));
+  }
+
+  @Override
+  public void embedPreferredLocations(final BwRequest request) {
+    request.setSessionAttr(BwRequest.bwPreferredLocationsListName,
+                           getLocationCollator().getCollatedCollection(
+                                   curAuthUserPrefs.getLocationPrefs().getPreferred()));
+  }
+
+  /* ====================================================================
+   *                   Package methods
+   * ==================================================================== */
+
+  /**
+   * @param val
+   */
+  void setCurAuthUserPrefs(final BwAuthUserPrefs val) {
+    curAuthUserPrefs = val;
+  }
+
+  /* ====================================================================
+   *                   Private methods
+   * ==================================================================== */
+
+  private void refreshView(final BwRequest req) {
     BwActionFormBase form = req.getBwForm();
     Client cl = req.getClient();
 
@@ -303,31 +538,31 @@ public class BwSessionImpl implements BwSession {
       switch (form.getCurViewPeriod()) {
         case BedeworkDefs.todayView:
           tv = new DayView(cl,
-                           req.getErr(),
+                           form.getErr(),
                            form.getViewMcDate(),
                            filter);
           break;
         case BedeworkDefs.dayView:
           tv = new DayView(cl,
-                           req.getErr(),
+                           form.getErr(),
                            form.getViewMcDate(),
                            filter);
           break;
         case BedeworkDefs.weekView:
           tv = new WeekView(cl,
-                            req.getErr(),
+                            form.getErr(),
                             form.getViewMcDate(),
                             filter);
           break;
         case BedeworkDefs.monthView:
           tv = new MonthView(cl,
-                             req.getErr(),
+                             form.getErr(),
                              form.getViewMcDate(),
                              filter);
           break;
         case BedeworkDefs.yearView:
           tv = new YearView(cl,
-                            req.getErr(),
+                            form.getErr(),
                             form.getViewMcDate(),
                             form.getShowYearData(), filter);
           break;
@@ -337,22 +572,6 @@ public class BwSessionImpl implements BwSession {
     } catch (Throwable t) {
       // Not much we can do here
       req.getErr().emit(t);
-    }
-  }
-
-  @Override
-  public void getChildren(final Client cl,
-                          final BwCalendar val) throws Throwable {
-    cl.resolveAlias(val, true, false);
-
-    val.setChildren(cl.getChildren(val));
-
-    if (val.getChildren() != null) {
-      for (BwCalendar c: val.getChildren()) {
-        cl.resolveAlias(c, true, false);
-
-        getChildren(cl, c);
-      }
     }
   }
 
@@ -429,90 +648,113 @@ public class BwSessionImpl implements BwSession {
     }
   }
 
-  /** Embed the current users calendars. For admin or guest mode this is the
-   * same as calling embedPublicCalendars.
-   *
-   * <p>For the websubmit application we embed the root of the submission
-   * calendars.
-   *
-   * @param request
-   */
-  protected void embedCollections(final BwRequest request) throws Throwable {
-    BwCalendar calendar = null;
+  /* Kind of entity we are referring to */
+
+  private static int ownersEntity = 1;
+  private static int editableEntity = 2;
+
+  private Collection<BwCategory> getCategoryCollection(final BwRequest request,
+                                                       final int kind,
+                                                       final boolean forEventUpdate) throws Throwable {
     BwActionFormBase form = request.getBwForm();
     Client cl = request.getClient();
+    Collection<BwCategory> vals = null;
 
-    try {
-      if (form.getSubmitApp()) {
-        // Use submission root
-        calendar = cl.getCollection(
-                form.getConfig().getSubmissionRoot());
+    if (kind == ownersEntity) {
+
+      String appType = cl.getAppType();
+      if (BedeworkDefs.appTypeWebsubmit.equals(appType) ||
+              BedeworkDefs.appTypeWebpublic.equals(appType) ||
+              BedeworkDefs.appTypeFeeder.equals(appType)) {
+        // Use public
+        vals = cl.getCategories(cl.getPublicUser().getPrincipalRef());
       } else {
         // Current owner
-        calendar = cl.getHome();
-      }
+        vals = cl.getCategories();
 
-      if (calendar != null) {
-        Set<String> cos = form.getCalendarsOpenState();
+        BwEvent ev = form.getEvent();
 
-        if (cos != null) {
-          calendar.setOpen(cos.contains(calendar.getPath()));
+        if (!publicAdmin && forEventUpdate &&
+                (ev != null) &&
+                (ev.getCategories() != null)) {
+          for (BwCategory cat: ev.getCategories()) {
+            if (!cat.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
+              vals.add(cat);
+            }
+          }
         }
       }
-
-      getChildren(cl, calendar);
-    } catch (Throwable t) {
-      request.getErr().emit(t);
+    } else if (kind == editableEntity) {
+      vals = cl.getEditableCategories();
     }
 
-    request.setSessionAttr(BwRequest.bwCollectionListName,
-                           calendar);
+    if (vals == null) {
+      return null;
+    }
+
+    return getCategoryCollator().getCollatedCollection(vals);
   }
 
-  protected void embedPublicCollections(final BwRequest request) throws Throwable {
-    Client cl = request.getClient();
-    BwCalendar calendar = cl.getPublicCalendars();
+  private CollectionCollator<BwCategory> getCategoryCollator() {
+    if (categoryCollator == null) {
+      categoryCollator = new CollectionCollator<BwCategory>();
+    }
 
-    getChildren(cl, calendar);
-
-    request.setSessionAttr(BwRequest.bwPublicCollectionListName,
-                           calendar);
+    return categoryCollator;
   }
 
-  protected void embedUserCollections(final BwRequest request) throws Throwable {
-    BwCalendar calendar = null;
-    BwActionFormBase form = request.getBwForm();
-    Client cl = request.getClient();
-    boolean publicAdmin = form.getConfig().getPublicAdmin();
-
+  private Collection<BwLocation> getLocations(final BwRequest request,
+                                              final int kind,
+                                              final boolean forEventUpdate) {
     try {
-      BwPrincipal p;
+      BwActionFormBase form = request.getBwForm();
+      Client cl = request.getClient();
+      Collection<BwLocation> vals = null;
 
-      if (publicAdmin) {
-        // Use calendar suite owner
-        p = cl.getPrincipal(
-                form.getCurrentCalSuite().getGroup().getOwnerHref());
-      } else {
-        p = cl.getCurrentPrincipal();
-      }
+      if (kind == ownersEntity) {
+        String appType = cl.getAppType();
+        if (BedeworkDefs.appTypeWebsubmit.equals(appType)) {
+          // Use public
+          vals = cl.getLocations(
+                  cl.getPublicUser().getPrincipalRef());
+        } else {
+          // Current owner
+          vals = cl.getLocations();
 
-      calendar = cl.getHome(p, false);
+          BwEvent ev = form.getEvent();
 
-      if (calendar != null) {
-        Set<String> cos = form.getCalendarsOpenState();
+          if (!publicAdmin && forEventUpdate && (ev != null)) {
+            BwLocation loc = ev.getLocation();
 
-        if (cos != null) {
-          calendar.setOpen(cos.contains(calendar.getPath()));
+            if ((loc != null) &&
+                    (!loc.getOwnerHref().equals(cl.getCurrentPrincipalHref()))) {
+              vals.add(loc);
+            }
+          }
         }
+      } else if (kind == editableEntity) {
+        vals = cl.getEditableLocations();
       }
 
-      getChildren(cl, calendar);
+      if (vals == null) {
+        // Won't need this with 1.5
+        throw new Exception("Software error - bad kind " + kind);
+      }
+
+      return getLocationCollator().getCollatedCollection(vals);
     } catch (Throwable t) {
+      t.printStackTrace();
       request.getErr().emit(t);
+      return new ArrayList<>();
+    }
+  }
+
+  private CollectionCollator<BwLocation> getLocationCollator() {
+    if (locationCollator == null) {
+      locationCollator = new CollectionCollator<BwLocation>();
     }
 
-    request.setSessionAttr(BwRequest.bwUserCollectionListName,
-                           calendar);
+    return locationCollator;
   }
 
   protected void embedPrefs(final BwRequest request) throws Throwable {
@@ -523,5 +765,28 @@ public class BwSessionImpl implements BwSession {
   protected void embedViews(final BwRequest request) throws Throwable {
     request.setSessionAttr(BwRequest.bwViewsListName,
                            request.getClient().getAllViews());
+  }
+
+  private String suffixRoot(final String val) throws Throwable {
+    StringBuilder sb = new StringBuilder(val);
+
+    /* If we're running as a portlet change the app root to point to a
+     * portlet specific directory.
+     */
+    String portalPlatform = config.getPortalPlatform();
+
+    if (isPortlet && (portalPlatform != null)) {
+      sb.append(".");
+      sb.append(portalPlatform);
+    }
+
+    /* If calendar suite is non-null append that. */
+    String calSuite = config.getCalSuite();
+    if (calSuite != null) {
+      sb.append(".");
+      sb.append(calSuite);
+    }
+
+    return sb.toString();
   }
 }

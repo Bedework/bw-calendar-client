@@ -102,8 +102,8 @@ public class UpdateCategoryAction extends BwAbstractAction {
     }
 
     /* refresh lists */
-    embedCategories(request, true);
-    embedDefaultCategories(request, true);
+    request.getSess().embedCategories(request, true);
+    request.getSess().embedDefaultCategories(request, true);
 
     return forwardContinue;
   }

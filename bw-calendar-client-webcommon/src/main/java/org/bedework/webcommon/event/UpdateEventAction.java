@@ -21,6 +21,7 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAttendee;
@@ -29,6 +30,7 @@ import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
+import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.base.StartEndComponent;
@@ -607,8 +609,16 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     if (adding) {
-      form.setEventInfo(null);
-      form.getEventDates().setNewEvent(form.getEvent());
+      ev = new BwEventObj();
+      form.getEventDates().setNewEvent(ev);
+
+      TimeView tv = request.getSess().getCurTimeView(request);
+
+      form.getEventStartDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
+      form.getEventEndDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
+      ei = new EventInfo(ev);
+
+      form.setEventInfo(ei, true);
 
       if (ev.getEntityType() == IcalDefs.entityTypeTodo) {
         form.getMsg().emit(ClientMessage.addedTasks, 1);

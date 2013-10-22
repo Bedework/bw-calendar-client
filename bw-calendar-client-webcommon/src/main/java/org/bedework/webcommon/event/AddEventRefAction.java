@@ -60,7 +60,7 @@ public class AddEventRefAction extends EventActionBase {
     }
 
     String start = form.getEvent().getDtstart().getDate().substring(0, 8);
-    gotoDateView(form, start, BedeworkDefs.dayView);
+    gotoDateView(request, start, BedeworkDefs.dayView);
 
     form.refreshIsNeeded();
 
@@ -108,7 +108,7 @@ public class AddEventRefAction extends EventActionBase {
                                                      false);
 
     EventInfo eref = new EventInfo(proxy);
-    form.setEventInfo(eref); // Make it available
+    form.setEventInfo(eref, false); // Make it available
 
     String calPath = getReqPar(request.getRequest(), "newCalPath");
 

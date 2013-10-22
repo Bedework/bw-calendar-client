@@ -72,7 +72,8 @@ public class FetchEventAction extends EventActionBase {
       resetEvent(request);
     }
 
-    embedCategories(request, false);
+    request.getSess().embedCategories(request, false);
+    request.getSess().embedLocations(request);
 
     return fwd;
   }

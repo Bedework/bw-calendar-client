@@ -83,13 +83,17 @@ public class SetAlarmAction extends BwAbstractAction {
       tr.setValue(form.getTriggerDuration().toString());
     }
 
-    String recipient = form.getLastEmail();
+    String recipient = request.getReqPar("lastEmail");
+    if (!Util.present(recipient)) {
+      recipient = cl.getPreferences().getEmail();
+    }
+
     if (!Util.present(recipient)) {
       form.getErr().emit(ClientError.mailNoRecipient, 1);
       return forwardRetry;
     }
 
-    String subject = form.getLastSubject();
+    String subject = request.getReqPar("subject");
     if (!Util.present(subject)) {
       subject = ev.getSummary();
     }

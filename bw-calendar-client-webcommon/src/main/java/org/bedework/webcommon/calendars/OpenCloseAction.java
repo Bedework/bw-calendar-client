@@ -83,7 +83,7 @@ public class OpenCloseAction extends BwAbstractAction {
       cos.remove(path);
     }
 
-    embedCategories(request, false);
+    request.getSess().embedCategories(request, false);
 
     return forwardSuccess;
   }

@@ -36,7 +36,7 @@ public class FetchCategoriesAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    embedEditableCategories(request, false);
+    request.getSess().embedEditableCategories(request, false);
 
     return forwardSuccess;
   }

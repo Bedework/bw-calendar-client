@@ -18,7 +18,7 @@
     <bw:emitText name="calForm" property="event.ownerHref" tagName="owner"/>
     <bw:emitText name="calForm" property="event.name" tagName="name"/>
   </logic:equal>
-  <bw:emitText name="calForm" property="syspars.eventregAdminToken"/>
+  <bw:emitText name="calForm" property="eventRegAdminToken"/>
 
   <genurl:form action="event/update" >
     <title><html:text property="summary" size="40" styleId="iTitle" styleClass="edit"/></title>
@@ -160,8 +160,10 @@
         </preferred>
       </logic:present>
       <all>
+        <bean:define id="locations"
+                     name="bw_locations_list" scope="session" />
         <html:select property="allLocationId">
-          <html:optionsCollection property="locations"
+          <html:optionsCollection name="locations"
                                     label="address.value"
                                     value="uid"/>
           </html:select>

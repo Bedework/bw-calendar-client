@@ -57,7 +57,7 @@ public class AddEventSubAction extends EventActionBase {
     }
 
     String start = form.getEvent().getDtstart().getDate().substring(0, 8);
-    gotoDateView(form, start, BedeworkDefs.dayView);
+    gotoDateView(request, start, BedeworkDefs.dayView);
 
     form.refreshIsNeeded();
 

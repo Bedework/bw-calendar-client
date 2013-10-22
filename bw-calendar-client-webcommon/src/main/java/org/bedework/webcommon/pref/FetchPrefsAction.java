@@ -49,8 +49,8 @@ public class FetchPrefsAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();
 
-    embedCategories(request, false);
-    embedDefaultCategories(request, false);
+    request.getSess().embedCategories(request, false);
+    request.getSess().embedDefaultCategories(request, false);
 
     String str = request.getReqPar("user");
     if (str != null) {

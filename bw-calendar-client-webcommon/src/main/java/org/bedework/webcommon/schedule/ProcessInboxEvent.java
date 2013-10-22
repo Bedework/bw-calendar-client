@@ -108,7 +108,7 @@ public class ProcessInboxEvent extends EventActionBase {
       cl.deleteEvent(einf, false);
     }
 
-    form.setEventInfo(colEi);
+    form.setEventInfo(colEi, false);
     BwEvent ev = colEi.getEvent();
 
     // Not export - just set up for display
@@ -134,6 +134,8 @@ public class ProcessInboxEvent extends EventActionBase {
 
     // Assume we need the collection containing the meeting
     form.setMeetingCal(cl.getCollection(ev.getColPath()));
+
+    request.getSess().embedLocations(request);
 
     return forwardContinue;
   }

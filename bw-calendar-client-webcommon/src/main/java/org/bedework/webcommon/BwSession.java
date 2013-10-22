@@ -19,11 +19,15 @@
 
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.util.servlet.filters.PresentationState;
+import org.bedework.calfacade.BwCategory;
+
+import edu.rpi.sss.util.servlets.PresentationState;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /** This interface represents a session for the Bedework web interface.
  * Some user state will be retained here.
@@ -42,49 +46,57 @@ public interface BwSession extends Serializable {
    *
    * @return long session number
    */
-  public long getSessionNum();
+  long getSessionNum();
 
   /** The current user
    *
    * @param val   String user
    */
-  public void setUser(String val);
+  void setUser(String val);
 
   /**
    * @return String
    */
-  public String getUser();
+  String getUser();
 
   /** Is this a guest user?
    *
    * @return boolean true for a guest
    */
-  public boolean isGuest();
+  boolean isGuest();
 
   /** The PresentationState object defines how the external information is
       presented, usually through some sort of XML/XSLT filtering
    *
    * @param val
    */
-  public void setPresentationState(PresentationState val);
+  void setPresentationState(PresentationState val);
 
   /**
    * @return PresentationState
    */
-  public PresentationState getPresentationState();
+  PresentationState getPresentationState();
 
   /** Prepare state of session for render
    *
    * @param req
    */
-  public void prepareRender(BwRequest req);
+  void prepareRender(BwRequest req);
 
   /**
    *
    * @param req
    * @throws Throwable
    */
-  public void embedFilters(final BwRequest req) throws Throwable;
+  void embedFilters(final BwRequest req) throws Throwable;
+
+  /** Get the current view according to the current setting of curViewPeriod.
+   * May be called when we change the view or if we need a refresh
+   *
+   * @param req
+   * @return current time view
+   */
+  TimeView getCurTimeView(final BwRequest req);
 
   /**
    *
@@ -92,7 +104,62 @@ public interface BwSession extends Serializable {
    * @param val
    * @throws Throwable
    */
-  public void getChildren(Client cl,
+  void getChildren(Client cl,
                           BwCalendar val) throws Throwable;
+
+  /* ====================================================================
+   *                   Categories
+   * ==================================================================== */
+
+  /** Embed the list of categories for this owner. Return a null list for
+   * exceptions or no categories. For guest mode or public admin this is the
+   * same as getPublicCategories. This is the method to call unless you
+   * specifically want a list of public categories (for search of public events
+   * perhaps.)
+   *
+   * @param request
+   * @param refresh
+   * @throws Throwable
+   */
+  void embedCategories(final BwRequest request,
+                       final boolean refresh) throws Throwable;
+
+  /** Embed the list of editable categories for this user. Return a null list for
+   * exceptions or no categories.
+   *
+   * @param request
+   * @param refresh
+   * @throws Throwable
+   */
+  void embedEditableCategories(final BwRequest request,
+                               final boolean refresh) throws Throwable;
+
+  /** Embed the list of default categories for this user. Return a null list for
+   * exceptions or no categories.
+   *
+   * @param request
+   * @param refresh
+   * @return list of default categories.
+   * @throws Throwable
+   */
+  Set<BwCategory> embedDefaultCategories(final BwRequest request,
+                                         final boolean refresh) throws Throwable;
+
+  /** Called by jsp when editing an event
+   *
+   * @param request
+   */
+  void embedLocations(final BwRequest request);
+
+  /**
+   * @param request
+   */
+  void embedEditableLocations(final BwRequest request);
+
+  /** Get the preferred locations for the current user
+   *
+   * @param request
+   */
+  void embedPreferredLocations(final BwRequest request);
 }
 

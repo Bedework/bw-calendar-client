@@ -61,6 +61,7 @@ public class AdminUtil implements ForwardDefs {
     // Refresh current auth user prefs.
     BwAuthUserPrefs prefs = au.getPrefs();
 
+    ((BwSessionImpl)request.getSess()).setCurAuthUserPrefs(prefs);
     form.setCurAuthUserPrefs(prefs);
     if (form.getNewSession()) {
       // First time through here for this session. svci is still set up for the

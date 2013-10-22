@@ -59,13 +59,13 @@ public class MailEventAction extends BwAbstractAction {
 
     BwEvent ev = ei.getEvent();
 
-    String recipient = form.getLastEmail();
+    String recipient = request.getReqPar("lastEmail");
     if (recipient == null) {
       request.getErr().emit(ClientError.mailNoRecipient, 1);
       return forwardRetry;
     }
 
-    String subject = form.getLastSubject();
+    String subject = request.getReqPar("subject");
     if (!Util.present(subject)) {
       subject = ev.getSummary();
     }
@@ -81,7 +81,6 @@ public class MailEventAction extends BwAbstractAction {
     Calendar cal = trans.toIcal(ei, Icalendar.methodTypePublish);
     mailMessage(emsg, cal.toString(),
                 "event.ics", "text/calendar",
-                form.getSyspars().getSystemid(),
                 request.getClient());
 
     form.getMsg().emit(ClientMessage.mailedEvent);
@@ -99,7 +98,6 @@ public class MailEventAction extends BwAbstractAction {
    * @param att      String val to attach - e.g event, todo
    * @param name     name for attachment
    * @param type     mimetype for attachment
-   * @param systemid
    * @param cl
    * @throws Throwable
    */
@@ -107,7 +105,6 @@ public class MailEventAction extends BwAbstractAction {
                            final String att,
                            final String name,
                            final String type,
-                           final String systemid,
                            final Client cl) throws Throwable {
     ObjectAttachment oa = new ObjectAttachment();
 
@@ -119,7 +116,7 @@ public class MailEventAction extends BwAbstractAction {
 
     if (val.getFrom() == null) {
       // This should be a property
-      val.setFrom("donotreply-" + systemid);
+      val.setFrom("donotreply-" + cl.getSystemProperties().getSystemid());
     }
 
     cl.postMessage(val);

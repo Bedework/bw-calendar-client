@@ -58,11 +58,12 @@ public class RenderEventAction extends EventActionBase {
     }
 
     EventInfo ei = findEvent(request, ekey);
-    form.setEventInfo(ei);
 
     if (ei == null) {
       return forwardNoAction;
     }
+
+    form.setEventInfo(ei, false);
 
     Client cl = request.getClient();
     BwEvent ev = ei.getEvent();

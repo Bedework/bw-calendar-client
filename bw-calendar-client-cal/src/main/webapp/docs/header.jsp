@@ -76,7 +76,7 @@ try {
   <logic:equal name="calForm" property="guest" value="false">
     <userid><bean:write name="calForm" property="currentUser" /></userid><%--
       Value: string - Userid of non-guest user --%>
-      <logic:iterate id="group" name="calForm" property="userVO.groups" >
+      <logic:iterate id="group" name="calForm" property="currentGroups" >
         <memberOf><bean:write name="group" property="principalRef" /></memberOf>
       </logic:iterate>
   </logic:equal>
@@ -449,9 +449,6 @@ try {
   <myCalendars>
     <jsp:include page="/docs/calendar/emitCalendars.jsp"/>
   </myCalendars>
-
-  <myPreferences>
-  </myPreferences>
 <%
 } catch (Throwable t) {
   t.printStackTrace();

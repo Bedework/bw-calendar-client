@@ -53,7 +53,7 @@ import net.fortuna.ical4j.model.parameter.Role;
  * <p>If no period is given return this week. If no interval and intunit is
  * supplied default to 1 hour intervals during the workday.
  *
- * @author Mike Douglass douglm @ bedework.edu
+ * @author Mike Douglass douglm @ rpi.edu
  */
 public class FreeBusyAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -65,7 +65,7 @@ public class FreeBusyAction extends BwAbstractAction {
     String uri = null;
     Client cl = request.getClient();
 
-    gotoDateView(form, form.getDate(), form.getViewTypeI());
+    gotoDateView(request, form.getDate(), form.getViewTypeI());
 
     String userId = request.getReqPar("userid");
 

@@ -60,7 +60,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * <p>If no period is given return this week.
  *
- * @author Mike Douglass douglm - bedework.edu
+ * @author Mike Douglass douglm - rpi.edu
  */
 public class FreeBusyPublishAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -72,7 +72,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
     BwPrincipal principal = null;
     Client cl = request.getClient();
 
-    gotoDateView(form, form.getDate(), form.getViewTypeI());
+    gotoDateView(request, form.getDate(), form.getViewTypeI());
 
     String userId = request.getReqPar("user");
     String cua = null;

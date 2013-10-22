@@ -1820,41 +1820,39 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 //    Client client = BwWebUtil.getClient(request.getRequest());
     Client client = module.getClient();
 
-    if (client != null) {
-      if (guestMode) {
-        // A guest user using the public clients. Get the calendar suite from the
-        // configuration
-        calSuiteName = form.getConfig().getCalSuite();
-      } else if (publicAdmin) {
-        /* Calendar suite we are administering is the one we find attached to a
-         * group as we proceed up the tree
-         */
+    if (guestMode) {
+      // A guest user using the public clients. Get the calendar suite from the
+      // configuration
+      calSuiteName = form.getConfig().getCalSuite();
+    } else if (publicAdmin & (client != null)) {
+      /* Calendar suite we are administering is the one we find attached to a
+       * group as we proceed up the tree
+       */
 
-        /* Note that we redo this once we have a group set. The first call
-           (before we have any client) has no group name set in the form
-         */
-        BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
-                                                      client,
-                                                      form.getAdminGroupName());
-        form.setCurrentCalSuite(cs);
+      /* Note that we redo this once we have a group set. The first call
+         (before we have any client) has no group name set in the form
+       */
+      BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
+                                                    client,
+                                                    form.getAdminGroupName());
+      form.setCurrentCalSuite(cs);
 
+      if (cs != null) {
+        calSuiteName = cs.getName();
+      }
+
+      if (debug) {
         if (cs != null) {
-          calSuiteName = cs.getName();
+          debugOut("Found calSuite " + cs);
+        } else {
+          debugOut("No calsuite found");
         }
-
-        if (debug) {
-          if (cs != null) {
-            debugOut("Found calSuite " + cs);
-          } else {
-            debugOut("No calsuite found");
-          }
-        }
-      } else {
-        /* !publicAdmin: We're never allowed to switch identity as a user client.
-         */
-        if (!user.equals(form.getCurrentUser())) {
-          return false;
-        }
+      }
+    } else {
+      /* !publicAdmin: We're never allowed to switch identity as a user client.
+       */
+      if (!user.equals(form.getCurrentUser())) {
+        return false;
       }
     }
 

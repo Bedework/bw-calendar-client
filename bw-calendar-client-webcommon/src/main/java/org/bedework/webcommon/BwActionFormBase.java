@@ -1900,7 +1900,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public void refreshIsNeeded() {
 //    refreshView();
-    curTimeView = null;
+//    curTimeView = null;
     refreshNeeded = true;
   }
 

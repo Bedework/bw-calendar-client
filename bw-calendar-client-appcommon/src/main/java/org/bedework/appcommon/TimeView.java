@@ -57,14 +57,13 @@ import java.util.Date;
  * <p>The calendar is represented as a sequence of, possibly overlapping,
  * events which must be rendered in some manner by the display.
  *
- * @author  Mike Douglass douglm  bedework.edu
+ * @author  Mike Douglass douglm  rpi.edu
  */
 public class TimeView implements Serializable {
   protected boolean debug;
 
   private MessageEmit err;
 
-  protected Client cl;
   protected IcalTranslator trans;
   protected String periodName;
   protected Calendar firstDay;
@@ -191,7 +190,6 @@ public class TimeView implements Serializable {
 
   /** Constructor:
    *
-   * @param  cl        Client interface
    * @param  err - for error messages
    * @param  curDay    MyCalendarVO representing current day.
    * @param  periodName Name of period, capitalized, e.g. Week
@@ -206,8 +204,7 @@ public class TimeView implements Serializable {
    * @param  filter    non-null to filter the results.
    * @throws CalFacadeException
    */
-  public TimeView(final Client cl,
-                  final MessageEmit err,
+  public TimeView(final MessageEmit err,
                   final Calendar curDay,
                   final String periodName,
                   final Calendar firstDay,
@@ -223,7 +220,6 @@ public class TimeView implements Serializable {
     lastDayFmt = new CalFmt(lastDay);
 
     this.periodName = periodName;
-    this.cl = cl;
     this.firstDay = firstDay;
     this.lastDay = lastDay;
     this.prevDate = prevDate;
@@ -241,16 +237,10 @@ public class TimeView implements Serializable {
   }
 
   /**
-   * @return Client
-   */
-  public Client getClient() {
-    return cl;
-  }
-
-  /**
+   * @param cl
    * @return translator for ical
    */
-  public IcalTranslator getTrans() {
+  public IcalTranslator getTrans(Client cl) {
     if (trans == null) {
       trans = new IcalTranslator(new IcalCallbackcb(cl));
     }
@@ -342,15 +332,17 @@ public class TimeView implements Serializable {
 
   /** Return the events for the given day as an array of value objects
    *
+   * @param cl
    * @param   date    MyCalendar object defining day
    * @return  Collection of EventInfo being one days events or empty for no events.
    * @throws Throwable
    */
-  public Collection<EventInfo> getDaysEvents(final MyCalendarVO date) throws Throwable {
+  public Collection<EventInfo> getDaysEvents(final Client cl,
+                                             final MyCalendarVO date) throws Throwable {
     //if (debug) {
     //  debugMsg("Get days events in range " + start + " to " + end);
     //}
-    getEvents();
+    getEvents(cl);
 
     ArrayList<EventInfo> al = new ArrayList<EventInfo>();
 
@@ -451,29 +443,6 @@ public class TimeView implements Serializable {
     }
 
     return al;
-  }
-
-  private void getEvents() throws CalFacadeException {
-    if (events != null) {
-      return;
-    }
-
-    long curTime = System.currentTimeMillis();
-
-    Calendar lastP1 = (Calendar)lastDay.clone();
-    lastP1.add(Calendar.DATE, 1);
-
-    BwDateTime start = getBwDate(firstDayFmt.getDateDigits());
-    BwDateTime end = getBwDate(DateTimeUtil.isoDate(lastP1.getTime()));
-
-    events = cl.getEvents(start, end, filter, false, false, 0, -1).getEvents();
-  }
-
-  private BwDateTime getBwDate(final String date) throws CalFacadeException {
-    return BwDateTimeUtil.getDateTime(date,
-                                      true,
-                                      false,
-                                      null);   // tzid
   }
 
   /** Return an array of the days of the week indexed from 0
@@ -648,6 +617,29 @@ public class TimeView implements Serializable {
 
       return null;
     }
+  }
+
+  private void getEvents(Client cl) throws CalFacadeException {
+    if (events != null) {
+      return;
+    }
+
+    long curTime = System.currentTimeMillis();
+
+    Calendar lastP1 = (Calendar)lastDay.clone();
+    lastP1.add(Calendar.DATE, 1);
+
+    BwDateTime start = getBwDate(firstDayFmt.getDateDigits());
+    BwDateTime end = getBwDate(DateTimeUtil.isoDate(lastP1.getTime()));
+
+    events = cl.getEvents(start, end, filter, false, false, 0, -1).getEvents();
+  }
+
+  private BwDateTime getBwDate(final String date) throws CalFacadeException {
+    return BwDateTimeUtil.getDateTime(date,
+                                      true,
+                                      false,
+                                      null);   // tzid
   }
 
   private void initGtpiForMonth(final GtpiData gtpi) {

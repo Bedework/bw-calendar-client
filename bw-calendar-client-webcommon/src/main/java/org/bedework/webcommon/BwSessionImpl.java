@@ -40,8 +40,7 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
-
-import edu.rpi.sss.util.servlets.PresentationState;
+import org.bedework.util.servlet.filters.PresentationState;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -537,32 +536,27 @@ public class BwSessionImpl implements BwSession {
 
       switch (form.getCurViewPeriod()) {
         case BedeworkDefs.todayView:
-          tv = new DayView(cl,
-                           form.getErr(),
+          tv = new DayView(form.getErr(),
                            form.getViewMcDate(),
                            filter);
           break;
         case BedeworkDefs.dayView:
-          tv = new DayView(cl,
-                           form.getErr(),
+          tv = new DayView(form.getErr(),
                            form.getViewMcDate(),
                            filter);
           break;
         case BedeworkDefs.weekView:
-          tv = new WeekView(cl,
-                            form.getErr(),
+          tv = new WeekView(form.getErr(),
                             form.getViewMcDate(),
                             filter);
           break;
         case BedeworkDefs.monthView:
-          tv = new MonthView(cl,
-                             form.getErr(),
+          tv = new MonthView(form.getErr(),
                              form.getViewMcDate(),
                              filter);
           break;
         case BedeworkDefs.yearView:
-          tv = new YearView(cl,
-                            form.getErr(),
+          tv = new YearView(form.getErr(),
                             form.getViewMcDate(),
                             form.getShowYearData(), filter);
           break;

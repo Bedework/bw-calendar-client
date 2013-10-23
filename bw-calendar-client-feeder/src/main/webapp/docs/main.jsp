@@ -3,6 +3,7 @@
 <%@ taglib uri='struts-logic' prefix='logic' %>
 <%@ taglib uri='struts-html' prefix='html' %>
 <%@ taglib uri='struts-genurl' prefix='genurl' %>
+<%@ taglib uri='bedework' prefix='bw' %>
 <html:xhtml/>
 
 <%-- Load the header common to all pages --%>
@@ -55,8 +56,8 @@
                                  property="curTimeView.showData" value="true">
                                  --%>
                     <logic:equal name="curTimeView" property="showData" value="true">
-                      <logic:iterate id="eventFmt" name="dayInfo"
-                                     property="eventFormatters" >
+                      <bw:eventFormatters id="eventFormatters" name="dayInfo" />
+                      <logic:iterate id="eventFmt" name="eventFormatters">
                         <bean:define id="eventFormatter" name="eventFmt"
                                      toScope="request" />
                         <jsp:include page="/docs/event/emitEvent.jsp" />

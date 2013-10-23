@@ -18,6 +18,7 @@
 */
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.util.servlet.MessageEmit;
 
@@ -33,7 +34,7 @@ import java.util.Collection;
  * <p>This information is always returned as a hierarchical set of these
  * entries with the top being years, containing months, weeks and days.
  *
- * @author  Mike Douglass douglm@bedework.edu
+ * @author  Mike Douglass douglm   rpi.edu
  */
 public class TimeViewDailyInfo implements Serializable {
   /** The view that created this.
@@ -499,12 +500,13 @@ public class TimeViewDailyInfo implements Serializable {
   }
 
   /**
+   * @param cl
    * @return Collection
    * @throws Throwable
    */
-  public Collection<EventInfo> getEvents() throws Throwable {
+  public Collection<EventInfo> getEvents(Client cl) throws Throwable {
     if (events == null) {
-      events = getDaysEvents(cal);
+      events = getDaysEvents(cl, cal);
       eventFormatters = null;
     }
 
@@ -515,9 +517,9 @@ public class TimeViewDailyInfo implements Serializable {
    * @return Collection - never null.
    * @throws Throwable
    */
-  public Collection<EventFormatter> getEventFormatters() throws Throwable {
+  public Collection<EventFormatter> getEventFormatters(Client cl) throws Throwable {
     try {
-      getEvents();
+      getEvents(cl);
 
       if (eventFormatters == null) {
         if (events == null) {
@@ -526,8 +528,8 @@ public class TimeViewDailyInfo implements Serializable {
 
         eventFormatters = new ArrayList<EventFormatter>();
         for (EventInfo ei: events) {
-          eventFormatters.add(new EventFormatter(view.getClient(),
-                                                 view.getTrans(),
+          eventFormatters.add(new EventFormatter(cl,
+                                                 view.getTrans(cl),
                                                  ei));
         }
       }
@@ -541,18 +543,20 @@ public class TimeViewDailyInfo implements Serializable {
 
   /** Return the events for the day as an array of value objects
    *
+   * @param cl
    * @param   date    MyCalendarVO object defining day
    * @return  Collection  one days events,  never null, length 0 for no events.
    * @exception Throwable if this is not a day object
    */
-  private Collection<EventInfo> getDaysEvents(final MyCalendarVO date) throws Throwable {
+  private Collection<EventInfo> getDaysEvents(final Client cl,
+                                              final MyCalendarVO date) throws Throwable {
     if (!getDayEntry()) {
       Logger.getLogger(this.getClass()).error("*******Not a day entry*****");
       throw new IllegalStateException("Not a day entry");
     }
 
     try {
-      return view.getDaysEvents(date);
+      return view.getDaysEvents(cl, date);
     } catch (Throwable t) {
       err.emit(t);
       return new ArrayList<EventInfo>();

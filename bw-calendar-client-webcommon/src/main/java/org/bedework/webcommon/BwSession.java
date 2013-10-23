@@ -23,8 +23,7 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
-
-import edu.rpi.sss.util.servlets.PresentationState;
+import org.bedework.util.servlet.filters.PresentationState;
 
 import java.io.Serializable;
 import java.util.Set;

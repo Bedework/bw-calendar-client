@@ -70,7 +70,7 @@ public class BaseTag extends TagSupport {
   }
 
   protected Client getClient() {
-    return (Client)pageContext.getRequest().getAttribute(BwRequest.clientNamePar);
+    return (Client)pageContext.getRequest().getAttribute(BwRequest.embeddedClientName);
   }
 
   protected BwPreferences getPreferences() {

@@ -132,6 +132,7 @@ try {
       <initialise><genurl:rewrite forward="initialise"/></initialise>
       <setSelection><bw:rewrite actionURL="true" page="/main/setSelection.do?b=de"/></setSelection>
       <setSelectionList><bw:rewrite actionURL="true" page="/main/setSelectionList.do?b=de"/></setSelectionList>
+      <setOngoingList><bw:rewrite actionURL="true" page="/main/setOngoingList.do?b=de"/></setOngoingList>
       <setViewPeriod><bw:rewrite actionURL="true" page="/main/setViewPeriod.do?b=de"/></setViewPeriod>
       <listEvents><bw:rewrite actionURL="true" page="/main/listEvents.do?b=de"/></listEvents>
       <showPage><bw:rewrite actionURL="true" page="/main/showPage.do?b=de"/></showPage>

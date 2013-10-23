@@ -51,6 +51,9 @@ public class BwRequest extends Request {
 
   private Client cl;
 
+  /** client stored in request */
+  public final static String embeddedClientName = "bw_embedded_client";
+
   /** search result stored in session */
   public final static String bwSearchResultName = "bw_search";
 
@@ -123,7 +126,7 @@ public class BwRequest extends Request {
   public Client getClient() {
     if (cl == null) {
       cl = getBwForm().fetchClient(req.getClientName());
-      request.setAttribute(clientNamePar, cl);
+      request.setAttribute(embeddedClientName, cl);
     }
 
     return cl;

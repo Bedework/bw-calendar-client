@@ -19,7 +19,6 @@
 
 package org.bedework.appcommon;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.servlet.MessageEmit;
@@ -27,22 +26,20 @@ import org.bedework.util.servlet.MessageEmit;
 /** This class represents a day of events. The firstDay and lastDay are set
  * to be the latest and earliest including the curDay.
  *
- * @author  Mike Douglass douglm@bedework.edu
+ * @author  Mike Douglass douglm   rpi.edu
  */
 public class DayView extends TimeView {
   /** Constructor:
    *
-   * @param  cl        Client interface
    * @param err - for error messages
    * @param  curDay    MyCalendarVO representing current day.
    * @param  filter    non-null to filter the results.
    * @throws CalFacadeException
    */
-  public DayView(final Client cl,
-                 final MessageEmit err,
+  public DayView(final MessageEmit err,
                  final MyCalendarVO curDay,
                  final FilterBase filter) throws CalFacadeException {
-    super(cl, err,
+    super(err,
           curDay.getCalendar(), "Day",
           curDay.getCalendar(),
           curDay.getCalendar(),

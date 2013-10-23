@@ -232,7 +232,6 @@ public class ROClientImpl implements Client {
         flushAll();
       }
     } else {
-      // Conversations
       if ((conversationType == Request.conversationTypeEnd) ||
               (conversationType == Request.conversationTypeOnly)) {
         flushAll();

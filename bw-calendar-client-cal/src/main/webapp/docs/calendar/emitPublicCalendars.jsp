@@ -4,7 +4,7 @@
 <calendars>
   <logic:present name="bw_public_collection_list" scope="session">
     <bean:define id="calendar" name="bw_public_collection_list" scope="session"
-               toScope="session" />
+                 toScope="session" />
     <%@include file="/docs/calendar/emitCalendar.jsp"%>
   </logic:present>
 </calendars>

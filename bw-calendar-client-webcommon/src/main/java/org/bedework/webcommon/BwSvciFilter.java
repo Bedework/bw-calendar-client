@@ -41,7 +41,7 @@ import javax.servlet.http.HttpSession;
  * deliver the response. This filter uses a callback object stored as an
  * attribute in the session.
  *
- * @author Mike Douglass douglm@bedework.edu
+ * @author Mike Douglass douglm rpi.edu
  */
 public class BwSvciFilter implements Filter {
   protected ServletContext ctx;
@@ -115,7 +115,7 @@ public class BwSvciFilter implements Filter {
         cb = getCb(sess, "close");
 
         if (cb != null) {
-          cb.close();
+          cb.close(false);
         }
       } catch (Throwable t) {
         getLogger().error("Callback exception: ", t);

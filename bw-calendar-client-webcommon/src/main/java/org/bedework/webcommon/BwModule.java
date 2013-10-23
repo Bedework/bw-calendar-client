@@ -32,7 +32,7 @@ import java.io.Serializable;
  * <p>A module will be single threaded with respect to requests. The
  * filter enforces this by checking to see if the module is in use.</p>
  *
- * @author Mike Douglass   douglm  bedework.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
 public class BwModule implements Serializable {
   /** This class will be exposed to JSP via the form. Do not expose the
@@ -64,13 +64,6 @@ public class BwModule implements Serializable {
                   Client cl) {
     this.moduleName = moduleName;
     this.cl = cl;
-  }
-
-  /**
-   * @param val
-   */
-  public void setModuleName(final String val) {
-    moduleName = val;
   }
 
   /**
@@ -165,12 +158,37 @@ public class BwModule implements Serializable {
     return inuse;
   }
 
+  /**
+   *
+   * @return true if we succeeded - false if interrupted or too busy
+   */
+  public synchronized boolean claim() {
+    while (getInuse()) {
+      // double-clicking on our links eh?
+      if (getWaiters() > 10) {
+        return false;
+      }
+      incWaiters();
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        decWaiters();
+        return false;
+      }
+      decWaiters();
+    }
+
+    setInuse(true);
+
+    return true;
+  }
+
   public void requestIn() throws Throwable {
     if (getClient() == null) {
       return;
     }
 
-    decWaiters();
+//    decWaiters();
     setInuse(true);
     timeIn = System.currentTimeMillis();
 
@@ -189,37 +207,34 @@ public class BwModule implements Serializable {
 
   /** Close the session.
    *
+   * @param cleanUp  true if we are cleaning up for id switch etc
    * @throws Throwable
    */
-  public void close() throws Throwable {
-    boolean unlocked = false;
+  public void close(final boolean cleanUp) throws Throwable {
     int convType = currentReq.getConversationType();
 
     try {
-      if (convType == Request.conversationTypeUnknown) {
+      if (cleanUp) {
+        closeNow();
+      } else if (convType == Request.conversationTypeUnknown) {
         if (currentReq.getActionType() != Request.actionTypeAction) {
           closeNow();
-          unlocked = true;
         }
       } else {
-        // Conversations
         if ((convType == Request.conversationTypeEnd) ||
                 (convType == Request.conversationTypeOnly)) {
           closeNow();
-          unlocked = true;
         }
       }
     } finally {
-      if (!unlocked) {
-        synchronized (this) {
-          setInuse(false);
-          notify();
-        }
+      synchronized (this) {
+        setInuse(false);
+        notify();
       }
     }
   }
 
-  public void closeNow() throws Throwable {
+  private void closeNow() throws Throwable {
     Throwable t = null;
 
     try {
@@ -229,11 +244,6 @@ public class BwModule implements Serializable {
       }
     } catch (Throwable t1) {
       t = t1;
-    } finally {
-      synchronized (this) {
-        setInuse(false);
-        notify();
-      }
     }
 
     if (t != null) {

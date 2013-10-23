@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 /** Abstract class an instance of which is used to signal open and close
  * events to the web application.
  *
- * @author Mike Douglass douglm@bedework.edu
+ * @author Mike Douglass douglm rpi.edu
  */
 public abstract class BwCallback implements Serializable {
   /** This callback should be installed in the session as an attribute with
@@ -62,7 +62,8 @@ public abstract class BwCallback implements Serializable {
 
   /** Called after the above to allow close etc.
    *
+   * @param cleanUp  true if we are cleaning up for id switch etc
    * @throws Throwable
    */
-  public abstract void close() throws Throwable;
+  public abstract void close(boolean cleanUp) throws Throwable;
 }

@@ -1372,7 +1372,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       } catch (Throwable t) {}
 
       try {
-        ((Callback)cb).closeNow();
+        cb.close(true);
       } catch (Throwable t) {}
     }
 
@@ -1422,124 +1422,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return null;
-  }
-
-  /** Callback for filter
-   *
-   */
-  public static class Callback extends BwCallback {
-    BwActionFormBase form;
-    Request req;
-    ActionForward errorForward;
-
-    Callback(final BwActionFormBase form, final ActionMapping mapping) {
-      this.form = form;
-      errorForward = mapping.findForward("error");
-      if (errorForward == null) {
-        throw new RuntimeException("Forward \"error\" must be defined in struts-comfig");
-      }
-    }
-
-    /* (non-Javadoc)
-     * @see org.bedework.webcommon.BwCallback#in()
-     */
-    @Override
-    public int in() throws Throwable {
-      /* On the way in we set up the client from the default client
-         embedded in the form.
-       */
-      synchronized (form) {
-        //System.out.println("cb.in - action path = " + form.getActionPath() +
-        //                   " conv-type = " + req.getConversationType());
-
-//        Client cl = form.fetchClient();
-  //      if (cl == null) {
-    //      return HttpServletResponse.SC_OK;
-      //  }
-
-        BwModule module = form.fetchModule(req.getClientName());
-
-        if (module.getInuse()) {
-          // double-clicking on our links eh?
-          if (module.getWaiters() > 10) {
-            return HttpServletResponse.SC_SERVICE_UNAVAILABLE;
-          }
-          module.incWaiters();
-          module.wait();
-        }
-
-        module.setRequest(req);
-        module.requestIn();
-
-        return HttpServletResponse.SC_OK;
-      }
-    }
-
-    /** Called when the response is on its way out.
-     *
-     * @throws Throwable
-     */
-    @Override
-    public void out() throws Throwable {
-      BwModule module = form.fetchModule(req.getClientName());
-
-      module.requestOut();
-    }
-
-    /** Close the session.
-     *
-     * @throws Throwable
-     */
-    @Override
-    public void close() throws Throwable {
-      form.fetchModule(req.getClientName()).close();
-    }
-
-    /* (non-Javadoc)
-     * @see org.bedework.webcommon.BwCallback#error(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Throwable)
-     */
-    @Override
-    public void error(final HttpServletRequest hreq,
-                      final HttpServletResponse hresp,
-                      final Throwable t) throws Throwable {
-      form.getErr().emit(t);
-
-      /* Redirect to an error action
-       */
-
-      String forwardPath = errorForward.getPath();
-      String uri = null;
-
-      // paths not starting with / should be passed through without any processing
-      // (ie. they're absolute)
-      if (forwardPath.startsWith("/")) {
-        uri = RequestUtils.forwardURL(hreq, errorForward, null);    // get module relative uri
-      } else {
-        uri = forwardPath;
-      }
-
-      // only prepend context path for relative uri
-      if (uri.startsWith("/")) {
-        uri = hreq.getContextPath() + uri;
-      }
-      try {
-        hresp.sendRedirect(hresp.encodeRedirectURL(uri));
-      } catch (Throwable t1) {
-        // Presumably illegal state
-      }
-    }
-
-    void closeNow() throws Throwable {
-      BwModule module = form.fetchModule(req.getClientName());
-
-      module.closeNow();
-
-      /* Try to release storage we won't need because next request will
-       * refresh
-       */
-
-      form.purgeCurTimeView();
-    }
   }
 
   /* ********************************************************************
@@ -1894,7 +1776,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             client.endTransaction();
             client.close();
             reinitClient = true;
-            ((Callback)cb).closeNow(); // So we're not waiting for ourself
+            cb.close(true); // So we're not waiting for ourself
           }
         }
 
@@ -1973,7 +1855,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       /* create a call back object so the filter can open the service
       interface */
 
-      cb = new Callback(form, request.getMapping());
+      cb = new BwCallbackImpl(form, request.getMapping());
       hsess.setAttribute(BwCallback.cbAttrName, cb);
     }
 
@@ -1982,7 +1864,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                        form.getActionPath() +
                        " conv-type = " + request.getConversationType());
     }
-    ((Callback)cb).req = request;
+    ((BwCallbackImpl)cb).req = request;
 
     return cb;
   }

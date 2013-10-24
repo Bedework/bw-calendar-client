@@ -198,7 +198,7 @@
                type="org.bedework.webcommon.event.SetSelectionAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=start;cl=ongoing"
+               parameter="actionType=action;conversation=start;mdl=ongoing"
                validate="false">
       <forward name="success" path="/main/showOngoingList.rdo" redirect="true" />
       <forward name="noViewDef" path="/main/showOngoingList.rdo" redirect="true" />
@@ -208,7 +208,7 @@
                type="org.bedework.webcommon.event.RenderEventListAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render;conversation=only;cl=ongoing;refaction=/main/showEventList.rdo"
+               parameter="actionType=render;conversation=only;mdl=ongoing;refaction=/main/showOngoingList.rdo"
                validate="false">
       <forward name="continue" path="/docs/event/eventList.jsp"/>
     </action>

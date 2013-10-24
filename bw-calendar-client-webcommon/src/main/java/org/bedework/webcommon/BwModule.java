@@ -35,19 +35,12 @@ import java.io.Serializable;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class BwModule implements Serializable {
-  /** This class will be exposed to JSP via the form. Do not expose the
-   * client indirectly through this.
-   *
-   */
-  public class ModuleState implements Serializable {
-  }
-
   /** */
   public static final String defaultModuleName = "default";
 
   private String moduleName;
   private Client cl;
-  private ModuleState state;
+  private BwModuleState state;
 
   /* ..................... fields associated with locking ............... */
 
@@ -64,6 +57,7 @@ public class BwModule implements Serializable {
                   Client cl) {
     this.moduleName = moduleName;
     this.cl = cl;
+    state = new BwModuleState(moduleName);
   }
 
   /**
@@ -89,19 +83,11 @@ public class BwModule implements Serializable {
     return cl;
   }
 
-  /** The current state of this module.
-   *
-   * @param val
-   */
-  public void setState(ModuleState val) {
-    state = val;
-  }
-
   /**
    *
    * @return the state object
    */
-  public ModuleState getState() {
+  public BwModuleState getState() {
     return state;
   }
 

@@ -40,7 +40,6 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
-import org.bedework.util.servlet.filters.PresentationState;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -97,7 +96,6 @@ public class BwSessionImpl implements BwSession {
 
   /** The current presentation state of the application
    */
-  private PresentationState ps;
 
   private SystemProperties syspars;
 
@@ -110,35 +108,18 @@ public class BwSessionImpl implements BwSession {
    * @param config
    * @param user       String user id
    * @param appName    String identifying particular application
-   * @param ps
    * @throws Throwable
    */
   public BwSessionImpl(final boolean isPortlet,
                        final ConfigCommon config,
                        final String user,
-                       final String appName,
-                       final PresentationState ps) throws Throwable {
+                       final String appName) throws Throwable {
     this.isPortlet = isPortlet;
     this.config = config;
     this.user = user;
     this.appName = appName;
-    this.ps = ps;
 
     publicAdmin = config.getPublicAdmin();
-
-    if (ps != null) {
-      /*
-      if (ps.getAppRoot() == null) {
-        ps.setAppRoot(prefixUri(schemeHostPort, appRoot));
-      }
-
-      if (ps.getBrowserResourceRoot() == null) {
-        ps.setBrowserResourceRoot(prefixUri(schemeHostPort, browserResourceRoot));
-      }
-      */
-      ps.setAppRoot(suffixRoot(config.getAppRoot()));
-      ps.setBrowserResourceRoot(suffixRoot(config.getBrowserResourceRoot()));
-    }
 
     setSessionNum(appName);
   }
@@ -173,9 +154,6 @@ public class BwSessionImpl implements BwSession {
    *                     Property methods
    * ====================================================================== */
 
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwSession#getSessionNum()
-   */
   @Override
   public long getSessionNum() {
     return sessionNum;
@@ -195,9 +173,6 @@ public class BwSessionImpl implements BwSession {
     return appName;
   }
 
-  /**
-   * @param val
-   */
   @Override
   public void setUser(final String val) {
     user = val;
@@ -206,16 +181,6 @@ public class BwSessionImpl implements BwSession {
   @Override
   public String getUser() {
     return user;
-  }
-
-  @Override
-  public void setPresentationState(final PresentationState val) {
-    ps = val;
-  }
-
-  @Override
-  public PresentationState getPresentationState() {
-    return ps;
   }
 
   @Override
@@ -759,28 +724,5 @@ public class BwSessionImpl implements BwSession {
   protected void embedViews(final BwRequest request) throws Throwable {
     request.setSessionAttr(BwRequest.bwViewsListName,
                            request.getClient().getAllViews());
-  }
-
-  private String suffixRoot(final String val) throws Throwable {
-    StringBuilder sb = new StringBuilder(val);
-
-    /* If we're running as a portlet change the app root to point to a
-     * portlet specific directory.
-     */
-    String portalPlatform = config.getPortalPlatform();
-
-    if (isPortlet && (portalPlatform != null)) {
-      sb.append(".");
-      sb.append(portalPlatform);
-    }
-
-    /* If calendar suite is non-null append that. */
-    String calSuite = config.getCalSuite();
-    if (calSuite != null) {
-      sb.append(".");
-      sb.append(calSuite);
-    }
-
-    return sb.toString();
   }
 }

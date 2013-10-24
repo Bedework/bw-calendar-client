@@ -2,6 +2,7 @@
 <%@ taglib uri='struts-logic' prefix='logic' %>
 <%@ taglib uri='struts-html' prefix='html' %>
 <%@ taglib uri='struts-genurl' prefix='genurl' %>
+<%@ taglib uri='bedework' prefix='bw' %>
 <html:xhtml/>
 
 <bedework>
@@ -25,7 +26,9 @@
     </error>
   </logic:iterate>
 
-  <approot><bean:write name="calForm" property="config.appRoot"/></approot>
+  <bean:define id="presentationState"
+               name="bw_presentationstate" scope="request" />
+  <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" /><%--
 
   <%-- List of groups  --%>
   <groups>

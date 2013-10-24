@@ -95,13 +95,15 @@ try {
     </error>
   </logic:iterate>
 
-  <approot><bean:write name="calForm" property="presentationState.appRoot"/></approot><%--
+  <bean:define id="presentationState"
+               name="bw_presentationstate" scope="request" />
+  <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" /><%--
         Value: URI - the location of web resources used by the code to find the
         XSLT files.  This element is defined prior to build in
         ../../../../clones/democal.properties
         as pubevents.app.root and personal.app.root. Note that references to
         html web resources such as images are set in the xsl stylesheets. --%>
-  <browserResourceRoot><bean:write name="calForm" property="presentationState.browserResourceRoot"/></browserResourceRoot>
+  <bw:emitText name="presentationState" property="browserResourceRoot"/>
   <urlprefix><bean:write name="calForm" property="urlPrefix"/></urlprefix><%--
         Value: URI - this is prefix of the calendar application.
         e.g. http://localhost:8080/cal

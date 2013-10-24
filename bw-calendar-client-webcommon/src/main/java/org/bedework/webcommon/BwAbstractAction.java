@@ -143,7 +143,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardError];
     }
 
-    setConfig(request, form);
+    setConfig(request);
 
     boolean guestMode = form.getConfig().getGuestMode();
 
@@ -213,13 +213,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setPublicView(true);
     }
 
-    String appBase = form.getAppBase();
-
-    if (appBase != null) {
-      // Embed in request for pages that cannot access the form (loggedOut)
-      req.setAttribute("org.bedework.action.appbase", appBase);
-    }
-
     BwPreferences prefs = cl.getPreferences();
 
     if (form.getNewSession()) {
@@ -282,7 +275,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (form.getNewSession()) {
       // Set the default skin
-      PresentationState ps = form.getPresentationState();
+      PresentationState ps = getPresentationState(request);
+
+      ps.setAppRoot(suffixRoot(request,
+                               form.getConfig().getAppRoot()));
+      ps.setBrowserResourceRoot(suffixRoot(request,
+                                           form.getConfig().getBrowserResourceRoot()));
 
       if (ps.getSkinName() == null) {
         // No skin name supplied - use the default
@@ -433,11 +431,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   /** Set the config object.
    *
    * @param request
-   * @param form
    * @throws Throwable
    */
-  public void setConfig(final Request request,
-                        final BwActionFormBase form) throws Throwable {
+  public void setConfig(final Request request) throws Throwable {
+    BwActionFormBase form = (BwActionFormBase)request.getForm();
+
     if (form.configSet()) {
       return;
     }
@@ -467,6 +465,26 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     form.assignSubmitApp(BedeworkDefs.appTypeWebsubmit.equals(appType));
     }
+
+  @Override
+  public PresentationState getPresentationState(final Request req) throws Throwable {
+    /* First try to get it from the module. */
+
+    BwActionFormBase form = (BwActionFormBase)req.getForm();
+
+    BwModule module = form.fetchModule(req.getModuleName());
+
+    PresentationState ps = module.getState().getPresentationState();
+
+    if (ps == null) {
+      ps = new PresentationState();
+      initPresentationState(req, ps);
+
+      module.getState().setPresentationState(ps);
+    }
+
+    return ps;
+  }
 
   protected int setEventListPars(final BwRequest request,
                                  final EventListPars elpars) throws Throwable {
@@ -1627,8 +1645,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       s = new BwSessionImpl(isPortlet,
                             form.getConfig(),
                             form.getCurrentUser(),
-                            appName,
-                            form.getPresentationState());
+                            appName);
 
       BwWebUtil.setState(request.getRequest(), s);
 
@@ -1697,7 +1714,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
 
     BwCallback cb = getCb(request, form);
-    BwModule module = form.fetchModule(request.getClientName());
+    BwModule module = form.fetchModule(request.getModuleName());
 
 //    Client client = BwWebUtil.getClient(request.getRequest());
     Client client = module.getClient();
@@ -1791,7 +1808,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             debugMsg("Client-- reinit for user " + user);
           }
 
-          form.flushModules(request.getClientName());
+          form.flushModules(request.getModuleName());
 
           if (guestMode) {
             ((ROClientImpl)client).reinit(form.getCurrentUser(),
@@ -1867,5 +1884,85 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     ((BwCallbackImpl)cb).req = request;
 
     return cb;
+  }
+
+  /** Check for request parameter setting a module variable
+   * We expect the request parameter to be of the form<br/>
+   * setmvar=name(value) or <br/>
+   * setmvar=name{value}<p>.
+   *  Currently we're not escaping characters so if you want both right
+   *  terminators in the value you're out of luck - actually we cheat a bit
+   *  We just look at the last char and then look for that from the start.
+   *
+   * @param request  Needed to locate session
+   * @return true if no error found.
+   * @throws Throwable
+   */
+  private boolean checkMvarReq(final BwRequest request) throws Throwable {
+    Collection<String> mvs = request.getReqPars("setmvar");
+    if (mvs == null) {
+      return true;
+    }
+
+    BwModuleState state = (BwModuleState)request.getRequestAttr(
+            BwRequest.moduleStateName);
+    if (state == null) {
+      return false;
+    }
+
+    for (String reqpar: mvs) {
+      int start;
+
+      if (reqpar.endsWith("}")) {
+        start = reqpar.indexOf('{');
+      } else if (reqpar.endsWith(")")) {
+        start = reqpar.indexOf('(');
+      } else {
+        return false;
+      }
+
+      if (start < 0) {
+        return false;
+      }
+
+      String varName = reqpar.substring(0, start);
+      String varVal = reqpar.substring(start + 1, reqpar.length() - 1);
+
+      if (varVal.length() == 0) {
+        varVal = null;
+      }
+
+      if (!state.setVar(varName, varVal)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private String suffixRoot(final Request req,
+                            final String val) throws Throwable {
+    BwActionFormBase form = (BwActionFormBase)req.getForm();
+
+    StringBuilder sb = new StringBuilder(val);
+
+    /* If we're running as a portlet change the app root to point to a
+     * portlet specific directory.
+     */
+    String portalPlatform = form.getConfig().getPortalPlatform();
+
+    if (isPortlet && (portalPlatform != null)) {
+      sb.append(".");
+      sb.append(portalPlatform);
+    }
+
+    /* If calendar suite is non-null append that. */
+    String calSuite = form.getConfig().getCalSuite();
+    if (calSuite != null) {
+      sb.append(".");
+      sb.append(calSuite);
+    }
+
+    return sb.toString();
   }
 }

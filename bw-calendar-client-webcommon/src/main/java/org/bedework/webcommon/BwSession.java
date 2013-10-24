@@ -23,7 +23,6 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.util.servlet.filters.PresentationState;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -63,18 +62,6 @@ public interface BwSession extends Serializable {
    * @return boolean true for a guest
    */
   boolean isGuest();
-
-  /** The PresentationState object defines how the external information is
-      presented, usually through some sort of XML/XSLT filtering
-   *
-   * @param val
-   */
-  void setPresentationState(PresentationState val);
-
-  /**
-   * @return PresentationState
-   */
-  PresentationState getPresentationState();
 
   /** Prepare state of session for render
    *

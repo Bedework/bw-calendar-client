@@ -622,10 +622,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     }
   }
 
-  public BwModule.ModuleState getModuleState(String name) {
-    return fetchModule(name).getState();
-  }
-
   /**
    * @return String
    */

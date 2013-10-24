@@ -25,9 +25,11 @@
     </error>
   </logic:iterate>
 
-  <approot><bean:write name="calForm" property="config.appRoot"/></approot>
+  <bean:define id="presentationState"
+               name="bw_presentationstate" scope="request" />
+  <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" /><%--
 
-  <page>attendeeWidget</page>  
+  <page>attendeeWidget</page>
 
 <%
 try {

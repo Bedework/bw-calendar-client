@@ -18,11 +18,13 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.util.servlet.filters.PresentationState;
+import org.bedework.util.struts.Request;
 import org.bedework.util.struts.UtilActionForm;
 
 /** This is a no-op action
  *
- * @author Mike Douglass  douglm - bedework.edu
+ * @author Mike Douglass  douglm - rpi.edu
  */
 public class RenderAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -38,11 +40,11 @@ public class RenderAction extends BwAbstractAction {
     return forwardSuccess;
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.util.struts.UtilAbstractAction#getContentName(org.bedework.util.struts.UtilActionForm)
-   */
-  public String getContentName(UtilActionForm form) {
-    String contentName = form.getPresentationState().getContentName();
+  @Override
+  public String getContentName(final Request req) throws Throwable {
+    UtilActionForm form = req.getForm();
+    PresentationState ps = getPresentationState(req);
+    String contentName = ps.getContentName();
 
     if (contentName != null) {
       form.setContentName(contentName);

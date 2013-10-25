@@ -273,14 +273,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setDirInfo(cl.getDirectoryInfo());
     }
 
-    if (form.getNewSession()) {
-      // Set the default skin
-      PresentationState ps = getPresentationState(request);
+    PresentationState ps = getPresentationState(request);
 
+    if (ps.getAppRoot() == null) {
       ps.setAppRoot(suffixRoot(request,
                                form.getConfig().getAppRoot()));
       ps.setBrowserResourceRoot(suffixRoot(request,
                                            form.getConfig().getBrowserResourceRoot()));
+
+      // Set the default skin
 
       if (ps.getSkinName() == null) {
         // No skin name supplied - use the default
@@ -289,7 +290,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         ps.setSkinName(skinName);
         ps.setSkinNameSticky(true);
       }
+    }
 
+    if (form.getNewSession()) {
       form.setHour24(form.getConfig().getHour24());
       if (!cl.getPublicAdmin() &&
               !form.getSubmitApp() &&

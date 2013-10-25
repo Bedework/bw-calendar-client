@@ -47,7 +47,6 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -112,9 +111,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private transient CollectionCollator<BwContact> contactCollator;
 
   /* This should be a cloned copy only */
-  private SystemProperties syspars;
-
-  /* This should be a cloned copy only */
   private AuthProperties authpars;
 
   /* This should be a cloned copy only */
@@ -150,7 +146,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private String[] yearVals;
   private static final int numYearVals = 10;
-  //private String curYear;
 
   /** Whether we show year data
    */

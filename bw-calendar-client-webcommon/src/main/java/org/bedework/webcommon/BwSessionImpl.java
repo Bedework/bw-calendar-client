@@ -40,6 +40,7 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
+import org.bedework.util.misc.Util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -252,19 +253,23 @@ public class BwSessionImpl implements BwSession {
   }
 
   @Override
-  public void getChildren(final Client cl,
-                          final BwCalendar val) throws Throwable {
-    cl.resolveAlias(val, true, false);
+  public Collection<BwCalendar> getChildren(final Client cl,
+                                            final BwCalendar val) throws Throwable {
+    BwCalendar col = cl.resolveAlias(val, true, false);
 
-    val.setChildren(cl.getChildren(val));
+    Collection<BwCalendar> children = cl.getChildren(col);
+    Collection<BwCalendar> cloned = new ArrayList<>(children.size());
 
-    if (val.getChildren() != null) {
+    if (!Util.isEmpty(val.getChildren())) {
       for (BwCalendar c: val.getChildren()) {
-        cl.resolveAlias(c, true, false);
+        BwCalendar clCol = (BwCalendar)c.clone();
+        cloned.add(clCol);
 
-        getChildren(cl, c);
+        clCol.setChildren(getChildren(cl, c));
       }
     }
+
+    return cloned;
   }
 
   /** Embed the current users calendars. For admin or guest mode this is the
@@ -276,49 +281,43 @@ public class BwSessionImpl implements BwSession {
    * @param request
    */
   protected void embedCollections(final BwRequest request) throws Throwable {
-    BwCalendar calendar = null;
+    BwCalendar col = null;
     BwActionFormBase form = request.getBwForm();
     Client cl = request.getClient();
 
     try {
       if (form.getSubmitApp()) {
         // Use submission root
-        calendar = cl.getCollection(
+        col = cl.getCollection(
                 form.getConfig().getSubmissionRoot());
       } else {
         // Current owner
-        calendar = cl.getHome();
+        col = cl.getHome();
       }
 
-      if (calendar != null) {
+      if (col != null) {
         Set<String> cos = form.getCalendarsOpenState();
 
         if (cos != null) {
-          calendar.setOpen(cos.contains(calendar.getPath()));
+          col.setOpen(cos.contains(col.getPath()));
         }
       }
 
-      getChildren(cl, calendar);
+      embedClonedCollection(request, col,
+                            BwRequest.bwCollectionListName);
     } catch (Throwable t) {
       request.getErr().emit(t);
     }
-
-    request.setSessionAttr(BwRequest.bwCollectionListName,
-                           calendar);
   }
 
   protected void embedPublicCollections(final BwRequest request) throws Throwable {
-    Client cl = request.getClient();
-    BwCalendar calendar = cl.getPublicCalendars();
-
-    getChildren(cl, calendar);
-
-    request.setSessionAttr(BwRequest.bwPublicCollectionListName,
-                           calendar);
+    embedClonedCollection(request,
+                          request.getClient().getPublicCalendars(),
+                          BwRequest.bwPublicCollectionListName);
   }
 
   protected void embedUserCollections(final BwRequest request) throws Throwable {
-    BwCalendar calendar = null;
+    BwCalendar col = null;
     BwActionFormBase form = request.getBwForm();
     Client cl = request.getClient();
     boolean publicAdmin = form.getConfig().getPublicAdmin();
@@ -334,23 +333,21 @@ public class BwSessionImpl implements BwSession {
         p = cl.getCurrentPrincipal();
       }
 
-      calendar = cl.getHome(p, false);
+      col = cl.getHome(p, false);
 
-      if (calendar != null) {
+      if (col != null) {
         Set<String> cos = form.getCalendarsOpenState();
 
         if (cos != null) {
-          calendar.setOpen(cos.contains(calendar.getPath()));
+          col.setOpen(cos.contains(col.getPath()));
         }
       }
 
-      getChildren(cl, calendar);
+      embedClonedCollection(request, col,
+                            BwRequest.bwUserCollectionListName);
     } catch (Throwable t) {
       request.getErr().emit(t);
     }
-
-    request.setSessionAttr(BwRequest.bwUserCollectionListName,
-                           calendar);
   }
 
   /* ====================================================================
@@ -452,6 +449,16 @@ public class BwSessionImpl implements BwSession {
   /* ====================================================================
    *                   Private methods
    * ==================================================================== */
+
+  private void embedClonedCollection(final BwRequest request,
+                                     final BwCalendar col,
+                                     final String attrName) throws Throwable {
+    BwCalendar cloned = (BwCalendar)col.clone();
+    cloned.setChildren(getChildren(request.getClient(),
+                                   col));
+
+    request.setSessionAttr(attrName, cloned);
+  }
 
   private void refreshView(final BwRequest req) {
     BwActionFormBase form = req.getBwForm();

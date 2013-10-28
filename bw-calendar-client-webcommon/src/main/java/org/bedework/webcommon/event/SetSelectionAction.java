@@ -72,6 +72,12 @@ public class SetSelectionAction extends BwAbstractAction {
       forward = doView(request, form);
     }
 
+    if (elpars.getFromDate() != null) {
+      gotoDateView(request,
+                   elpars.getFromDate().getDtval(),
+                   form.getViewTypeI());
+    }
+
     return forward;
   }
 

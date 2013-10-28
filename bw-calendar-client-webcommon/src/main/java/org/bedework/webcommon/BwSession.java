@@ -25,6 +25,7 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
 
 /** This interface represents a session for the Bedework web interface.
@@ -90,8 +91,8 @@ public interface BwSession extends Serializable {
    * @param val
    * @throws Throwable
    */
-  void getChildren(Client cl,
-                          BwCalendar val) throws Throwable;
+  Collection<BwCalendar> getChildren(Client cl,
+                                     BwCalendar val) throws Throwable;
 
   /* ====================================================================
    *                   Categories

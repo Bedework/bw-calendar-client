@@ -270,7 +270,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     if (c != null) {
       path = c.getPath();
       form.setCalendar(c);
-      request.getSess().getChildren(cl, c);
+      //request.getSess().getChildren(cl, c);
     }
 
     form.retrieveCalendarId().reset(path, SelectId.AHasPrecedence);

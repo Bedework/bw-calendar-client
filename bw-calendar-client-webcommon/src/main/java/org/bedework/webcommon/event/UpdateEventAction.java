@@ -308,7 +308,7 @@ public class UpdateEventAction extends EventActionBase {
       evCol = cl.getCollection(colPath);
     }
 
-    String submissionsRoot = form.getUnencodedSubmissionsRoot();
+    String submissionsRoot = form.getConfig().getSubmissionRoot();
 
     if (publishEvent) {
       /* Event MUST NOT be in a submission calendar */

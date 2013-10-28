@@ -78,7 +78,7 @@ public class RenderCalendarAction extends BwAbstractAction {
     form.assignAddingCalendar(false);
     form.setCalendarPath(calPath);
     form.setCalendar(calendar);
-    request.getSess().getChildren(cl, calendar);
+    //request.getSess().getChildren(cl, calendar);
     request.getSess().embedCategories(request, false);
 
     if (calendar == null) {

@@ -620,27 +620,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @return String
-   */
-  public String getPublicAdminUri() {
-    return getConfig().getPublicAdminUri();
-  }
-
-  /**
-   * @return String
-   */
-  public String getPublicCalendarUri() {
-    return getConfig().getPublicCalendarUri();
-  }
-
-  /**
-   * @return String
-   */
-  public String getPersonalCalendarUri() {
-    return getConfig().getPersonalCalendarUri();
-  }
-
-  /**
    * @param val
    */
   public void setSynchInfo(final BwSynchInfo val) {
@@ -2042,21 +2021,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return "";
   }
 
-  /** Return the unencoded root of the submissions calendars
-   *
-   * @return String path.
-   */
-  public String getUnencodedSubmissionsRoot() {
-    String appType = getAppType();
-
-    if (appTypeWebsubmit.equals(appType) ||
-        appTypeWebadmin.equals(appType)) {
-      return getConfig().getSubmissionRoot();
-    }
-
-    return "";
-  }
-
   /** Return a list of calendars in which calendar objects can be
    * placed by the current user.
    *
@@ -3436,15 +3400,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return db;
   }
 
-/*
-  public void resetEventStartDate() {
-    eventStartDate = null;
-  }
-
-  public void resetEventEndDate() {
-    eventEndDate = null;
-  }*/
-
   /**
    * @param val
    */
@@ -3522,34 +3477,30 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *
    */
   public void resetSelectIds() {
-    calendarId = new SelectId<String>(null, SelectId.AHasPrecedence);
-    locId = new SelectId<String>(null, SelectId.AHasPrecedence);
-    ctctId = new SelectId<String>(null, SelectId.AHasPrecedence);
+    calendarId = new SelectId<>(null, SelectId.AHasPrecedence);
+    locId = new SelectId<>(null, SelectId.AHasPrecedence);
+    ctctId = new SelectId<>(null, SelectId.AHasPrecedence);
   }
 
   /* ====================================================================
    *                Private methods
    * ==================================================================== */
 
-  private BwPrincipal getPublicUser() throws Throwable {
-    return fetchClient().getPublicUser();
-  }
-
   private Collection<BwContact> getContactCollection(final int kind) {
+    Client cl = fetchClient();
     try {
       Collection<BwContact> vals = null;
 
       if (kind == ownersEntity) {
         if (getSubmitApp()) {
           // Use public
-          vals = fetchClient().getContacts(
-                  getPublicUser().getPrincipalRef());
+          vals = cl.getContacts(cl.getPublicUser().getPrincipalRef());
         } else {
           // Current owner
-          vals = fetchClient().getContacts();
+          vals = cl.getContacts();
         }
       } else if (kind == editableEntity) {
-        vals = fetchClient().getEditableContacts();
+        vals = cl.getEditableContacts();
       }
 
       // Won't need this with 1.5
@@ -3569,7 +3520,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private CollectionCollator<BwContact> getContactCollator() {
     if (contactCollator == null) {
-      contactCollator = new CollectionCollator<BwContact>();
+      contactCollator = new CollectionCollator<>();
     }
 
     return contactCollator;

@@ -116,9 +116,9 @@ try {
   <urlpattern><genurl:rewrite action="DUMMYACTION.DO" /></urlpattern>
 
   <%-- URLs of other Bedework web clients --%>
-  <personaluri><bean:write name="calForm" property="personalCalendarUri"/></personaluri>
-  <publicuri><bean:write name="calForm" property="publicCalendarUri"/></publicuri>
-  <adminuri><bean:write name="calForm" property="publicAdminUri"/></adminuri>
+  <personaluri><bean:write name="bwconfig" property="personalCalendarUri"/></personaluri>
+  <publicuri><bean:write name="bwconfig" property="publicCalendarUri"/></publicuri>
+  <adminuri><bean:write name="bwconfig" property="publicAdminUri"/></adminuri>
 
   <urlPrefixes>
     <%-- Use URL prefixes when writing hyperlinks; these use the "genurl"
@@ -134,6 +134,7 @@ try {
       <initialise><genurl:rewrite forward="initialise"/></initialise>
       <setSelection><bw:rewrite actionURL="true" page="/main/setSelection.do?b=de"/></setSelection>
       <setSelectionList><bw:rewrite actionURL="true" page="/main/setSelectionList.do?b=de"/></setSelectionList>
+      <setMainEventList><bw:rewrite actionURL="true" page="/main/setMainEventList.do?b=de"/></setMainEventList>
       <setOngoingList><bw:rewrite actionURL="true" page="/main/setOngoingList.do?b=de"/></setOngoingList>
       <setViewPeriod><bw:rewrite actionURL="true" page="/main/setViewPeriod.do?b=de"/></setViewPeriod>
       <listEvents><bw:rewrite actionURL="true" page="/main/listEvents.do?b=de"/></listEvents>

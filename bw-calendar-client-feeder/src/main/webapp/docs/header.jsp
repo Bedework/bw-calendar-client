@@ -116,10 +116,10 @@ try {
   <urlpattern><genurl:rewrite action="DUMMYACTION.DO" /></urlpattern>
 
   <%-- URLs of other Bedework web clients --%>
-  <personaluri><bean:write name="calForm" property="globalProperty(personalCalendarUri)"/></personaluri>
-  <publicuri><bean:write name="calForm" property="globalProperty(publicCalendarUri)"/></publicuri>
-  <adminuri><bean:write name="calForm" property="globalProperty(publicAdminUri)"/></adminuri>
-  <bean:define id="personalUri"><bean:write name="calForm" property="globalProperty(personalCalendarUri)"/></bean:define>
+  <personaluri><bean:write name="bwconfig" property="personalCalendarUri"/></personaluri>
+  <publicuri><bean:write name="bwconfig" property="publicCalendarUri"/></publicuri>
+  <adminuri><bean:write name="bwconfig" property="publicAdminUri"/></adminuri>
+  <bean:define id="personalUri"><bean:write name="bwconfig" property="personalCalendarUri"/></bean:define>
 
   <urlPrefixes>
     <%-- Use URL prefixes when writing hyperlinks; these use the "genurl"

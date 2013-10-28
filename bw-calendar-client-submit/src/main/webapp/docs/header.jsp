@@ -112,14 +112,14 @@ try {
   <urlpattern><genurl:rewrite action="DUMMYACTION.DO" /></urlpattern>
 
   <%-- URLs of other Bedework web clients --%>
-  <personaluri><bean:write name="calForm" property="personalCalendarUri"/></personaluri>
-  <publicuri><bean:write name="calForm" property="publicCalendarUri"/></publicuri>
-  <adminuri><bean:write name="calForm" property="publicAdminUri"/></adminuri>
+  <personaluri><bean:write name="bwconfig" property="personalCalendarUri"/></personaluri>
+  <publicuri><bean:write name="bwconfig" property="publicCalendarUri"/></publicuri>
+  <adminuri><bean:write name="bwconfig" property="publicAdminUri"/></adminuri>
 
   <!-- Path to calendar for public event submissions -->
   <submissionsRoot>
     <encoded><bean:write name="calForm" property="submissionsRoot"/></encoded>
-    <unencoded><bean:write name="calForm" property="unencodedSubmissionsRoot"/></unencoded>
+    <unencoded><bean:write name="bwconfig" property="unencodedSubmissionsRoot"/></unencoded>
   </submissionsRoot>
 
   <urlPrefixes>

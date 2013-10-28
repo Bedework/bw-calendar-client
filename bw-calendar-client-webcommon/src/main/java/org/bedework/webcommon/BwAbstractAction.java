@@ -606,7 +606,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       boolean ignoreCreator = false;
 
       if ((cal != null) &&
-              (cal.getPath().startsWith(form.getUnencodedSubmissionsRoot()))) {
+              (cal.getPath().startsWith(form.getConfig().getSubmissionRoot()))) {
         ignoreCreator = true;
       } else if (form.getCurUserSuperUser()) {
         ignoreCreator = "yes".equals(request.getReqPar("ignoreCreator"));

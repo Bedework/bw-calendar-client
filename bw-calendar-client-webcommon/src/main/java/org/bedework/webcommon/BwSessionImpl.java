@@ -194,6 +194,8 @@ public class BwSessionImpl implements BwSession {
     Client cl = req.getClient();
 
     try {
+      form.setCurrentVirtualPath(cl.getVirtualPath());
+
       Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
       long now = System.currentTimeMillis();
 

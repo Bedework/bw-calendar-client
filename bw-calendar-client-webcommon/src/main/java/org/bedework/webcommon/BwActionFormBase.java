@@ -303,6 +303,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   // ENUM
   private String selectionType = selectionTypeView;
 
+  private String currentVirtualPath;
+
   /* ....................................................................
    *                       View period
    * .................................................................... */
@@ -1940,17 +1942,16 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return null; // clientState always returns null
   }
 
+  public void setCurrentVirtualPath(String val) {
+    currentVirtualPath = val;
+  }
+
   /** Get the current virtual path from the client state
    *
-   * @return BwCalendar object  object or null for all events
+   * @return String path or null for all events
    */
   public String getCurrentVirtualPath() {
-    try {
-      return fetchClient().getVirtualPath();
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
+    return currentVirtualPath;
   }
 
   /** Get the current view we have set

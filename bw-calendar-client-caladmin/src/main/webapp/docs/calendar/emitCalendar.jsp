@@ -16,10 +16,12 @@
       <bw:getChildren id="children" name="calendar" form="calForm" />
       <logic:iterate name="children" id="cal">
         <bean:define id="calendar" name="cal" toScope="session" />
+          <%--
         <c:if test="${requestScope.stopDescent == 'true'}">
-          <%-- an explicit request has been made to stop descending the full tree --%>
+          < % - - an explicit request has been made to stop descending the full tree - - % >
           <bean:define id="fullTree" toScope="request">false</bean:define>
         </c:if>
+        --%>
         <c:if test="${!((requestScope.stopDescentAtAliases == 'true') and (internalAlias == 'true' or externalSub == 'true'))}">
           <jsp:include page="/docs/calendar/emitCalendar.jsp" />
         </c:if>

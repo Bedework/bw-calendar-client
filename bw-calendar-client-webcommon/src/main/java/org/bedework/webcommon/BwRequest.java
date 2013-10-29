@@ -114,7 +114,7 @@ public class BwRequest extends Request {
                    final BwSession sess,
                    final Action action) {
     super(request.getRequest(), request.getResponse(), request.getForm(),
-          action);
+          action, request.getMapping());
     this.req = request;
     this.sess = sess;
   }

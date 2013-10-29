@@ -100,7 +100,7 @@ public class BwSvciFilter implements Filter {
 
       cb = getCb(sess, "out");
       if (cb != null) {
-        cb.out();
+        cb.out(hreq);
       }
     } catch (Throwable t) {
       getLogger().error("Callback exception: ", t);
@@ -115,7 +115,7 @@ public class BwSvciFilter implements Filter {
         cb = getCb(sess, "close");
 
         if (cb != null) {
-          cb.close(false);
+          cb.close(hreq, false);
         }
       } catch (Throwable t) {
         getLogger().error("Callback exception: ", t);

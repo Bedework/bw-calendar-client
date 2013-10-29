@@ -67,18 +67,19 @@ public class AdminClientImpl extends ClientImpl {
   /** User's current group or null. */
   private String adminGroupName;
 
-  public AdminClientImpl(final String authUser,
+  public AdminClientImpl(final String id,
+                         final String authUser,
                          final String runAsUser,
                          final String calSuiteName,
                          final AdminConfig conf)
           throws CalFacadeException {
-    super();
+    super(id);
 
     reinit(authUser, runAsUser, calSuiteName, conf);
   }
 
-  protected AdminClientImpl() {
-    super();
+  protected AdminClientImpl(final String id) {
+    super(id);
   }
 
   public void reinit(final String authUser,
@@ -96,6 +97,8 @@ public class AdminClientImpl extends ClientImpl {
                            conf.getAllowEditAllLocations(),
                            conf.getAllowEditAllContacts(),
                            false);    // sessionless
+    pars.setLogId(id);
+
     svci = new CalSvcFactoryDefault().getSvc(pars);
 
     superUser = svci.getSuperUser();
@@ -104,10 +107,11 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public Client copy() throws CalFacadeException {
-    AdminClientImpl cl = new AdminClientImpl();
+  public Client copy(final String id) throws CalFacadeException {
+    AdminClientImpl cl = new AdminClientImpl(id);
 
     cl.pars = (CalSvcIPars)pars.clone();
+    cl.pars.setLogId(id);
 
     cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
 

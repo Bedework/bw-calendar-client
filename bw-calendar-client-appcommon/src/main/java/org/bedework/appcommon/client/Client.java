@@ -74,12 +74,13 @@ import java.util.Locale;
  */
 public interface Client extends Serializable {
   /**
+   * @param id   provide an id for logging and tracing.
    * @return a copy of this client which can be used for an asynchronous
    * action. Client copies should be discarded on completion of the request
    * cycle.
    * @throws CalFacadeException
    */
-  Client copy() throws CalFacadeException;
+  Client copy(final String id) throws CalFacadeException;
 
   /** Call on the way in once we have a client object.
    *

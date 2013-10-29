@@ -41,13 +41,14 @@ public abstract class BwCallback implements Serializable {
    * @return int HttpServletResponse status
    * @throws Throwable
    */
-  public abstract int in() throws Throwable;
+  public abstract int in(Request req) throws Throwable;
 
   /** Called when the response is on its way out.
    *
+   * @param hreq
    * @throws Throwable
    */
-  public abstract void out() throws Throwable;
+  public abstract void out(HttpServletRequest hreq) throws Throwable;
 
   /** Flag an error
    *
@@ -65,5 +66,6 @@ public abstract class BwCallback implements Serializable {
    * @param cleanUp  true if we are cleaning up for id switch etc
    * @throws Throwable
    */
-  public abstract void close(boolean cleanUp) throws Throwable;
+  public abstract void close(HttpServletRequest hreq,
+                             boolean cleanUp) throws Throwable;
 }

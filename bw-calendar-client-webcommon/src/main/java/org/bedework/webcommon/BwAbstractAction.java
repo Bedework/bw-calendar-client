@@ -82,11 +82,8 @@ import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.config.ClientConfigurations;
 
 import net.fortuna.ical4j.model.Dur;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
 import org.apache.struts.util.MessageResources;
-import org.apache.struts.util.RequestUtils;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -136,7 +133,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     BwCallback cb = getCb(request, form);
 
-    int status = cb.in();
+    int status = cb.in(request);
     if (status != HttpServletResponse.SC_OK) {
       request.getResponse().setStatus(status);
       getLogger().error("Callback.in status=" + status);
@@ -404,15 +401,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
     */
 
-    String refreshAction = getRefreshAction(form);
-    Integer refreshInt = getRefreshInt(form);
+    String refreshAction = request.getRefreshAction();
+    Integer refreshInt = request.getRefreshInt();
 
     if (refreshAction == null) {
       refreshAction = conf.getRefreshAction();
     }
 
     if (refreshAction == null) {
-      refreshAction = form.getActionPath();
+      refreshAction = request.getActionPath();
     }
 
     if (refreshAction != null) {
@@ -1389,11 +1386,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         debugMsg("cb object found for logout");
       }
       try {
-        cb.out();
+        cb.out(request);
       } catch (Throwable t) {}
 
       try {
-        cb.close(true);
+        cb.close(request, true);
       } catch (Throwable t) {}
     }
 
@@ -1796,7 +1793,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             client.endTransaction();
             client.close();
             reinitClient = true;
-            cb.close(true); // So we're not waiting for ourself
+            cb.close(request.getRequest(), true); // So we're not waiting for ourself
           }
         }
 
@@ -1837,17 +1834,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
 
         if (guestMode) {
-          client = new ROClientImpl(form.getCurrentUser(),
+          client = new ROClientImpl(module.getModuleName(),
+                                    form.getCurrentUser(),
                                     user,
                                     calSuiteName,
                                     true);
         } else if (publicAdmin) {
-          client = new AdminClientImpl(form.getCurrentUser(),
+          client = new AdminClientImpl(module.getModuleName(),
+                                       form.getCurrentUser(),
                                        user,
                                        calSuiteName,
                                        (AdminConfig)form.getConfig());
         } else {
-          client = new ClientImpl(form.getCurrentUser(),
+          client = new ClientImpl(module.getModuleName(),
+                                  form.getCurrentUser(),
                                   user);
         }
 
@@ -1881,10 +1881,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (debug) {
       debugMsg("checkSvci-- set req in cb - form action path = " +
-                       form.getActionPath() +
+                       request.getActionPath() +
                        " conv-type = " + request.getConversationType());
     }
-    ((BwCallbackImpl)cb).req = request;
 
     return cb;
   }

@@ -585,7 +585,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
         for (BwModule from: modules.values()) {
           if (from.getClient() != null) {
             try {
-              m.setClient(from.getClient().copy());
+              m.setClient(from.getClient().copy(m.getModuleName()));
             } catch (CalFacadeException e) {
               err.emit(e);
             }

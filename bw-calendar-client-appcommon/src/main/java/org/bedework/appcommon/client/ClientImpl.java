@@ -51,16 +51,17 @@ import java.util.Collection;
  * User: douglm Date: 6/27/13 Time: 2:05 PM
  */
 public class ClientImpl extends ROClientImpl {
-  public ClientImpl(final String authUser,
+  public ClientImpl(final String id,
+                    final String authUser,
                     final String runAsUser)
           throws CalFacadeException {
-    this();
+    this(id);
 
     reinit(authUser, runAsUser);
   }
 
-  protected ClientImpl() {
-    super();
+  protected ClientImpl(final String id) {
+    super(id);
   }
 
   public void reinit(final String authUser,
@@ -76,15 +77,17 @@ public class ClientImpl extends ROClientImpl {
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
                            false);    // sessionless
+    pars.setLogId(id);
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
   }
 
   @Override
-  public Client copy() throws CalFacadeException {
-    ClientImpl cl = new ClientImpl();
+  public Client copy(final String id) throws CalFacadeException {
+    ClientImpl cl = new ClientImpl(id);
 
     cl.pars = (CalSvcIPars)pars.clone();
+    cl.pars.setLogId(id);
 
     cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
 

@@ -39,7 +39,6 @@ public class BwCallbackImpl extends BwCallback {
   private transient Logger log;
 
   BwActionFormBase form;
-  Request req;
   ActionForward errorForward;
 
   BwCallbackImpl(final BwActionFormBase form,
@@ -53,7 +52,7 @@ public class BwCallbackImpl extends BwCallback {
   }
 
   @Override
-  public int in() throws Throwable {
+  public int in(Request req) throws Throwable {
       /* On the way in we set up the client from the default client
          embedded in the form.
        */
@@ -67,6 +66,7 @@ public class BwCallbackImpl extends BwCallback {
         return HttpServletResponse.SC_SERVICE_UNAVAILABLE;
       }
 
+      req.setRequestAttr(Request.moduleNamePar, module.getModuleName());
       module.setRequest(req);
       module.requestIn();
 
@@ -75,8 +75,9 @@ public class BwCallbackImpl extends BwCallback {
   }
 
   @Override
-  public void out() throws Throwable {
-    BwModule module = form.fetchModule(req.getModuleName());
+  public void out(HttpServletRequest hreq) throws Throwable {
+    BwModule module = form.fetchModule(
+            (String)hreq.getAttribute(Request.moduleNamePar));
 
     if (debug) {
       getLogger().debug("Request out for module " + module.getModuleName());
@@ -86,8 +87,10 @@ public class BwCallbackImpl extends BwCallback {
   }
 
   @Override
-  public void close(boolean cleanUp) throws Throwable {
-    BwModule module = form.fetchModule(req.getModuleName());
+  public void close(HttpServletRequest hreq,
+                    boolean cleanUp) throws Throwable {
+    BwModule module = form.fetchModule(
+            (String)hreq.getAttribute(Request.moduleNamePar));
 
     if (debug) {
       getLogger().debug("Close for module " + module.getModuleName());

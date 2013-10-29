@@ -98,6 +98,8 @@ import javax.xml.ws.Holder;
 public class ROClientImpl implements Client {
   protected boolean debug;
 
+  protected String id;
+
   protected CalSvcIPars pars;
 
   protected CalSvcI svci;
@@ -134,17 +136,19 @@ public class ROClientImpl implements Client {
 
   protected AccessChecker accessChecker = new AccessChecker();
 
-  public ROClientImpl(final String authUser,
+  public ROClientImpl(final String id,
+                      final String authUser,
                       final String runAsUser,
                       final String calSuiteName,
                       final boolean publicView)
           throws CalFacadeException {
-    this();
+    this(id);
 
     reinit(authUser, runAsUser, calSuiteName, publicView);
   }
 
-  protected ROClientImpl() {
+  protected ROClientImpl(final String id) {
+    this.id = id;
     cstate = new ClientState(this);
   }
 
@@ -163,16 +167,17 @@ public class ROClientImpl implements Client {
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
                            false);    // sessionless
-
+    pars.setLogId(id);
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
   }
 
   @Override
-  public Client copy() throws CalFacadeException {
-    ROClientImpl cl = new ROClientImpl();
+  public Client copy(final String id) throws CalFacadeException {
+    ROClientImpl cl = new ROClientImpl(id);
 
     cl.pars = (CalSvcIPars)pars.clone();
+    cl.pars.setLogId(id);
 
     cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
     cl.publicView = publicView;

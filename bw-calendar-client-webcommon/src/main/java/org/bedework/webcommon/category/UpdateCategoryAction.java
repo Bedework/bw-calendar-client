@@ -27,6 +27,7 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 /** This action updates a category.
  *
@@ -102,8 +103,10 @@ public class UpdateCategoryAction extends BwAbstractAction {
     }
 
     /* refresh lists */
-    request.getSess().embedCategories(request, true);
-    request.getSess().embedDefaultCategories(request, true);
+    request.getSess().embedCategories(request, true,
+                                      BwSession.ownersEntity);
+    request.getSess().embedCategories(request, true,
+                                      BwSession.defaultEntity);
 
     return forwardContinue;
   }

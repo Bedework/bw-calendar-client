@@ -147,18 +147,22 @@ try {
     </location>
 
     <contact>
-      <logic:present name="calForm" property="preferredContacts">
+      <logic:present name="bw_preferred_contacts_list" scope="session">
+        <bean:define id="preferredContacts"
+                         name="bw_preferred_contacts_list" scope="session"/>
         <preferred>
           <html:select property="prefContactId">
-            <html:optionsCollection property="preferredContacts"
+            <html:optionsCollection name="preferredContacts"
                                     label="name.value"
                                     value="uid"/>
           </html:select>
         </preferred>
       </logic:present>
       <all>
+        <bean:define id="contacts"
+                     name="bw_contacts_list" scope="session"/>
         <html:select property="allContactId">
-          <html:optionsCollection property="contacts"
+          <html:optionsCollection name="contacts"
                                     label="name.value"
                                     value="uid"/>
         </html:select>

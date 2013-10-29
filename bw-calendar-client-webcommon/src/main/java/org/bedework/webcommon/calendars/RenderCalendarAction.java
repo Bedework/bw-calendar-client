@@ -25,6 +25,7 @@ import org.bedework.calfacade.wrappers.CalendarWrapper;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 import java.util.Set;
 
@@ -79,7 +80,8 @@ public class RenderCalendarAction extends BwAbstractAction {
     form.setCalendarPath(calPath);
     form.setCalendar(calendar);
     //request.getSess().getChildren(cl, calendar);
-    request.getSess().embedCategories(request, false);
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
 
     if (calendar == null) {
       form.getErr().emit(ClientError.unknownCalendar, calPath);

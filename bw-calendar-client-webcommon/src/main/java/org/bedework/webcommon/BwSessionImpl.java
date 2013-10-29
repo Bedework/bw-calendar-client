@@ -33,6 +33,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
@@ -100,6 +101,7 @@ public class BwSessionImpl implements BwSession {
 
   private SystemProperties syspars;
 
+  private transient CollectionCollator<BwContact> contactCollator;
   private transient CollectionCollator<BwCategory> categoryCollator;
   private transient CollectionCollator<BwLocation> locationCollator;
 
@@ -260,8 +262,8 @@ public class BwSessionImpl implements BwSession {
     Collection<BwCalendar> children = cl.getChildren(col);
     Collection<BwCalendar> cloned = new ArrayList<>(children.size());
 
-    if (!Util.isEmpty(val.getChildren())) {
-      for (BwCalendar c: val.getChildren()) {
+    if (!Util.isEmpty(children)) {
+      for (BwCalendar c:children) {
         BwCalendar clCol = (BwCalendar)c.clone();
         cloned.add(clCol);
 
@@ -355,61 +357,99 @@ public class BwSessionImpl implements BwSession {
    * ==================================================================== */
 
   @Override
-  public void embedCategories(final BwRequest request,
-                              final boolean refresh) throws Throwable {
-    if (!refresh &&
-            request.getSessionAttr(BwRequest.bwCategoriesListName) != null) {
-      return;
-    }
+  public Collection<BwCategory> embedCategories(final BwRequest request,
+                                                final boolean refresh,
+                                                final int kind) throws Throwable {
+    String attrName;
+    Collection <BwCategory> vals;
 
-    request.setSessionAttr(BwRequest.bwCategoriesListName,
-                           getCategoryCollection(request,
-                                                 ownersEntity, true));
-  }
+    if (kind == ownersEntity) {
+      attrName = BwRequest.bwCategoriesListName;
 
-  @Override
-  public void embedEditableCategories(final BwRequest request,
-                                      final boolean refresh) throws Throwable {
-    if (!refresh &&
-            request.getSessionAttr(BwRequest.bwEditableCategoriesListName) != null) {
-      return;
-    }
-
-    request.setSessionAttr(BwRequest.bwEditableCategoriesListName,
-                           getCategoryCollection(request,
-                                                 editableEntity, false));
-  }
-
-  @Override
-  public Set<BwCategory> embedDefaultCategories(final BwRequest request,
-                                                final boolean refresh) throws Throwable {
-    Set<BwCategory> cats;
-
-    if (!refresh) {
-      cats = (Set<BwCategory>)request.getSessionAttr(BwRequest.bwDefaultCategoriesListName);
-      if (cats != null) {
-        return cats;
+      vals = (Collection<BwCategory>)request.getSessionAttr(BwRequest.bwCategoriesListName);
+      if (!refresh && vals  != null) {
+        return vals;
       }
+
+      vals = getCategoryCollection(request, ownersEntity, true);
+    } else if (kind == editableEntity) {
+      attrName = BwRequest.bwEditableCategoriesListName;
+
+      vals = (Collection<BwCategory>)request.getSessionAttr(BwRequest.bwEditableCategoriesListName);
+      if (!refresh && vals  != null) {
+        return vals;
+      }
+
+      vals = getCategoryCollection(request, editableEntity, false);
+    } else if (kind == preferredEntity) {
+      attrName = BwRequest.bwPreferredCategoriesListName;
+
+      vals = curAuthUserPrefs.getCategoryPrefs().getPreferred();
+    } else if (kind == defaultEntity) {
+      attrName = BwRequest.bwDefaultCategoriesListName;
+
+      vals = (Set<BwCategory>)request.getSessionAttr(BwRequest.bwDefaultCategoriesListName);
+      if (!refresh && vals  != null) {
+        return vals;
+      }
+
+      vals = new TreeSet<>();
+
+      Client cl = request.getClient();
+
+      Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
+
+      for (String uid: catuids) {
+        BwCategory cat = cl.getCategory(uid);
+
+        if (cat != null) {
+          vals.add(cat);
+        }
+      }
+    } else {
+      throw new Exception("Software error - bad kind " + kind);
     }
 
-    cats = new TreeSet<>();
+    request.setSessionAttr(attrName, vals);
+    return vals;
+  }
 
+  /* ====================================================================
+   *                   Contacts
+   * ==================================================================== */
+
+  @Override
+  public void embedContactCollection(BwRequest request,
+                                     final int kind) throws Throwable {
     Client cl = request.getClient();
+    Collection<BwContact> vals = null;
+    String attrName;
 
-    Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
+    if (kind == ownersEntity) {
+      attrName = BwRequest.bwContactsListName;
 
-    for (String uid: catuids) {
-      BwCategory cat = cl.getCategory(uid);
-
-      if (cat != null) {
-        cats.add(cat);
+      String appType = cl.getAppType();
+      if (BedeworkDefs.appTypeWebsubmit.equals(appType)) {
+        // Use public
+        vals = cl.getContacts(cl.getPublicUser().getPrincipalRef());
+      } else {
+        // Current owner
+        vals = cl.getContacts();
       }
+    } else if (kind == editableEntity) {
+      attrName = BwRequest.bwEditableContactsListName;
+
+      vals = cl.getEditableContacts();
+    } else if (kind == preferredEntity) {
+      attrName = BwRequest.bwPreferredContactsListName;
+
+      vals = curAuthUserPrefs.getContactPrefs().getPreferred();
+    } else {
+      throw new Exception("Software error - bad kind " + kind);
     }
 
-    request.setSessionAttr(BwRequest.bwDefaultCategoriesListName,
-                           cats);
-
-    return cats;
+    request.setSessionAttr(attrName,
+                           getContactCollator().getCollatedCollection(vals));
   }
 
   /* ====================================================================
@@ -417,22 +457,28 @@ public class BwSessionImpl implements BwSession {
    * ==================================================================== */
 
   @Override
-  public void embedLocations(final BwRequest request) {
-    request.setSessionAttr(BwRequest.bwLocationsListName,
-                           getLocations(request, ownersEntity, true));
-  }
+  public void embedLocations(final BwRequest request,
+                             final int kind) throws Throwable {
+    Collection<BwLocation> vals = null;
+    String attrName;
 
-  @Override
-  public void embedEditableLocations(final BwRequest request) {
-    request.setSessionAttr(BwRequest.bwEditableLocationsListName,
-                           getLocations(request, editableEntity, false));
-  }
+    if (kind == ownersEntity) {
+      attrName = BwRequest.bwLocationsListName;
+      vals = getLocations(request, ownersEntity, true);
+    } else if (kind == editableEntity) {
+      attrName = BwRequest.bwEditableLocationsListName;
 
-  @Override
-  public void embedPreferredLocations(final BwRequest request) {
-    request.setSessionAttr(BwRequest.bwPreferredLocationsListName,
-                           getLocationCollator().getCollatedCollection(
-                                   curAuthUserPrefs.getLocationPrefs().getPreferred()));
+      vals = getLocations(request, editableEntity, false);
+    } else if (kind == preferredEntity) {
+      attrName = BwRequest.bwPreferredLocationsListName;
+
+      vals = curAuthUserPrefs.getLocationPrefs().getPreferred();
+    } else {
+      throw new Exception("Software error - bad kind " + kind);
+    }
+
+    request.setSessionAttr(attrName,
+                           getLocationCollator().getCollatedCollection(vals));
   }
 
   /* ====================================================================
@@ -616,11 +662,6 @@ public class BwSessionImpl implements BwSession {
     }
   }
 
-  /* Kind of entity we are referring to */
-
-  private static int ownersEntity = 1;
-  private static int editableEntity = 2;
-
   private Collection<BwCategory> getCategoryCollection(final BwRequest request,
                                                        final int kind,
                                                        final boolean forEventUpdate) throws Throwable {
@@ -669,6 +710,14 @@ public class BwSessionImpl implements BwSession {
     }
 
     return categoryCollator;
+  }
+
+  private CollectionCollator<BwContact> getContactCollator() {
+    if (contactCollator == null) {
+      contactCollator = new CollectionCollator<>();
+    }
+
+    return contactCollator;
   }
 
   private Collection<BwLocation> getLocations(final BwRequest request,

@@ -772,7 +772,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /* categories already set in event */
     Set<BwCategory> evcats = ent.getCategories();
 
-    Set<BwCategory> defCats = request.getSess().embedDefaultCategories(request, false);
+    Collection<BwCategory> defCats = request.getSess().embedCategories(request, true,
+                                                                       BwSession.defaultEntity);
+
 
     /* Get the uids */
     Collection<String> strCatUids = request.getReqPars("catUid");

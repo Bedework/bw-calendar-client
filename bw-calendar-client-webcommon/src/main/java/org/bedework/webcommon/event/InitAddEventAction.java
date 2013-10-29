@@ -32,6 +32,7 @@ import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.DurationBean;
 import org.bedework.webcommon.EventDates;
 
@@ -148,8 +149,10 @@ public class InitAddEventAction extends EventActionBase {
       ev.setColPath(cal.getPath());
     }
 
-    request.getSess().embedCategories(request, false);
-    request.getSess().embedLocations(request);
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
+    request.getSess().embedLocations(request,
+                                     BwSession.ownersEntity);
 
     //if (!request.setEventCalendar(ev)) {
     //  return forwardValidationError;

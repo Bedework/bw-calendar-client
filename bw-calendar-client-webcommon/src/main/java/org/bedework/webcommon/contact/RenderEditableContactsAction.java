@@ -16,30 +16,25 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.category;
+package org.bedework.webcommon.contact;
 
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
-/** This action fetches all categories and embeds them in the session.
+/** Fetch the editable contacts for rendering
  *
- * <p>Forwards to:<ul>
- *      <li>"success"      ok.</li>
- * </ul>
- *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass  douglm - rpi.edu
  */
-public class FetchCategoriesAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+public class RenderEditableContactsAction extends BwAbstractAction {
+  @Override
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    request.getSess().embedCategories(request, false,
-                                      BwSession.editableEntity);
+    request.getSess().embedContactCollection(request,
+                                             BwSession.editableEntity);
 
     return forwardSuccess;
   }
 }
+

@@ -26,7 +26,6 @@ import org.bedework.calfacade.BwCategory;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Set;
 
 /** This interface represents a session for the Bedework web interface.
  * Some user state will be retained here.
@@ -106,47 +105,37 @@ public interface BwSession extends Serializable {
    *
    * @param request
    * @param refresh
+   * @param kind
    * @throws Throwable
+   * @return collection of categories
    */
-  void embedCategories(final BwRequest request,
-                       final boolean refresh) throws Throwable;
+  Collection<BwCategory> embedCategories(BwRequest request,
+                                         boolean refresh,
+                                         int kind) throws Throwable;
 
-  /** Embed the list of editable categories for this user. Return a null list for
-   * exceptions or no categories.
+  /* Kind of entity we are referring to */
+
+  public static final int ownersEntity = 1;
+  public static final int editableEntity = 2;
+  public static final int preferredEntity = 3;
+  public static final int defaultEntity = 4;
+
+  /**
    *
    * @param request
-   * @param refresh
+   * @param kind
    * @throws Throwable
    */
-  void embedEditableCategories(final BwRequest request,
-                               final boolean refresh) throws Throwable;
-
-  /** Embed the list of default categories for this user. Return a null list for
-   * exceptions or no categories.
-   *
-   * @param request
-   * @param refresh
-   * @return list of default categories.
-   * @throws Throwable
-   */
-  Set<BwCategory> embedDefaultCategories(final BwRequest request,
-                                         final boolean refresh) throws Throwable;
+  void embedContactCollection(BwRequest request,
+                              final int kind) throws Throwable;
 
   /** Called by jsp when editing an event
    *
    * @param request
+   * @param kind
+   * @throws Throwable
    */
-  void embedLocations(final BwRequest request);
-
-  /**
-   * @param request
-   */
-  void embedEditableLocations(final BwRequest request);
-
-  /** Get the preferred locations for the current user
-   *
-   * @param request
-   */
-  void embedPreferredLocations(final BwRequest request);
+  void embedLocations(final BwRequest request,
+                      final int kind) throws Throwable;
 }
 

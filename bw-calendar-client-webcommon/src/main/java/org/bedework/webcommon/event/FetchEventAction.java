@@ -24,6 +24,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 /** This action fetches events for editing
  *
@@ -72,8 +73,19 @@ public class FetchEventAction extends EventActionBase {
       resetEvent(request);
     }
 
-    request.getSess().embedCategories(request, false);
-    request.getSess().embedLocations(request);
+    request.getSess().embedContactCollection(request,
+                                             BwSession.ownersEntity);
+
+    request.getSess().embedContactCollection(request,
+                                             BwSession.preferredEntity);
+
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
+
+    request.getSess().embedLocations(request,
+                                     BwSession.ownersEntity);
+    request.getSess().embedLocations(request,
+                                     BwSession.preferredEntity);
 
     return fwd;
   }

@@ -22,6 +22,7 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -83,7 +84,8 @@ public class OpenCloseAction extends BwAbstractAction {
       cos.remove(path);
     }
 
-    request.getSess().embedCategories(request, false);
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
 
     return forwardSuccess;
   }

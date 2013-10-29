@@ -24,6 +24,7 @@ import org.bedework.calfacade.BwPreferences;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 /** Delete a view.
  *
@@ -49,8 +50,10 @@ public class FetchPrefsAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();
 
-    request.getSess().embedCategories(request, false);
-    request.getSess().embedDefaultCategories(request, false);
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
+    request.getSess().embedCategories(request, true,
+                                      BwSession.defaultEntity);
 
     String str = request.getReqPar("user");
     if (str != null) {

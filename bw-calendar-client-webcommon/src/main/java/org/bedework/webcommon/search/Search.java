@@ -24,6 +24,7 @@ import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 /**
  * Action to carry out a search.
@@ -100,7 +101,8 @@ public class Search extends BwAbstractAction {
     }
 
     /* Ensure we have categories embedded in session */
-    request.getSess().embedCategories(request, false);
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
 
     return forwardSuccess;
   }

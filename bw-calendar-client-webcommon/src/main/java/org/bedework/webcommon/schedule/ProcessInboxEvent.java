@@ -29,6 +29,7 @@ import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.event.EventActionBase;
 
 import org.bedework.util.timezones.DateTimeUtil;
@@ -135,7 +136,8 @@ public class ProcessInboxEvent extends EventActionBase {
     // Assume we need the collection containing the meeting
     form.setMeetingCal(cl.getCollection(ev.getColPath()));
 
-    request.getSess().embedLocations(request);
+    request.getSess().embedLocations(request,
+                                     BwSession.ownersEntity);
 
     return forwardContinue;
   }

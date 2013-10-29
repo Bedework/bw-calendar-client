@@ -150,8 +150,10 @@
     <cost><html:text property="event.cost" size="30" styleId="iCost" styleClass="edit"/></cost>
     <link><html:text property="event.link" size="30" styleId="iLink" styleClass="edit"/></link>
     <location>
-      <logic:present name="calForm" property="preferredLocations">
+      <logic:present name="bw_preferred_locations_list" scope="session">
         <preferred>
+          <bean:define id="preferredLocations"
+                       name="bw_preferred_locations_list" scope="session" />
           <html:select property="prefLocationId">
             <html:optionsCollection property="preferredLocations"
                                     label="address.value"
@@ -180,9 +182,10 @@
     </location>
 
     <categories>
-      <logic:present name="calForm" property="preferredCategories">
+      <logic:present name="bw_preferred_categories_list" scope="session">
         <preferred>
-          <logic:iterate id="category" name="calForm" property="preferredCategories">
+          <logic:iterate id="category"
+                         name="bw_preferred_categories_list" scope="session">
             <%@include file="/docs/category/emitCategory.jsp"%>
           </logic:iterate>
         </preferred>
@@ -230,18 +233,22 @@
     <%@ include file="/docs/event/emitRecur.jsp" %>
 
     <contact>
-      <logic:present name="calForm" property="preferredContacts">
+      <logic:present name="bw_preferred_contacts_list" scope="session">
+        <bean:define id="preferredContacts"
+                     name="bw_preferred_contacts_list" scope="session"/>
         <preferred>
           <html:select property="prefContactId">
-            <html:optionsCollection property="preferredContacts"
+            <html:optionsCollection name="preferredContacts"
                                     label="name.value"
                                     value="uid"/>
           </html:select>
         </preferred>
       </logic:present>
       <all>
+        <bean:define id="contacts"
+                     name="bw_contacts_list" scope="session"/>
         <html:select property="allContactId">
-          <html:optionsCollection property="contacts"
+          <html:optionsCollection name="contacts"
                                     label="name.value"
                                     value="uid"/>
         </html:select>

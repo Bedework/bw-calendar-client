@@ -1141,7 +1141,7 @@
 
 
     <action    path="/contact/showContact"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderEditableContactsAction"
                name="calForm"
                scope="session"
                parameter="actionType=render"
@@ -1171,7 +1171,7 @@
 
 
     <action    path="/contact/showUpdateList"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderEditableContactsAction"
                name="calForm"
                scope="session"
                parameter="actionType=render"

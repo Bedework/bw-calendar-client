@@ -21,7 +21,6 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.CheckData;
-import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
@@ -86,11 +85,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author  Mike Douglass     douglm - rpi.edu
  */
 public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
-  /* Kind of entity we are referring to */
-
-  private static int ownersEntity = 1;
-  private static int editableEntity = 2;
-
   private Map<String, BwModule> modules = new HashMap<>();
 
   private DateTimeFormatter today;
@@ -107,8 +101,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private ConfigCommon config;
 
   private Locale requestedLocale;
-
-  private transient CollectionCollator<BwContact> contactCollator;
 
   /* This should be a cloned copy only */
   private AuthProperties authpars;
@@ -2006,7 +1998,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *
    * @return String path.
    */
-  public String getSubmissionsRoot() {
+  public String getEncodedSubmissionRoot() {
     String appType = getAppType();
 
     if (appTypeWebsubmit.equals(appType) ||
@@ -2278,20 +2270,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return getCategory().getWordVal();
   }
 
-  /** Get the preferred categories for the current user
-   *
-   * @return Collection  preferred categories
-   */
-  public Collection<BwCategory> getPreferredCategories() {
-    try {
-      return fetchClient().getCategories(
-                             getCurAuthUserPrefs().getCategoryPrefs().getPreferred());
-    } catch (Throwable t) {
-      getErr().emit(t);
-      return new ArrayList<BwCategory>();
-    }
-  }
-
   /* ====================================================================
    *                   Contacts
    * ==================================================================== */
@@ -2416,15 +2394,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return getContact().getUid();
   }
 
-  /** Get the preferred contacts for the current user
-   *
-   * @return Collection  preferred contacts
-   */
-  public Collection<BwContact> getPreferredContacts() {
-    return getContactCollator().getCollatedCollection(
-          getCurAuthUserPrefs().getContactPrefs().getPreferred());
-  }
-
   /** Contact uid for next action
    *
    * @param val
@@ -2438,24 +2407,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String getContactUid() {
     return contactUid;
-  }
-
-  /** Get the list of contacts for this owner. Return a null list for
-   * exceptions or no contacts.
-   *
-   * @return Collection    of BwContact
-   */
-  public Collection<BwContact> getContacts() {
-    return getContactCollection(ownersEntity);
-  }
-
-  /** Get the list of editable contacts for this user. Return a null list for
-   * exceptions or no contacts.
-   *
-   * @return Collection    of BwContact
-   */
-  public Collection<BwContact> getEditableContacts() {
-    return getContactCollection(editableEntity);
   }
 
   /* ====================================================================
@@ -3485,46 +3436,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* ====================================================================
    *                Private methods
    * ==================================================================== */
-
-  private Collection<BwContact> getContactCollection(final int kind) {
-    Client cl = fetchClient();
-    try {
-      Collection<BwContact> vals = null;
-
-      if (kind == ownersEntity) {
-        if (getSubmitApp()) {
-          // Use public
-          vals = cl.getContacts(cl.getPublicUser().getPrincipalRef());
-        } else {
-          // Current owner
-          vals = cl.getContacts();
-        }
-      } else if (kind == editableEntity) {
-        vals = cl.getEditableContacts();
-      }
-
-      // Won't need this with 1.5
-      if (vals == null) {
-        throw new Exception("Software error - bad kind " + kind);
-      }
-
-      return getContactCollator().getCollatedCollection(vals);
-    } catch (Throwable t) {
-      if (debug) {
-        t.printStackTrace();
-      }
-      err.emit(t);
-      return new ArrayList<BwContact>();
-    }
-  }
-
-  private CollectionCollator<BwContact> getContactCollator() {
-    if (contactCollator == null) {
-      contactCollator = new CollectionCollator<>();
-    }
-
-    return contactCollator;
-  }
 
   public boolean publicAdmin() {
     try {

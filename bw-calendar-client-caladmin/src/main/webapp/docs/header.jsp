@@ -79,8 +79,8 @@ try {
 
   <!-- Path to calendar for public event submissions -->
   <submissionsRoot>
-    <encoded><bean:write name="bwconfig" property="submissionsRoot"/></encoded>
-    <unencoded><bean:write name="bwconfig" property="unencodedSubmissionsRoot"/></unencoded>
+    <encoded><bean:write name="calForm" property="encodedSubmissionRoot"/></encoded>
+    <unencoded><bean:write name="bwconfig" property="submissionRoot"/></unencoded>
   </submissionsRoot>
 
   <%-- Use URL prefixes when writing hyperlinks; these use the "genurl"

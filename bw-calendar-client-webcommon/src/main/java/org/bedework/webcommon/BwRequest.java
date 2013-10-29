@@ -96,6 +96,18 @@ public class BwRequest extends Request {
   /** editable category list stored in session */
   public final static String bwEditableCategoriesListName = "bw_editable_categories_list";
 
+  /** preferred category list stored in session */
+  public final static String bwPreferredCategoriesListName = "bw_preferred_categories_list";
+
+  /** contact list stored in session */
+  public final static String bwContactsListName = "bw_contacts_list";
+
+  /** editable contact list stored in session */
+  public final static String bwEditableContactsListName = "bw_editable_contacts_list";
+
+  /** preferred contact list stored in session */
+  public final static String bwPreferredContactsListName = "bw_preferred_contacts_list";
+
   /** location list stored in session */
   public final static String bwLocationsListName = "bw_locations_list";
 

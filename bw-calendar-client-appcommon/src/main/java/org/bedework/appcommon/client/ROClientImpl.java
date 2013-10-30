@@ -110,7 +110,7 @@ public class ROClientImpl implements Client {
 
   protected boolean publicAdmin;
 
-  private BwPrincipal currentPrincipal;
+  protected BwPrincipal currentPrincipal;
   private String currentCalendarAddress;
 
   private Collection<Locale>supportedLocales;
@@ -157,6 +157,8 @@ public class ROClientImpl implements Client {
                      final String calSuiteName,
                      final boolean publicView)
           throws CalFacadeException {
+    currentPrincipal = null;
+
     pars = new CalSvcIPars(authUser,
                            runAsUser,
                            calSuiteName,

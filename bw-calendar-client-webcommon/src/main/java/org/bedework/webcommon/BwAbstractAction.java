@@ -194,11 +194,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setCurrentLocale(loc);
     }
 
-    BwPrincipal pr = cl.getCurrentPrincipal();
-
-    if (cl.getPublicAdmin()) {
-      form.assignCurrentAdminUser(pr.getAccount());
-    }
     form.assignCurUserSuperUser(cl.isSuperUser());
     form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
     form.assignUserMaintOK(cl.getUserMaintOK());
@@ -1863,6 +1858,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         module.requestIn();
         form.setRefreshNeeded(true);
+      }
+
+      if (client.getPublicAdmin()) {
+        BwPrincipal pr = client.getCurrentPrincipal();
+        form.assignCurrentAdminUser(pr.getAccount());
       }
     } catch (CalFacadeException cfe) {
       throw cfe;

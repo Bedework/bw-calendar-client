@@ -67,6 +67,8 @@ public class ClientImpl extends ROClientImpl {
   public void reinit(final String authUser,
                      final String runAsUser)
           throws CalFacadeException {
+    currentPrincipal = null;
+
     pars = new CalSvcIPars(authUser,
                            runAsUser,
                            null,  // calSuiteName,

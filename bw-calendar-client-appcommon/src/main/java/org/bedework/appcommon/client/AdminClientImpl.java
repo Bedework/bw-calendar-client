@@ -87,6 +87,8 @@ public class AdminClientImpl extends ClientImpl {
                      final String calSuiteName,
                      final AdminConfig conf)
           throws CalFacadeException {
+    currentPrincipal = null;
+
     pars = new CalSvcIPars(authUser,
                            runAsUser,
                            calSuiteName,

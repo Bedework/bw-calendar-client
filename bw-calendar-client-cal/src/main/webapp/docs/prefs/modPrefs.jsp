@@ -51,8 +51,10 @@
  <form>
    <!-- user's writable calendars -->
    <calendars>
+     <bean:define id="addContentCalendarCollections"
+                  name="bw_addcontent_collection_list" scope="session" />
      <html:select name="calForm" property="calendarId">
-       <html:optionsCollection name="calForm" property="addContentCalendarCollections"
+       <html:optionsCollection name="addContentCalendarCollections"
                                      label="path"
                                      value="path"/>
      </html:select>

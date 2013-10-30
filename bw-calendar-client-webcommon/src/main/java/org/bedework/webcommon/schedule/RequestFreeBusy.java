@@ -64,7 +64,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * <p>If no period is given return this week.
  *
- * @author Mike Douglass douglm @ bedework.edu
+ * @author Mike Douglass douglm   rpi.edu
  */
 public class RequestFreeBusy extends BwAbstractAction {
   /* (non-Javadoc)
@@ -89,7 +89,7 @@ public class RequestFreeBusy extends BwAbstractAction {
         orgUri = cl.getCurrentCalendarAddress();
       }
 
-      AuthProperties authp = form.getAuthpars();
+      AuthProperties authp = request.getSess().getAuthpars();
 
       int max = 0;
 
@@ -332,9 +332,9 @@ public class RequestFreeBusy extends BwAbstractAction {
     wtr.write("\"value\" : ");
 
     if (val == null) {
-      wtr.write(JsonUtil.jsonEncode(""));
+      wtr.write(Util.jsonEncode(""));
     } else {
-      wtr.write(JsonUtil.jsonEncode(val));
+      wtr.write(Util.jsonEncode(val));
     }
     if (withComma) {
       wtr.write("},\n");

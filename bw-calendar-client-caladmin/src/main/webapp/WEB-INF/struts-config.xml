@@ -794,7 +794,7 @@
 
 
     <action    path="/calsuite/showCalSuites"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.AdminRenderAction"
                name="calForm"
                scope="session"
                parameter="actionType=render"
@@ -1141,7 +1141,7 @@
 
 
     <action    path="/contact/showContact"
-               type="org.bedework.webcommon.RenderEditableContactsAction"
+               type="org.bedework.webcommon.contact.RenderEditableContactsAction"
                name="calForm"
                scope="session"
                parameter="actionType=render"
@@ -1171,7 +1171,7 @@
 
 
     <action    path="/contact/showUpdateList"
-               type="org.bedework.webcommon.RenderEditableContactsAction"
+               type="org.bedework.webcommon.contact.RenderEditableContactsAction"
                name="calForm"
                scope="session"
                parameter="actionType=render"
@@ -1481,7 +1481,7 @@
 
 
     <action    path="/authuser/showUpdateList"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.authuser.AuthUserListRenderAction"
                name="calForm"
                scope="session"
                parameter="actionType=render"
@@ -1560,7 +1560,7 @@
 
 
     <action    path="/admingroup/showChooseGroup"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.AdminRenderAction"
                name="calForm"
                scope="session"
                parameter="actionType=render"

@@ -128,7 +128,7 @@ try {
       </duration>
     </end>
     <desc><html:textarea property="description"></html:textarea></desc>
-    <descLength><bean:write name="calForm" property="maxDescriptionLength" /></descLength>
+    <descLength><bean:write name="calForm" property="authpars.maxPublicDescriptionLength" /></descLength>
     <status><bean:write name="event" property="status"/></status>
     <transparency><bean:write name="event" property="transparency"/></transparency>
     <cost><html:text name="event" property="cost"/></cost>

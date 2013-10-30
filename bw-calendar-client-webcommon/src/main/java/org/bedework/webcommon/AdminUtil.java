@@ -128,6 +128,8 @@ public class AdminUtil implements ForwardDefs {
         if (reqpar == null) {
           // Make them do it again.
 
+          form.assignCalSuites(cl.getContextCalSuites());
+
           return forwardChooseGroup;
         }
 
@@ -136,6 +138,8 @@ public class AdminUtil implements ForwardDefs {
           if (getLogger().isDebugEnabled()) {
             logIt("No user admin group with name " + reqpar);
           }
+
+          form.assignCalSuites(cl.getContextCalSuites());
           // We require a group
           return forwardChooseGroup;
         }
@@ -187,6 +191,8 @@ public class AdminUtil implements ForwardDefs {
       /** Go ahead and present the possible groups
        */
       form.setUserAdminGroups(adgs);
+
+      form.assignCalSuites(cl.getContextCalSuites());
       cl.setChoosingGroup(true); // reset
 
       return forwardChooseGroup;

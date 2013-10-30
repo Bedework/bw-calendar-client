@@ -36,8 +36,10 @@
       <%-- all publishing calendars to which user has write access;
            in single calendar model, there will be only one. --%>
       <all>
+        <bean:define id="addContentCalendarCollections"
+                     name="bw_addcontent_collection_list" scope="session" />
         <html:select property="calendarId">
-          <html:optionsCollection property="addContentCalendarCollections"
+          <html:optionsCollection name="addContentCalendarCollections"
                                       label="path"
                                       value="path"/>
         </html:select>
@@ -145,7 +147,7 @@
       </duration>
     </end>
     <desc><html:textarea property="description" rows="8" cols="55" styleId="iDesc" styleClass="edit"></html:textarea></desc>
-    <descLength><bean:write name="calForm" property="maxDescriptionLength" /></descLength>
+    <descLength><bean:write name="calForm" property="authpars.maxPublicDescriptionLength" /></descLength>
     <status><bean:write name="calForm" property="event.status"/></status>
     <cost><html:text property="event.cost" size="30" styleId="iCost" styleClass="edit"/></cost>
     <link><html:text property="event.link" size="30" styleId="iLink" styleClass="edit"/></link>
@@ -155,7 +157,7 @@
           <bean:define id="preferredLocations"
                        name="bw_preferred_locations_list" scope="session" />
           <html:select property="prefLocationId">
-            <html:optionsCollection property="preferredLocations"
+            <html:optionsCollection name="preferredLocations"
                                     label="address.value"
                                     value="uid"/>
           </html:select>

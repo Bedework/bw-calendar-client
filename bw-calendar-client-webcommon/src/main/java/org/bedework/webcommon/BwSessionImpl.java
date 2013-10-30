@@ -38,6 +38,7 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
@@ -96,8 +97,7 @@ public class BwSessionImpl implements BwSession {
    */
   private String appName;
 
-  /** The current presentation state of the application
-   */
+  private AuthProperties authpars;
 
   private SystemProperties syspars;
 
@@ -198,6 +198,17 @@ public class BwSessionImpl implements BwSession {
 
     try {
       form.setCurrentVirtualPath(cl.getVirtualPath());
+      form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
+      form.assignCurrentView(cl.getCurrentView());
+
+      if (form.getEventDates() == null) {
+        form.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),
+                                             form.getCalInfo(),
+                                             form.getHour24(),
+                                             form.getEndDateType(),
+                                             config.getMinIncrement(),
+                                             form.getErr()));
+      }
 
       Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
       long now = System.currentTimeMillis();
@@ -211,6 +222,9 @@ public class BwSessionImpl implements BwSession {
         embedUserCollections(req);
         embedPrefs(req);
         embedViews(req);
+
+        authpars = cl.getAuthProperties().cloneIt();
+        form.setAuthPars(authpars);
 
         syspars = cl.getSystemProperties();
         form.setEventRegAdminToken(syspars.getEventregAdminToken());
@@ -252,6 +266,16 @@ public class BwSessionImpl implements BwSession {
     }
 
     return form.getCurTimeView();
+  }
+
+  public AuthProperties getAuthpars() {
+    return authpars;
+  }
+
+  @Override
+  public void embedAddContentCalendarCollections(final BwRequest request) throws Throwable {
+    request.setSessionAttr(BwRequest.bwAddContentCollectionListName,
+                       request.getClient().getAddContentCollections(publicAdmin));
   }
 
   @Override
@@ -318,7 +342,8 @@ public class BwSessionImpl implements BwSession {
                           BwRequest.bwPublicCollectionListName);
   }
 
-  protected void embedUserCollections(final BwRequest request) throws Throwable {
+  @Override
+  public void embedUserCollections(final BwRequest request) throws Throwable {
     BwCalendar col = null;
     BwActionFormBase form = request.getBwForm();
     Client cl = request.getClient();
@@ -384,7 +409,9 @@ public class BwSessionImpl implements BwSession {
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredCategoriesListName;
 
-      vals = curAuthUserPrefs.getCategoryPrefs().getPreferred();
+      Client cl = request.getClient();
+
+      vals = cl.getCategories(curAuthUserPrefs.getCategoryPrefs().getPreferred());
     } else if (kind == defaultEntity) {
       attrName = BwRequest.bwDefaultCategoriesListName;
 

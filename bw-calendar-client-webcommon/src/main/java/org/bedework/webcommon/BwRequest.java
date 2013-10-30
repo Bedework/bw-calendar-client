@@ -60,6 +60,9 @@ public class BwRequest extends Request {
   /** search result stored in session */
   public final static String bwSearchResultName = "bw_search";
 
+  /** auth user list stored in session */
+  public final static String bwAuthUsersListName = "bw_auth_users";
+
   /** admin group info list stored in session */
   public final static String bwAdminGroupsInfoName = "bw_admin_groups";
 
@@ -80,6 +83,9 @@ public class BwRequest extends Request {
 
   /** user collection list stored in session */
   public final static String bwUserCollectionListName = "bw_user_collection_list";
+
+  /** add content collection list stored in session */
+  public final static String bwAddContentCollectionListName = "bw_addcontent_collection_list";
 
   /** preferences stored in session */
   public final static String bwPreferencesName = "bw_preferences";

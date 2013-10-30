@@ -30,8 +30,11 @@ try {
                       indent="    " tagName="calendar" />
     <!-- user's writable calendars -->
     <calendars>
-      <html:select property="calendarId">
-        <html:optionsCollection property="addContentCalendarCollections"
+      <bean:define id="addContentCalendarCollections"
+                   name="bw_addcontent_collection_list" scope="session" />
+      <html:select name="calForm"
+                   property="calendarId">
+        <html:optionsCollection name="addContentCalendarCollections"
                                       label="path"
                                       value="path"/>
       </html:select>

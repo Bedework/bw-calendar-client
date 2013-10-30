@@ -106,7 +106,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
       }
     }
 
-    AuthProperties authp = form.getAuthpars();
+    AuthProperties authp = request.getSess().getAuthpars();
 
     int max = 0;
 

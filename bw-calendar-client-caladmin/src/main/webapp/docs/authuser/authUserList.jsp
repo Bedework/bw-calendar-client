@@ -13,7 +13,7 @@
 %>
 
 <authUsers>
-  <logic:iterate id="authUser" name="calForm" property="authUsers" >
+  <logic:iterate id="authUser" name="bw_auth_users" scope="session" >
     <authUser>
       <account><bean:write name="authUser" property="user.account" /></account>
       <publicEventUser><bean:write name="authUser" property="publicEventUser"/></publicEventUser>

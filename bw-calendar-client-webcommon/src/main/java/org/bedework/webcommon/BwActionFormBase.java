@@ -100,6 +100,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   private ConfigCommon config;
 
+  private BwPrincipal adminUserId;
+
   private Locale requestedLocale;
 
   /* This should be a cloned copy only */
@@ -127,14 +129,13 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /** True if this user has more than the default rights
    */
   private boolean authorisedUser;
+  private boolean superUser;
 
-  private boolean submitApp;
+  private String appType;
 
   /** true if we are showing the public face
    */
   private boolean publicView;
-
-  private Client client;
 
   private String[] yearVals;
   private static final int numYearVals = 10;
@@ -197,6 +198,9 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private CalSuiteResource calSuiteResource;
 
   private List<CalSuiteResource> calSuiteResources;
+
+  private boolean oneGroup;
+  private String adminGroupName;
 
   /** The groups of which our user is a member
    */
@@ -362,6 +366,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /** True to show members in list
    */
   private boolean showAgMembers;
+
+  private boolean adminGroupMaintOK;
+
+  private boolean userMaintOK;
 
   /* ....................................................................
    *                   Authorised user fields
@@ -547,6 +555,9 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private UpdateFromTimeZonesInfo updateFromTimeZonesInfo;
 
   private boolean reloadRequired;
+  private Collection<BwCalSuite> calSuites;
+  private String calendarUserAddress;
+  private BwView currentView;
 
   /* ====================================================================
    *                   Property methods
@@ -709,18 +720,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @return int
-   */
-  public int getMaxDescriptionLength() {
-    try {
-      return getAuthpars().getMaxPublicDescriptionLength();
-    } catch (Throwable t) {
-      err.emit(t);
-      return 0;
-    }
-  }
-
-  /**
    * @param val
    */
   public void setDirInfo(final DirectoryInfo val) {
@@ -871,30 +870,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *                   Authorised user maintenance
    * ==================================================================== */
 
+  /**
+   * @param val
+   */
+  public void assignUserMaintOK(final boolean val) {
+    userMaintOK = val;
+  }
+
   /** Show whether user entries can be displayed or modified with this
    * class. Some sites may use other mechanisms.
    *
    * @return boolean    true if user maintenance is implemented.
    */
   public boolean getUserMaintOK() {
-    try {
-      return fetchClient().getUserMaintOK();
-    } catch (Throwable t) {
-      err.emit(t);
-      return false;
-    }
-  }
-
-  /**
-   * @return list of auth users
-   */
-  public Collection<BwAuthUser> getAuthUsers() {
-    try {
-      return fetchClient().getAllAuthUsers();
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
+    return userMaintOK;
   }
 
   /** Only called if the flag is set - it's a checkbox.
@@ -982,18 +971,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return showAgMembers;
   }
 
+  /**
+   * @param val
+   */
+  public void assignAdminGroupMaintOK(final boolean val) {
+    adminGroupMaintOK = val;
+  }
+
   /** Show whether admin group maintenance is available.
    * Some sites may use other mechanisms.
    *
    * @return boolean    true if admin group maintenance is implemented.
    */
   public boolean getAdminGroupMaintOK() {
-    try {
-      return fetchClient().getAdminGroupMaintOK();
-   } catch (Throwable t) {
-      err.emit(t);
-      return false;
-    }
+    return adminGroupMaintOK;
   }
 
   /**
@@ -1090,18 +1081,14 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return eventRegAdminToken;
   }
 
+  public void setAuthPars(AuthProperties val) {
+    authpars = val;
+  }
+
   /**
    * @return SystemProperties object
    */
   public AuthProperties getAuthpars() {
-    if (authpars == null) {
-      try {
-        authpars = fetchClient().getAuthProperties().cloneIt();
-      } catch (Throwable t) {
-        getErr().emit(t);
-      }
-    }
-
     return authpars;
   }
 
@@ -1132,23 +1119,18 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   public boolean configSet() {
     return config != null;
   }
+  /**
+   * @param val
+   */
+  public void assignAdminUserPrincipal(final BwPrincipal val) {
+    adminUserId = val;
+  }
 
   /**
    * @return admin userid
    */
   public String getAdminUserId() {
-    BwPrincipal pr = null;
-    try {
-      pr = fetchClient().getCurrentPrincipal();
-    } catch (CalFacadeException e) {
-      return null;
-    }
-
-    if (pr == null) {
-      return null;
-    }
-
-    return pr.getAccount();
+    return adminUserId.getAccount();
   }
 
   /* ====================================================================
@@ -1218,12 +1200,19 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return curUserContentAdminUser;
   }
 
-  /** Current user rights
+  /**
+   * @param val
+   */
+  public void assignCurUserSuperUser(final boolean val) {
+    superUser = val;
+  }
+
+  /**
   *
    * @return true for superuser
    */
   public boolean getCurUserSuperUser() {
-    return fetchClient().isSuperUser();
+    return superUser;
   }
 
   /** apptype
@@ -1231,7 +1220,14 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return boolean
    */
   public String getAppType() {
-    return fetchClient().getAppType();
+    return appType;
+  }
+
+  /**
+   * @param val
+   */
+  public void assignAppType(final String val) {
+    appType = val;
   }
 
   /** True for submitApp
@@ -1239,14 +1235,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return boolean
    */
   public boolean getSubmitApp() {
-    return submitApp;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignSubmitApp(final boolean val) {
-    submitApp = val;
+    return BedeworkDefs.appTypeWebsubmit.equals(appType);
   }
 
   /* ====================================================================
@@ -1360,17 +1349,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return addingResource;
   }
 
+  /** the collection of cal suites
+   *
+   * @return Calendar suites
+   */
+  public void assignCalSuites(Collection<BwCalSuite> val) {
+    calSuites = val;
+  }
+
   /** Return the collection of cal suites
    *
    * @return Calendar suites
    */
   public Collection<BwCalSuite> getCalSuites() {
-    try {
-      return client.getContextCalSuites();
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
+    return calSuites;
   }
 
   /** Current resource fetched
@@ -1408,22 +1400,31 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * ==================================================================== */
 
   /**
+   * @param val
+   */
+  public void assignOneGroup(final boolean val) {
+    oneGroup = val;
+  }
+
+  /**
    * @return true if there is only one group
    */
   public boolean getOneGroup() {
-    return fetchClient().getOneGroup();
+    return oneGroup;
+  }
+
+  /**
+   * @param val
+   */
+  public void assignAdminGroupName(final String val) {
+    adminGroupName = val;
   }
 
   /**
    * @return String admin group name
    */
   public String getAdminGroupName() {
-    if (fetchClient() == null) {
-      // Not set up yet
-      return null;
-    }
-
-    return fetchClient().getAdminGroupName();
+    return adminGroupName;
   }
 
   /** The groups of which our user is a member
@@ -1456,16 +1457,16 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return currentGroups;
   }
 
+  public void assignCalendarUserAddress(String val) {
+    calendarUserAddress = val;
+  }
+
+
   /**
    * @return current users calendar user address.
    */
   public String getCalendarUserAddress() {
-    try {
-      return client.getCurrentCalendarAddress();
-    } catch (Throwable t) {
-      getErr().emit(t);
-      return "**error**";
-    }
+    return calendarUserAddress;
   }
 
   /**
@@ -1499,20 +1500,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String fetchCurrentAdminUser() {
     return currentAdminUser;
-  }
-
-  /**
-   * @param val a client object
-   */
-  public void setClient(final Client val) {
-    client = val;
-  }
-
-  /**
-   * @return a client object
-   */
-  public Client fetchClient() {
-    return client;
   }
 
   /**
@@ -1925,18 +1912,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return currentVirtualPath;
   }
 
-  /** Get the current view we have set
+  /** the current view we have set
    *
    * @return BwView    named Collection of Collections or null for default
-   * @throws CalFacadeException
    */
-  public BwView getCurrentView() throws CalFacadeException {
-    try {
-      return client.getCurrentView();
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
+  public void assignCurrentView(BwView val) {
+    currentView = val;
+  }
+
+  /** the current view we have set
+   *
+   * @return BwView    named Collection of Collections or null for default
+   */
+  public BwView getCurrentView() {
+    return currentView;
   }
 
   /** Set the view name for fetch
@@ -2011,23 +2000,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     }
 
     return "";
-  }
-
-  /** Return a list of calendars in which calendar objects can be
-   * placed by the current user.
-   *
-   * <p>Caldav currently does not allow collections inside collections so that
-   * calendar collections are the leaf nodes only.
-   *
-   * @return Collection   of BwCalendar
-   */
-  public Collection<BwCalendar> getAddContentCalendarCollections() {
-    try {
-      return fetchClient().getAddContentCollections(!publicAdmin());
-    } catch (Throwable t) {
-      err.emit(t);
-      return null;
-    }
   }
 
   /**
@@ -2882,23 +2854,19 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * They will be distinguished by the action called.
    * ==================================================================== */
 
+  /** Set an object containing the dates.
+   *
+   * @return EventDates  object representing date/times and duration
+   */
+  public void assignEventDates(EventDates val) {
+    eventDates = val;
+  }
+
   /** Return an object containing the dates.
    *
    * @return EventDates  object representing date/times and duration
    */
   public EventDates getEventDates() {
-    if (eventDates == null) {
-      try {
-        eventDates = new EventDates(fetchClient().getCurrentPrincipalHref(),
-                                    getCalInfo(),
-                                    getHour24(), getEndDateType(),
-                                    config.getMinIncrement(),
-                                    err);
-      } catch (Throwable t) {
-        err.emit(t);
-      }
-    }
-
     return eventDates;
   }
 

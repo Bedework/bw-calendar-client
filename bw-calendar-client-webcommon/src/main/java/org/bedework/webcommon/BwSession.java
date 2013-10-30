@@ -23,6 +23,7 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.configs.AuthProperties;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -82,7 +83,30 @@ public interface BwSession extends Serializable {
    * @param req
    * @return current time view
    */
-  TimeView getCurTimeView(final BwRequest req);
+  TimeView getCurTimeView(BwRequest req);
+
+  /**
+   * @return AuthProperties object
+   */
+  AuthProperties getAuthpars();
+
+  /** Make these available
+   *
+   * @param request
+   * @throws Throwable
+   */
+  void embedUserCollections(BwRequest request) throws Throwable;
+
+  /** Return a list of calendars in which calendar objects can be
+   * placed by the current user.
+   *
+   * <p>Caldav currently does not allow collections inside collections so that
+   * calendar collections are the leaf nodes only.
+   *
+   * @param request
+   * @throws Throwable
+   */
+  void embedAddContentCalendarCollections(BwRequest request) throws Throwable;
 
   /**
    *

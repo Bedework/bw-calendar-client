@@ -73,19 +73,19 @@ public class FetchEventAction extends EventActionBase {
       resetEvent(request);
     }
 
-    request.getSess().embedContactCollection(request,
-                                             BwSession.ownersEntity);
+    BwSession sess = request.getSess();
 
-    request.getSess().embedContactCollection(request,
-                                             BwSession.preferredEntity);
+    sess.embedAddContentCalendarCollections(request);
+    sess.embedUserCollections(request);
 
-    request.getSess().embedCategories(request, false,
-                                      BwSession.ownersEntity);
+    sess.embedContactCollection(request, BwSession.ownersEntity);
 
-    request.getSess().embedLocations(request,
-                                     BwSession.ownersEntity);
-    request.getSess().embedLocations(request,
-                                     BwSession.preferredEntity);
+    sess.embedContactCollection(request, BwSession.preferredEntity);
+
+    sess.embedCategories(request, false, BwSession.ownersEntity);
+
+    sess.embedLocations(request, BwSession.ownersEntity);
+    sess.embedLocations(request, BwSession.preferredEntity);
 
     return fwd;
   }

@@ -149,10 +149,18 @@ public class InitAddEventAction extends EventActionBase {
       ev.setColPath(cal.getPath());
     }
 
-    request.getSess().embedCategories(request, false,
-                                      BwSession.ownersEntity);
-    request.getSess().embedLocations(request,
-                                     BwSession.ownersEntity);
+    BwSession sess = request.getSess();
+
+    sess.embedAddContentCalendarCollections(request);
+    sess.embedUserCollections(request);
+
+    sess.embedContactCollection(request, BwSession.ownersEntity);
+
+    sess.embedContactCollection(request, BwSession.preferredEntity);
+
+    sess.embedCategories(request, false, BwSession.ownersEntity);
+    sess.embedLocations(request, BwSession.ownersEntity);
+    sess.embedLocations(request, BwSession.preferredEntity);
 
     //if (!request.setEventCalendar(ev)) {
     //  return forwardValidationError;

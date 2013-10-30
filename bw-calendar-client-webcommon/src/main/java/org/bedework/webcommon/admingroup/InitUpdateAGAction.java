@@ -47,6 +47,7 @@ public class InitUpdateAGAction extends FetchAGsAction {
      */
     form.assignAddingAdmingroup(false);
     form.setUpdGroupMember(null);
+    form.assignCalSuites(request.getClient().getContextCalSuites());
 
     return forwardContinue;
   }

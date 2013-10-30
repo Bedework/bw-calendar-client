@@ -199,6 +199,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (cl.getPublicAdmin()) {
       form.assignCurrentAdminUser(pr.getAccount());
     }
+    form.assignCurUserSuperUser(cl.isSuperUser());
+    form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
+    form.assignUserMaintOK(cl.getUserMaintOK());
+    form.assignAdminGroupName(cl.getAdminGroupName());
+    form.assignOneGroup(cl.getOneGroup());
+    form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
 
     // We need to have set the current locale before we do this.
     form.setCalInfo(CalendarInfo.getInstance());
@@ -462,8 +468,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
 //    conf = (ConfigCommon)conf.clone();
     form.setConfig(conf); // So we can get an svci object and set defaults
-
-    form.assignSubmitApp(BedeworkDefs.appTypeWebsubmit.equals(appType));
+    form.assignAppType(appType);
     }
 
   @Override
@@ -1853,7 +1858,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                   user);
         }
 
-        form.setClient(client);
         module.setClient(client);
         module.setRequest(request);
 

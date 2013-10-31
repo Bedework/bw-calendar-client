@@ -216,6 +216,7 @@ public class AdminUtil implements ForwardDefs {
     }
 
     cl.setAdminGroupName(adg.getAccount());
+    form.assignAdminGroupName(adg.getAccount());
     cl.setGroupSet(true);
 
     //int access = getAccess(request, getMessages());
@@ -248,13 +249,12 @@ public class AdminUtil implements ForwardDefs {
    *
    * @param request
    * @param cl
-   * @param groupName
    * @return calendar suite wrapper
    * @throws Throwable
    */
   public static BwCalSuiteWrapper findCalSuite(final Request request,
-                                               final Client cl,
-                                               final String groupName) throws Throwable {
+                                               final Client cl) throws Throwable {
+    final String groupName = cl.getAdminGroupName();
     if (groupName == null) {
       return null;
     }

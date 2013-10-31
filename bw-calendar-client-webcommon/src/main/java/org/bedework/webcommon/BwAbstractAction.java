@@ -197,7 +197,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     form.assignCurUserSuperUser(cl.isSuperUser());
     form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
     form.assignUserMaintOK(cl.getUserMaintOK());
-    form.assignAdminGroupName(cl.getAdminGroupName());
     form.assignOneGroup(cl.getOneGroup());
     form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
 
@@ -1735,8 +1734,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
          (before we have any client) has no group name set in the form
        */
       BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
-                                                    client,
-                                                    form.getAdminGroupName());
+                                                    client);
       form.setCurrentCalSuite(cs);
 
       if (cs != null) {

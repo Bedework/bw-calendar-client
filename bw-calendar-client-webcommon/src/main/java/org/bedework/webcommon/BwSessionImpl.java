@@ -38,11 +38,13 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.util.misc.Util;
+import org.bedework.util.struts.Request;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -125,6 +128,11 @@ public class BwSessionImpl implements BwSession {
     publicAdmin = config.getPublicAdmin();
 
     setSessionNum(appName);
+  }
+
+  @Override
+  public void reset(final Request req) {
+    req.setSessionAttr(refreshTimeAttr, new Long(0));
   }
 
   /* NOTE: This is NOT intended to turn a relative URL into an
@@ -276,26 +284,6 @@ public class BwSessionImpl implements BwSession {
   public void embedAddContentCalendarCollections(final BwRequest request) throws Throwable {
     request.setSessionAttr(BwRequest.bwAddContentCollectionListName,
                        request.getClient().getAddContentCollections(publicAdmin));
-  }
-
-  @Override
-  public Collection<BwCalendar> getChildren(final Client cl,
-                                            final BwCalendar val) throws Throwable {
-    BwCalendar col = cl.resolveAlias(val, true, false);
-
-    Collection<BwCalendar> children = cl.getChildren(col);
-    Collection<BwCalendar> cloned = new ArrayList<>(children.size());
-
-    if (!Util.isEmpty(children)) {
-      for (BwCalendar c:children) {
-        BwCalendar clCol = (BwCalendar)c.clone();
-        cloned.add(clCol);
-
-        clCol.setChildren(getChildren(cl, c));
-      }
-    }
-
-    return cloned;
   }
 
   /** Embed the current users calendars. For admin or guest mode this is the
@@ -526,9 +514,7 @@ public class BwSessionImpl implements BwSession {
   private void embedClonedCollection(final BwRequest request,
                                      final BwCalendar col,
                                      final String attrName) throws Throwable {
-    BwCalendar cloned = (BwCalendar)col.clone();
-    cloned.setChildren(getChildren(request.getClient(),
-                                   col));
+    BwCalendar cloned = new Cloner(request.getClient()).deepClone(col);
 
     request.setSessionAttr(attrName, cloned);
   }
@@ -809,5 +795,100 @@ public class BwSessionImpl implements BwSession {
   protected void embedViews(final BwRequest request) throws Throwable {
     request.setSessionAttr(BwRequest.bwViewsListName,
                            request.getClient().getAllViews());
+  }
+
+  private static class Cloner {
+    private Map<String, BwCalendar> clonedCols = new HashMap<>();
+
+    private Map<String, BwCategory> clonedCats = new HashMap<>();
+
+    private Client cl;
+
+    Cloner(Client cl) {
+      this.cl = cl;
+    }
+
+    BwCalendar deepClone(final BwCalendar val) throws Throwable {
+      BwCalendar clCol = cloneOne(val);
+
+      clCol.setChildren(getChildren(val));
+
+      return clCol;
+    }
+
+    BwCalendar cloneOne(final BwCalendar val) throws Throwable {
+      BwCalendar clCol = clonedCols.get(val.getPath());
+
+      if (clCol != null) {
+        return clCol;
+      }
+
+      clCol = val.shallowClone();
+
+      clCol.setCategories(cloneCategories(val));
+      clCol.setProperties(cloneProperties(val));
+
+      if (val.getAliasUri() != null) {
+        BwCalendar aliased = cl.resolveAlias(val, false, false);
+
+        clCol.setAliasCalType(aliased.getCalType());
+        BwCalendar clAliased = deepClone(aliased);
+
+        clCol.setAliasTarget(clAliased);
+      }
+
+      clonedCols.put(val.getPath(), clCol);
+
+      return clCol;
+    }
+
+    private Collection<BwCalendar> getChildren(final BwCalendar col) throws Throwable {
+      Collection<BwCalendar> children = cl.getChildren(col);
+      Collection<BwCalendar> cloned = new ArrayList<>(children.size());
+
+      if (!Util.isEmpty(children)) {
+        for (BwCalendar c:children) {
+          BwCalendar clCol = cloneOne(c);
+          cloned.add(clCol);
+
+          clCol.setChildren(getChildren(c));
+        }
+      }
+
+      return cloned;
+    }
+
+    Set<BwCategory> cloneCategories(final BwCalendar val) {
+      if (val.getNumCategories() == 0) {
+        return null;
+      }
+      TreeSet<BwCategory> ts = new TreeSet<>();
+
+      for (BwCategory cat: val.getCategories()) {
+        BwCategory clCat = clonedCats.get(cat.getUid());
+
+        if (clCat == null) {
+          clCat = (BwCategory)cat.clone();
+          clonedCats.put(cat.getUid(), clCat);
+        }
+
+        ts.add(clCat);
+      }
+
+      return ts;
+    }
+
+    Set<BwProperty> cloneProperties(final BwCalendar val) {
+      if (val.getNumProperties() == 0) {
+        return null;
+      }
+      TreeSet<BwProperty> ts = new TreeSet<>();
+
+      for (BwProperty p: val.getProperties()) {
+        ts.add((BwProperty)p.clone());
+      }
+
+      return ts;
+    }
   }
 }

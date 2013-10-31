@@ -1677,7 +1677,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /** Ensure we have a CalSvcI object
      */
-    checkSvci(request, adminUserId, false);
+    checkSvci(request, s, adminUserId, false);
 
     return s;
   }
@@ -1707,6 +1707,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @throws Throwable
    */
   boolean checkSvci(final Request request,
+                    final BwSession sess,
                     final String user,
                     boolean canSwitch) throws Throwable {
     BwActionFormBase form = (BwActionFormBase)request.getForm();
@@ -1795,6 +1796,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             client.endTransaction();
             client.close();
             reinitClient = true;
+            sess.reset(request);
             cb.close(request.getRequest(), true); // So we're not waiting for ourself
           }
         }
@@ -1858,6 +1860,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         module.requestIn();
         form.setRefreshNeeded(true);
+        sess.reset(request);
       }
 
       if (client.getPublicAdmin()) {

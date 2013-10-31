@@ -20,10 +20,9 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.TimeView;
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.configs.AuthProperties;
+import org.bedework.util.struts.Request;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -39,6 +38,12 @@ public interface BwSession extends Serializable {
   /** ===================================================================
    *                     Property methods
    *  =================================================================== */
+
+  /**
+   * Call to reset state and flush objects.
+   * @param req
+   */
+  void reset(Request req);
 
   /** This may not be entirely correct so should be used with care.
    * Really just provides some measure of use.
@@ -107,15 +112,6 @@ public interface BwSession extends Serializable {
    * @throws Throwable
    */
   void embedAddContentCalendarCollections(BwRequest request) throws Throwable;
-
-  /**
-   *
-   * @param cl
-   * @param val
-   * @throws Throwable
-   */
-  Collection<BwCalendar> getChildren(Client cl,
-                                     BwCalendar val) throws Throwable;
 
   /* ====================================================================
    *                   Categories

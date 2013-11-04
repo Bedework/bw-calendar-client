@@ -563,15 +563,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       params.setToDate(tr.getEnd());
     }
 
-    int page = request.getIntReqPar("p", -1);
-    params.setPaged(page > 0);
-    params.setCurOffset(page);
+    int offset = request.getIntReqPar("offset", -1);
 
-    if (params.getPaged()) {
-      params.setPageSize(cl.getPreferences().getPageSize());
-      if (params.getPageSize() < 0) {
-        params.setPaged(false);
-      }
+    if (offset > 0) {
+      params.setCurOffset(offset);
+    }
+
+    params.setPageSize(cl.getPreferences().getPageSize());
+    if (params.getPageSize() < 0) {
+      params.setPageSize(20);
     }
 
     BwCalendar cal = request.getCalendar(false);

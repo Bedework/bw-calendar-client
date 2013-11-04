@@ -56,9 +56,10 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
-import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
+import org.bedework.calsvci.indexing.BwIndexer.Position;
+import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.calsvci.indexing.SearchResultEntry;
 
 import java.io.Serializable;
@@ -1675,12 +1676,6 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   SearchResult search(final SearchParams params) throws CalFacadeException;
-
-  enum Position {
-    previous,  // Move to previous batch
-    current,   // Return the current set
-    next       // Move to next batch
-  }
 
   /** Called to retrieve results after a search of the index. Updates
    * the current search result.

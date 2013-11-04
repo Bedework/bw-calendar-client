@@ -22,6 +22,8 @@ import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 
+import edu.rpi.sss.util.ToString;
+
 import java.io.Serializable;
 
 /** Parameters for fetching a bunch of events.
@@ -49,8 +51,6 @@ public class SearchParams implements Serializable {
   private boolean forExport;
 
   private boolean useDbSearch;
-
-  private boolean paged;
 
   private int resultSize;
 
@@ -189,21 +189,6 @@ public class SearchParams implements Serializable {
     return format;
   }
 
-  /** True if the result is paged
-   *
-   * @param val
-   */
-  public void setPaged(final boolean val) {
-    paged = val;
-  }
-
-  /**
-   * @return boolean
-   */
-  public boolean getPaged() {
-    return paged;
-  }
-
   /** Set result set size for last search
    * @param val
    */
@@ -244,5 +229,24 @@ public class SearchParams implements Serializable {
    */
   public int getPageSize() {
     return pageSize;
+  }
+
+  @Override
+  public String toString() {
+    ToString ts = new ToString(this);
+
+    ts.append("publick", getPublick())
+            .append("fromDate", getFromDate())
+            .append("toDate", getToDate())
+            .append("query", getQuery())
+            .append("filter", getFilter())
+            .append("collection", getCollection())
+            .append("format", getFormat())
+            .append("forExport", getForExport())
+            .append("resultSize", getResultSize())
+            .append("curOffset", getCurOffset())
+            .append("pageSize", getPageSize());
+
+    return ts.toString();
   }
 }

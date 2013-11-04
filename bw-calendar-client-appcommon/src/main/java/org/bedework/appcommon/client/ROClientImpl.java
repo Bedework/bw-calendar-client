@@ -70,6 +70,7 @@ import org.bedework.calsvci.EventProperties;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.calsvci.indexing.BwIndexer;
+import org.bedework.calsvci.indexing.BwIndexer.Position;
 import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.calsvci.indexing.SearchResultEntry;
 import org.bedework.icalendar.IcalTranslator;
@@ -1394,12 +1395,12 @@ public class ROClientImpl implements Client {
       return null;
     }
 
-    if (pos == Position.current) {
+    if ((pos == Position.current) && (lastSearchEntries != null)) {
       return lastSearchEntries;
     }
 
     lastSearchEntries = formatSearchResult(lastSearch.getIndexer().
-            getSearchResult(lastSearch, pos == Position.next));
+            getSearchResult(lastSearch, pos));
 
     return lastSearchEntries;
   }

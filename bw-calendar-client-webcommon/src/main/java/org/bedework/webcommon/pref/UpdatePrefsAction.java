@@ -70,9 +70,6 @@ import java.util.TreeSet;
  * @author Mike Douglass   douglm@bedework.edu
  */
 public class UpdatePrefsAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -123,7 +120,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     str = request.getReqPar("viewPeriod");
     if (str != null) {
-      prefs.setPreferredViewPeriod(form.validViewPeriod(str));
+      prefs.setPreferredViewPeriod(validViewPeriod(str));
     }
 
     str = validViewMode(request.getReqPar("defaultViewMode"));

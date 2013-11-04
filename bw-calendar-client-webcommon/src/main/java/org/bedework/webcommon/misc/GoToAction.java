@@ -31,16 +31,13 @@ import org.bedework.webcommon.BwRequest;
  *
  */
 public class GoToAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
 
     gotoDateView(request,
-                 form.getDate(),
-                 form.getViewTypeI());
+                 request.getDate(),
+                 request.getViewTypeI());
 
     return forwardSuccess;
   }

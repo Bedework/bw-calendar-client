@@ -29,6 +29,7 @@ import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.EventState;
 
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.parameter.Related;
@@ -45,13 +46,11 @@ import net.fortuna.ical4j.model.property.Trigger;
  * </ul>
  */
 public class SetAlarmAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     BwEvent ev = form.getEvent();
+    EventState evstate = form.getEventState();
 
     if (ev == null) {
       return forwardNoAction;
@@ -64,7 +63,7 @@ public class SetAlarmAction extends BwAbstractAction {
     Trigger tr;
     //boolean trDuration = false;
 
-    if (form.getAlarmTriggerByDate()) {
+    if (evstate.getAlarmTriggerByDate()) {
       /*XXX this needs changing */
       throw new Exception("Unimplemented");
 //      tr = new Trigger(form.getTriggerDateTime().getDateTime());
@@ -72,15 +71,15 @@ public class SetAlarmAction extends BwAbstractAction {
       //trDuration = true;
 
       Related rel;
-      if (form.getAlarmRelStart()) {
+      if (evstate.getAlarmRelStart()) {
         rel = Related.START;
       } else {
         rel = Related.END;
       }
       ParameterList plist = new ParameterList();
       plist.add(rel);
-      tr = new Trigger(plist, form.getTriggerDuration().toString());
-      tr.setValue(form.getTriggerDuration().toString());
+      tr = new Trigger(plist, evstate.getTriggerDuration().toString());
+      tr.setValue(evstate.getTriggerDuration().toString());
     }
 
     String recipient = request.getReqPar("lastEmail");
@@ -121,6 +120,9 @@ public class SetAlarmAction extends BwAbstractAction {
     cl.updateEvent(new EventInfo(ev), true, null);
 
     form.getMsg().emit(ClientMessage.setAlarm);
+
+    request.setRequestAttr(BwRequest.eventStateName,
+                           evstate);
 
     return forwardSuccess;
   }

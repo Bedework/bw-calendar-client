@@ -86,7 +86,7 @@
 
     <!-- Forward for a new session from some bookmarked link; used by
          org.bedework.webcommon.RenderAction when a refresh is needed -->
-    <forward name="gotomain" path="/docs/main.jsp" />
+    <forward name="gotomain" path="/main/showMain.rdo" />
 
     <!-- set up state and get going. -->
     <forward name="initial" path="/setup.do"/>
@@ -110,7 +110,7 @@
     <!-- ........... PUBLIC and PERSONAL clients ...... -->
 
     <action    path="/main/initialise"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only"
@@ -121,7 +121,7 @@
 
 
     <action    path="/main/processShowMain"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=processAndOnly"
@@ -130,7 +130,7 @@
     </action>
 
     <action    path="/main/showMain"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only"
@@ -139,7 +139,7 @@
     </action>
 
     <action    path="/main/showMainEnd"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=end"
@@ -171,7 +171,7 @@
        ............................................................... -->
 
     <action    path="/main/setSelection"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
@@ -181,7 +181,7 @@
     </action>
 
     <action    path="/main/setSelectionList"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
@@ -190,12 +190,12 @@
       <forward name="noViewDef" path="/main/showEventList.rdo" redirect="true" />
     </action>
 
-  <!-- ...............................................................
+    <!-- ...............................................................
              Actions for ongoing
          ............................................................... -->
 
     <action    path="/main/setOngoingList"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start;mdl=ongoing"
@@ -205,10 +205,33 @@
     </action>
 
     <action    path="/main/showOngoingList"
-               type="org.bedework.webcommon.event.RenderEventListAction"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only;mdl=ongoing;refaction=/main/showOngoingList.rdo"
+               validate="false">
+      <forward name="continue" path="/docs/event/eventList.jsp"/>
+    </action>
+
+    <!-- ...............................................................
+         Actions for mainEventList
+     ............................................................... -->
+
+    <action    path="/main/setMainEventList"
+               type="org.bedework.webcommon.search.SearchParamsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start;mdl=mainEventList"
+               validate="false">
+      <forward name="success" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="noViewDef" path="/main/showMainEventList.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/showMainEventList"
+               type="org.bedework.webcommon.search.RenderSearchResultActionn"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only;mdl=mainEventList;refaction=/main/showMainEventList.rdo"
                validate="false">
       <forward name="continue" path="/docs/event/eventList.jsp"/>
     </action>
@@ -231,7 +254,7 @@
        ............................................................... -->
 
     <action    path="/main/listEvents"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
@@ -240,7 +263,7 @@
     </action>
 
     <action    path="/main/showEventList"
-               type="org.bedework.webcommon.event.RenderEventListAction"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only;refaction=/main/showEventList.rdo"
@@ -1575,7 +1598,7 @@
          =============================================================== -->
 
     <action    path="/search/search"
-               type="org.bedework.webcommon.search.Search"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
@@ -1594,7 +1617,7 @@
     </action>
 
     <action    path="/search/next"
-               type="org.bedework.webcommon.search.SearchResultParams"
+               type="org.bedework.webcommon.search.SearchNextAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"

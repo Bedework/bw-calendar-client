@@ -22,59 +22,52 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 /**
- * Set search result retrieval params.
+ * Action to move to prev/next in a search.
  *
  * <p>Request parameters<ul>
- *      <li>"pageNum"        page number 1-n</li>
+ *      <li>"offset"         Move to given offset.</li>
+ *      <li>"next"           Next page (default)</li>
+ *      <li>"prev"           Previous page</li>
  * </ul>
  *
- * <p>If neither are present will increment last page number by 1.
- * For no last page# will set it to 1.
- *
  * <p>Forwards to:<ul>
- *      <li>"noAction"     no query.</li>
  *      <li>"success"      ok.</li>
  * </ul>
 
  * @author Mike Douglass
  */
-public class SearchResultParams extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
+public class SearchNextAction extends BwAbstractAction {
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();
 
-    int pageNum = request.getIntReqPar("pageNum", -1);
-    int start;
-    int count;
+    int offset = request.getIntReqPar("offset", -1);
 
-    if (pageNum < 0) {
-      pageNum = form.getCurPage() + 1;
-    }
-
-    if (pageNum == 0) {
-      pageNum = 1;
-    }
-
-    count = cl.getPreferences().getPageSize();
-
-    start = (pageNum - 1) * count;
-    form.setResultCt(count);
-    form.setPrevPage(Math.max(0, pageNum - 1));
-    form.setCurPage(pageNum);
-
-    if (pageNum == form.getNumPages()) {
-      form.setNextPage(0);
+    if (offset > 0) {
+      request.setRequestAttr(BwRequest.bwSearchListName,
+                             cl.getSearchResult(offset,
+                                                cl.getSearchParams()
+                                                        .getPageSize()));
     } else {
-      form.setNextPage(pageNum + 1);
+      Client.Position pos = Client.Position.current;
+
+      if (request.present("next")) {
+        pos = Client.Position.next;
+      } else if (request.present("prev")) {
+        pos = Client.Position.previous;
+      }
+
+        request.setRequestAttr(BwRequest.bwSearchListName,
+                             cl.getSearchResult(pos));
     }
 
-    form.setResultStart(start);
-    form.setResultCt(count);
+    /* Ensure we have categories embedded in session */
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
 
     return forwardSuccess;
   }

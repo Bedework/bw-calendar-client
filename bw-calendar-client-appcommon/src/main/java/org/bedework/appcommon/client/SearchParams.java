@@ -28,7 +28,9 @@ import java.io.Serializable;
  *
  * @author Mike Douglass douglm - rpi.edu
  */
-public class EventListPars implements Serializable {
+public class SearchParams implements Serializable {
+  private boolean publick;
+
   /* null if times not limited. */
   private BwDateTime fromDate;
 
@@ -52,11 +54,24 @@ public class EventListPars implements Serializable {
 
   private int resultSize;
 
-  private int curPage;
-
-  private int numPages;
+  private int curOffset;
 
   private int pageSize;
+
+  /** True for public
+   *
+   * @param val
+   */
+  public void setPublick(final boolean val) {
+    publick = val;
+  }
+
+  /**
+   * @return boolean
+   */
+  public boolean getPublick() {
+    return publick;
+  }
 
   /** if null no date time limiting
    * @param val
@@ -144,7 +159,7 @@ public class EventListPars implements Serializable {
     return forExport;
   }
 
-  /** True if we should retrieve the event to export
+  /** True if we should search the db rather than the index
    *
    * @param val
    */
@@ -206,29 +221,15 @@ public class EventListPars implements Serializable {
   /** Set current page in search result
    * @param val
    */
-  public void setCurPage(final int val) {
-    curPage = val;
+  public void setCurOffset(final int val) {
+    curOffset = val;
   }
 
   /**
    * @return current page in search result
    */
-  public int getCurPage() {
-    return curPage;
-  }
-
-  /** Set number of pages in search result
-   * @param val
-   */
-  public void setNumPages(final int val) {
-    numPages = val;
-  }
-
-  /**
-   * @return result set size for last search
-   */
-  public int getNumPages() {
-    return numPages;
+  public int getCurOffset() {
+    return curOffset;
   }
 
   /** Set current page size

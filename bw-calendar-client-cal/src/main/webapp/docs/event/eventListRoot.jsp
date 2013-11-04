@@ -7,16 +7,19 @@
 <%--  Generate events --%>
 <bean:define id="detailView" value="true" toScope="request"/>
 <events>
-  <bean:define id="elpars" name="bw_event_list_pars" scope="request" />
+  <bean:define id="sres" name="bw_search_result" scope="request" >
+  <bean:define id="params" name="bw_search_params" scope="request" >
 
-  <bw:emitText name="elpars" property="paged" />
-  <bw:emitText name="elpars" property="resultSize" />
-  <bw:emitText name="elpars" property="curPage"/>
-  <bw:emitText name="elpars" property="numPages"/>
+  <bw:emitText name="params" property="paged" />
+  <bw:emitText name="sres" property="found" tagName="resultSize" />
 
-  <logic:present name="bw_event_list" scope="request">
-    <logic:iterate id="eventFormatter" name="bw_event_list" scope="request">
-      <%@include file="/docs/event/emitEventForList.jsp"%>
+  <logic:present name="bw_search_list" scope="request">
+    <logic:iterate id="sre" name="bw_search_list" scope="request">
+      <logic:equal name="sre" property="docType" value="event">
+        <bean:define id="eventFormatter"
+                   name="eventFmt" property="eventInfo" toScope="request"  />
+        <%@include file="/docs/event/emitEventForList.jsp"%>
+      </logic:equal>
     </logic:iterate>
   </logic:present>
 </events>

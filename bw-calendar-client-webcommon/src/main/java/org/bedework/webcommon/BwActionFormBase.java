@@ -20,16 +20,12 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
-import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
-import org.bedework.appcommon.FormattedEvents;
 import org.bedework.appcommon.InOutBoxInfo;
-import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.NotificationInfo;
 import org.bedework.appcommon.SelectId;
-import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
@@ -57,7 +53,6 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.SchedulingI.FbResponses;
-import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.UtilActionForm;
@@ -156,28 +151,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private BwFilterDef currentFilter;
 
   /* ....................................................................
-   *                   Alarm fields
-   * .................................................................... */
-
-  /* The trigger is a date/time or a duration.
-   */
-
-  private TimeDateComponents triggerDateTime;
-
-  private DurationBean triggerDuration;
-
-  /** Specified trigger is relative to the start of event or todo, otherwise
-   * it's the end.
-   */
-  private boolean alarmRelStart = true;
-
-  private DurationBean alarmDuration;
-
-  private int alarmRepeatCount;
-
-  private boolean alarmTriggerByDate;
-
-  /* ....................................................................
    *                       Calendar suites
    * .................................................................... */
 
@@ -222,7 +195,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private int minIncrement;
 
-  private TimeDateComponents rdate;
+  //private TimeDateComponents rdate;
 
   private Collection<RecurRuleComponents> rruleComponents;
 
@@ -235,6 +208,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* ....................................................................
    *           Fields for creating or editing objects
    * .................................................................... */
+
+   private EventState eventState;
 
   /** Formatter for the current event
    */
@@ -270,8 +245,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   private boolean listAllEvents;
 
-  private FormattedEvents formattedEvents;
-
   private Collection<DateTimeFormatter> formattedRdates;
 
   private Collection<DateTimeFormatter> formattedExdates;
@@ -296,53 +269,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *                       Selection type and selection
    * .................................................................... */
 
-  // ENUM
-  private String selectionType = selectionTypeView;
-
   private String currentVirtualPath;
-
-  /* ....................................................................
-   *                       View period
-   * .................................................................... */
-
-  private static HashMap<String, Integer> viewTypeMap =
-    new HashMap<String, Integer>();
-
-  static {
-    for (int i = 0; i < BedeworkDefs.viewPeriodNames.length; i++) {
-      viewTypeMap.put(BedeworkDefs.viewPeriodNames[i], new Integer(i));
-    }
-  }
-
-  /** Index of the view type set when the page was last generated
-   */
-  private int curViewPeriod = -1;
-
-  /** This will be set if a refresh is needed - we do it on the way out.
-   */
-  private boolean refreshNeeded;
-
-  /** Index of the view type requested this time round. We set curViewPeriod to
-   * viewTypeI. This allows us to see if the view changed as a result of the
-   * request.
-   */
-  private int viewTypeI;
-
-  /** one of the viewTypeNames values
-   */
-  private String viewType;
-
-  /** The current view with user selected date (day, week, month etc)
-   */
-  private TimeView curTimeView;
-
-  /** MyCalendarVO version of the start date
-   */
-  private MyCalendarVO viewMcDate;
-
-  private TimeDateComponents viewStartDate;
-
-  private String date;
 
   private String eventRegAdminToken;
 
@@ -525,32 +452,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private InOutBoxInfo inBoxInfo;
   private InOutBoxInfo outBoxInfo;
-
-  /* ....................................................................
-   *                   Searches
-   * .................................................................... */
-
-  private int resultSize;
-
-  private int resultStart;
-
-  private int resultCt;
-
-  private String query;
-
-  private SearchResult searchResult;
-
-  private String searchLimits = "fromToday";
-
-  /* Values based on users page size */
-
-  private int prevPage; // 1+  0 for none
-
-  private int curPage; // 1+  0 for none
-
-  private int nextPage; // 1+  0 for none
-
-  private int numPages;
 
   private UpdateFromTimeZonesInfo updateFromTimeZonesInfo;
 
@@ -1551,20 +1452,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @param val calendar info
-   */
-  public void setCalInfo(final CalendarInfo val) {
-    calInfo = val;
-  }
-
-  /**
-   * @return calendar info
-   */
-  public CalendarInfo getCalInfo() {
-    return calInfo;
-  }
-
-  /**
    * @param val Property references
    */
   public void setPropRefs(final Collection<EventPropertiesReference> val) {
@@ -1679,213 +1566,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String getViewTypeName(final int i) {
     return BedeworkDefs.viewPeriodNames[i];
-  }
-
-  /** Index of the view type set when the page was last generated
-   *
-   * @param val  int valid view index
-   */
-  public void setCurViewPeriod(final int val) {
-    curViewPeriod = val;
-  }
-
-  /**
-   * @return view index
-   */
-  public int getCurViewPeriod() {
-    return curViewPeriod;
-  }
-
-  /** Index of the view type requested this time round. We set curViewPeriod to
-   * viewTypeI. This allows us to see if the view changed as a result of the
-   * request.
-   *
-   * @param val index
-   */
-  public void setViewTypeI(final int val) {
-    viewTypeI = val;
-  }
-
-  /**
-   * @return index
-   */
-  public int getViewTypeI() {
-    return viewTypeI;
-  }
-
-  /** This often appears as the request parameter specifying the view.
-   * It should be one of the viewTypeNames
-   *
-   * @param  val   String viewType
-   */
-  public void setViewType(final String val) {
-    viewType = Util.checkNull(val);
-
-    if (viewType == null) {
-      viewTypeI = -1;
-      return;
-    }
-
-    Integer i = viewTypeMap.get(viewType);
-
-    if (i == null) {
-      viewTypeI = BedeworkDefs.defaultView;
-    } else {
-      viewTypeI = i;
-    }
-  }
-
-  /** Return the value or a default if it's invalid
-   *
-   * @param val
-   * @return String valid view period
-   */
-  public String validViewPeriod(String val) {
-    int vt = BedeworkDefs.defaultView;
-
-    val = Util.checkNull(val);
-    if (val != null) {
-      Integer i = viewTypeMap.get(val);
-
-      if (i != null) {
-        vt = i;
-      }
-    }
-
-    return BedeworkDefs.viewPeriodNames[vt];
-  }
-
-  /**
-   * @return String
-   */
-  public String getViewType() {
-    return viewType;
-  }
-
-  /** Date of the view as a MyCalendar object
-   *
-   * @param val
-   */
-  public void setViewMcDate(final MyCalendarVO val) {
-    viewMcDate = val;
-  }
-
-  /** Date of the view as a MyCalendar object
-   *
-   * @return MyCalendarVO date last set
-   */
-  public MyCalendarVO getViewMcDate() {
-    return viewMcDate;
-  }
-
-  /** The current view (day, week, month etc)
-   *
-   * @param val
-   */
-  public void setCurTimeView(final TimeView val) {
-    curTimeView = val;
-  }
-
-  /**
-   * @return current view (day, week, month etc) and refresh the events.
-   */
-  public TimeView getCurTimeViewRefreshed() {
-    TimeView tv = getCurTimeView();
-    if (tv != null) {
-      tv.refreshEvents();
-    }
-
-    return tv;
-  }
-
-  /** Call to save some vm between requests
-   *
-   */
-  public void purgeCurTimeView() {
-    if (curTimeView != null) {
-      curTimeView.refreshEvents();
-    }
-  }
-
-  /**
-   *
-   * @return current view (day, week, month etc)
-   */
-  public TimeView getCurTimeView() {
-    return curTimeView;
-  }
-
-  /**
-   * @return time date
-   */
-  public TimeDateComponents getViewStartDate() {
-    if (viewStartDate == null) {
-      viewStartDate = getNowTimeComponents();
-    }
-
-    return viewStartDate;
-  }
-
-  /** This often appears as the request parameter specifying the date for an
-   * action. Always YYYYMMDD format
-   *
-   * @param  val   String date in YYYYMMDD format
-   */
-  public void setDate(final String val) {
-    if (!CheckData.checkDateString(val)) {
-      date = new MyCalendarVO(new Date(System.currentTimeMillis())).getDateDigits();
-    } else {
-      date = val;
-    }
-  }
-
-  /**
-   * @return date
-   */
-  public String getDate() {
-    return date;
-  }
-
-  /** XXX This looks wrong we might be refreshing twice.
-   *
-   */
-  public void refreshIsNeeded() {
-//    refreshView();
-//    curTimeView = null;
-    refreshNeeded = true;
-  }
-
-  /** set refreh needed flag
-   *
-   * @param val   boolean
-   */
-  public void setRefreshNeeded(final boolean val) {
-    refreshNeeded = val;
-  }
-
-  /**
-   * @return true if we need to refresh
-   */
-  public boolean isRefreshNeeded() {
-    return refreshNeeded;
-  }
-
-  /* ....................................................................
-   *                       Selection type
-   * .................................................................... */
-
-  /**
-   * @param val
-   */
-  public void setSelectionType(final String val) {
-    selectionType = val;
-  }
-
-  /**
-   * @return String
-   */
-  public String getSelectionType() {
-    return selectionType;
   }
 
   /* ====================================================================
@@ -2542,6 +2222,13 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *                   Events
    * ==================================================================== */
 
+   public EventState getEventState() {
+    if (eventState == null){
+      eventState = new EventState(this);
+    }
+    return eventState;
+  }
+
   /** Not set - invisible to jsp
    */
   /**
@@ -2586,21 +2273,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return listAllEvents;
   }
 
-  /**
+  /** Set an object containing the dates.
    *
-   * @param val formatted events
+   * @return EventDates  object representing date/times and duration
    */
-  public void setFormattedEvents(final FormattedEvents val) {
-    formattedEvents = val;
+  public void assignEventDates(EventDates val) {
+    eventDates = val;
   }
 
-  /** Return a formatted events object. If doing alerts we pick them out
-   * otherwise exclude them
+  /** Return an object containing the dates.
    *
-   * @return FormattedEvents  populated event value objects
+   * @return EventDates  object representing date/times and duration
    */
-  public FormattedEvents getFormattedEvents() {
-    return formattedEvents;
+  public EventDates getEventDates() {
+    return eventDates;
   }
 
   /**
@@ -2854,26 +2540,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * They will be distinguished by the action called.
    * ==================================================================== */
 
-  /** Set an object containing the dates.
-   *
-   * @return EventDates  object representing date/times and duration
-   */
-  public void assignEventDates(EventDates val) {
-    eventDates = val;
-  }
-
-  /** Return an object containing the dates.
-   *
-   * @return EventDates  object representing date/times and duration
-   */
-  public EventDates getEventDates() {
-    return eventDates;
-  }
-
-  /** Return an object containing the rdate.
+  /* * Return an object containing the rdate.
    *
    * @return TimeDateComponents  for rdate
-   */
+   * /
   public TimeDateComponents getRdate() {
     if (rdate == null) {
       try {
@@ -2886,7 +2556,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     }
 
     return rdate;
-  }
+  } */
 
   /**
    * @param val Collection of RecurRuleComponents
@@ -2989,106 +2659,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return outBoxInfo;
   }
 
-  /* ====================================================================
-   *                   Alarm fields
-   * ==================================================================== */
-
-  /* *
-   * @param val
-   * /
-  private void setTriggerDateTime(TimeDateComponents val) {
-    triggerDateTime = val;
-  } */
-
-  /**
-   * @return time date
-   */
-  public TimeDateComponents getTriggerDateTime() {
-    if (triggerDateTime == null) {
-      triggerDateTime = getNowTimeComponents();
-    }
-
-    return triggerDateTime;
-  }
-
-  /**
-   * @param val
-   */
-  public void setTriggerDuration(final DurationBean val) {
-    triggerDuration = val;
-  }
-
-  /**
-   * @return duration
-   */
-  public DurationBean getTriggerDuration() {
-    if (triggerDuration == null) {
-      triggerDuration = new DurationBean();
-    }
-
-    return triggerDuration;
-  }
-
-  /**
-   * @param val
-   */
-  public void setAlarmRelStart(final boolean val) {
-    alarmRelStart = val;
-  }
-
-  /**
-   * @return alarm rel start
-   */
-  public boolean getAlarmRelStart() {
-    return alarmRelStart;
-  }
-
-  /**
-   * @param val
-   */
-  public void setAlarmDuration(final DurationBean val) {
-    alarmDuration = val;
-  }
-
-  /**
-   * @return duration
-   */
-  public DurationBean getAlarmDuration() {
-    if (alarmDuration == null) {
-      alarmDuration = new DurationBean();
-    }
-
-    return alarmDuration;
-  }
-
-  /**
-   * @param val
-   */
-  public void setAlarmRepeatCount(final int val) {
-    alarmRepeatCount = val;
-  }
-
-  /**
-   * @return int
-   */
-  public int getAlarmRepeatCount() {
-    return alarmRepeatCount;
-  }
-
-  /**
-   * @param val
-   */
-  public void setAlarmTriggerByDate(final boolean val) {
-    alarmTriggerByDate = val;
-  }
-
-  /**
-   * @return  bool
-   */
-  public boolean getAlarmTriggerByDate() {
-    return alarmTriggerByDate;
-  }
-
   /* ....................................................................
    *                   public events submission
    * .................................................................... */
@@ -3139,154 +2709,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String getSnsubject() {
     return snsubject;
-  }
-
-  /* ....................................................................
-   *                   Searches
-   * .................................................................... */
-
-  /** Set result set size for last search
-   * @param val
-   */
-  public void setResultSize(final int val) {
-    resultSize = val;
-  }
-
-  /**
-   * @return result set size for last search
-   */
-  public int getResultSize() {
-    return resultSize;
-  }
-
-  /** Set retrieval start
-   * @param val
-   */
-  public void setResultStart(final int val) {
-    resultStart = val;
-  }
-
-  /**
-   * @return start position
-   */
-  public int getResultStart() {
-    return resultStart;
-  }
-
-  /** Set count found in last search
-   * @param val
-   */
-  public void setResultCt(final int val) {
-    resultCt = val;
-  }
-
-  /**
-   * @return count found in last search
-   */
-  public int getResultCt() {
-    return resultCt;
-  }
-
-  /** Set query from last search
-   *
-   * @param val
-   */
-  public void setQuery(final String val) {
-    query = val;
-  }
-
-  /** Get query from last search
-   *
-   * @return count found in last search
-   */
-  public String getQuery() {
-    return query;
-  }
-
-  /** Set last search result (segment)
-   *
-   * @param val
-   */
-  public void setSearchResult(final SearchResult val) {
-    searchResult = val;
-  }
-
-  /**
-   * @return last search result
-   */
-  public SearchResult getSearchResult() {
-    return searchResult;
-  }
-
-  /** Set search limits
-   *
-   * @param val
-   */
-  public void setSearchLimits(final String val) {
-    searchLimits = val;
-  }
-
-  /**
-   * @return search limits
-   */
-  public String getSearchLimits() {
-    return searchLimits;
-  }
-
-  /** Set previous page in search result
-   * @param val
-   */
-  public void setPrevPage(final int val) {
-    prevPage = val;
-  }
-
-  /**
-   * @return previous page in search result
-   */
-  public int getPrevPage() {
-    return prevPage;
-  }
-
-  /** Set current page in search result
-   * @param val
-   */
-  public void setCurPage(final int val) {
-    curPage = val;
-  }
-
-  /**
-   * @return current page in search result
-   */
-  public int getCurPage() {
-    return curPage;
-  }
-
-  /** Set next page in search result
-   * @param val
-   */
-  public void setNextPage(final int val) {
-    nextPage = val;
-  }
-
-  /**
-   * @return next page in search result
-   */
-  public int getNextPage() {
-    return nextPage;
-  }
-
-  /** Set number of pages in search result
-   * @param val
-   */
-  public void setNumPages(final int val) {
-    numPages = val;
-  }
-
-  /**
-   * @return result set size for last search
-   */
-  public int getNumPages() {
-    return numPages;
   }
 
   /** Return an object representing an events start date.
@@ -3355,13 +2777,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   }
 
   /**
-   * @return TimeDateComponents used for labels
-   */
-  public TimeDateComponents getForLabels() {
-    return getEventDates().getForLabels();
-  }
-
-  /**
    * @param val
    */
   public void setSession(final BwSession val) {
@@ -3382,9 +2797,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @param request The servlet request we are processing
    */
   @Override
-  public void reset(final ActionMapping mapping, final HttpServletRequest request) {
-    viewTypeI = -1;
-    date = null;
+  public void reset(final ActionMapping mapping,
+                    final HttpServletRequest request) {
     today = null;
 
     //key.reset();

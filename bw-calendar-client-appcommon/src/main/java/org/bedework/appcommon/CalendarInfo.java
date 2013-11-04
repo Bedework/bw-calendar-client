@@ -33,11 +33,11 @@ import java.util.TimeZone;
 
 /** Class to hold localized calendar info.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm     rpi.edu
  *  @version 1.0
  */
 public class CalendarInfo implements Serializable {
-  private static HashMap<Locale, CalendarInfo> infoMap = new HashMap<Locale, CalendarInfo>();
+  private static HashMap<Locale, CalendarInfo> infoMap = new HashMap<>();
 
   /** Current locale
    */

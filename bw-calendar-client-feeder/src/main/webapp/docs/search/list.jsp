@@ -14,14 +14,16 @@ try {
 <page>searchResult</page>
 
 <searchResults>
-  <bw:emitText name="calForm" property="query"/>
-  <bw:emitText name="calForm" property="resultSize" />
-  <bw:emitText name="calForm" property="curPage"/>
-  <bw:emitText name="calForm" property="numPages"/>
-  <bw:emitText name="calForm" property="searchLimits"/>
+  <bw:emitText name="moduleState" property="query"/>
+  <bw:emitText name="moduleState" property="searchLimits"/>
+  <logic:notPresent name="bw_search_result" scope="request" >
+    <resultSize>0</resultSize>
+  </logic:notPresent>
 
-  <logic:present name="calForm" property="searchResult" >
-    <logic:iterate id="sre" name="calForm" property="searchResult.searchResult" >
+  <logic:present name="bw_search_result" scope="request" >
+    <bean:define id="sres" name="bw_search_result" scope="request" >
+    <bw:emitText name="sres" property="found" tagName="resultSize" />
+    <logic:iterate id="sre" name="bw_search_list" scope="request">
       <searchResult>
         <bw:emitText name="sre" property="score" />
         <logic:equal name="sre" property="docType" value="event">

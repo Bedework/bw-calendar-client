@@ -29,6 +29,7 @@ import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.EventKey;
 
@@ -40,17 +41,15 @@ import java.util.Date;
  * @author Mike Douglass  douglm - rpi.edu
  */
 public class RenderEventAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     if (form.getNewSession()) {
-      form.refreshIsNeeded();
+      request.refresh();
       return forwardGotomain;
     }
 
+    BwModuleState mstate = request.getModule().getState();
     EventKey ekey = form.getEventKey();
 
     if (ekey == null) {
@@ -94,7 +93,7 @@ public class RenderEventAction extends EventActionBase {
       // Replies have all sorts of missing fields
       /* Only change date if current date is outside range of event. */
 
-      String cur = form.getViewMcDate().getDateDigits();
+      String cur = mstate.getViewMcDate().getDateDigits();
 
       /* Get start date in current locale */
 
@@ -114,7 +113,7 @@ public class RenderEventAction extends EventActionBase {
       /* This doesn't seem altogether correct */
       if ((cur.compareTo(evst) < 0) ||
           (cur.compareTo(evend) > 0)) {
-        setViewDate(form, evst);
+        setViewDate(request, evst);
       }
     }
 

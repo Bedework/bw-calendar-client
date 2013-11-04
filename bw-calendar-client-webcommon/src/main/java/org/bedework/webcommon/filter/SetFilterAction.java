@@ -37,7 +37,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      created ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm     rpi.edu
  */
 public class SetFilterAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -57,7 +57,7 @@ public class SetFilterAction extends BwAbstractAction {
     }
 
     form.setCurrentFilter(fd);
-    form.setRefreshNeeded(true);
+    request.refresh();
     return forwardSuccess;
   }
 }

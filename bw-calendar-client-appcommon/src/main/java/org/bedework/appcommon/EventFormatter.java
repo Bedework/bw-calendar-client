@@ -31,7 +31,6 @@ import net.fortuna.ical4j.model.TimeZoneRegistry;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /** Object to provide formatting services for a BwEvent.
  *
@@ -42,8 +41,6 @@ public class EventFormatter extends EventTimeZonesRegistry
   /** The event
    */
   private EventInfo eventInfo;
-
-  private Client cl;
 
   /** The view currently in place.
    */
@@ -75,7 +72,13 @@ public class EventFormatter extends EventTimeZonesRegistry
     super(trans,
           eventInfo.getEvent());
     this.eventInfo = eventInfo;
-    this.cl = cl;
+
+    try {
+      xmlAccess = AccessXmlUtil.getXmlAclString(eventInfo.getCurrentAccess().getAcl(),
+                                                cl);
+    } catch (Throwable t) {
+      error(t);
+    }
   }
 
   /** =====================================================================
@@ -99,18 +102,6 @@ public class EventFormatter extends EventTimeZonesRegistry
   /** ===================================================================
                       Convenience methods
       =================================================================== */
-
-  /** Get today as a calendar object
-   *
-   * @return MyCalendarVO
-   */
-  public MyCalendarVO getToday() {
-    if (today == null) {
-      today = new MyCalendarVO(new Date(System.currentTimeMillis()));
-    }
-
-    return today;
-  }
 
   /** Get the event's starting day and time
    *
@@ -181,15 +172,6 @@ public class EventFormatter extends EventTimeZonesRegistry
    * @return String
    */
   public String getXmlAccess() {
-    try {
-      if (xmlAccess == null) {
-        xmlAccess = AccessXmlUtil.getXmlAclString(eventInfo.getCurrentAccess().getAcl(),
-                                                  cl);
-      }
-    } catch (Throwable t) {
-      error(t);
-    }
-
     return xmlAccess;
   }
 

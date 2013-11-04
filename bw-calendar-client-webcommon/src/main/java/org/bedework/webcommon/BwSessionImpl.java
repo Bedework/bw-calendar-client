@@ -203,15 +203,26 @@ public class BwSessionImpl implements BwSession {
   public void prepareRender(final BwRequest req) {
     BwActionFormBase form = req.getBwForm();
     Client cl = req.getClient();
+    BwModuleState mstate = req.getModule().getState();
 
     try {
       form.setCurrentVirtualPath(cl.getVirtualPath());
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
       form.assignCurrentView(cl.getCurrentView());
 
+      if (mstate.getEventDates() == null) {
+        mstate.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),
+                                               mstate.getCalInfo(),
+                                               form.getHour24(),
+                                               form.getEndDateType(),
+                                               config.getMinIncrement(),
+                                               form.getErr()));
+      }
+
+      /* This only till we make module state the resuest scope form */
       if (form.getEventDates() == null) {
         form.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),
-                                             form.getCalInfo(),
+                                               mstate.getCalInfo(),
                                              form.getHour24(),
                                              form.getEndDateType(),
                                              config.getMinIncrement(),
@@ -221,7 +232,7 @@ public class BwSessionImpl implements BwSession {
       Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
       long now = System.currentTimeMillis();
 
-      if (!form.isRefreshNeeded() ||
+      if (!mstate.getRefresh() ||
               (lastRefresh == null) || (now - lastRefresh > refreshRate)) {
         // Implant various objects for the pages.
         embedFilters(req);
@@ -242,7 +253,7 @@ public class BwSessionImpl implements BwSession {
         req.setSessionAttr(refreshTimeAttr, now);
       }
 
-      if (!form.isRefreshNeeded()) {
+      if (!mstate.getRefresh()) {
         // Always returned false; if (!form.fetchSvci().refreshNeeded()) {
         return;
         //}
@@ -254,9 +265,9 @@ public class BwSessionImpl implements BwSession {
     }
 
     if (!req.getClient().getPublicAdmin() ||
-            form.getCurTimeView() == null) {
+            mstate.getCurTimeView() == null) {
       refreshView(req);
-      form.setRefreshNeeded(false);
+      mstate.setRefresh(false);
     }
   }
 
@@ -267,13 +278,13 @@ public class BwSessionImpl implements BwSession {
   }
 
   public TimeView getCurTimeView(final BwRequest req) {
-    BwActionFormBase form = req.getBwForm();
+    BwModuleState mstate = req.getModule().getState();
 
-    if (form.getCurTimeView() == null) {
+    if (mstate.getCurTimeView() == null) {
       refreshView(req);
     }
 
-    return form.getCurTimeView();
+    return mstate.getCurTimeView();
   }
 
   public AuthProperties getAuthpars() {
@@ -520,12 +531,13 @@ public class BwSessionImpl implements BwSession {
   }
 
   private void refreshView(final BwRequest req) {
+    BwModuleState mstate = req.getModule().getState();
     BwActionFormBase form = req.getBwForm();
     Client cl = req.getClient();
 
     try {
       /* First ensure we have the view period set */
-      if (form.getCurTimeView() == null) {
+      if (mstate.getCurTimeView() == null) {
         /** Figure out the default from the properties
          */
         String vn;
@@ -540,62 +552,62 @@ public class BwSessionImpl implements BwSession {
           vn = "week";
         }
 
-        if (form.getCurViewPeriod() < 0) {
+        if (mstate.getCurViewPeriod() < 0) {
           for (int i = 1; i < BedeworkDefs.viewPeriodNames.length; i++) {
             if (BedeworkDefs.viewPeriodNames[i].startsWith(vn)) {
-              form.setCurViewPeriod(i);
+              mstate.setCurViewPeriod(i);
               break;
             }
           }
 
-          if (form.getCurViewPeriod() < 0) {
-            form.setCurViewPeriod(BedeworkDefs.weekView);
+          if (mstate.getCurViewPeriod() < 0) {
+            mstate.setCurViewPeriod(BedeworkDefs.weekView);
           }
 
-          form.setViewMcDate(new MyCalendarVO(new Date(System.currentTimeMillis())));
+          mstate.setViewMcDate(new MyCalendarVO(new Date(System.currentTimeMillis())));
         }
       }
 
       /* Now get a view object */
 
-      if ((form.getCurViewPeriod() == BedeworkDefs.todayView) ||
-              (form.getViewMcDate() == null)) {
-        form.setViewMcDate(new MyCalendarVO(new Date(
+      if ((mstate.getCurViewPeriod() == BedeworkDefs.todayView) ||
+              (mstate.getViewMcDate() == null)) {
+        mstate.setViewMcDate(new MyCalendarVO(new Date(
                 System.currentTimeMillis())));
       }
 
       FilterBase filter = getFilter(req, null);
       TimeView tv = null;
 
-      switch (form.getCurViewPeriod()) {
+      switch (mstate.getCurViewPeriod()) {
         case BedeworkDefs.todayView:
           tv = new DayView(form.getErr(),
-                           form.getViewMcDate(),
+                           mstate.getViewMcDate(),
                            filter);
           break;
         case BedeworkDefs.dayView:
           tv = new DayView(form.getErr(),
-                           form.getViewMcDate(),
+                           mstate.getViewMcDate(),
                            filter);
           break;
         case BedeworkDefs.weekView:
           tv = new WeekView(form.getErr(),
-                            form.getViewMcDate(),
+                            mstate.getViewMcDate(),
                             filter);
           break;
         case BedeworkDefs.monthView:
           tv = new MonthView(form.getErr(),
-                             form.getViewMcDate(),
+                             mstate.getViewMcDate(),
                              filter);
           break;
         case BedeworkDefs.yearView:
           tv = new YearView(form.getErr(),
-                            form.getViewMcDate(),
+                            mstate.getViewMcDate(),
                             form.getShowYearData(), filter);
           break;
       }
 
-      form.setCurTimeView(tv);
+      mstate.setCurTimeView(tv);
     } catch (Throwable t) {
       // Not much we can do here
       req.getErr().emit(t);

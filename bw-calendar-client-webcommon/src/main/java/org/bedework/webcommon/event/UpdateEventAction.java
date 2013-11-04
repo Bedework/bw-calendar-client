@@ -98,9 +98,6 @@ import java.util.TreeSet;
  * @author Mike Douglass
  */
 public class UpdateEventAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(javax.servlet.http.HttpServletRequest, org.bedework.webcommon.BwSession, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -605,7 +602,7 @@ public class UpdateEventAction extends EventActionBase {
 
       resetEvent(request);
     } else {
-      form.refreshIsNeeded();
+      request.refresh();
     }
 
     if (adding) {

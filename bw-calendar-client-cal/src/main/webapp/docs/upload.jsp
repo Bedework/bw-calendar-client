@@ -14,17 +14,17 @@ try {
 
 <formElements>
   <form>
-  <!-- user's writable calendars -->
-  <calendars>
-    <bean:define id="addContentCalendarCollections"
-                 name="bw_addcontent_collection_list" scope="session" />
-    <html:select property="calendarId">
-      <html:optionsCollection name="addContentCalendarCollections"
-                              label="path"
-                              value="path"/>
+    <!-- user's writable calendars -->
+    <calendars>
+      <bean:define id="addContentCalendarCollections"
+                   name="bw_addcontent_collection_list" scope="session" />
+      <html:select property="calendarId">
+        <html:optionsCollection name="addContentCalendarCollections"
+                                label="path"
+                                value="path"/>
      </html:select>
    </calendars>
-  </form>
+ </form>
 </formElements>
 
 <%

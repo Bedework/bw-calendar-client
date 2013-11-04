@@ -163,8 +163,8 @@ try {
                      name="bw_contacts_list" scope="session"/>
         <html:select property="allContactId">
           <html:optionsCollection name="contacts"
-                                    label="name.value"
-                                    value="uid"/>
+                                  label="name.value"
+                                  value="uid"/>
         </html:select>
       </all>
       <logic:equal name="bwconfig" property="autoCreateContacts"

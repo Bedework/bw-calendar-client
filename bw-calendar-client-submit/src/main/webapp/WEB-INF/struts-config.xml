@@ -85,7 +85,7 @@
 
     <!-- Forward for a new session from some bookmarked link; used by
          org.bedework.webcommon.RenderAction when a refresh is needed -->
-    <forward name="gotomain" path="/docs/main.jsp" />
+    <forward name="gotomain" path="/main/showMain.rdo" />
 
     <!-- set up state and getResource going. -->
     <forward name="initial" path="/setup.do"/>
@@ -108,7 +108,7 @@
 
     <!-- renderUrl -->
     <action    path="/main/initialise"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only"
@@ -120,7 +120,7 @@
 
     <!-- renderUrl -->
     <action    path="/main/processShowMain"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=processAndOnly"
@@ -130,7 +130,7 @@
 
     <!-- renderUrl -->
     <action    path="/main/showMain"
-               type="org.bedework.webcommon.RenderAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only"
@@ -155,7 +155,7 @@
        ............................................................... -->
 
     <action    path="/main/setSelection"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
@@ -220,7 +220,7 @@
     </action>
 
     <action    path="/event/initPendingEvents"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action"
@@ -602,7 +602,7 @@
          =============================================================== -->
 
     <action    path="/search/search"
-               type="org.bedework.webcommon.search.Search"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
@@ -622,7 +622,7 @@
     </action>
 
     <action    path="/search/next"
-               type="org.bedework.webcommon.search.SearchResultParams"
+               type="org.bedework.webcommon.search.SearchNextAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"

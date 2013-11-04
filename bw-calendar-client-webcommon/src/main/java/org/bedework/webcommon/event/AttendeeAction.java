@@ -20,6 +20,7 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
 import com.google.gson.Gson;
@@ -53,9 +54,6 @@ import java.util.Collection;
  * </ul>
  */
 public class AttendeeAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -63,12 +61,14 @@ public class AttendeeAction extends EventActionBase {
       return forwardNoAccess; // First line of defence
     }
 
+    BwModuleState mstate = request.getModule().getState();
+
     boolean listResponseOnly = "yes".equals(request.getReqPar("list"));
     boolean noFb = "no".equals(request.getReqPar("getfb"));
 
     if (!listResponseOnly && !noFb) {
       /* Select appropriate view for freebusy display */
-      gotoDateView(request, form.getDate(), form.getViewTypeI());
+      gotoDateView(request, mstate.getDate(), mstate.getViewTypeI());
     }
 
     /* If we were sent a bunch of json use that */

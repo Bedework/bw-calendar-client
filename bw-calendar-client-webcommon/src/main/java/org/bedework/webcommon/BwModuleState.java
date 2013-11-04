@@ -19,10 +19,18 @@
 
 package org.bedework.webcommon;
 
-import edu.rpi.sss.util.servlets.PresentationState;
+import org.bedework.appcommon.BedeworkDefs;
+import org.bedework.appcommon.CalendarInfo;
+import org.bedework.appcommon.MyCalendarVO;
+import org.bedework.appcommon.TimeView;
+import org.bedework.calsvci.indexing.SearchResult;
+import org.bedework.calsvci.indexing.SearchResultEntry;
+import org.bedework.util.misc.Util;
+import org.bedework.util.servlet.filters.PresentationState;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** This class will be exposed to JSP via the request. Do not expose the
@@ -33,14 +41,80 @@ import java.util.Map;
 public class BwModuleState implements Serializable {
   private String moduleName;
 
+  private boolean refresh;
+
   private PresentationState ps;
 
   private static final int maxAppVars = 50; // Stop screwing around.
 
+  //private EventState eventState;
+
   Map<String, String> vars = new HashMap<>();
+  private TimeDateComponents viewStartDate;
+  private CalendarInfo calInfo;
+  private EventDates eventDates;
+
+  /* ....................................................................
+   *                       View period
+   * .................................................................... */
+
+  // ENUM
+  private String selectionType = BedeworkDefs.selectionTypeView;
+
+  private String date;
+
+  /** Index of the view type set when the page was last generated
+   */
+  private int curViewPeriod = -1;
+
+  /** one of the viewTypeNames values
+   */
+  private String viewType;
+
+  /** MyCalendarVO version of the start date
+   */
+  private MyCalendarVO viewMcDate;
+
+  /** Index of the view type requested this time round. We set curViewPeriod to
+   * viewTypeI. This allows us to see if the view changed as a result of the
+   * request.
+   */
+  private int viewTypeI;
+
+  /** The current view with user selected date (day, week, month etc)
+   */
+  private TimeView curTimeView;
+
+  /* ....................................................................
+   *                   Searches
+   * .................................................................... */
+
+  private String query;
+
+  private SearchResult searchResult;
+
+  private List<SearchResultEntry> searchResultEntries;
+
+  private String searchLimits = "fromToday";
 
   public BwModuleState(String moduleName) {
     this.moduleName = moduleName;
+  }
+
+  /** flag refresh needed
+   *
+   * @param val
+   */
+  public void setRefresh(final boolean val) {
+    refresh = val;
+  }
+
+  /**
+   *
+   * @return true if refresh needed
+   */
+  public boolean getRefresh() {
+    return refresh;
   }
 
   /**
@@ -63,6 +137,111 @@ public class BwModuleState implements Serializable {
   public String getModuleName() {
     return moduleName;
   }
+
+  /**
+   * @param val calendar info
+   */
+  public void setCalInfo(final CalendarInfo val) {
+    calInfo = val;
+  }
+
+  /**
+   * @return calendar info
+   */
+  public CalendarInfo getCalInfo() {
+    return calInfo;
+  }
+
+  /** Set an object containing the dates.
+   *
+   * @return EventDates  object representing date/times and duration
+   */
+  public void assignEventDates(EventDates val) {
+    eventDates = val;
+  }
+
+  /** Return an object containing the dates.
+   *
+   * @return EventDates  object representing date/times and duration
+   */
+  public EventDates getEventDates() {
+    return eventDates;
+  }
+
+  /**
+   * @return time date
+   */
+  public TimeDateComponents getViewStartDate() {
+    if (viewStartDate == null) {
+      viewStartDate = getEventDates().getNowTimeComponents();
+    }
+
+    return viewStartDate;
+  }
+
+  /** Date of the view as a MyCalendar object
+   *
+   * @param val
+   */
+  public void setViewMcDate(final MyCalendarVO val) {
+    viewMcDate = val;
+  }
+
+  /** Date of the view as a MyCalendar object
+   *
+   * @return MyCalendarVO date last set
+   */
+  public MyCalendarVO getViewMcDate() {
+    return viewMcDate;
+  }
+
+  /** This often appears as the request parameter specifying the view.
+   * It should be one of the viewTypeNames
+   *
+   * @param  val   String viewType
+   */
+  public void setViewType(final String val) {
+    viewType = Util.checkNull(val);
+
+    if (viewType == null) {
+      viewTypeI = -1;
+      return;
+    }
+
+    Integer i = BwAbstractAction.viewTypeMap.get(viewType);
+
+    if (i == null) {
+      viewTypeI = BedeworkDefs.defaultView;
+    } else {
+      viewTypeI = i;
+    }
+  }
+
+  /**
+   * @return String
+   */
+  public String getViewType() {
+    return viewType;
+  }
+
+  /** Index of the view type set when the page was last generated
+   *
+   * @param val  int valid view index
+   */
+  public void setCurViewPeriod(final int val) {
+    curViewPeriod = val;
+  }
+
+  /**
+   * @return view index
+   */
+  public int getCurViewPeriod() {
+    return curViewPeriod;
+  }
+
+  /* ====================================================================
+   *                   Variables
+   * ==================================================================== */
 
   /** Called to set a variable to a value
    *
@@ -92,5 +271,116 @@ public class BwModuleState implements Serializable {
   public String getVar(final String name) {
     return vars.get(name);
   }
+
+  /* ....................................................................
+   *                   Searches
+   * .................................................................... */
+
+  /** Set query from last search
+   *
+   * @param val
+   */
+  public void setQuery(final String val) {
+    query = val;
+  }
+
+  /** Get query from last search
+   *
+   * @return count found in last search
+   */
+  public String getQuery() {
+    return query;
+  }
+
+  /** Set search limits
+   *
+   * @param val
+   */
+  public void setSearchLimits(final String val) {
+    searchLimits = val;
+  }
+
+  /**
+   * @return search limits
+   */
+  public String getSearchLimits() {
+    return searchLimits;
+  }
+
+  /* ....................................................................
+   *                   View state
+   * .................................................................... */
+
+  /**
+   * @param val
+   */
+  public void setSelectionType(final String val) {
+    selectionType = val;
+  }
+
+  /**
+   * @return String
+   */
+  public String getSelectionType() {
+    return selectionType;
+  }
+
+  /** Last date used to position ourselves
+   *
+   * @param val
+   */
+  public void setDate(final String val) {
+    date = val;
+  }
+
+  /**
+   *
+   * @return Last date used to position ourselves
+   */
+  public String getDate() {
+    return date;
+  }
+
+  /** Index of the view type requested this time round. We set curViewPeriod to
+   * viewTypeI. This allows us to see if the view changed as a result of the
+   * request.
+   *
+   * @param val index
+   */
+  public void setViewTypeI(final int val) {
+    viewTypeI = val;
+  }
+
+  /**
+   * @return index
+   */
+  public int getViewTypeI() {
+    return viewTypeI;
+  }
+
+  /** The current view (day, week, month etc)
+   *
+   * @param val
+   */
+  public void setCurTimeView(final TimeView val) {
+    curTimeView = val;
+  }
+
+  /**
+   *
+   * @return current view (day, week, month etc)
+   */
+  public TimeView getCurTimeView() {
+    return curTimeView;
+  }
+
+  /* later
+  public EventState getEventState() {
+    if (eventState == null){
+      eventState = new EventState(this);
+    }
+    return eventState;
+  }
+  */
 }
 

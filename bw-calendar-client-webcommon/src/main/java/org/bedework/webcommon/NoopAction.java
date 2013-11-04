@@ -19,7 +19,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.EventListPars;
 
 /** This is a no-op action
  *
@@ -33,24 +32,13 @@ public class NoopAction extends BwAbstractAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     if (form.getNewSession()) {
-      form.refreshIsNeeded();
+      request.refresh();
 
       Client cl = request.getClient();
 
       String defViewMode = cl.getPreferences().getDefaultViewMode();
 
       if ("list".equals(defViewMode)) {
-        /* Set up the event list parameters */
-
-        EventListPars elpars = new EventListPars();
-        int forward = setEventListPars(request, elpars);
-
-        if (forward != forwardSuccess) {
-          return forward;
-        }
-
-        cl.setEventListPars(elpars);
-
         return forwardListEvents;
       }
     }

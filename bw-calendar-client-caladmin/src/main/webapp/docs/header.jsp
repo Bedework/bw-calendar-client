@@ -11,6 +11,7 @@ try {
 
 <bedework>
   <bean:define id="bwconfig" name="calForm" property="config" toScope="session" />
+  <bean:define id="moduleState" name="bw_module_state" scope="request" />
 
   <now><%-- The actual date right "now" - this may not be the same as currentdate --%>
     <bw:emitText name="calForm" property="defaultTzid" />
@@ -18,7 +19,7 @@ try {
     <date><bean:write name="fmtnow" property="date"/></date><%-- Value: YYYYMMDD --%>
   </now>
 
-  <bean:define id="ctView" name="calForm" property="curTimeView"/>
+  <bean:define id="ctView" name="moduleState" property="curTimeView"/>
   <currentdate><%-- The current user-selected date --%>
     <date><bean:write name="ctView" property="curDayFmt.dateDigits"/></date><%--
       Value: yyyymmdd - date value --%>

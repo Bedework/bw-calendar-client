@@ -32,8 +32,8 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.AdminClientImpl;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ClientImpl;
-import org.bedework.appcommon.client.EventListPars;
 import org.bedework.appcommon.client.ROClientImpl;
+import org.bedework.appcommon.client.SearchParams;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.filter.ObjectFilter;
 import org.bedework.caldav.util.filter.OrFilter;
@@ -90,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -108,6 +109,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "rpiappname";
+
+  static HashMap<String, Integer> viewTypeMap =
+          new HashMap<String, Integer>();
+
+  static {
+    for (int i = 0; i < BedeworkDefs.viewPeriodNames.length; i++) {
+      viewTypeMap.put(BedeworkDefs.viewPeriodNames[i], new Integer(i));
+    }
+  }
 
   @Override
   public String getId() {
@@ -180,16 +190,19 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
+    checkMvarReq(bwreq);
+
     Client cl = bwreq.getClient();
 
     Locale loc = cl.getUserLocale(reqLocales,
                                   form.getRequestedLocale());
+    BwModuleState mstate = bwreq.getModule().getState();
 
     if (loc != null) {
       BwLocale.setLocale(loc);
       Locale cloc = form.getCurrentLocale();
       if ((cloc == null) | (!cloc.equals(loc))) {
-        form.setRefreshNeeded(true);
+        mstate.setRefresh(true);
       }
       form.setCurrentLocale(loc);
     }
@@ -201,7 +214,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
 
     // We need to have set the current locale before we do this.
-    form.setCalInfo(CalendarInfo.getInstance());
+    mstate.setCalInfo(CalendarInfo.getInstance());
 
     form.setGuest(bsess.isGuest());
 
@@ -222,9 +235,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       if (!cl.getPublicAdmin()) {
         String viewType = request.getReqPar("viewType");
         if (viewType != null) {
-          form.setCurViewPeriod(form.getViewTypeI());
+          mstate.setCurViewPeriod(mstate.getViewTypeI());
         } else {
-          form.setViewType(prefs.getPreferredViewPeriod());
+          mstate.setViewType(prefs.getPreferredViewPeriod());
         }
 
         // Set to default view or view in request.
@@ -345,8 +358,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     try {
       if (bwreq.present("viewType")) {
         gotoDateView(bwreq,
-                     form.getDate(),
-                     form.getViewTypeI());
+                     mstate.getDate(),
+                     mstate.getViewTypeI());
       }
 
       forward = forwards[doAction(bwreq, form)];
@@ -485,13 +498,31 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return ps;
   }
 
-  protected int setEventListPars(final BwRequest request,
-                                 final EventListPars elpars) throws Throwable {
+  protected int setSearchParams(final BwRequest request,
+                                final SearchParams params) throws Throwable {
     BwActionFormBase form = request.getBwForm();
+    BwModuleState mstate = request.getModule().getState();
     Client cl = request.getClient();
+
+    if (cl.getPublicAdmin() || cl.isGuest()) {
+      params.setPublick(true);
+    } else {
+      params.setPublick(request.present("public"));
+    }
 
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
+
+    String lim = mstate.getSearchLimits();
+    if (lim != null) {
+      if ("none".equals(lim)) {
+        // no limits
+      } else if ("beforeToday".equals(lim)) {
+        endStr = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
+      } else if ("fromToday".equals(lim)) {
+        startStr = DateTimeUtil.isoDate(new java.util.Date());
+      }
+    }
 
     AuthProperties authp = cl.getAuthProperties();
 
@@ -502,11 +533,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if ((startStr == null) && (endStr == null)) {
       if (!form.getListAllEvents()) {
-        elpars.setFromDate(todaysDateTime(form));
+        params.setFromDate(todaysDateTime(form));
 
         // Must have end
 
-        elpars.setToDate(elpars.getFromDate().addDur(new Dur(days, 0, 0, 0)));
+        params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
+                                                             0, 0)));
       }
     } else {
       int max = 0;
@@ -527,18 +559,18 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         return forwardNoAction;
       }
 
-      elpars.setFromDate(tr.getStart());
-      elpars.setToDate(tr.getEnd());
+      params.setFromDate(tr.getStart());
+      params.setToDate(tr.getEnd());
     }
 
     int page = request.getIntReqPar("p", -1);
-    elpars.setPaged(page > 0);
-    elpars.setCurPage(page);
+    params.setPaged(page > 0);
+    params.setCurOffset(page);
 
-    if (elpars.getPaged()) {
-      elpars.setPageSize(cl.getPreferences().getPageSize());
-      if (elpars.getPageSize() < 0) {
-        elpars.setPaged(false);
+    if (params.getPaged()) {
+      params.setPageSize(cl.getPreferences().getPageSize());
+      if (params.getPageSize() < 0) {
+        params.setPaged(false);
       }
     }
 
@@ -552,10 +584,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (cal != null) {
-      elpars.setCollection(cal);
+      params.setCollection(cal);
     }
 
-    elpars.setQuery(request.getReqPar("query"));
+    params.setQuery(request.getReqPar("query"));
 
     FilterBase filter = null;
     BwFilterDef fd = request.getFilterDef();
@@ -616,9 +648,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    elpars.setFilter(filter);
+    params.setFilter(filter);
 
-    elpars.setFormat(request.getReqPar("format"));
+    params.setFormat(request.getReqPar("format"));
 
     return forwardSuccess;
   }
@@ -686,7 +718,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   protected boolean setView(final BwRequest request,
                             String name) throws CalFacadeException {
-    BwActionFormBase form = request.getBwForm();
+    BwModuleState mstate = request.getModule().getState();
     Client cl = request.getClient();
 
     if (name == null) {
@@ -704,8 +736,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return false;
     }
 
-    form.setSelectionType(BedeworkDefs.selectionTypeView);
-    form.refreshIsNeeded();
+    mstate.setSelectionType(BedeworkDefs.selectionTypeView);
+    mstate.setRefresh(true);
     return true;
   }
 
@@ -946,6 +978,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                         final String intunitStr,
                         final int interval) throws Throwable {
     Client cl = request.getClient();
+    BwModuleState mstate = request.getModule().getState();
 
     /*  Start of getting date/time - make a common method? */
 
@@ -961,7 +994,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       end = tv.getLastDay();
       end.add(Calendar.DATE, 1);
     } else {
-      start = form.getCalInfo().getFirstDayOfThisWeek(Timezones.getDefaultTz(),
+      start = mstate.getCalInfo().getFirstDayOfThisWeek(Timezones.getDefaultTz(),
                                                       DateTimeUtil.fromISODate(st));
 
       // Set end to 1 week on.
@@ -970,7 +1003,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     // Don't allow more than a month
-    Calendar check = Calendar.getInstance(form.getCalInfo().getLocale());
+    Calendar check = Calendar.getInstance(mstate.getCalInfo().getLocale());
     check.setTime(start.getTime());
     check.add(Calendar.DATE, 32);
 
@@ -1036,7 +1069,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     form.setFbResponses(resps);
 
     FormattedFreeBusy ffb = new FormattedFreeBusy(resps.getAggregatedResponse(),
-                                                  form.getCalInfo().getLocale());
+                                                  mstate.getCalInfo().getLocale());
 
     form.setFormattedFreeBusy(ffb);
 
@@ -1461,7 +1494,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   protected void gotoDateView(final BwRequest request,
                               final String date,
                               int newViewTypeI) throws Throwable {
-    BwActionFormBase form = request.getBwForm();
+    BwModuleState mstate = request.getModule().getState();
+
+    //BwActionFormBase form = request.getBwForm();
     /* We get a new view if either the date changed or the view changed.
      */
     boolean newView = false;
@@ -1481,7 +1516,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       if (newViewTypeI == BedeworkDefs.dayView) {
         // selected specific day to display from personal event entry screen.
 
-        Date jdt = BwDateTimeUtil.getDate(form.getViewStartDate().getDateTime());
+        Date jdt = BwDateTimeUtil.getDate(mstate.getViewStartDate().getDateTime());
         dt = new MyCalendarVO(jdt);
         newView = true;
       } else {
@@ -1490,7 +1525,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
 
         // Just stay here
-        dt = form.getViewMcDate();
+        dt = mstate.getViewMcDate();
         if (dt == null) {
           // Just in case
           dt = new MyCalendarVO(new Date(System.currentTimeMillis()));
@@ -1503,7 +1538,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       Date jdt = DateTimeUtil.fromISODate(date);
       dt = new MyCalendarVO(jdt);
-      if (!checkDateInRange(form, dt.getYear())) {
+      if (!checkDateInRange(request, dt.getYear())) {
         // Set it to today
         jdt = new Date(System.currentTimeMillis());
         dt = new MyCalendarVO(jdt);
@@ -1512,19 +1547,19 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if ((newViewTypeI >= 0) &&
-        (newViewTypeI != form.getCurViewPeriod())) {
+        (newViewTypeI != mstate.getCurViewPeriod())) {
       // Change of view
       newView = true;
     }
 
     if (newView && (newViewTypeI < 0)) {
-      newViewTypeI = form.getCurViewPeriod();
+      newViewTypeI = mstate.getCurViewPeriod();
       if (newViewTypeI < 0) {
         newViewTypeI = BedeworkDefs.defaultView;
       }
     }
 
-    TimeDateComponents viewStart = form.getViewStartDate();
+    TimeDateComponents viewStart = mstate.getViewStartDate();
 
     if (!newView) {
       /* See if we were given an explicit date as view start date components.
@@ -1532,7 +1567,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
        */
       int year = viewStart.getYear();
 
-      if (checkDateInRange(form, year)) {
+      if (checkDateInRange(request, year)) {
         String vsdate = viewStart.getDateTime().getDtval().substring(0, 8);
         if (debug) {
           debugMsg("vsdate=" + vsdate);
@@ -1540,7 +1575,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         if (!(vsdate.equals(request.getSess().getCurTimeView(request).getFirstDayFmt().getDateDigits()))) {
           newView = true;
-          newViewTypeI = form.getCurViewPeriod();
+          newViewTypeI = mstate.getCurViewPeriod();
           Date jdt = DateTimeUtil.fromISODate(vsdate);
           dt = new MyCalendarVO(jdt);
         }
@@ -1548,9 +1583,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (newView) {
-      form.setCurViewPeriod(newViewTypeI);
-      form.setViewMcDate(dt);
-      form.refreshIsNeeded();
+      mstate.setCurViewPeriod(newViewTypeI);
+      mstate.setViewMcDate(dt);
+      mstate.setRefresh(true);
     }
 
     TimeView tv = request.getSess().getCurTimeView(request);
@@ -1570,37 +1605,41 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /** Set the current date for view.
    *
-   * @param form
+   * @param request
    * @param date         String yyyymmdd date
    * @throws Throwable
    */
-  protected void setViewDate(final BwActionFormBase form,
+  protected void setViewDate(final BwRequest request,
                              final String date) throws Throwable {
+    BwModuleState mstate = request.getModule().getState();
     Date jdt = DateTimeUtil.fromISODate(date);
     MyCalendarVO dt = new MyCalendarVO(jdt);
+
     if (debug) {
       debugMsg("calvo dt = " + dt);
     }
 
-    if (!checkDateInRange(form, dt.getYear())) {
+    if (!checkDateInRange(request, dt.getYear())) {
       // Set it to today
       jdt = new Date(System.currentTimeMillis());
       dt = new MyCalendarVO(jdt);
     }
-    form.setViewMcDate(dt);
-    form.refreshIsNeeded();
+    mstate.setViewMcDate(dt);
+    mstate.setRefresh(true);
   }
 
   /* ********************************************************************
                              private methods
      ******************************************************************** */
 
-  private boolean checkDateInRange(final BwActionFormBase form,
+  private boolean checkDateInRange(final BwRequest req,
                                    final int year) throws Throwable {
+    BwActionFormBase form = req.getBwForm();
+
     // XXX make system parameters for allowable start/end year
     int thisYear = form.getToday().getFormatted().getYear();
 
-    if ((year < (thisYear - 10)) || (year > (thisYear + 10))) {
+    if ((year < (thisYear - 50)) || (year > (thisYear + 50))) {
       form.getErr().emit(ValidationError.invalidDate, year);
       return false;
     }
@@ -1717,6 +1756,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     BwCallback cb = getCb(request, form);
     BwModule module = form.fetchModule(request.getModuleName());
+    BwModuleState mstate = module.getState();
 
 //    Client client = BwWebUtil.getClient(request.getRequest());
     Client client = module.getClient();
@@ -1828,7 +1868,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           }
 
           client.requestIn(request.getConversationType());
-          form.setRefreshNeeded(true);
+          mstate.setRefresh(true);
         }
       } else {
         if (debug) {
@@ -1857,7 +1897,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         module.setRequest(request);
 
         module.requestIn();
-        form.setRefreshNeeded(true);
+        mstate.setRefresh(true);
         sess.reset(request);
       }
 
@@ -1913,11 +1953,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return true;
     }
 
-    BwModuleState state = (BwModuleState)request.getRequestAttr(
-            BwRequest.moduleStateName);
-    if (state == null) {
-      return false;
-    }
+    BwModuleState state = request.getModule().getState();
 
     for (String reqpar: mvs) {
       int start;
@@ -1973,5 +2009,25 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return sb.toString();
+  }
+
+  /** Return the value or a default if it's invalid
+   *
+   * @param val
+   * @return String valid view period
+   */
+  public String validViewPeriod(String val) {
+    int vt = BedeworkDefs.defaultView;
+
+    val = Util.checkNull(val);
+    if (val != null) {
+      Integer i = viewTypeMap.get(val);
+
+      if (i != null) {
+        vt = i;
+      }
+    }
+
+    return BedeworkDefs.viewPeriodNames[vt];
   }
 }

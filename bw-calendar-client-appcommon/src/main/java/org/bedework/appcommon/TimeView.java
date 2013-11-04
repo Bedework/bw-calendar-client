@@ -27,6 +27,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
+import org.bedework.calsvci.indexing.SearchResultEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.servlet.MessageEmit;
@@ -174,7 +175,7 @@ public class TimeView implements Serializable {
 
   /* Fetched when required
    */
-  protected Collection<EventInfo> events;
+  protected Collection<EventFormatter> events;
 
   /** set on the first call to getTimePeriodInfo
    */
@@ -332,19 +333,12 @@ public class TimeView implements Serializable {
 
   /** Return the events for the given day as an array of value objects
    *
-   * @param cl
    * @param   date    MyCalendar object defining day
-   * @return  Collection of EventInfo being one days events or empty for no events.
+   * @return  Collection of EventFormatter being one days events or empty for no events.
    * @throws Throwable
    */
-  public Collection<EventInfo> getDaysEvents(final Client cl,
-                                             final MyCalendarVO date) throws Throwable {
-    //if (debug) {
-    //  debugMsg("Get days events in range " + start + " to " + end);
-    //}
-    getEvents(cl);
-
-    ArrayList<EventInfo> al = new ArrayList<EventInfo>();
+  public Collection<EventFormatter> getDaysEvents(final MyCalendarVO date) throws Throwable {
+    ArrayList<EventFormatter> al = new ArrayList<>();
 
     BwDateTime startDt = getBwDate(date.getDateDigits());
     BwDateTime endDt = startDt.getNextDay();
@@ -367,13 +361,14 @@ public class TimeView implements Serializable {
      */
     boolean today = date.isToday();
 
-    for (EventInfo ei: events) {
+    for (EventFormatter ef: events) {
+      EventInfo ei = ef.getEventInfo();
       BwEvent ev = ei.getEvent();
 
       if ((ev.getEntityType() == IcalDefs.entityTypeTodo)  &&
            ev.getNoStart()) {
         if (today) {
-          al.add(ei);
+          al.add(ef);
         }
 
         continue;
@@ -438,7 +433,7 @@ public class TimeView implements Serializable {
               ": " + ev.getSummary());
         }
         */
-        al.add(ei);
+        al.add(ef);
       }
     }
 
@@ -619,8 +614,16 @@ public class TimeView implements Serializable {
     }
   }
 
-  private void getEvents(Client cl) throws CalFacadeException {
-    if (events != null) {
+  /** Ensure we have the current set of events. If refresh is true will
+   * get a new set.
+   *
+   * @param cl
+   * @param refresh
+   * @throws CalFacadeException
+   */
+  public void getEvents(Client cl,
+                        final boolean refresh) throws CalFacadeException {
+    if (!refresh && (events != null)) {
       return;
     }
 
@@ -632,7 +635,13 @@ public class TimeView implements Serializable {
     BwDateTime start = getBwDate(firstDayFmt.getDateDigits());
     BwDateTime end = getBwDate(DateTimeUtil.isoDate(lastP1.getTime()));
 
-    events = cl.getEvents(start, end, filter, false, false, 0, -1).getEvents();
+    Collection<SearchResultEntry> sres = cl.getSearchResult(0, -1);
+    events = new ArrayList<>(sres.size());
+
+    for (SearchResultEntry sre: sres) {
+      events.add(new EventFormatter(cl, trans,
+                                    (EventInfo)sre.getEntity()));
+    }
   }
 
   private BwDateTime getBwDate(final String date) throws CalFacadeException {

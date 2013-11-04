@@ -40,8 +40,8 @@
                      name="bw_addcontent_collection_list" scope="session" />
         <html:select property="calendarId">
           <html:optionsCollection name="addContentCalendarCollections"
-                                      label="path"
-                                      value="path"/>
+                                  label="path"
+                                  value="path"/>
         </html:select>
       </all>
       <%-- Output the event's calendar information --%>
@@ -168,8 +168,8 @@
                      name="bw_locations_list" scope="session" />
         <html:select property="allLocationId">
           <html:optionsCollection name="locations"
-                                    label="address.value"
-                                    value="uid"/>
+                                  label="address.value"
+                                  value="uid"/>
           </html:select>
       </all>
       <logic:equal name="bwconfig" property="autoCreateLocations"
@@ -251,8 +251,8 @@
                      name="bw_contacts_list" scope="session"/>
         <html:select property="allContactId">
           <html:optionsCollection name="contacts"
-                                    label="name.value"
-                                    value="uid"/>
+                                  label="name.value"
+                                  value="uid"/>
         </html:select>
       </all>
       <logic:equal name="bwconfig" property="autoCreateContacts"
@@ -316,7 +316,7 @@
   </logic:iterate>
 </timezones>
 
-<bean:define id="calInfo" name="calForm" property="calInfo" />
+<bean:define id="calInfo" name="moduleState" property="calInfo" />
 <shortdaynames>
   <logic:iterate id="shortDayName" name="calInfo" property="shortDayNamesAdjusted">
     <val><bean:write name="shortDayName"/></val>
@@ -336,5 +336,5 @@
   <logic:iterate id="monthVal" name="calInfo" property="monthVals">
     <val><bean:write name="monthVal"/></val>
   </logic:iterate>
-  <start><bean:write name="calForm" property="viewStartDate.month"/></start>
+  <start><bean:write name="moduleState" property="viewStartDate.month"/></start>
 </monthvalues>

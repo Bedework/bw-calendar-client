@@ -59,7 +59,7 @@ import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.indexing.SearchResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.util.indexing.SearchLimits;
+import org.bedework.calsvci.indexing.SearchResultEntry;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -1101,68 +1101,10 @@ public interface Client extends Serializable {
                      RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException;
 
-  /** Event key for getEvents
-   *
-   * @param val
-   */
-  void setEventListPars(final EventListPars val);
-
   /**
-   * @return EventListPars
+   * @return SearchParams
    */
-  EventListPars getEventListPars();
-
-  public interface GetEventsResult {
-    /**
-     * @return true if result is paged
-     */
-    boolean getPaged();
-
-    /**
-     * @return total number in result set
-     */
-    long getCount();
-
-    /**
-     * @return the retrieved events
-     */
-    Collection<EventInfo> getEvents();
-  }
-
-  /** Get events specified by current EventListPars object
-   *
-   * @return events and information
-   * @throws CalFacadeException
-   */
-  GetEventsResult getEvents() throws CalFacadeException;
-
-  /** Get events that lie in the given range and are constrained by the
-   * given filter. The current view filter will be ANDed
-   *
-   * @param start of range
-   * @param end of range
-   * @param filter the filter
-   * @param forExport true if we are going to export the events in
-   *                  which case we want overrides. Otherwise we getResource
-   *                  an expanded form in which each instance of
-   *                  recurring events is represented as a separate event.
-   * @param exact true if we must have a true representation of the
-   *              stored events. Otherwise we may fetch a cached set
-   *              which doesn't necessarily have all the events due to
-   *              commit delays.
-   * @param pos entity number - start at 0
-   * @param pageSize number of entities per page, -1 for all - may be ignored
-   * @return events and information
-   * @throws CalFacadeException
-   */
-  GetEventsResult getEvents(BwDateTime start,
-                            BwDateTime end,
-                            FilterBase filter,
-                            boolean forExport,
-                            boolean exact,
-                            final int pos,
-                            final int pageSize)
-          throws CalFacadeException;
+  SearchParams getSearchParams();
 
   /** Return the events for the current user within the given date and time
    * range. If retrieveList is supplied only those fields (and a few required
@@ -1722,37 +1664,43 @@ public interface Client extends Serializable {
   void postMessage(Message val) throws CalFacadeException;
 
   /* ------------------------------------------------------------
-   *                     Search
+   *                     SearchNextAction
    * ------------------------------------------------------------ */
 
-  /** Called to search an index. If publick is false use the principal to
-   * identify the index.
+  /** Called to search an index. If params.publick is false use the
+   * current principal to identify the index.
    *
-   *
-   * @param publick true for public index - otherwise current principal
-   * @param query    Query string
-   * @param filter   Filter expression
-   * @param start - if non-null limit to this and after
-   * @param end - if non-null limit to before this
+   * @param params  defining search
    * @return  SearchResult   never null
    * @throws CalFacadeException
    */
-  SearchResult search(boolean publick,
-                      String query,
-                      String filter,
-                      String start,
-                      String end) throws CalFacadeException;
+  SearchResult search(final SearchParams params) throws CalFacadeException;
+
+  enum Position {
+    previous,  // Move to previous batch
+    current,   // Return the current set
+    next       // Move to next batch
+  }
+
+  /** Called to retrieve results after a search of the index. Updates
+   * the current search result.
+   *
+   * @param pos - specify movement in result set
+   * @return  list of SearchResultEntry
+   * @throws CalFacadeException
+   */
+  List<SearchResultEntry> getSearchResult(Position pos) throws CalFacadeException;
 
   /** Called to retrieve results after a search of the index. Updates
    * the current search result.
    *
    * @param start in result set
    * @param num of entries
-   * @return  SearchResult
+   * @return  list of SearchResultEntry
    * @throws CalFacadeException
    */
-  SearchResult getSearchResult(int start,
-                               int num) throws CalFacadeException;
+  List<SearchResultEntry> getSearchResult(int start,
+                                          int num) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                   Access

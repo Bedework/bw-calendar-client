@@ -55,7 +55,9 @@ public class ClientState implements Serializable {
   /* The current virtual path target */
   private String vpathTarget;
 
-  private EventListPars eventListPars;
+  private SearchParams searchParams;
+
+  private String currentDate;
 
   /* Filter resulting from the view or vpath */
   private FilterBase filter;

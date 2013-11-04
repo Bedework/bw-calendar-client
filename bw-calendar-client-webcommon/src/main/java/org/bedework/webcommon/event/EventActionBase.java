@@ -55,7 +55,6 @@ import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.BwWebUtil.ValidateResult;
 import org.bedework.webcommon.EventKey;
-import org.bedework.appcommon.client.EventListPars;
 
 import net.fortuna.ical4j.model.parameter.Role;
 
@@ -70,31 +69,6 @@ import java.util.TreeSet;
  *
  */
 public abstract class EventActionBase extends BwAbstractAction {
-  /** Get events based on EventListPars
-   *
-   * @param req
-   * @return Collection of events or nul
-   * @throws Throwable
-   */
-  public Collection<EventInfo> getEventsList(final BwRequest req) throws Throwable {
-    BwActionFormBase form = req.getBwForm();
-    Client cl = req.getClient();
-
-    form.assignAddingEvent(false);
-
-    Client.GetEventsResult ger = cl.getEvents();
-    if (ger == null) {
-      return null;
-    }
-
-    EventListPars elpars = cl.getEventListPars();
-
-    form.setResultSize(elpars.getResultSize());
-    form.setNumPages(elpars.getNumPages());
-
-    return ger.getEvents();
-  }
-
   /** Given the EventInfo object refresh the information in the form.
    *
    * @param request

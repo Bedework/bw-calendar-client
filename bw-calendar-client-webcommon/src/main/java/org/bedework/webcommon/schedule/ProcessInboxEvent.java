@@ -131,7 +131,7 @@ public class ProcessInboxEvent extends EventActionBase {
     Date evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtstart().getDate());
 
     /* Set the date using the current user timezone */
-    setViewDate(form, DateTimeUtil.isoDate(evdt).substring(0, 8));
+    setViewDate(request, DateTimeUtil.isoDate(evdt).substring(0, 8));
 
     // Assume we need the collection containing the meeting
     form.setMeetingCal(cl.getCollection(ev.getColPath()));

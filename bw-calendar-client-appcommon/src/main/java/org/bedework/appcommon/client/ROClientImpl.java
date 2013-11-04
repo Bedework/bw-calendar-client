@@ -54,7 +54,6 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calfacade.filter.SimpleFilterParser;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -90,8 +89,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.ws.Holder;
-
 /**
  * User: douglm Date: 6/27/13 Time: 2:03
  */
@@ -123,6 +120,7 @@ public class ROClientImpl implements Client {
   private BwIndexer publicIndexer;
   private BwIndexer userIndexer;
   private SearchResult lastSearch;
+  private List<SearchResultEntry> lastSearchEntries;
 
   protected class AccessChecker implements BwIndexer.AccessChecker {
     @Override
@@ -1010,13 +1008,8 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public void setEventListPars(final EventListPars val) {
-    cstate.setEventListPars(val);
-  }
-
-  @Override
-  public EventListPars getEventListPars() {
-    return cstate.getEventListPars();
+  public SearchParams getSearchParams() {
+    return cstate.getSearchParams();
   }
 
   @Override
@@ -1027,185 +1020,7 @@ public class ROClientImpl implements Client {
     return svci.getEventsHandler().get(colPath, name, recurRetrieval);
   }
 
-  private static class ClGetEventsResult implements GetEventsResult {
-    private boolean paged;
-    private long count;
-    private Collection<EventInfo> events;
-
     @Override
-    public boolean getPaged() {
-      return paged;
-    }
-
-    @Override
-    public long getCount() {
-      return count;
-    }
-
-    @Override
-    public Collection<EventInfo> getEvents() {
-      return events;
-    }
-  }
-
-  @Override
-  public GetEventsResult getEvents() throws CalFacadeException {
-    EventListPars elpars = getEventListPars();
-    if (elpars == null) {
-      return null;
-    }
-
-    int pos = 0;
-    int pageSize = -1;    // Give me all
-
-    if (elpars.getPaged()) {
-      pos = elpars.getCurPage() - 1;
-      if (pos < 0) {
-        pos = 0;
-      }
-
-      pageSize = elpars.getPageSize();
-      pos *= pageSize;
-    }
-
-    GetEventsResult ger = getEvents(elpars.getFromDate(),
-                                    elpars.getToDate(),
-                                    elpars.getFilter(),
-                                    elpars.getForExport(),
-                                    elpars.getUseDbSearch(),
-                                    pos,
-                                    pageSize);
-
-    elpars.setResultSize((int)ger.getCount());
-
-    if (ger.getPaged()) {
-      elpars.setNumPages(
-              (int)(((ger.getCount() + pageSize) - 1) / pageSize));
-    } else {
-      elpars.setNumPages(0);
-      elpars.setPaged(false);
-    }
-
-    return ger;
-  }
-
-  @Override
-  public GetEventsResult getEvents(final BwDateTime start,
-                                   final BwDateTime end,
-                                   final FilterBase filter,
-                                   final boolean forExport,
-                                   final boolean exact,
-                                   final int pos,
-                                   final int pageSize)
-          throws CalFacadeException {
-    long curTime = System.currentTimeMillis();
-    ClGetEventsResult ger = new ClGetEventsResult();
-
-    FilterBase f = FilterBase.addAndChild(filter,
-                                          cstate.getViewFilter(null));
-
-    /* See if we can use the indexed version */
-    boolean tryIndexer = publicView;
-
-    BwIndexer idx = null;
-    if (publicView) {
-      idx = svci.getIndexer(publicView,
-                            getCurrentPrincipalHref());
-    }
-
-    if (publicView && idx.isFetchEnabled()) {
-      // Fetch from the index.
-
-      String from = null;
-      String to = null;
-
-      if (start !=null) {
-        from = start.getDate();
-      }
-
-      if (end !=null) {
-        to = end.getDate();
-      }
-
-      Holder<Long> resSz = new Holder<>();
-
-      ger.events = idx.fetch(f,
-                             from,
-                             to,
-                             resSz,
-                             pos,
-                             pageSize,
-                             accessChecker);
-
-      ger.count = resSz.value;
-      ger.paged = true;
-
-      int count = 0;
-      if (!Util.isEmpty(ger.events)) {
-        count = ger.events.size();
-      }
-
-      if (debug) {
-        debugMsg("Indexer retrieved " + count + " events after " +
-                         (System.currentTimeMillis() - curTime));
-      }
-
-      /* We need to implant categories and locations */
-
-      if (count > 0) {
-        Categories cats = svci.getCategoriesHandler();
-        EventProperties<BwLocation> locs = svci.getLocationsHandler();
-
-        for (EventInfo ei: ger.events) {
-          BwEvent ev = ei.getEvent();
-
-          Set<String> catUids = ev.getCategoryUids();
-
-          if (catUids != null) {
-            for (String uid: catUids) {
-              BwCategory cat = cats.get(uid);
-
-              if (cat != null) {
-                ev.addCategory(cat);
-              }
-            }
-          }
-
-          if (ev.getLocationUid() != null) {
-            ev.setLocation(locs.getCached(ev.getLocationUid()));
-          }
-        }
-      }
-
-      if (debug) {
-        debugMsg("Retrieved events fully populated: took " +
-                         (System.currentTimeMillis() - curTime));
-      }
-    } else {
-      RecurringRetrievalMode rrm;
-      if (forExport) {
-        rrm = new RecurringRetrievalMode(RecurringRetrievalMode.Rmode.overrides);
-      } else {
-        rrm = new RecurringRetrievalMode(RecurringRetrievalMode.Rmode.expanded);
-      }
-
-      ger.events = svci.getEventsHandler().getEvents((BwCalendar)null, f,
-                                                     start,
-                                                     end,
-                                                     null, // retrieveList
-                                                     rrm);
-
-      if (!Util.isEmpty(ger.events)) {
-        ger.count = ger.events.size();
-      }
-    }
-
-    cstate.setColor(ger.events);
-
-    return ger;
-  }
-
-  @Override
   public Collection<EventInfo> getEvents(final BwCalendar cal,
                                          final FilterBase filter,
                                          final BwDateTime startDate,
@@ -1559,44 +1374,52 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public SearchResult search(final boolean publick,
-                             final String query,
-                             final String filter,
-                             final String start,
-                             final String end) throws CalFacadeException {
-    FilterBase f = null;
+  public SearchResult search(final SearchParams params) throws CalFacadeException {
+    cstate.setSearchParams(params);
 
-    if (filter != null) {
-      SimpleFilterParser.ParseResult pr = svci.getFilterParser().parse(filter);
-
-      if (!pr.ok) {
-        if (pr.cfe != null) {
-          throw pr.cfe;
-        } else {
-          throw new CalFacadeException("bad expression", filter);
-        }
-      }
-
-      f = pr.filter;
-    }
-
-    lastSearch = getIndexer(publick).search(query, f, start, end);
+    lastSearch = getIndexer(params.getPublick()).search(
+            params.getQuery(),
+            params.getFilter(),
+            params.getFromDate().getDtval(),
+            params.getToDate().getDtval(),
+            params.getPageSize(),
+            accessChecker);
 
     return lastSearch;
-  }
+        }
 
   @Override
-  public SearchResult getSearchResult(final int start,
-                                      final int num) throws CalFacadeException {
+  public List<SearchResultEntry> getSearchResult(Position pos) throws CalFacadeException {
     if (lastSearch == null) {
       return null;
     }
 
-    lastSearch.getIndexer().getSearchResult(lastSearch, start, num);
+    if (pos == Position.current) {
+      return lastSearchEntries;
+    }
 
+    lastSearchEntries = formatSearchResult(lastSearch.getIndexer().
+            getSearchResult(lastSearch, pos == Position.next));
+
+    return lastSearchEntries;
+  }
+
+  @Override
+  public List<SearchResultEntry> getSearchResult(final int start,
+                                                 final int num) throws CalFacadeException {
+    if (lastSearch == null) {
+      return new ArrayList<>(0);
+    }
+
+    return formatSearchResult(lastSearch.getIndexer().
+            getSearchResult(lastSearch, start, num));
+  }
+
+  private List<SearchResultEntry> formatSearchResult(
+          List<SearchResultEntry> entries) throws CalFacadeException {
     IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(this));
 
-    for (SearchResultEntry sre: lastSearch.getSearchResult()) {
+    for (SearchResultEntry sre: entries) {
       Object o = sre.getEntity();
 
       if (!(o instanceof EventInfo)) {
@@ -1609,7 +1432,7 @@ public class ROClientImpl implements Client {
       sre.setEntity(ev);
     }
 
-    return lastSearch;
+    return entries;
   }
 
   @Override

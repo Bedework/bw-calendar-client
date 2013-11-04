@@ -9,8 +9,12 @@
 
 <events>
   <bw:emitText name="calForm" property="eventRegAdminToken"/>
-  <logic:iterate id="eventFormatter" name="bw_event_list" scope="request">
-    <%@include file="/docs/event/emitEvent.jsp"%>
+  <logic:iterate id="sre" name="bw_search_list" scope="request">
+    <logic:equal name="sre" property="docType" value="event">
+      <bean:define id="eventFormatter"
+                   name="eventFmt" property="eventInfo" toScope="request"  />
+      <%@include file="/docs/event/emitEvent.jsp"%>
+    </logic:equal>
   </logic:iterate>
 </events>
 

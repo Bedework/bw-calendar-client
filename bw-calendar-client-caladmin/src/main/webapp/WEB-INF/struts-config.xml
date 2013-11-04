@@ -164,22 +164,22 @@
       <forward name="loggedOut" path="/main/showMain.rdo" redirect="true"/>
     </action>
 
-    <action    path="/main/showPendingTab"
-               type="org.bedework.webcommon.event.RenderEventListAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render;conversation=end"
-               validate="false">
-      <forward name="continue" path="/docs/tabPendingEvents.jsp"/>
-    </action>
-
     <action    path="/main/initPendingTab"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/main/showPendingTab.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/showPendingTab"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="continue" path="/docs/tabPendingEvents.jsp"/>
     </action>
 
     <action    path="/main/showCalsuiteTab"
@@ -233,7 +233,7 @@
     </action>
 
     <action    path="/event/initUpdateEvent"
-               type="org.bedework.webcommon.event.SetSelectionAction"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action"
@@ -1707,7 +1707,7 @@
     </action>
 
     <action    path="/search/search"
-               type="org.bedework.webcommon.search.Search"
+               type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
                parameter="actionType=action"
@@ -1717,36 +1717,12 @@
     </action>
 
     <action    path="/search/next"
-               type="org.bedework.webcommon.search.SearchResultParams"
+               type="org.bedework.webcommon.search.SearchNextAction"
                name="calForm"
                scope="session"
                parameter="actionType=action"
                validate="false">
       <forward name="success" path="/search/showResult.rdo" redirect="true" />
-    </action>
-
-    <!-- ===============================================================
-                     Stats Actions
-         =============================================================== -->
-
-
-    <action    path="/stats/show"
-               type="org.bedework.webcommon.RenderAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render"
-               validate="false">
-      <forward name="success" path="/docs/system/showSysStats.jsp" />
-    </action>
-
-    <action    path="/stats/update"
-               type="org.bedework.webcommon.misc.StatisticsAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="continue"  path="/stats/show.rdo" redirect="true" />
-      <forward name="success"  path="/stats/show.rdo" redirect="true" />
     </action>
   </action-mappings>
 

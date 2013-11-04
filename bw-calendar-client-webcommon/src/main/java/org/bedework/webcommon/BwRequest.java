@@ -18,7 +18,9 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
@@ -39,6 +41,7 @@ import org.apache.struts.action.Action;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author douglm
@@ -49,16 +52,18 @@ public class BwRequest extends Request {
 
   private Request req;
 
+  private BwModule module;
+
   private Client cl;
 
   /** client stored in request */
   public final static String embeddedClientName = "bw_embedded_client";
 
+  /** event state stored in request */
+  public final static String eventStateName = "bw_event_state";
+
   /** module state stored in request */
   public final static String moduleStateName = "bw_module_state";
-
-  /** search result stored in session */
-  public final static String bwSearchResultName = "bw_search";
 
   /** auth user list stored in session */
   public final static String bwAuthUsersListName = "bw_auth_users";
@@ -66,11 +71,14 @@ public class BwRequest extends Request {
   /** admin group info list stored in session */
   public final static String bwAdminGroupsInfoName = "bw_admin_groups";
 
-  /** Event list pars stored in session */
-  public final static String bwEventListParsName = "bw_event_list_pars";
+  /** Search pars stored in session */
+  public final static String bwSearchParamsName = "bw_search_params";
 
-  /** Formatted event list stored in session */
-  public final static String bwEventListName = "bw_event_list";
+  /** Search result stored in session */
+  public final static String bwSearchResultName = "bw_search_result";
+
+  /** Formatted entity list stored in session */
+  public final static String bwSearchListName = "bw_search_list";
 
   /** filter list stored in session */
   public final static String bwFiltersListName = "bw_filters_list";
@@ -144,6 +152,15 @@ public class BwRequest extends Request {
     return sess;
   }
 
+  public BwModule getModule() {
+    if (module == null) {
+      module = getBwForm().fetchModule(req.getModuleName());
+      request.setAttribute(moduleStateName, module.getState());
+    }
+
+    return module;
+  }
+
   public Client getClient() {
     if (cl == null) {
       cl = getBwForm().fetchClient(req.getModuleName());
@@ -158,6 +175,13 @@ public class BwRequest extends Request {
    */
   public BwActionFormBase getBwForm() {
     return (BwActionFormBase)getForm();
+  }
+
+  /**
+   * Signal we need to refresh the module state
+   */
+  public void refresh() {
+    getModule().getState().setRefresh(true);
   }
 
   /**
@@ -329,6 +353,29 @@ public class BwRequest extends Request {
     }
 
     return bwdts;
+  }
+
+  /** This often appears as the request parameter specifying the date for an
+   * action. Always YYYYMMDD format. Returns current date if not in request
+   *
+   * @return String date in YYYYMMDD format
+   */
+  public String getDate() {
+    String date = getReqPar("date");
+
+    if (!CheckData.checkDateString(date)) {
+      return new MyCalendarVO(new Date(System.currentTimeMillis())).getDateDigits();
+    }
+
+    return date;
+  }
+
+  /**
+   * @return index
+   * @throws Throwable
+   */
+  public int getViewTypeI() throws Throwable {
+    return getIntReqPar("viewTypeI", -1);
   }
 
   /** Get date/time object

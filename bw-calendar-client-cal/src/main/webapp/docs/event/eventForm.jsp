@@ -35,8 +35,8 @@ try {
       <html:select name="calForm"
                    property="calendarId">
         <html:optionsCollection name="addContentCalendarCollections"
-                                      label="path"
-                                      value="path"/>
+                                label="path"
+                                value="path"/>
       </html:select>
     </calendars>
     <allDay><html:checkbox property="eventStartDate.dateOnly"/></allDay>

@@ -52,9 +52,6 @@ import java.util.List;
  * </ul>
  */
 public class DeleteEventAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -123,7 +120,7 @@ public class DeleteEventAction extends EventActionBase {
     }
 
     form.getMsg().emit(ClientMessage.deletedEvents, 1);
-    form.refreshIsNeeded();
+    request.refresh();
 
     return forwardSuccess;
   }

@@ -25,6 +25,7 @@ import org.bedework.util.calendar.IcalDefs;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.parameter.Role;
@@ -56,16 +57,14 @@ import net.fortuna.ical4j.model.parameter.Role;
  * @author Mike Douglass douglm @ rpi.edu
  */
 public class FreeBusyAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     String uri = null;
     Client cl = request.getClient();
+    BwModuleState mstate = request.getModule().getState();
 
-    gotoDateView(request, form.getDate(), form.getViewTypeI());
+    gotoDateView(request, mstate.getDate(), mstate.getViewTypeI());
 
     String userId = request.getReqPar("userid");
 

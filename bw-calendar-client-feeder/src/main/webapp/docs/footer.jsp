@@ -6,10 +6,11 @@ try {
 %>
   <%-- Generates standard calendar values for use in the client for forms, etc --%>
 
-  <bean:define id="forLabels" name="calForm" property="forLabels" />
-  <bean:define id="calInfo" name="calForm" property="calInfo" />
+  <bean:define id="calInfo" name="moduleState" property="calInfo" />
+  <bean:define id="forLabels" name="moduleState"
+               property="eventDates.forLabels" />
 
-  <daylabels>
+<daylabels>
     <logic:iterate id="dayLabel" name="calInfo" property="dayLabels">
       <val><bean:write name="dayLabel"/></val>
     </logic:iterate>
@@ -18,7 +19,7 @@ try {
     <logic:iterate id="dayVal" name="calInfo" property="dayVals">
       <val><bean:write name="dayVal"/></val>
     </logic:iterate>
-    <start><bean:write name="calForm" property="viewStartDate.day"/></start>
+    <start><bean:write name="moduleState" property="viewStartDate.day"/></start>
   </dayvalues>
   <daynames>
     <logic:iterate id="dayName" name="calInfo" property="dayNamesAdjusted">
@@ -44,38 +45,38 @@ try {
     <logic:iterate id="monthVal" name="calInfo" property="monthVals">
       <val><bean:write name="monthVal"/></val>
     </logic:iterate>
-    <start><bean:write name="calForm" property="viewStartDate.month"/></start>
+    <start><bean:write name="moduleState" property="viewStartDate.month"/></start>
   </monthvalues>
   <yearvalues>
     <logic:iterate id="yearVals" name="calForm" property="yearVals">
       <val><bean:write name="yearVals"/></val>
     </logic:iterate>
-    <start><bean:write name="calForm" property="viewStartDate.year"/></start>
+    <start><bean:write name="moduleState" property="viewStartDate.year"/></start>
   </yearvalues>
   <hourlabels>
-    <logic:iterate id="hourLabel" name="calForm" property="forLabels.hourLabels">
+    <logic:iterate id="hourLabel" name="forLabels" property="hourLabels">
       <val><bean:write name="hourLabel"/></val>
     </logic:iterate>
   </hourlabels>
   <hourvalues>
-    <logic:iterate id="hourVal" name="calForm" property="forLabels.hourVals">
+    <logic:iterate id="hourVal" name="forLabels" property="hourVals">
       <val><bean:write name="hourVal"/></val>
     </logic:iterate>
-    <start><bean:write name="calForm" property="viewStartDate.hour"/></start>
+    <start><bean:write name="moduleState" property="viewStartDate.hour"/></start>
   </hourvalues>
   <minvalues>
-    <logic:iterate id="minuteVals" name="calForm" property="forLabels.minuteLabels">
+    <logic:iterate id="minuteVals" name="forLabels" property="minuteLabels">
       <val><bean:write name="minuteVals"/></val>
     </logic:iterate>
-    <start><bean:write name="calForm" property="viewStartDate.minute"/></start>
+    <start><bean:write name="moduleState" property="viewStartDate.minute"/></start>
 <%--    <logic:iterate id="minuteVals" name="calForm" property="forLabels.minuteLabels">
  --%>
   </minvalues>
   <ampmvalues>
-    <logic:iterate id="ampmVals" name="calForm" property="forLabels.ampmLabels">
+    <logic:iterate id="ampmVals" name="forLabels" property="ampmLabels">
       <val><bean:write name="ampmVals"/></val>
     </logic:iterate>
-    <start><bean:write name="calForm" property="viewStartDate.ampm"/></start>
+    <start><bean:write name="moduleState" property="viewStartDate.ampm"/></start>
   </ampmvalues>
 </bedework>
 <%

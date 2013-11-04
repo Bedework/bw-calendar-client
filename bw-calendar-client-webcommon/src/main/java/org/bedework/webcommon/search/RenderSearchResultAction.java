@@ -20,11 +20,13 @@
 package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.Client.Position;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.RenderAction;
 
-/** Implant the search result in the form.
+/** Implant the first segment of the search result in the form.
  *
  * <p>Forwards to:<ul>
  *      <li>"success"      subscribed ok.</li>
@@ -33,18 +35,17 @@ import org.bedework.webcommon.RenderAction;
  * @author Mike Douglass   douglm rpi.edu
  */
 public class RenderSearchResultAction extends RenderAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();
 
-    int start = form.getResultStart();
-    int count = form.getResultCt();
+    request.setRequestAttr(BwRequest.bwSearchListName,
+                           cl.getSearchResult(Position.current));
 
-    form.setSearchResult(cl.getSearchResult(start, count));
+    /* Ensure we have categories embedded in session */
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
 
     return forwardSuccess;
   }

@@ -54,13 +54,10 @@ import org.bedework.webcommon.EventDates;
  *
  */
 public class InitAddEventAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    form.refreshIsNeeded();
+    request.refresh();
 
     BwEvent ev = new BwEventObj();
     form.getEventDates().setNewEvent(ev);

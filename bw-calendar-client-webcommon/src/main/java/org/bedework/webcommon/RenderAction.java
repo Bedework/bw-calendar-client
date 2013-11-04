@@ -33,7 +33,7 @@ public class RenderAction extends BwAbstractAction {
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
     if (form.getNewSession()) {
-      form.refreshIsNeeded();
+      request.refresh();
       return forwardGotomain;
     }
 

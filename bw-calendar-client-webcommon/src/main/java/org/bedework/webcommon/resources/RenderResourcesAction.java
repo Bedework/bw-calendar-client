@@ -49,7 +49,7 @@ public class RenderResourcesAction extends RenderAction {
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     if (form.getNewSession()) {
-      form.refreshIsNeeded();
+      request.refresh();
       return forwardGotomain;
     }
 

@@ -28,7 +28,7 @@
   <bean:define id="timeInfo" name="calForm"
                property="curTimeView.timePeriodInfo"/>
                --%>
-  <bean:define id="curTimeView" name="calForm" property="curTimeViewRefreshed"/>
+  <bean:define id="curTimeView" name="moduleState" property="curTimeView"/>
   <bean:define id="timeInfo" name="curTimeView" property="timePeriodInfo"/>
   <logic:iterate id="yearInfo" name="timeInfo" >
     <year>
@@ -56,8 +56,7 @@
                                  property="curTimeView.showData" value="true">
                                  --%>
                     <logic:equal name="curTimeView" property="showData" value="true">
-                      <bw:eventFormatters id="eventFormatters" name="dayInfo" />
-                      <logic:iterate id="eventFmt" name="eventFormatters">
+                      <logic:iterate id="eventFmt" name="dayInfo" property="events">
                         <bean:define id="eventFormatter" name="eventFmt"
                                      toScope="request" />
                         <jsp:include page="/docs/event/emitEvent.jsp" />

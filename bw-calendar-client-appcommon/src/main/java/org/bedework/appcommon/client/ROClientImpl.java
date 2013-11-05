@@ -1378,6 +1378,8 @@ public class ROClientImpl implements Client {
   public SearchResult search(final SearchParams params) throws CalFacadeException {
     cstate.setSearchParams(params);
 
+    lastSearchEntries = null;
+
     lastSearch = getIndexer(params.getPublick()).search(
             params.getQuery(),
             params.getFilter(),

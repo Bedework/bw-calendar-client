@@ -513,14 +513,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
 
-    String lim = mstate.getSearchLimits();
-    if (lim != null) {
-      if ("none".equals(lim)) {
-        // no limits
-      } else if ("beforeToday".equals(lim)) {
-        endStr = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
-      } else if ("fromToday".equals(lim)) {
-        startStr = DateTimeUtil.isoDate(new java.util.Date());
+    if (startStr == null) {
+      String lim = mstate.getSearchLimits();
+      if (lim != null) {
+        if ("none".equals(lim)) {
+          // no limits
+        } else if ("beforeToday".equals(lim)) {
+          endStr = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
+        } else if ("fromToday".equals(lim)) {
+          startStr = DateTimeUtil.isoDate(new java.util.Date());
+        }
       }
     }
 

@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon;
 
-import edu.rpi.sss.util.jsp.Request;
+import org.bedework.util.struts.Request;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForward;

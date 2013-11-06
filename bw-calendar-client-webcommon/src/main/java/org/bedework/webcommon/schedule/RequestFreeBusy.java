@@ -332,9 +332,9 @@ public class RequestFreeBusy extends BwAbstractAction {
     wtr.write("\"value\" : ");
 
     if (val == null) {
-      wtr.write(Util.jsonEncode(""));
+      wtr.write(JsonUtil.jsonEncode(""));
     } else {
-      wtr.write(Util.jsonEncode(val));
+      wtr.write(JsonUtil.jsonEncode(val));
     }
     if (withComma) {
       wtr.write("},\n");

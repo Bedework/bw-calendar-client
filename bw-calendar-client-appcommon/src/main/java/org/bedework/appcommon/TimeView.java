@@ -627,6 +627,7 @@ public class TimeView implements Serializable {
       return;
     }
 
+    /*
     long curTime = System.currentTimeMillis();
 
     Calendar lastP1 = (Calendar)lastDay.clone();
@@ -634,13 +635,15 @@ public class TimeView implements Serializable {
 
     BwDateTime start = getBwDate(firstDayFmt.getDateDigits());
     BwDateTime end = getBwDate(DateTimeUtil.isoDate(lastP1.getTime()));
+    */
 
     Collection<SearchResultEntry> sres = cl.getSearchResult(0, -1);
     events = new ArrayList<>(sres.size());
 
     for (SearchResultEntry sre: sres) {
-      events.add(new EventFormatter(cl, trans,
-                                    (EventInfo)sre.getEntity()));
+      if (sre.getEntity() instanceof EventFormatter) {
+        events.add((EventFormatter)sre.getEntity());
+      }
     }
   }
 

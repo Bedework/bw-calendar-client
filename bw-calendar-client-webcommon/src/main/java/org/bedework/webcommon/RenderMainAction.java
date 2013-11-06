@@ -47,8 +47,6 @@ public class RenderMainAction extends BwAbstractAction {
         return forward;
       }
 
-      request.setRequestAttr(BwRequest.bwSearchResultName,
-                             cl.search(params));
       if (tv != null) {
         tv.refreshEvents();
       }
@@ -58,8 +56,9 @@ public class RenderMainAction extends BwAbstractAction {
 
     if (fetch) {
       /* Do the search */
+      mstate.setSearchResult(cl.search(params));
       request.setRequestAttr(BwRequest.bwSearchResultName,
-                             cl.search(params));
+                             mstate.getSearchResult());
     }
 
     if (tv != null) {

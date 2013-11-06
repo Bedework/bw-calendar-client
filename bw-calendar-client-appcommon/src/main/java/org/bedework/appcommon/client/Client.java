@@ -1103,11 +1103,6 @@ public interface Client extends Serializable {
                      RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException;
 
-  /**
-   * @return SearchParams
-   */
-  SearchParams getSearchParams();
-
   /** Return the events for the current user within the given date and time
    * range. If retrieveList is supplied only those fields (and a few required
    * fields) will be returned.
@@ -1677,6 +1672,11 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   SearchResult search(final SearchParams params) throws CalFacadeException;
+
+  /**
+   * @return SearchParams
+   */
+  SearchParams getSearchParams();
 
   /** Called to retrieve results after a search of the index. Updates
    * the current search result.

@@ -64,6 +64,7 @@ public class SearchParamsAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    BwModuleState mstate = request.getModule().getState();
     SearchParams params = new SearchParams();
     Client cl = request.getClient();
 
@@ -119,8 +120,9 @@ public class SearchParamsAction extends EventActionBase {
     }
 
     /* Do the search */
+    mstate.setSearchResult(cl.search(params));
     request.setRequestAttr(BwRequest.bwSearchResultName,
-                           cl.search(params));
+                           mstate.getSearchResult());
 
     return forwardSuccess;
   }

@@ -36,7 +36,7 @@ public class GetFiltersAction extends BwAbstractAction {
    */
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    form.resetFilters();
+    request.getSess().embedFilters(request);
     return forwardSuccess;
   }
 }

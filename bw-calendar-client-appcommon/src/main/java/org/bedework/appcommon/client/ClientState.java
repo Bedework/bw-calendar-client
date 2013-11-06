@@ -277,15 +277,15 @@ public class ClientState implements Serializable {
    *
    * @param val
    */
-  public void setEventListPars(final EventListPars val) {
-    eventListPars = val;
+  public void setSearchParams(final SearchParams val) {
+    searchParams = val;
   }
 
   /**
-   * @return EventListPars
+   * @return SearchParams
    */
-  public EventListPars getEventListPars() {
-    return eventListPars;
+  public SearchParams getSearchParams() {
+    return searchParams;
   }
 
   /**
@@ -359,6 +359,14 @@ public class ClientState implements Serializable {
     } catch (Throwable t) {
       throw new RuntimeException(t);
     }
+  }
+
+  public String getCurrentDate() {
+    return currentDate;
+  }
+
+  public void setCurrentDate(final String val) {
+    currentDate = val;
   }
 
   /* ====================================================================

@@ -210,7 +210,7 @@
                scope="session"
                parameter="actionType=render;conversation=only;mdl=ongoing;refaction=/main/showOngoingList.rdo"
                validate="false">
-      <forward name="continue" path="/docs/event/eventList.jsp"/>
+      <forward name="success" path="/docs/event/eventList.jsp"/>
     </action>
 
     <!-- ...............................................................
@@ -228,12 +228,12 @@
     </action>
 
     <action    path="/main/showMainEventList"
-               type="org.bedework.webcommon.search.RenderSearchResultActionn"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only;mdl=mainEventList;refaction=/main/showMainEventList.rdo"
                validate="false">
-      <forward name="continue" path="/docs/event/eventList.jsp"/>
+      <forward name="success" path="/docs/event/eventList.jsp"/>
     </action>
 
   <!-- ...............................................................
@@ -268,7 +268,7 @@
                scope="session"
                parameter="actionType=render;conversation=only;refaction=/main/showEventList.rdo"
                validate="false">
-      <forward name="continue" path="/docs/event/eventList.jsp"/>
+      <forward name="success" path="/docs/event/eventList.jsp"/>
     </action>
 
   <!-- ===============================================================

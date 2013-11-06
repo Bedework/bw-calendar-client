@@ -179,7 +179,7 @@
                scope="session"
                parameter="actionType=render;conversation=end"
                validate="false">
-      <forward name="continue" path="/docs/tabPendingEvents.jsp"/>
+      <forward name="success" path="/docs/tabPendingEvents.jsp"/>
     </action>
 
     <action    path="/main/showCalsuiteTab"

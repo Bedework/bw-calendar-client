@@ -205,6 +205,12 @@ public class BwSessionImpl implements BwSession {
     Client cl = req.getClient();
     BwModuleState mstate = req.getModule().getState();
 
+    req.setRequestAttr(BwRequest.bwSearchParamsName,
+                       cl.getSearchParams());
+
+    req.setRequestAttr(BwRequest.bwSearchResultName,
+                       mstate.getSearchResult());
+
     try {
       form.setCurrentVirtualPath(cl.getVirtualPath());
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());

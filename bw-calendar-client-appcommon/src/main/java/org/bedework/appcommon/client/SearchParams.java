@@ -22,8 +22,7 @@ import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.filter.SortTerm;
-
-import edu.rpi.sss.util.ToString;
+import org.bedework.util.misc.ToString;
 
 import java.io.Serializable;
 import java.util.List;

@@ -18,6 +18,8 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.util.struts.Request;
+
 import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;

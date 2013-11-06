@@ -54,12 +54,12 @@ public class SearchNextAction extends BwAbstractAction {
                                                 cl.getSearchParams()
                                                         .getPageSize()));
     } else {
-      Client.Position pos = Client.Position.current;
+      Position pos = Position.current;
 
       if (request.present("next")) {
-        pos = Client.Position.next;
+        pos = Position.next;
       } else if (request.present("prev")) {
-        pos = Client.Position.previous;
+        pos = Position.previous;
       }
 
         request.setRequestAttr(BwRequest.bwSearchListName,

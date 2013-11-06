@@ -276,6 +276,22 @@ public class BwModuleState implements Serializable {
    *                   Searches
    * .................................................................... */
 
+  /**
+   *
+   * @param val - the search result
+   */
+  public void setSearchResult(SearchResult val) {
+    searchResult = val;
+  }
+
+  /**
+   *
+   * @return search result
+   */
+  public SearchResult getSearchResult() {
+    return searchResult;
+  }
+
   /** Set query from last search
    *
    * @param val

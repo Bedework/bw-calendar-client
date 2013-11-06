@@ -651,6 +651,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     params.setFilter(filter);
+    params.setSort(cl.parseSort(request.getReqPar("sort")));
 
     params.setFormat(request.getReqPar("format"));
 

@@ -73,8 +73,6 @@ public class SearchParamsAction extends EventActionBase {
     }
 
     params.setForExport(request.getBooleanReqPar("forExport", false));
-    params.setUseDbSearch(request.getBooleanReqPar("useDbSearch",
-                                                   false));
 
     forward = tryCal(request, form);
 

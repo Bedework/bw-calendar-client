@@ -54,6 +54,7 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.filter.SortTerm;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -1383,6 +1384,7 @@ public class ROClientImpl implements Client {
     lastSearch = getIndexer(params.getPublick()).search(
             params.getQuery(),
             params.getFilter(),
+            params.getSort(),
             params.getFromDate().getDtval(),
             params.getToDate().getDtval(),
             params.getPageSize(),
@@ -1591,6 +1593,12 @@ public class ROClientImpl implements Client {
   public void parseFilter(final BwFilterDef val)
           throws CalFacadeException {
     svci.getFiltersHandler().parse(val);
+  }
+
+  @Override
+  public List<SortTerm> parseSort(final String val)
+          throws CalFacadeException {
+    return svci.getFiltersHandler().parseSort(val);
   }
 
   @Override

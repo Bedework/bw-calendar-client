@@ -49,6 +49,7 @@ import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.filter.SortTerm;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -1853,12 +1854,19 @@ public interface Client extends Serializable {
    */
   BwFilterDef getFilter(String name) throws CalFacadeException;
 
-  /** Parse the xml definition in the given filter object
+  /** Parse the definition in the given filter object
    *
    * @param  val       BwFilterDef
    * @throws CalFacadeException
    */
   void parseFilter(BwFilterDef val) throws CalFacadeException;
+
+  /** Parse the sort expression
+   *
+   * @param  val  String sort expression
+   * @throws CalFacadeException
+   */
+  List<SortTerm> parseSort(String val) throws CalFacadeException;
 
   /** Get filter definitions to which this user has access
    *

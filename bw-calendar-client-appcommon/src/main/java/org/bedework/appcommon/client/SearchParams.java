@@ -21,10 +21,12 @@ package org.bedework.appcommon.client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.filter.SortTerm;
 
 import edu.rpi.sss.util.ToString;
 
 import java.io.Serializable;
+import java.util.List;
 
 /** Parameters for fetching a bunch of events.
  *
@@ -42,6 +44,8 @@ public class SearchParams implements Serializable {
   private String query;
 
   private FilterBase filter;
+
+  private List<SortTerm> sort;
 
   private BwCalendar collection;
 
@@ -130,6 +134,22 @@ public class SearchParams implements Serializable {
     return filter;
   }
 
+  /** Set the sort expression
+   *
+   * @param  val  String sort expression
+   * @throws
+   */
+  public void setSort(List<SortTerm> val) {
+    sort = val;
+  }
+
+  /**
+   * @return sort expression
+   */
+  public List<SortTerm> getSort() {
+    return sort;
+  }
+
   /** if null no collection specified
    * @param val
    */
@@ -159,21 +179,6 @@ public class SearchParams implements Serializable {
     return forExport;
   }
 
-  /** True if we should search the db rather than the index
-   *
-   * @param val
-   */
-  public void setUseDbSearch(final boolean val) {
-    useDbSearch = val;
-  }
-
-  /**
-   * @return boolean
-   */
-  public boolean getUseDbSearch() {
-    return useDbSearch;
-  }
-
   /** Set the format
    *
    * @param val
@@ -187,20 +192,6 @@ public class SearchParams implements Serializable {
    */
   public String getFormat() {
     return format;
-  }
-
-  /** Set result set size for last search
-   * @param val
-   */
-  public void setResultSize(final int val) {
-    resultSize = val;
-  }
-
-  /**
-   * @return result set size for last search
-   */
-  public int getResultSize() {
-    return resultSize;
   }
 
   /** Set current page in search result
@@ -243,7 +234,6 @@ public class SearchParams implements Serializable {
             .append("collection", getCollection())
             .append("format", getFormat())
             .append("forExport", getForExport())
-            .append("resultSize", getResultSize())
             .append("curOffset", getCurOffset())
             .append("pageSize", getPageSize());
 

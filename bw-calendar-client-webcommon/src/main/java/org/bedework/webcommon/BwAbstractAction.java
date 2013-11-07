@@ -564,7 +564,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       params.setFromDate(tr.getStart());
       params.setToDate(tr.getEnd());
     } else {
-      params.setFromDate(BwDateTimeUtil.getDateTimeUTC(startStr));
+      params.setFromDate(BwDateTimeUtil.getDateTime(
+              XcalUtil.getIcalFormatDateTime(startStr),
+              true,
+              false, null));
     }
 
     int offset = request.getIntReqPar("offset", -1);

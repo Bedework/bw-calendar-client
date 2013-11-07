@@ -66,8 +66,6 @@ import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
-import org.bedework.calsvci.Categories;
-import org.bedework.calsvci.EventProperties;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.calsvci.indexing.BwIndexer;
@@ -89,7 +87,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:03
@@ -1381,12 +1378,23 @@ public class ROClientImpl implements Client {
 
     lastSearchEntries = null;
 
+    String start = null;
+    String end = null;
+
+    if (params.getFromDate() != null) {
+      start = params.getFromDate().getDtval();
+    }
+
+    if (params.getToDate() != null) {
+      end = params.getToDate().getDtval();
+    }
+
     lastSearch = getIndexer(params.getPublick()).search(
             params.getQuery(),
             params.getFilter(),
             params.getSort(),
-            params.getFromDate().getDtval(),
-            params.getToDate().getDtval(),
+            start,
+            end,
             params.getPageSize(),
             accessChecker);
 

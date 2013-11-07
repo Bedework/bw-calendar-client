@@ -18,7 +18,7 @@
       <logic:equal name="sre" property="docType" value="event">
         <bean:define id="eventFormatter"
                    name="sre" property="entity" toScope="request"  />
-        <%@include file="/docs/event/emitEventForList.jsp"%>
+        <%@include file="/docs/event/emitEvent.jsp"%>
       </logic:equal>
     </logic:iterate>
   </logic:present>

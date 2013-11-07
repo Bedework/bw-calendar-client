@@ -18,16 +18,15 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.SearchParams;
 
 /** This is a no-op action
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
 public class NoopAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -39,6 +38,38 @@ public class NoopAction extends BwAbstractAction {
       String defViewMode = cl.getPreferences().getDefaultViewMode();
 
       if ("list".equals(defViewMode)) {
+        BwModuleState mstate = request.getModule().getState();
+        TimeView tv = mstate.getCurTimeView();
+        boolean fetch = false;
+
+        SearchParams params = cl.getSearchParams();
+
+        if (params == null) {
+          /* Set up the search parameters */
+
+          params = new SearchParams();
+          int forward = setSearchParams(request, params);
+
+          if (forward != forwardSuccess) {
+            return forward;
+          }
+
+          if (tv != null) {
+            tv.refreshEvents();
+          }
+
+          /* Do the search */
+          mstate.setSearchResult(cl.search(params));
+          request.setRequestAttr(BwRequest.bwSearchResultName,
+                                 mstate.getSearchResult());
+        }
+
+        if (tv != null) {
+          tv.getEvents(cl, mstate.getRefresh());
+        }
+
+        mstate.setRefresh(false);
+
         return forwardListEvents;
       }
     }

@@ -235,7 +235,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       if (!cl.getPublicAdmin()) {
         String viewType = request.getReqPar("viewType");
         if (viewType != null) {
-          mstate.setCurViewPeriod(mstate.getViewTypeI());
+          mstate.setViewType(viewType);
         } else {
           mstate.setViewType(prefs.getPreferredViewPeriod());
         }
@@ -357,9 +357,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     try {
       if (bwreq.present("viewType")) {
+        mstate.setViewType(bwreq.getReqPar("viewType"));
+
         gotoDateView(bwreq,
                      mstate.getDate(),
-                     mstate.getViewTypeI());
+                     mstate.getCurViewPeriod());
       }
 
       forward = forwards[doAction(bwreq, form)];

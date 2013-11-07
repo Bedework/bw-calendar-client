@@ -63,23 +63,13 @@ public class BwModuleState implements Serializable {
 
   private String date;
 
-  /** Index of the view type set when the page was last generated
+  /** Index of the current view type
    */
   private int curViewPeriod = -1;
-
-  /** one of the viewTypeNames values
-   */
-  private String viewType;
 
   /** MyCalendarVO version of the start date
    */
   private MyCalendarVO viewMcDate;
-
-  /** Index of the view type requested this time round. We set curViewPeriod to
-   * viewTypeI. This allows us to see if the view changed as a result of the
-   * request.
-   */
-  private int viewTypeI;
 
   /** The current view with user selected date (day, week, month etc)
    */
@@ -195,33 +185,44 @@ public class BwModuleState implements Serializable {
     return viewMcDate;
   }
 
+  /** The current view (day, week, month etc)
+   *
+   * @param val
+   */
+  public void setCurTimeView(final TimeView val) {
+    curTimeView = val;
+  }
+
+  /**
+   *
+   * @return current view (day, week, month etc)
+   */
+  public TimeView getCurTimeView() {
+    return curTimeView;
+  }
+
   /** This often appears as the request parameter specifying the view.
    * It should be one of the viewTypeNames
    *
    * @param  val   String viewType
    */
   public void setViewType(final String val) {
-    viewType = Util.checkNull(val);
+    String viewType = Util.checkNull(val);
 
     if (viewType == null) {
-      viewTypeI = -1;
       return;
     }
 
     Integer i = BwAbstractAction.viewTypeMap.get(viewType);
 
     if (i == null) {
-      viewTypeI = BedeworkDefs.defaultView;
-    } else {
-      viewTypeI = i;
+      i = BedeworkDefs.defaultView;
     }
-  }
 
-  /**
-   * @return String
-   */
-  public String getViewType() {
-    return viewType;
+    if (i != curViewPeriod) {
+      curViewPeriod = i;
+      refresh = true;
+    }
   }
 
   /** Index of the view type set when the page was last generated
@@ -355,39 +356,6 @@ public class BwModuleState implements Serializable {
    */
   public String getDate() {
     return date;
-  }
-
-  /** Index of the view type requested this time round. We set curViewPeriod to
-   * viewTypeI. This allows us to see if the view changed as a result of the
-   * request.
-   *
-   * @param val index
-   */
-  public void setViewTypeI(final int val) {
-    viewTypeI = val;
-  }
-
-  /**
-   * @return index
-   */
-  public int getViewTypeI() {
-    return viewTypeI;
-  }
-
-  /** The current view (day, week, month etc)
-   *
-   * @param val
-   */
-  public void setCurTimeView(final TimeView val) {
-    curTimeView = val;
-  }
-
-  /**
-   *
-   * @return current view (day, week, month etc)
-   */
-  public TimeView getCurTimeView() {
-    return curTimeView;
   }
 
   /* later

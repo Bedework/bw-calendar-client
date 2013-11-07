@@ -84,7 +84,7 @@ public class SearchParamsAction extends EventActionBase {
     if (params.getFromDate() != null) {
       gotoDateView(request,
                    params.getFromDate().getDtval(),
-                   request.getModule().getState().getViewTypeI());
+                   mstate.getCurViewPeriod());
     }
 
     request.setRequestAttr(BwRequest.bwSearchParamsName, params);

@@ -259,21 +259,15 @@ public class BwSessionImpl implements BwSession {
         req.setSessionAttr(refreshTimeAttr, now);
       }
 
-      if (!mstate.getRefresh()) {
-        // Always returned false; if (!form.fetchSvci().refreshNeeded()) {
-        return;
-        //}
+      if (mstate.getRefresh() ||
+              mstate.getCurTimeView() == null) {
+        refreshView(req);
+        mstate.setRefresh(false);
       }
     } catch (Throwable t) {
       // Not much we can do here
       form.getErr().emit(t);
       return;
-    }
-
-    if (!req.getClient().getPublicAdmin() ||
-            mstate.getCurTimeView() == null) {
-      refreshView(req);
-      mstate.setRefresh(false);
     }
   }
 
@@ -414,9 +408,7 @@ public class BwSessionImpl implements BwSession {
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredCategoriesListName;
 
-      Client cl = request.getClient();
-
-      vals = cl.getCategories(curAuthUserPrefs.getCategoryPrefs().getPreferred());
+      vals = curAuthUserPrefs.getCategoryPrefs().getPreferred();
     } else if (kind == defaultEntity) {
       attrName = BwRequest.bwDefaultCategoriesListName;
 
@@ -580,6 +572,7 @@ public class BwSessionImpl implements BwSession {
               (mstate.getViewMcDate() == null)) {
         mstate.setViewMcDate(new MyCalendarVO(new Date(
                 System.currentTimeMillis())));
+        mstate.setCurViewPeriod(BedeworkDefs.dayView);
       }
 
       FilterBase filter = getFilter(req, null);
@@ -587,10 +580,6 @@ public class BwSessionImpl implements BwSession {
 
       switch (mstate.getCurViewPeriod()) {
         case BedeworkDefs.todayView:
-          tv = new DayView(form.getErr(),
-                           mstate.getViewMcDate(),
-                           filter);
-          break;
         case BedeworkDefs.dayView:
           tv = new DayView(form.getErr(),
                            mstate.getViewMcDate(),

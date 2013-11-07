@@ -68,7 +68,7 @@ public class AttendeeAction extends EventActionBase {
 
     if (!listResponseOnly && !noFb) {
       /* Select appropriate view for freebusy display */
-      gotoDateView(request, mstate.getDate(), mstate.getViewTypeI());
+      gotoDateView(request, mstate.getDate(), mstate.getCurViewPeriod());
     }
 
     /* If we were sent a bunch of json use that */

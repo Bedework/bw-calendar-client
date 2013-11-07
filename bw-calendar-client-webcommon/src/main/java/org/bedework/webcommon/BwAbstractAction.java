@@ -529,20 +529,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     AuthProperties authp = cl.getAuthProperties();
 
     int days = request.getIntReqPar("days", -32767);
-    if (days < 0) {
-      days = authp.getDefaultWebCalPeriod();
-    }
+//    if (days < 0) {
+  //    days = authp.getDefaultWebCalPeriod();
+    //}
 
     if ((startStr == null) && (endStr == null)) {
       if (!form.getListAllEvents()) {
-        params.setFromDate(todaysDateTime(form));
+        params.setFromDate(todaysDateTime());
 
-        // Must have end
-
-        params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
-                                                             0, 0)));
+        if (days > 0) {
+          params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
+                                                               0, 0)));
+        }
       }
-    } else {
+    } else if ((endStr != null) || (days > 0)) {
       int max = 0;
 
       if (!cl.isSuperUser()) {
@@ -563,6 +563,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       params.setFromDate(tr.getStart());
       params.setToDate(tr.getEnd());
+    } else {
+      params.setFromDate(BwDateTimeUtil.getDateTimeUTC(startStr));
     }
 
     int offset = request.getIntReqPar("offset", -1);
@@ -658,7 +660,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return forwardSuccess;
   }
 
-  protected BwDateTime todaysDateTime(final BwActionFormBase form) throws Throwable {
+  protected BwDateTime todaysDateTime() throws Throwable {
     return BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
                                       true,
                                       false,   // floating

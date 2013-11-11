@@ -3,6 +3,7 @@
 <%@ taglib uri='struts-html' prefix='html' %>
 <%@ taglib uri='struts-genurl' prefix='genurl' %>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>deleteAdminGroupConfirm</page>
@@ -14,3 +15,4 @@
 
 <%@include file="/docs/footer.jsp"%>
 
+</bedework>

@@ -5,6 +5,7 @@
 <%@ taglib uri='bedework' prefix='bw' %>
 <html:xhtml/>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>deleteCalSuiteConfirm</page>
@@ -26,3 +27,4 @@
 
 <%@include file="/docs/footer.jsp"%>
 
+</bedework>

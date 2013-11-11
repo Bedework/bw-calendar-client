@@ -7,7 +7,6 @@
 try {
 %>
 
-<bedework>
   <bean:define id="bwconfig" name="calForm" property="config" toScope="session" />
   <bean:define id="moduleState" name="bw_module_state" scope="request" />
 

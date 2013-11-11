@@ -1,5 +1,6 @@
 <%@ taglib uri='struts-bean' prefix='bean' %>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>deleteResourceConfirm</page>
@@ -15,3 +16,4 @@
 </currentResource>
 
 <%@include file="/docs/footer.jsp"%>
+</bedework>

@@ -1,6 +1,7 @@
 <%@ taglib uri='struts-bean' prefix='bean' %>
 <%@ taglib uri='struts-logic' prefix='logic' %>
 
+<bedework>
 <%@ include file="header.jsp" %>
   <%-- branch to an arbitrary page (an xslt template) using the
        "appvar" application variable on a link like so:
@@ -20,3 +21,4 @@
   <page>showMsgErr</page>
 
 <%@ include file="footer.jsp" %>
+</bedework>

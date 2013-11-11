@@ -2,6 +2,7 @@
 
 <html:xhtml/>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 <%
 try {
@@ -17,3 +18,4 @@ try {
 %>
 <%@include file="/docs/footer.jsp"%>
 
+</bedework>

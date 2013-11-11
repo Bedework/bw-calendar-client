@@ -1,6 +1,7 @@
 <%@ taglib uri='struts-bean' prefix='bean' %>
 <%@ taglib uri='struts-logic' prefix='logic' %>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>adminGroupList</page>
@@ -36,3 +37,4 @@
 </calSuites>
 
 <%@include file="/docs/footer.jsp"%>
+</bedework>

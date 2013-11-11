@@ -9,7 +9,6 @@
 try {
 %>
 
-<bedework>
   <bean:define id="bwconfig" name="calForm" property="config" toScope="session" />
   <bean:define id="moduleState" name="bw_module_state" scope="request" />
 
@@ -104,6 +103,7 @@ try {
       <showEvent><bw:rewrite renderURL="true" page="/event/showEvent.rdo?b=de"/></showEvent>
       <showModForm><bw:rewrite renderURL="true" page="/event/showModForm.rdo?b=de"/></showModForm>
       <showUpdateList><bw:rewrite renderURL="true" page="/event/showUpdateList.rdo?b=de"/></showUpdateList>
+      <nextUpdateList><bw:rewrite renderURL="true" page="/event/nextUpdateList.rdo?b=de"/></nextUpdateList>
       <showDeleteConfirm><bw:rewrite renderURL="true" page="/event/showDeleteConfirm.rdo?b=de"/></showDeleteConfirm>
       <initAddEvent><bw:rewrite actionURL="true" page="/event/initAddEvent.do?b=de"/></initAddEvent>
       <initUpdateEvent><bw:rewrite actionURL="true" page="/event/initUpdateEvent.do?b=de"/></initUpdateEvent>

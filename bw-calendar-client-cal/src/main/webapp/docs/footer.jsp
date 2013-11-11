@@ -79,7 +79,6 @@ try {
     </logic:iterate>
     <start><bean:write name="moduleState" property="viewStartDate.ampm"/></start>
   </ampmvalues>
-</bedework>
 <%
 } catch (Throwable t) {
   t.printStackTrace();

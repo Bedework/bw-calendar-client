@@ -6,6 +6,7 @@
 <html:xhtml/>
 
 <%-- Load the header common to all pages --%>
+<bedework>
 <%@ include file="/docs/header.jsp" %>
 
 <page>home</page>
@@ -13,3 +14,4 @@
 
 <%@ include file="/docs/footer.jsp" %>
 
+</bedework>

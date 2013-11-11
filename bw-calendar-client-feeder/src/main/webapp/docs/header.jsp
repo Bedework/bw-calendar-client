@@ -7,7 +7,6 @@
 try {
 %>
 
-<bedework>
   <bean:define id="bwconfig" name="calForm" property="config" toScope="session" />
   <bean:define id="moduleState" name="bw_module_state" scope="request" />
 
@@ -360,9 +359,6 @@ try {
       <logic:present name="calForm" property="currentCollection" >
         <name><bean:write name="calForm" property="currentCollection.name"/></name>
         <path><bean:write name="calForm" property="currentCollection.path"/></path>
-      </logic:present>
-      <logic:present name="calForm" property="currentVirtualPath" >
-        <virtualpath><bean:write name="calForm" property="currentVirtualPath"/></virtualpath>
       </logic:present>
     </collection>
     <view>

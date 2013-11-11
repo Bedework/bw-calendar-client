@@ -1,5 +1,6 @@
 <%@ taglib uri='struts-bean' prefix='bean' %>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>deleteViewConfirm</page>
@@ -14,3 +15,4 @@
 </currentView>
 
 <%@include file="/docs/footer.jsp"%>
+</bedework>

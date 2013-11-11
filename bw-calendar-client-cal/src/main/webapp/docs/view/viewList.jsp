@@ -2,6 +2,7 @@
 <%@ taglib uri='struts-logic' prefix='logic' %>
 <%@ taglib uri='bedework' prefix='bw' %>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>views</page>
@@ -21,3 +22,4 @@
 
 
 <%@include file="/docs/footer.jsp"%>
+</bedework>

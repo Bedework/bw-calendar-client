@@ -1,6 +1,7 @@
 <%@ taglib uri='struts-bean' prefix='bean' %>
 <%@ taglib uri='struts-logic' prefix='logic' %>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>addSubscription</page>
@@ -18,3 +19,4 @@
 <%@include file="/docs/footer.jsp"%>
 
 
+</bedework>

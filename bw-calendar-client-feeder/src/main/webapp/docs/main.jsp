@@ -7,6 +7,7 @@
 <html:xhtml/>
 
 <%-- Load the header common to all pages --%>
+<bedework>
 <%@ include file="/docs/header.jsp" %>
 
 <%-- the <page> element allows us to branch in our XSLT based on what page
@@ -75,3 +76,4 @@
 
 <%@ include file="/docs/footer.jsp" %>
 
+</bedework>

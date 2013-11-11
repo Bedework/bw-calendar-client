@@ -5,6 +5,7 @@
 <%@ taglib uri='bedework' prefix='bw' %>
 <html:xhtml/>
 
+<bedework>
 <%@ include file="/docs/header.jsp" %>
 
 <page>addEvent</page>
@@ -15,3 +16,4 @@
 
 <%@ include file="/docs/footer.jsp" %>
 
+</bedework>

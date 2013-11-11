@@ -4,6 +4,7 @@
 <%@ taglib uri='struts-genurl' prefix='genurl' %>
 <html:xhtml/>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>locationReferenced</page>
@@ -52,3 +53,4 @@
 
 <%@include file="/docs/footer.jsp"%>
 
+</bedework>

@@ -2,6 +2,7 @@
 
 <html:xhtml/>
 
+<bedework>
 <%@include file="/docs/header.jsp"%>
 
 <page>modEvent</page>
@@ -11,3 +12,4 @@
 
 <%@include file="/docs/footer.jsp"%>
 
+</bedework>

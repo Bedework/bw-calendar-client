@@ -49,12 +49,6 @@ public class ClientState implements Serializable {
 
   private BwView currentView;
 
-  /* The current virtual path */
-  private String vpath;
-
-  /* The current virtual path target */
-  private String vpathTarget;
-
   private SearchParams searchParams;
 
   private String currentDate;
@@ -116,8 +110,6 @@ public class ClientState implements Serializable {
     for (BwView view: v) {
       if (val.equals(view.getName())) {
         currentView = view;
-        vpath = null;
-        vpathTarget = null;
 
         if (debug) {
           trace("set view to " + view);
@@ -148,8 +140,6 @@ public class ClientState implements Serializable {
     vfilter = null;
 
     currentView = val;
-    vpath = null;
-    vpathTarget = null;
   }
 
   /** Get the current view we have set
@@ -159,118 +149,6 @@ public class ClientState implements Serializable {
    */
   public BwView getCurrentView() throws CalFacadeException {
     return currentView;
-  }
-
-  /** Set the virtual path and unset any current view.
-   *
-   * <p>A virtual path is the apparent path for a user looking at an explorer
-   * view of collections.
-   *
-   * <p>We might have,
-   * <pre>
-   *    home-->Arts-->Theatre
-   * </pre>
-   *
-   * <p>In reality the Arts collection might be an alias to another alias which
-   * is an alias to a collection containing aliases including "Theatre".
-   *
-   * <p>So the real picture might be something like...
-   * <pre>
-   *    home-->Arts             (categories="ChemEng")
-   *            |
-   *            V
-   *           Arts             (categories="Approved")
-   *            |
-   *            V
-   *           Arts-->Theatre   (categories="Arts" AND categories="Theatre")
-   *                     |
-   *                     V
-   *                    MainCal
-   * </pre>
-   * where the vertical links are aliasing. The importance of thsi is that
-   * each alias might introduce another filtering term, the intent of which is
-   * to restrict the retrieval to a specific subset. The parenthesized terms
-   * represent example filters.
-   *
-   * <p>The desired filter is the ANDing of all the above.
-   *
-   * @param  vpath  a String virtual path
-   * @return false for bad path
-   * @throws CalFacadeException
-   */
-  public boolean setVirtualPath(final String vpath) throws CalFacadeException {
-    /* We decompose the virtual path into it's elements and then try to
-     * build a sequence of collections that include the aliases and their
-     * targets until we reach the last element in the path.
-     *
-     * We'll assume the path is already normalized and that no "/" are allowed
-     * as parts of names.
-     *
-     * What we're doing here is resolving aliases to aliases and accumulating
-     * any filtering that might be in place as a sequence of ANDed terms. For
-     * example:
-     *
-     * /user/eng/Lectures has the filter cat=eng and is aliased to
-     * /public/aliases/Lectures which has the filter cat=lectures and is aliased to
-     * /public/cals/MainCal
-     *
-     * We want the filter (cat=eng) & (cat=Lectures) on MainCal.
-     *
-     * Below, we decompose the virtual path and we save the path to an actual
-     * folder or calendar collection.
-     */
-
-    Collection<BwCalendar> cols = cl.decomposeVirtualPath(vpath);
-
-    if (cols == null) {
-      // Bad vpath
-      return false;
-    }
-
-    vfilter = null;
-    this.vpath = vpath;
-    vpathTarget = vpath;
-
-    for (BwCalendar col: cols) {
-      if (debug) {
-        trace("      vpath collection:" + col.getPath());
-      }
-
-      if (col.getFilterExpr() != null) {
-        if (vfilter == null) {
-          vfilter = "(" ;
-        } else {
-          vfilter += " & (";
-        }
-        vfilter += col.getFilterExpr() + ")";
-      }
-
-      if (col.getCollectionInfo().onlyCalEntities ||
-          (col.getCalType() == BwCalendar.calTypeFolder)) {
-        // reached an end point
-        vpathTarget = col.getPath();
-      }
-    }
-
-    if (debug) {
-      trace("      vpath filter: " + vfilter);
-    }
-
-    colorMap = new ColorMap();
-    currentView = null;
-    filter = null;
-//    filter = new FilterBuilder(getSvc(),
-  //                             colorMap).buildFilter(null, vfilter, true);
-
-    return true;
-  }
-
-  /**
-   * @return non-null if setVirtualPath was called succesfully
-   * @throws CalFacadeException
-   */
-  public String getVirtualPath() throws CalFacadeException {
-    return vpath;
   }
 
   /** Event key for next action
@@ -326,11 +204,7 @@ public class ClientState implements Serializable {
       return filter;
     }
 
-    if (vpathTarget != null) {
-      paths = new ArrayList<String>();
-
-      paths.add(vpathTarget);
-    } else if (currentView != null) {
+    if (currentView != null) {
       paths = currentView.getCollectionPaths();
       conjunction = currentView.getConjunction();
     } else {
@@ -399,6 +273,18 @@ public class ClientState implements Serializable {
     @Override
     public BwCategory getCategory(final String uid) throws CalFacadeException {
       return cl.getCategory(uid);
+    }
+
+    @Override
+    public BwView getView(final String path)
+            throws CalFacadeException {
+      return cl.getView(path);
+    }
+
+    @Override
+    public Collection<BwCalendar> decomposeVirtualPath(final String vpath)
+            throws CalFacadeException {
+      return cl.decomposeVirtualPath(vpath);
     }
   }
 

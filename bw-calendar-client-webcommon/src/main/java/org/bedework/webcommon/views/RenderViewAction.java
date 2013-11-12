@@ -50,7 +50,7 @@ public class RenderViewAction extends RenderAction {
       return forwardRetry;
     }
 
-    BwView view = cl.findView(name);
+    BwView view = cl.getView(name);
 
     if (view == null) {
       form.getErr().emit(ClientError.unknownView, name);

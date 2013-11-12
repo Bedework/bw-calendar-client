@@ -67,7 +67,7 @@ import java.util.TreeSet;
  *      <li>"delete"       for confirmation.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm   rpi.edu
  */
 public class UpdatePrefsAction extends BwAbstractAction {
   @Override
@@ -110,7 +110,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     str = request.getReqPar("preferredView");
     if (str != null) {
-      if (cl.findView(str) == null) {
+      if (cl.getView(str) == null) {
         form.getErr().emit(ClientError.unknownView, str);
         return forwardNotFound;
       }

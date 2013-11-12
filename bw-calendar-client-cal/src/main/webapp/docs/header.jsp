@@ -385,18 +385,6 @@ try {
         Value: view,search,collections,filter
         Used to branch into different presentation depending on the type of
         output we expect --%>
-    <collection>
-      <logic:present name="calForm" property="currentCollection" >
-        <name><bean:write name="calForm" property="currentCollection.name"/></name>
-        <path><bean:write name="calForm" property="currentCollection.path"/></path>
-      </logic:present>
-    </collection>
-    <view>
-      <logic:present name="calForm" property="currentView" >
-        <name><bean:write name="calForm" property="currentView.name"/></name><%--
-          Value: string - Name of selected view for display --%>
-      </logic:present>
-    </view>
     <filter></filter> <%-- unimplemented --%>
   </selectionState>
 

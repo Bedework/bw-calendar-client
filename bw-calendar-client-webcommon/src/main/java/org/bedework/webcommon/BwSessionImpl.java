@@ -212,9 +212,7 @@ public class BwSessionImpl implements BwSession {
                        mstate.getSearchResult());
 
     try {
-      form.setCurrentVirtualPath(cl.getVirtualPath());
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
-      form.assignCurrentView(cl.getCurrentView());
 
       if (mstate.getEventDates() == null) {
         mstate.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),

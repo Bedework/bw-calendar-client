@@ -265,12 +265,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private String imageUploadDirectory;
 
-  /* ....................................................................
-   *                       Selection type and selection
-   * .................................................................... */
-
-  private String currentVirtualPath;
-
   private String eventRegAdminToken;
 
   /** ...................................................................
@@ -458,7 +452,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private boolean reloadRequired;
   private Collection<BwCalSuite> calSuites;
   private String calendarUserAddress;
-  private BwView currentView;
 
   /* ====================================================================
    *                   Property methods
@@ -1571,42 +1564,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /* ====================================================================
    *                   Views
    * ==================================================================== */
-
-  /** Get the current collection from the client state
-   *
-   * @return BwCalendar object  object or null for all events
-   */
-  public BwCalendar getCurrentCollection() {
-    return null; // clientState always returns null
-  }
-
-  public void setCurrentVirtualPath(String val) {
-    currentVirtualPath = val;
-  }
-
-  /** Get the current virtual path from the client state
-   *
-   * @return String path or null for all events
-   */
-  public String getCurrentVirtualPath() {
-    return currentVirtualPath;
-  }
-
-  /** the current view we have set
-   *
-   * @return BwView    named Collection of Collections or null for default
-   */
-  public void assignCurrentView(BwView val) {
-    currentView = val;
-  }
-
-  /** the current view we have set
-   *
-   * @return BwView    named Collection of Collections or null for default
-   */
-  public BwView getCurrentView() {
-    return currentView;
-  }
 
   /** Set the view name for fetch
    *

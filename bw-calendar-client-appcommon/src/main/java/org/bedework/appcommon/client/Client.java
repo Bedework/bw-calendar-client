@@ -1430,7 +1430,7 @@ public interface Client extends Serializable {
    * @return BwView  null view not found.
    * @throws CalFacadeException
    */
-  BwView findView(String val) throws CalFacadeException;
+  BwView getView(String val) throws CalFacadeException;
 
   /** Add a view.
    *
@@ -1487,75 +1487,6 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   public void flushState() throws CalFacadeException;
-
-  /** Set the view to the given named view. Null means reset to default.
-   * Unset current calendar.
-   *
-   * @param  val     String view name - null for default
-   * @return boolean false - view not found.
-   * @throws CalFacadeException
-   */
-  boolean setCurrentView(String val) throws CalFacadeException;
-
-  /** Set the view to the given view object. Null means reset to default.
-   * Unset current calendar.
-   *
-   * @param  val     view name - null for default
-   * @throws CalFacadeException
-   */
-  void setCurrentView(final BwView val) throws CalFacadeException;
-
-  /** Get the current view we have set
-   *
-   * @return BwView    named Collection of Collections or null for default
-   * @throws CalFacadeException
-   */
-  BwView getCurrentView() throws CalFacadeException;
-
-  /** Set the virtual path and unset any current view.
-   *
-   * <p>A virtual path is the apparent path for a user looking at an explorer
-   * view of collections.
-   *
-   * <p>We might have,
-   * <pre>
-   *    home-->Arts-->Theatre
-   * </pre>
-   *
-   * <p>In reality the Arts collection might be an alias to another alias which
-   * is an alias to a collection containing aliases including "Theatre".
-   *
-   * <p>So the real picture might be something like...
-   * <pre>
-   *    home-->Arts             (categories="ChemEng")
-   *            |
-   *            V
-   *           Arts             (categories="Approved")
-   *            |
-   *            V
-   *           Arts-->Theatre   (categories="Arts" AND categories="Theatre")
-   *                     |
-   *                     V
-   *                    MainCal
-   * </pre>
-   * where the vertical links are aliasing. The importance of thsi is that
-   * each alias might introduce another filtering term, the intent of which is
-   * to restrict the retrieval to a specific subset. The parenthesized terms
-   * represent example filters.
-   *
-   * <p>The desired filter is the ANDing of all the above.
-   *
-   * @param  vpath  a String virtual path
-   * @return false for bad path
-   * @throws CalFacadeException
-   */
-  boolean setVirtualPath(final String vpath) throws CalFacadeException;
-
-  /**
-   * @return non-null if setVirtualPath was called successfully
-   * @throws CalFacadeException
-   */
-  String getVirtualPath() throws CalFacadeException;
 
   /** Given a possible collection object return whatever is appropriate for the
    * current view.

@@ -218,16 +218,30 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     form.setGuest(bsess.isGuest());
 
+    BwPreferences prefs = cl.getPreferences();
+
     if (form.getGuest()) {
       // force public view on - off by default
       form.setPublicView(true);
+    } else {
+      form.assignImageUploadDirectory(prefs.getDefaultImageDirectory());
     }
-
-    BwPreferences prefs = cl.getPreferences();
 
     if (form.getNewSession()) {
       if (debug) {
         traceConfig(request);
+      }
+
+      form.setHour24(form.getConfig().getHour24());
+      if (!cl.getPublicAdmin() &&
+              !form.getSubmitApp() &&
+              !form.getGuest()) {
+        form.setHour24(prefs.getHour24());
+      }
+
+      form.setEndDateType(BwPreferences.preferredEndTypeDuration);
+      if (!cl.getPublicAdmin() && !form.getGuest()) {
+        form.setEndDateType(prefs.getPreferredEndType());
       }
 
       bsess.embedFilters(bwreq);
@@ -238,14 +252,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           mstate.setViewType(viewType);
         } else {
           mstate.setViewType(prefs.getPreferredViewPeriod());
-        }
-
-        // Set to default view or view in request.
-        String viewName = request.getReqPar("viewName");
-
-        if (!setView(bwreq, viewName) && (viewName != null)) {
-          // try default
-          setView(bwreq, null);
         }
       }
     }
@@ -275,10 +281,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     } catch (Throwable t) {
     }
 
-    if (!form.getGuest()) {
-      form.assignImageUploadDirectory(prefs.getDefaultImageDirectory());
-    }
-
     if (form.getDirInfo() == null) {
       form.setDirInfo(cl.getDirectoryInfo());
     }
@@ -299,20 +301,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         ps.setSkinName(skinName);
         ps.setSkinNameSticky(true);
-      }
-    }
-
-    if (form.getNewSession()) {
-      form.setHour24(form.getConfig().getHour24());
-      if (!cl.getPublicAdmin() &&
-              !form.getSubmitApp() &&
-              !form.getGuest()) {
-        form.setHour24(prefs.getHour24());
-      }
-
-      form.setEndDateType(BwPreferences.preferredEndTypeDuration);
-      if (!cl.getPublicAdmin() && !form.getGuest()) {
-        form.setEndDateType(prefs.getPreferredEndType());
       }
     }
 
@@ -720,35 +708,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         form.getMsg().emit(ClientMessage.scheduleSent, srr.recipient);
       }
     }
-  }
-
-  /* Set the view to the given name or the default if null.
-   *
-   * @return false for not found
-   */
-  protected boolean setView(final BwRequest request,
-                            String name) throws CalFacadeException {
-    BwModuleState mstate = request.getModule().getState();
-    Client cl = request.getClient();
-
-    if (name == null) {
-      BwPreferences prefs = cl.getPreferences();
-      name = prefs.getPreferredView();
-    }
-
-    if (name == null) {
-      request.getErr().emit(ClientError.noDefaultView);
-      return false;
-    }
-
-    if (!cl.setCurrentView(name)) {
-      request.getErr().emit(ClientError.unknownView, name);
-      return false;
-    }
-
-    mstate.setSelectionType(BedeworkDefs.selectionTypeView);
-    mstate.setRefresh(true);
-    return true;
   }
 
   /** Find a principal object given a "user" request parameter.

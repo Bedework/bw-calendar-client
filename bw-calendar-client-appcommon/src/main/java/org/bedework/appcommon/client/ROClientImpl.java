@@ -1224,7 +1224,7 @@ public class ROClientImpl implements Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwView findView(final String val) throws CalFacadeException {
+  public BwView getView(final String val) throws CalFacadeException {
     return svci.getViewsHandler().find(val);
   }
 
@@ -1267,34 +1267,6 @@ public class ROClientImpl implements Client {
   @Override
   public void flushState() throws CalFacadeException {
     cstate.flush();
-  }
-
-  @Override
-  public boolean setCurrentView(final String val)
-          throws CalFacadeException {
-    return cstate.setCurrentView(val);
-  }
-
-  @Override
-  public void setCurrentView(final BwView val)
-          throws CalFacadeException {
-    cstate.setCurrentView(val);
-  }
-
-  @Override
-  public BwView getCurrentView() throws CalFacadeException {
-    return cstate.getCurrentView();
-  }
-
-  @Override
-  public boolean setVirtualPath(final String vpath)
-          throws CalFacadeException {
-    return cstate.setVirtualPath(vpath);
-  }
-
-  @Override
-  public String getVirtualPath() throws CalFacadeException {
-    return cstate.getVirtualPath();
   }
 
   @Override

@@ -42,7 +42,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      subscribed ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
 public class DeleteViewAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -65,7 +65,7 @@ public class DeleteViewAction extends BwAbstractAction {
       return forwardRetry;
     }
 
-    BwView view = cl.findView(name);
+    BwView view = cl.getView(name);
 
     if (view == null) {
       request.getErr().emit(ClientError.unknownView, name);

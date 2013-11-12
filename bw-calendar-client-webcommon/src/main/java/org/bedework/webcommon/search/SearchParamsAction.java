@@ -18,12 +18,9 @@
 */
 package org.bedework.webcommon.search;
 
-import org.bedework.appcommon.BedeworkDefs;
-import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
-import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calsvci.indexing.BwIndexer.Position;
 import org.bedework.calsvci.indexing.SearchResultEntry;
@@ -38,7 +35,6 @@ import net.fortuna.ical4j.model.Calendar;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Action to set up parameters for search.
@@ -74,12 +70,6 @@ public class SearchParamsAction extends EventActionBase {
     }
 
     params.setForExport(request.getBooleanReqPar("forExport", false));
-
-    forward = tryCal(request, form);
-
-    if (forward == forwardNoAction) {
-      forward = doView(request, form);
-    }
 
     if (params.getFromDate() != null) {
       gotoDateView(request,
@@ -123,55 +113,6 @@ public class SearchParamsAction extends EventActionBase {
     mstate.setSearchResult(cl.search(params));
     request.setRequestAttr(BwRequest.bwSearchResultName,
                            mstate.getSearchResult());
-
-    return forwardSuccess;
-  }
-
-  /* Try for a calendar url. Return with forward or null for not found.
-   */
-  private int tryCal(final BwRequest request,
-                     final BwActionFormBase form) throws Throwable {
-    BwModuleState mstate = request.getModule().getState();
-    String vpath = request.getReqPar("virtualPath");
-
-    if (vpath == null) {
-      return forwardNoAction;
-    }
-
-    if (!request.getClient().setVirtualPath(vpath)) {
-      form.getErr().emit(ClientError.badVpath, vpath);
-      return forwardNoAction;
-    }
-
-    mstate.setSelectionType(BedeworkDefs.selectionTypeCollections);
-
-    request.refresh();
-    return forwardSuccess;
-  }
-
-  /* Do the view thing. This is the default action
-   */
-  private int doView(final BwRequest request,
-                     final BwActionFormBase form) throws Throwable {
-    BwModuleState mstate = request.getModule().getState();
-    List<String> vpaths = request.getReqPars("vpath");
-    if (vpaths != null) {
-      BwView view = new BwView();
-
-      view.setName("--temp--");
-      view.setCollectionPaths(vpaths);
-      view.setConjunction(request.getBooleanReqPar("conjunction", false));
-      request.getClient().setCurrentView(view);
-
-      mstate.setSelectionType(BedeworkDefs.selectionTypeView);
-      request.refresh();
-
-      return forwardSuccess;
-    }
-
-    if (!setView(request, request.getReqPar("viewName"))) {
-      return forwardNoViewDefined;
-    }
 
     return forwardSuccess;
   }

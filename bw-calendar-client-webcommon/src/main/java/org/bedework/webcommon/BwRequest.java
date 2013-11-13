@@ -524,7 +524,10 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public BwCalendar getCalendar(final boolean required) throws Throwable {
-    return getCalendar("calPath", required);
+    if (present("calPath")) {               // TODO - drop this
+      return getCalendar("calPath", required);
+    }
+    return getCalendar("colPath", required);
   }
 
   /** Get calendar identified by single-valued request parameter specified.

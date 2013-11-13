@@ -21,8 +21,6 @@ package org.bedework.appcommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 
@@ -105,13 +103,11 @@ public class InOutBoxInfo implements Serializable {
 
     // XXX need to be able to store and retrieve other types of info.
 
-    RecurringRetrievalMode rrm =
-      new RecurringRetrievalMode(Rmode.overrides);
-    Collection<EventInfo> evs = cl.getEvents(cal,
+    String fexpr = "(colPath='" + cal.getPath() + "')";
+
+    Collection<EventInfo> evs = cl.getEvents(fexpr,
                                              null, null,
-                                             null,
-                                             null, // retrieveList
-                                             rrm);
+                                             false);
     numActive = 0;
     numProcessed = 0;
 

@@ -22,7 +22,6 @@ import org.bedework.access.Ace;
 import org.bedework.access.Acl;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
-import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
@@ -46,6 +45,7 @@ import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.RecurringRetrievalMode;
+import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwShareableDbentity;
@@ -1019,19 +1019,34 @@ public class ROClientImpl implements Client {
     return svci.getEventsHandler().get(colPath, name, recurRetrieval);
   }
 
-    @Override
-  public Collection<EventInfo> getEvents(final BwCalendar cal,
-                                         final FilterBase filter,
+  @Override
+  public Collection<EventInfo> getEvents(final String filter,
                                          final BwDateTime startDate,
                                          final BwDateTime endDate,
-                                         final List<String> retrieveList,
-                                         final RecurringRetrievalMode recurRetrieval)
+                                         final boolean expand)
           throws CalFacadeException {
-    return svci.getEventsHandler().getEvents(cal, filter,
+    if (filter == null) {
+      return null;
+    }
+
+    BwFilterDef fd = new BwFilterDef();
+    fd.setDefinition(filter);
+
+    parseFilter(fd);
+
+    RecurringRetrievalMode rrm;
+    if (expand) {
+      rrm = new RecurringRetrievalMode(Rmode.expanded);
+    } else {
+      rrm = new RecurringRetrievalMode(Rmode.overrides);
+    }
+
+    return svci.getEventsHandler().getEvents(null,
+                                             fd.getFilters(),
                                              startDate,
                                              endDate,
-                                             retrieveList,
-                                             recurRetrieval);
+                                             null,
+                                             rrm);
   }
 
   @Override
@@ -1266,13 +1281,6 @@ public class ROClientImpl implements Client {
 
   @Override
   public void flushState() throws CalFacadeException {
-    cstate.flush();
-  }
-
-  @Override
-  public FilterBase getViewFilter(final BwCalendar col)
-          throws CalFacadeException {
-    return cstate.getViewFilter(col);
   }
 
   /* ------------------------------------------------------------

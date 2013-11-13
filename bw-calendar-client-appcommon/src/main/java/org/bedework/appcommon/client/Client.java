@@ -1107,22 +1107,19 @@ public interface Client extends Serializable {
    * range. If retrieveList is supplied only those fields (and a few required
    * fields) will be returned.
    *
-   * @param cal          BwCalendar object - non-null means limit to given calendar
-   *                     null is limit to current user
-   * @param filter       BwFilter object restricting search or null.
+   * @param filter       String filter restricting search or null.
    * @param startDate    BwDateTime start - may be null
    * @param endDate      BwDateTime end - may be null.
-   * @param retrieveList List of properties to retrieve or null for a full event.
-   * @param recurRetrieval How recurring event is returned.
+   * @param expanded     How recurring event is returned - expanded means
+   *                     expand all instances to full form. Otherwise
+   *                     just return overrides.
    * @return Collection  populated event value objects
    * @throws CalFacadeException
    */
-  Collection<EventInfo> getEvents(BwCalendar cal,
-                                  FilterBase filter,
+  Collection<EventInfo> getEvents(String filter,
                                   BwDateTime startDate,
                                   BwDateTime endDate,
-                                  List<String> retrieveList,
-                                  RecurringRetrievalMode recurRetrieval)
+                                  boolean expanded)
           throws CalFacadeException;
 
   /** Add an event and ensure its location and contact exist. The calendar path
@@ -1487,18 +1484,6 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   public void flushState() throws CalFacadeException;
-
-  /** Given a possible collection object return whatever is appropriate for the
-   * current view.
-   *
-   * <p>If the collection is non-null go with that, otherwise go with the
-   * current selected collection or the current selected view.
-   *
-   * @param col
-   * @return BwFilter or null
-   * @throws CalFacadeException
-   */
-  FilterBase getViewFilter(BwCalendar col) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                     State of current admin group

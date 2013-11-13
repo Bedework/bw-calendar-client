@@ -63,7 +63,6 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.BwCategoryFilter;
 import org.bedework.calfacade.filter.BwCreatorFilter;
 import org.bedework.calfacade.locale.BwLocale;
-import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.util.BwDateTimeUtil;
@@ -72,6 +71,7 @@ import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleStates;
+import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.struts.Request;
@@ -571,6 +571,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       params.setPageSize(20);
     }
 
+    /*
     BwCalendar cal = request.getCalendar(false);
 
     if ((cal == null) && (cl.getPublicAdmin())) {
@@ -583,6 +584,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (cal != null) {
       params.setCollection(cal);
     }
+    */
 
     params.setQuery(request.getReqPar("query"));
 
@@ -591,49 +593,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (fd != null) {
       filter = fd.getFilters();
-    } else {
-      Collection<String> cats = request.getReqPars("cat");
-
-      if (cats != null) {
-        for (String catStr: cats) {
-          BwCategory cat = cl.getCategoryByName(new BwString(null, catStr));
-          if (cat != null) {
-            filter = addor(filter, cat);
-          }
-        }
-      }
-
-      cats = request.getReqPars("catuid");
-
-      if (cats != null) {
-        for (String catStr: cats) {
-          BwCategory cat = cl.getCategory(catStr);
-          if (cat != null) {
-            filter = addor(filter, cat);
-          }
-        }
-      }
-
-
-      if (!cl.getPublicAdmin()) {
-        String creatorHref = request.getReqPar("creator");
-
-        if (creatorHref != null) {
-          BwCreatorFilter crefilter = new BwCreatorFilter(null);
-          crefilter.setEntity(creatorHref);
-
-          FilterBase.addAndChild(filter, crefilter);
-        }
-      }
     }
 
     if (cl.getPublicAdmin()) {
       boolean ignoreCreator = false;
 
-      if ((cal != null) &&
-              (cal.getPath().startsWith(form.getConfig().getSubmissionRoot()))) {
-        ignoreCreator = true;
-      } else if (form.getCurUserSuperUser()) {
+//      if ((cal != null) &&
+//              (cal.getPath().startsWith(form.getConfig().getSubmissionRoot()))) {
+//        ignoreCreator = true;
+//      } else
+      if (form.getCurUserSuperUser()) {
         ignoreCreator = "yes".equals(request.getReqPar("ignoreCreator"));
       }
 

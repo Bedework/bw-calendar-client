@@ -20,9 +20,7 @@ package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
-import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.svc.EventInfo;
@@ -99,22 +97,13 @@ public class ExportAction extends BwAbstractAction {
         }
       }
 
-      String expandStr = request.getReqPar("expand");
-      RecurringRetrievalMode rrm = null;
-      if ((expandStr != null) && "true".equals(expandStr)) {
-        rrm = new RecurringRetrievalMode(Rmode.expanded);
-      } else {
-        rrm = new RecurringRetrievalMode(Rmode.overrides);
-      }
-
       BwTimeRange tr = new BwTimeRange();
 
       String dl = request.getReqPar("dateLimits");
 
       if (dl != null) {
         if (dl.equals("active")) {
-          tr = new BwTimeRange(BwDateTimeUtil.getDateTime(
-                  DateTimeUtil.isoDate(),
+          tr = new BwTimeRange(BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
                                                           true, false,
                                                           null),   // tzid
                                                           null);
@@ -123,14 +112,10 @@ public class ExportAction extends BwAbstractAction {
         }
       }
 
-      FilterBase f = cl.getViewFilter(col);
-
-      evs = cl.getEvents(null,
-                         f,
+      evs = cl.getEvents("(colPath='" + col.getPath() + "')",
                          tr.getStart(),
                          tr.getEnd(),
-                         null, // retrieveList
-                         rrm);
+                         request.present("expand"));
 
       if (evs == null) {
         return forwardNotFound;

@@ -19,7 +19,6 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.filter.SortTerm;
 import org.bedework.util.misc.ToString;
@@ -46,16 +45,10 @@ public class SearchParams implements Serializable {
 
   private List<SortTerm> sort;
 
-  private BwCalendar collection;
-
   /* null for default */
   private String format;
 
   private boolean forExport;
-
-  private boolean useDbSearch;
-
-  private int resultSize;
 
   private int curOffset;
 
@@ -149,20 +142,6 @@ public class SearchParams implements Serializable {
     return sort;
   }
 
-  /** if null no collection specified
-   * @param val
-   */
-  public void setCollection(final BwCalendar val) {
-    collection = val;
-  }
-
-  /** if null no collection specified
-   * @return collection
-   */
-  public BwCalendar getCollection() {
-    return collection;
-  }
-
   /** True if we should retrieve the event to export
    *
    * @param val
@@ -230,7 +209,6 @@ public class SearchParams implements Serializable {
             .append("toDate", getToDate())
             .append("query", getQuery())
             .append("filter", getFilter())
-            .append("collection", getCollection())
             .append("format", getFormat())
             .append("forExport", getForExport())
             .append("curOffset", getCurOffset())

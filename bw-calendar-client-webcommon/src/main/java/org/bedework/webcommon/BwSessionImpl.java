@@ -406,7 +406,9 @@ public class BwSessionImpl implements BwSession {
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredCategoriesListName;
 
-      vals = curAuthUserPrefs.getCategoryPrefs().getPreferred();
+      Client cl = request.getClient();
+
+      vals = cl.getCategories(curAuthUserPrefs.getCategoryPrefs().getPreferred());
     } else if (kind == defaultEntity) {
       attrName = BwRequest.bwDefaultCategoriesListName;
 

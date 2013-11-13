@@ -20,12 +20,7 @@ package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
-import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.caldav.util.filter.ObjectFilter;
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
@@ -37,7 +32,6 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
-import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.timezones.DateTimeUtil;
 
 import java.util.Calendar;
@@ -52,7 +46,9 @@ import javax.servlet.http.HttpServletResponse;
  * <p>Request parameters - all optional:<ul>
  *      <li>  start:    start of period - default to beginning of this week</li>.
  *      <li>  end:      end of period - default to end of this week</li>.
- *      <li>  calPath:  required path to calendar</li>.
+ *      <li>  fexpr:    required filter expression</li>.
+ *      <li>  expanded: expand recurrences</li>.
+ *      <li>  name:     optional name for result</li>.
  * </ul>
  *
  * <p>Forwards to:<ul>
@@ -88,6 +84,11 @@ public class WebCalendarAction extends BwAbstractAction {
     Locale loc = BwLocale.getLocale();
     Calendar start = Calendar.getInstance(loc);
     Calendar end = Calendar.getInstance(loc);
+    String name = request.getReqPar("name");
+
+    if (name == null) {
+      name = start.toString();
+    }
 
     String st = request.getReqPar("start");
 
@@ -129,28 +130,11 @@ public class WebCalendarAction extends BwAbstractAction {
       return forwardNull;
     }
 
-    BwCalendar cal = null;
-
-    String calPath = request.getReqPar("calPath");
-    if (calPath != null) {
-      cal = cl.getCollection(calPath);
-      if (cal == null) {
-        request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND,
-                                        calPath);
-        return forwardNull;
-      }
-    }
-
-    FilterBase filter = null;
-
-    String cat = request.getReqPar("cat");
-    if (cat != null) {
-      PropertyInfoIndex pi = PropertyInfoIndex.lookupPname("CATEGORIES");
-      ObjectFilter<String> f = new ObjectFilter<String>(null, pi);
-      f.setEntity(cat);
-      f.setExact(false);
-
-      filter = f;
+    String fexpr = request.getReqPar("fexpr");
+    if (fexpr == null) {
+      request.getResponse().sendError(HttpServletResponse.SC_BAD_REQUEST,
+                                      "no fexpr specified");
+      return forwardNull;
     }
 
     try {
@@ -164,24 +148,23 @@ public class WebCalendarAction extends BwAbstractAction {
                  " end = " + edt);
       }
 
-      RecurringRetrievalMode rrm = new RecurringRetrievalMode(Rmode.expanded,
-                                                              sdt, edt);
-      Collection<EventInfo> evs = cl.getEvents(cal,
-                                               filter,
+      Collection<EventInfo> evs = cl.getEvents(fexpr,
                                                sdt,
                                                edt,
-                                               null, // retrieveList
-                                               rrm);
+                                               request.present("expanded"));
 
       IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
       net.fortuna.ical4j.model.Calendar c = trans.toIcal(evs,
                                                          Icalendar.methodTypePublish);
 
-      form.setContentName(cal.getName() + ".ics");
+      if (!name.endsWith(".ics")) {
+        name += ".ics";
+      }
+      form.setContentName(name);
       request.getResponse().setHeader("Content-Disposition",
                                       "Attachment; Filename=\"" +
-                                      cal.getName() + ".ics\"");
+                                      name + "\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");
 
       IcalTranslator.writeCalendar(c, request.getResponse().getWriter());

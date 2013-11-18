@@ -153,7 +153,8 @@ public final class ClientConfigurations extends ConfBase {
     }
   }
 
-  void stop() {
+  @Override
+  public void stop() {
     try {
       getManagementContext().stop();
     } catch (Throwable t){

@@ -18,14 +18,13 @@
 */
 package org.bedework.webcommon.monitor;
 
+import org.bedework.calfacade.MonitorStat;
 import org.bedework.sysevents.monitor.BwSysMonitorMBean;
-import org.bedework.sysevents.monitor.MonitorStat;
+import org.bedework.util.jmx.MBeanUtil;
+import org.bedework.util.xml.XmlEmit;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import org.bedework.util.jmx.MBeanUtil;
-import org.bedework.util.xml.XmlEmit;
 
 import java.io.Writer;
 import java.util.List;

@@ -23,8 +23,8 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.TimeView;
-import org.bedework.calsvci.indexing.SearchResult;
-import org.bedework.calsvci.indexing.SearchResultEntry;
+import org.bedework.calfacade.indexing.SearchResult;
+import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.filters.PresentationState;
 

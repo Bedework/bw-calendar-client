@@ -27,7 +27,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvci.indexing.SearchResultEntry;
+import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.servlet.MessageEmit;

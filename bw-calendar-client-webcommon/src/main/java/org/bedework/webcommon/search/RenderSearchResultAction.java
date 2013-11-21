@@ -20,7 +20,7 @@
 package org.bedework.webcommon.search;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calsvci.indexing.BwIndexer.Position;
+import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;

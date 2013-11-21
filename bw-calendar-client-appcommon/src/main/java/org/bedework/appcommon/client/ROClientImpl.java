@@ -49,6 +49,7 @@ import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwShareableDbentity;
+import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
@@ -68,10 +69,10 @@ import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.calsvci.indexing.BwIndexer;
-import org.bedework.calsvci.indexing.BwIndexer.Position;
-import org.bedework.calsvci.indexing.SearchResult;
-import org.bedework.calsvci.indexing.SearchResultEntry;
+import org.bedework.calfacade.indexing.BwIndexer;
+import org.bedework.calfacade.indexing.BwIndexer.Position;
+import org.bedework.calfacade.indexing.SearchResult;
+import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
@@ -87,6 +88,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:03
@@ -1379,7 +1382,7 @@ public class ROClientImpl implements Client {
             accessChecker);
 
     return lastSearch;
-        }
+  }
 
   @Override
   public List<SearchResultEntry> getSearchResult(Position pos) throws CalFacadeException {
@@ -1415,17 +1418,37 @@ public class ROClientImpl implements Client {
     for (SearchResultEntry sre: entries) {
       Object o = sre.getEntity();
 
+      if (o instanceof CategorisedEntity) {
+        restoreCategories((CategorisedEntity)o);
+      }
+
       if (!(o instanceof EventInfo)) {
         continue;
       }
 
       EventFormatter ev = new EventFormatter(this,
                                              trans,
-                                             (EventInfo)sre.getEntity());
+                                             (EventInfo)o);
       sre.setEntity(ev);
     }
 
     return entries;
+  }
+
+  private void restoreCategories(final CategorisedEntity ce) throws CalFacadeException {
+    Set<String> uids = ce.getCategoryUids();
+    if (Util.isEmpty(uids)) {
+      return;
+    }
+
+    Set<String> catUids = new TreeSet<>();
+
+    for (Object o: uids) {
+      String uid = (String)o;
+      catUids.add(uid);
+
+      ce.addCategory(getCategory(uid));
+    }
   }
 
   @Override

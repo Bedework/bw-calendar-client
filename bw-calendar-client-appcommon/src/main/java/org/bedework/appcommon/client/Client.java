@@ -19,7 +19,6 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.access.Ace;
-import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
@@ -59,9 +58,9 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.calsvci.indexing.BwIndexer.Position;
-import org.bedework.calsvci.indexing.SearchResult;
-import org.bedework.calsvci.indexing.SearchResultEntry;
+import org.bedework.calfacade.indexing.BwIndexer.Position;
+import org.bedework.calfacade.indexing.SearchResult;
+import org.bedework.calfacade.indexing.SearchResultEntry;
 
 import java.io.Serializable;
 import java.util.Collection;

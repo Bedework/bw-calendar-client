@@ -22,6 +22,8 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.util.struts.Request;
 
+import org.apache.log4j.Logger;
+
 import java.io.Serializable;
 
 /** A module represents a client and its associated state. A module
@@ -35,6 +37,10 @@ import java.io.Serializable;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class BwModule implements Serializable {
+  protected boolean debug = false;
+
+  private transient Logger log;
+
   /** */
   public static final String defaultModuleName = "default";
 
@@ -55,6 +61,7 @@ public class BwModule implements Serializable {
 
   public BwModule(String moduleName,
                   Client cl) {
+    debug = getLogger().isDebugEnabled();
     this.moduleName = moduleName;
     this.cl = cl;
     state = new BwModuleState(moduleName);
@@ -150,6 +157,10 @@ public class BwModule implements Serializable {
    */
   public synchronized boolean claim() {
     while (getInuse()) {
+      if (debug) {
+        debugMsg("Module " + getModuleName() +
+                         " in use by " + getWaiters());
+      }
       // double-clicking on our links eh?
       if (getWaiters() > 10) {
         return false;
@@ -158,10 +169,10 @@ public class BwModule implements Serializable {
       try {
         wait();
       } catch (InterruptedException e) {
-        decWaiters();
         return false;
+      } finally {
+        decWaiters();
       }
-      decWaiters();
     }
 
     setInuse(true);
@@ -235,6 +246,25 @@ public class BwModule implements Serializable {
     if (t != null) {
       throw t;
     }
+  }
+
+  /** Get a logger for messages
+   *
+   * @return Logger
+   */
+  private Logger getLogger() {
+    if (log == null) {
+      log = Logger.getLogger(this.getClass());
+    }
+
+    return log;
+  }
+
+  /**
+   * @param msg
+   */
+  private void debugMsg(final String msg) {
+    getLogger().debug(msg);
   }
 }
 

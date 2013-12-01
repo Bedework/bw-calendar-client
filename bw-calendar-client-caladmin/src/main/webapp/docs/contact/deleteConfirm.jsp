@@ -12,7 +12,7 @@
 
 <contact>
   <name>
-    <bean:write name="calForm" property="contact.name.value" />
+    <bean:write name="calForm" property="contact.cn.value" />
   </name>
   <phone><bean:write name="calForm" property="contact.phone" /></phone>
   <logic:present name="calForm" property="contact.email">

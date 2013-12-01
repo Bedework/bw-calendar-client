@@ -68,7 +68,7 @@
       </logic:notPresent>
 
       <logic:present name="schedEvent" property="contact">
-        <contact><bean:write name="formattedEventForSchedMessages" property="event.contact.name.value" /></contact>
+        <contact><bean:write name="formattedEventForSchedMessages" property="event.contact.cn.value" /></contact>
       </logic:present>
       <logic:notPresent name="schedEvent" property="contact">
         <contact></contact>

@@ -135,6 +135,7 @@ try {
       <setSelection><bw:rewrite actionURL="true" page="/main/setSelection.do?b=de"/></setSelection>
       <setSelectionList><bw:rewrite actionURL="true" page="/main/setSelectionList.do?b=de"/></setSelectionList>
       <setMainEventList><bw:rewrite actionURL="true" page="/main/setMainEventList.do?b=de"/></setMainEventList>
+      <nextMainEventList><bw:rewrite actionURL="true" page="/main/nextMainEventList.do?b=de"/></nextMainEventList>
       <setOngoingList><bw:rewrite actionURL="true" page="/main/setOngoingList.do?b=de"/></setOngoingList>
       <setViewPeriod><bw:rewrite actionURL="true" page="/main/setViewPeriod.do?b=de"/></setViewPeriod>
       <listEvents><bw:rewrite actionURL="true" page="/main/listEvents.do?b=de"/></listEvents>

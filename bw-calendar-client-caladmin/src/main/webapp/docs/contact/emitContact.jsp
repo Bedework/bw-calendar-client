@@ -3,7 +3,7 @@
 <contact>
   <name>
     <genurl:link page="<%=rpitemp%>">
-      <bean:write name="contact" property="name.value" />
+      <bean:write name="contact" property="cn.value" />
     </genurl:link>
   </name>
   <phone><bean:write name="contact" property="phone" /></phone>

@@ -846,13 +846,7 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public boolean categoryExists(final BwCategory cat)
-          throws CalFacadeException {
-    return svci.getCategoriesHandler().exists(cat);
-  }
-
-  @Override
-  public void addCategory(final BwCategory val)
+  public boolean addCategory(final BwCategory val)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
@@ -880,6 +874,12 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public BwContact getPersistentContact(final String uid)
+          throws CalFacadeException {
+    return svci.getContactsHandler().getPersistent(uid);
+  }
+
+  @Override
   public Collection<BwContact> getContacts()
           throws CalFacadeException {
     return svci.getContactsHandler().get();
@@ -900,8 +900,9 @@ public class ROClientImpl implements Client {
   @Override
   public BwContact findContact(final BwString val)
           throws CalFacadeException {
-    return svci.getContactsHandler().find(val,
-                                          getOwner().getPrincipalRef());
+    return svci.getContactsHandler().findPersistent(val,
+                                                    getOwner()
+                                                            .getPrincipalRef());
   }
 
   @Override
@@ -940,6 +941,12 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public BwLocation getPersistentLocation(final String uid)
+          throws CalFacadeException {
+    return svci.getLocationsHandler().getPersistent(uid);
+  }
+
+  @Override
   public Collection<BwLocation> getLocations()
           throws CalFacadeException {
     return svci.getLocationsHandler().get();
@@ -960,8 +967,9 @@ public class ROClientImpl implements Client {
   @Override
   public BwLocation findLocation(final BwString address)
           throws CalFacadeException {
-    return svci.getLocationsHandler().find(address,
-                                           getOwner().getPrincipalRef());
+    return svci.getLocationsHandler().findPersistent(address,
+                                                     getOwner()
+                                                             .getPrincipalRef());
   }
 
   @Override

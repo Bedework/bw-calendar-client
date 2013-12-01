@@ -34,7 +34,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm   rpi.edu
  */
 public class FetchContactAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -76,8 +76,8 @@ public class FetchContactAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    if (contact.getName() != null) {
-      form.setContactName((BwString)contact.getName().clone());
+    if (contact.getCn() != null) {
+      form.setContactName((BwString)contact.getCn().clone());
     } else {
       form.setContactName(null);
     }

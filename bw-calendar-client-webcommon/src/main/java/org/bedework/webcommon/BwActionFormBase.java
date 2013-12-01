@@ -1908,7 +1908,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     if (val != null) {
       contactUid = val.getUid();
 
-      BwString s = val.getName();
+      BwString s = val.getCn();
       if (s != null) {
         contactName = (BwString)s.clone();
       }

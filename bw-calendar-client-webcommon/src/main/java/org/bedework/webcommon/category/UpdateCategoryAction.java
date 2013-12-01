@@ -82,8 +82,7 @@ public class UpdateCategoryAction extends BwAbstractAction {
     if (add) {
       cat.setPublick(cl.getPublicAdmin());
 
-      if (!cl.categoryExists(cat)) {
-        cl.addCategory(cat);
+      if (cl.addCategory(cat)) {
         added = true;
       }
     } else if (vcr.changed) {

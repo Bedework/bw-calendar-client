@@ -822,14 +822,6 @@ public interface Client extends Serializable {
    */
   Collection<BwCategory> getEditableCategories() throws CalFacadeException;
 
-  /** Check for existence
-   *
-   * @param cat the category
-   * @return true if exists
-   * @throws CalFacadeException
-   */
-  boolean categoryExists(BwCategory cat) throws CalFacadeException;
-
   /** Update a category.
    *
    * @param val   category object to be updated
@@ -840,9 +832,10 @@ public interface Client extends Serializable {
   /** Add the given category.
    *
    * @param val
+   * @return false if not added because already exists
    * @throws CalFacadeException
    */
-  void addCategory(BwCategory val) throws CalFacadeException;
+  boolean addCategory(BwCategory val) throws CalFacadeException;
 
   public interface DeleteReffedEntityResult {
     boolean getDeleted();
@@ -869,6 +862,14 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   BwContact getContact(String uid) throws CalFacadeException;
+
+  /** Get the contact with the given uid.
+   *
+   * @param uid
+   * @return contact object
+   * @throws CalFacadeException
+   */
+  BwContact getPersistentContact(String uid) throws CalFacadeException;
 
   /** Return all current user entities.
    *
@@ -977,6 +978,14 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   BwLocation getLocation(String uid) throws CalFacadeException;
+
+  /** Get the location with the given uid.
+   *
+   * @param uid
+   * @return Location object
+   * @throws CalFacadeException
+   */
+  BwLocation getPersistentLocation(String uid) throws CalFacadeException;
 
   /** Return all current user entities.
    *

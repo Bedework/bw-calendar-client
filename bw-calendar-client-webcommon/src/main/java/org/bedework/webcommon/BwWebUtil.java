@@ -407,7 +407,7 @@ public class BwWebUtil {
 
     BwContact contact = form.getContact();
 
-    BwString str = contact.getName();
+    BwString str = contact.getCn();
     BwString frmstr = form.getContactName();
     if (frmstr != null) {
       if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
@@ -418,7 +418,7 @@ public class BwWebUtil {
     if (str == null) {
       if (frmstr != null) {
         vr.changed = true;
-        contact.setName(frmstr);
+        contact.setCn(frmstr);
       } else {
         form.getErr().emit(ValidationError.missingContactName);
         vr.ok = false;
@@ -480,7 +480,7 @@ public class BwWebUtil {
   }
 
   private static void noSession() {
-    Logger.getLogger("edu.bedework.cct.uwcal.webcommon.UWCalWebUtil").warn(
+    Logger.getLogger("org.bedework.webcommon.BwWebUtil").warn(
             "No session!!!!!!!");
   }
 }

@@ -53,7 +53,7 @@
       <contact>
         <id><bean:write name="contact" property="id"/></id><%--
           Value: integer - contact id --%>
-        <bw:emitText name="contact" property="name.value" tagName="name"/><%--
+        <bw:emitText name="contact" property="cn.value" tagName="name"/><%--
           Value: string - contact's name --%>
         <bw:emitText name="contact" property="phone"/><%--
           Value (example): x7777 - contact's phone number --%>

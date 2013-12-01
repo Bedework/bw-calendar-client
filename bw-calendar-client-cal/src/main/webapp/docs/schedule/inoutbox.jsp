@@ -68,7 +68,7 @@
       </logic:notPresent>
 
       <logic:present name="event" property="contact">
-        <contact><bean:write name="formattedEvent" property="event.contact.name.value" /></contact>
+        <contact><bean:write name="formattedEvent" property="event.contact.cn.value" /></contact>
       </logic:present>
       <logic:notPresent name="event" property="contact">
         <contact></contact>

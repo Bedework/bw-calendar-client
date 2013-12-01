@@ -37,7 +37,7 @@ import javax.xml.namespace.QName;
 /** Class to generate xml from an access specification. The resulting xml follows
  * the webdav acl spec rfc3744
  *
- *  @author Mike Douglass   douglm @ bedework.edu
+ *  @author Mike Douglass   douglm @ rpi.edu
  */
 public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
   /**

@@ -150,9 +150,9 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public void addCategory(final BwCategory val)
+  public boolean addCategory(final BwCategory val)
           throws CalFacadeException {
-    svci.getCategoriesHandler().add(val);
+    return svci.getCategoriesHandler().add(val);
   }
 
   @Override
@@ -227,7 +227,15 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public void updateContact(final BwContact val)
           throws CalFacadeException {
-    svci.getContactsHandler().update(val);
+    BwContact pval = svci.getContactsHandler().getPersistent(val.getUid());
+
+    if (pval == null) {
+      throw new CalFacadeException("No such contact");
+    }
+
+    if (pval.updateFrom(val)) {
+      svci.getContactsHandler().update(pval);
+    }
   }
 
   @Override
@@ -288,7 +296,15 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public void updateLocation(final BwLocation val)
           throws CalFacadeException {
-    svci.getLocationsHandler().update(val);
+    BwLocation pval = svci.getLocationsHandler().getPersistent(val.getUid());
+
+    if (pval == null) {
+      throw new CalFacadeException("No such location");
+    }
+
+    if (pval.updateFrom(val)) {
+      svci.getLocationsHandler().update(pval);
+    }
   }
 
   @Override

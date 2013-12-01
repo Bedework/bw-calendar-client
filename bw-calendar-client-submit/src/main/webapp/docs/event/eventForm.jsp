@@ -153,7 +153,7 @@ try {
         <preferred>
           <html:select property="prefContactId">
             <html:optionsCollection name="preferredContacts"
-                                    label="name.value"
+                                    label="cn.value"
                                     value="uid"/>
           </html:select>
         </preferred>
@@ -163,7 +163,7 @@ try {
                      name="bw_contacts_list" scope="session"/>
         <html:select property="allContactId">
           <html:optionsCollection name="contacts"
-                                  label="name.value"
+                                  label="cn.value"
                                   value="uid"/>
         </html:select>
       </all>

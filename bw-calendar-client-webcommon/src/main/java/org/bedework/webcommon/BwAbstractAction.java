@@ -466,7 +466,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 //    conf = (ConfigCommon)conf.clone();
     form.setConfig(conf); // So we can get an svci object and set defaults
     form.assignAppType(appType);
-    }
+  }
 
   @Override
   public PresentationState getPresentationState(final Request req) throws Throwable {
@@ -721,7 +721,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * category collection to correspond.
    *
    * @param request
-   * @param extraCats Catgeories to add as a result of other operations
+   * @param extraCats Categories to add as a result of other operations
    * @param changes
    * @param ent
    * @return setEventCategoriesResult  with rcode = error forward or

@@ -36,7 +36,7 @@ import org.bedework.webcommon.BwWebUtil.ValidateResult;
  *      <li>"success"      update successful.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm   rpi.edu
  */
 public class UpdateContactAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -78,8 +78,8 @@ public class UpdateContactAction extends BwAbstractAction {
 
     if (add) {
       c.setPublick(cl.getPublicAdmin());
-      if (cl.findContact(c.getName()) != null) {
-        form.getErr().emit(ClientError.duplicateContact, c.getName());
+      if (cl.findContact(c.getCn()) != null) {
+        form.getErr().emit(ClientError.duplicateContact, c.getCn());
         return forwardDuplicate;
       }
       c = cl.ensureContactExists(c, null).getEntity();

@@ -578,6 +578,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
       if ((loc == null) || !loc.getPublick()) {
         // Somebody's faking
+        form.getErr().emit(ValidationError.locationNotPublic);
         return false;
       }
 

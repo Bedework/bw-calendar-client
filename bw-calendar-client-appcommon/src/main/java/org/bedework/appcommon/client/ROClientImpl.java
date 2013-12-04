@@ -1434,10 +1434,16 @@ public class ROClientImpl implements Client {
         continue;
       }
 
-      EventFormatter ev = new EventFormatter(this,
+      BwEvent ev = ((EventInfo)o).getEvent();
+
+      if (ev.getLocationUid() != null){
+        ev.setLocation(getLocation(ev.getLocationUid()));
+      }
+
+      EventFormatter ef = new EventFormatter(this,
                                              trans,
                                              (EventInfo)o);
-      sre.setEntity(ev);
+      sre.setEntity(ef);
     }
 
     return entries;
@@ -1449,11 +1455,11 @@ public class ROClientImpl implements Client {
       return;
     }
 
-    Set<String> catUids = new TreeSet<>();
+//    Set<String> catUids = new TreeSet<>();
 
     for (Object o: uids) {
       String uid = (String)o;
-      catUids.add(uid);
+//      catUids.add(uid);
 
       ce.addCategory(getCategory(uid));
     }

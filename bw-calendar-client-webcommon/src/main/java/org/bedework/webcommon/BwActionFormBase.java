@@ -465,7 +465,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     modules.put(name, module);
   }
 
-  public synchronized BwModule fetchModule(final String name) {
+  public BwModule fetchModule(final String name) {
     String n = name;
 
     if (n == null) {

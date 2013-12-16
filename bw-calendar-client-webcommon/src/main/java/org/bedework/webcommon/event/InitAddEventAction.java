@@ -140,7 +140,7 @@ public class InitAddEventAction extends EventActionBase {
     BwCalendar cal = request.getNewCal(false);
 
     if (cal != null) {
-      changes.changed(PropertyInfoIndex.COLLECTION.getPname(),
+      changes.changed(PropertyInfoIndex.COLLECTION,
                       ev.getColPath(),
                       cal.getPath());
       ev.setColPath(cal.getPath());

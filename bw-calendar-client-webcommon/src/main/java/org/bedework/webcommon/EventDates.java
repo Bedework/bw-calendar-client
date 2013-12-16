@@ -157,11 +157,11 @@ public class EventDates extends EntityDates implements ForwardDefs {
     ChangeTable changes = ei.getChangeset(principalHref);
     int res = forwardNoAction;
 
-    String endPname;
+    PropertyInfoIndex endPi;
     if (ev.getEntityType() != IcalDefs.entityTypeTodo) {
-      endPname = PropertyInfoIndex.DTEND.getPname();
+      endPi = PropertyInfoIndex.DTEND;
     } else {
-      endPname = PropertyInfoIndex.DUE.getPname();
+      endPi = PropertyInfoIndex.DUE;
     }
 
     try {
@@ -233,7 +233,7 @@ public class EventDates extends EntityDates implements ForwardDefs {
 
       /* Flag any changes */
       if ((esdt == null) || !esdt.equals(start)) {
-        changes.changed(PropertyInfoIndex.DTSTART.getPname(),
+        changes.changed(PropertyInfoIndex.DTSTART,
                         esdt, start);
       }
 
@@ -257,14 +257,14 @@ public class EventDates extends EntityDates implements ForwardDefs {
           dur = null;
         }
 
-        changes.changed(endPname, eedt, end);
-        changes.changed(PropertyInfoIndex.DURATION.getPname(), edur, dur);
+        changes.changed(endPi, eedt, end);
+        changes.changed(PropertyInfoIndex.DURATION, edur, dur);
       } else if (endtype == StartEndComponent.endTypeDuration) {
         if (Util.cmpObjval(edur, dur) != 0) {
-          changes.changed(PropertyInfoIndex.DURATION.getPname(), edur, dur);
+          changes.changed(PropertyInfoIndex.DURATION, edur, dur);
         }
       } else if (!eedt.equals(end)) {
-        changes.changed(endPname, eedt, end);
+        changes.changed(endPi, eedt, end);
       }
 
       return res;

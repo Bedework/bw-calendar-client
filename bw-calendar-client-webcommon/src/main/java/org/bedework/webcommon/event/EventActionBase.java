@@ -486,7 +486,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     ev.updateSummaries(lang, text);
 
-    changes.changed(PropertyInfoIndex.SUMMARY.getPname(),
+    changes.changed(PropertyInfoIndex.SUMMARY,
                     oldSums, ev.getSummaries());
   }
 
@@ -507,7 +507,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     }
     ev.updateDescriptions(lang, text);
 
-    changes.changed(PropertyInfoIndex.DESCRIPTION.getPname(),
+    changes.changed(PropertyInfoIndex.DESCRIPTION,
                     oldDescs,
                     ev.getDescriptions());
   }
@@ -560,7 +560,7 @@ public abstract class EventActionBase extends BwAbstractAction {
         l = cl.ensureLocationExists(l,
                                     cl.getCurrentPrincipalHref()).getEntity();
 
-        if (changes.changed(PropertyInfoIndex.LOCATION.getPname(),
+        if (changes.changed(PropertyInfoIndex.LOCATION,
                             event.getLocation(), l)) {
           event.setLocation(l);
         }
@@ -585,7 +585,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       if ((eloc == null) || !loc.equals(eloc)) {
         event.setLocation(loc);
         form.setLocation(loc);
-        changes.changed(PropertyInfoIndex.LOCATION.getPname(),
+        changes.changed(PropertyInfoIndex.LOCATION,
                         eloc, loc);
       }
 
@@ -613,7 +613,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     }
 
     if ((eloc == null) || (loc == null) || !loc.equals(eloc)) {
-      changes.changed(PropertyInfoIndex.LOCATION.getPname(),
+      changes.changed(PropertyInfoIndex.LOCATION,
                       eloc, loc);
       ev.setLocation(loc);
       return true;
@@ -660,7 +660,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
         c = cl.ensureContactExists(c, owner).getEntity();
 
-        if (changes.changed(PropertyInfoIndex.CONTACT.getPname(),
+        if (changes.changed(PropertyInfoIndex.CONTACT,
                             event.getContact(), c)) {
           event.setContact(c);
         }
@@ -692,7 +692,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     BwContact evc = event.getContact();
 
     if (Util.cmpObjval(evc, c) != 0) {
-      changes.changed(PropertyInfoIndex.CONTACT.getPname(),
+      changes.changed(PropertyInfoIndex.CONTACT,
                       event.getContact(), c);
       event.setContact(c);
       form.setContact(c);

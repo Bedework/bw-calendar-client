@@ -430,7 +430,7 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     if (!Util.equalsString(ev.getLink(), link)) {
-      changes.changed(PropertyInfoIndex.URL.getPname(), ev.getLink(), link);
+      changes.changed(PropertyInfoIndex.URL, ev.getLink(), link);
       ev.setLink(link);
     }
 
@@ -438,7 +438,7 @@ public class UpdateEventAction extends EventActionBase {
 
     String cost = Util.checkNull(form.getEventCost());
     if (!Util.equalsString(ev.getCost(), cost)) {
-      changes.changed(PropertyInfoIndex.COST.getPname(), ev.getCost(), cost);
+      changes.changed(PropertyInfoIndex.COST, ev.getCost(), cost);
       ev.setCost(cost);
     }
 
@@ -446,7 +446,7 @@ public class UpdateEventAction extends EventActionBase {
 
     String transp = Util.checkNull(form.getTransparency());
     if (!Util.equalsString(ev.getTransparency(), transp)) {
-      changes.changed(PropertyInfoIndex.TRANSP.getPname(), ev.getTransparency(),
+      changes.changed(PropertyInfoIndex.TRANSP, ev.getTransparency(),
                       transp);
       ev.setTransparency(transp);
     }
@@ -467,7 +467,7 @@ public class UpdateEventAction extends EventActionBase {
   //      canceling = true;
     //  }
 
-      changes.changed(PropertyInfoIndex.STATUS.getPname(), ev.getStatus(),
+      changes.changed(PropertyInfoIndex.STATUS, ev.getStatus(),
                       fStatus);
       ev.setStatus(fStatus);
     }
@@ -522,7 +522,7 @@ public class UpdateEventAction extends EventActionBase {
     if (publishEvent) {
       copyEntities(ev);
       changeOwner(ev, cl);
-      changes.changed(PropertyInfoIndex.CREATOR.getPname(), null,
+      changes.changed(PropertyInfoIndex.CREATOR, null,
                       ev.getCreatorHref());
 
       // Do the same for any overrides

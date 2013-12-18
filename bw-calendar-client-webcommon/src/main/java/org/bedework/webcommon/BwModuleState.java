@@ -26,6 +26,7 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.util.misc.Util;
+import org.bedework.util.servlet.filters.ConfiguredXSLTFilter.XSLTConfig;
 import org.bedework.util.servlet.filters.PresentationState;
 
 import java.io.Serializable;
@@ -44,6 +45,8 @@ public class BwModuleState implements Serializable {
   private boolean refresh;
 
   private PresentationState ps;
+
+  private XSLTConfig xsltConfig;
 
   private static final int maxAppVars = 50; // Stop screwing around.
 
@@ -119,6 +122,20 @@ public class BwModuleState implements Serializable {
    */
   public PresentationState getPresentationState() {
     return ps;
+  }
+
+  /**
+   * @param val XSLTConfig
+   */
+  public void setXsltConfig(XSLTConfig val) {
+    xsltConfig = val;
+  }
+
+  /**
+   * @return XSLTConfig
+   */
+  public XSLTConfig getXsltConfig() {
+    return xsltConfig;
   }
 
   /**

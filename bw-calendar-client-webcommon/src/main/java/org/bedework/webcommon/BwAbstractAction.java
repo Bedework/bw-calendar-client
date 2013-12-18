@@ -73,6 +73,7 @@ import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleStates;
 import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
+import org.bedework.util.servlet.filters.ConfiguredXSLTFilter.XSLTConfig;
 import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.struts.Request;
 import org.bedework.util.struts.UtilAbstractAction;
@@ -475,15 +476,32 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     BwActionFormBase form = (BwActionFormBase)req.getForm();
 
     BwModule module = form.fetchModule(req.getModuleName());
+    BwModuleState mstate = module.getState();
 
-    PresentationState ps = module.getState().getPresentationState();
+    PresentationState ps = mstate.getPresentationState();
 
     if (ps == null) {
       ps = new PresentationState();
       initPresentationState(req, ps);
 
-      module.getState().setPresentationState(ps);
+      mstate.setPresentationState(ps);
     }
+
+    XSLTConfig xc = mstate.getXsltConfig();
+
+    if (xc == null) {
+      Object o = req.getRequestAttr(ModuleXsltFilter.globalsName);
+
+      if (o instanceof XSLTConfig) {
+        xc = (XSLTConfig)o;
+      } else {
+        xc = new XSLTConfig();
+      }
+
+      mstate.setXsltConfig(xc);
+    }
+
+    req.setRequestAttr(ModuleXsltFilter.globalsName, xc);
 
     return ps;
   }

@@ -2,12 +2,15 @@
 <%@ taglib uri='struts-logic' prefix='logic' %>
 
 <views>
-  <logic:iterate name="calForm" property="views" id="view">
-    <view>
-      <name><bean:write name="view" property="name" /></name>
-      <logic:iterate name="view" property="collectionPaths" id="path">
-        <path><bean:write name="path"/></path>
-      </logic:iterate>
-    </view>
-  </logic:iterate>
+  <logic:present name="bw_views_list" scope="session">
+    <logic:iterate id="view" name="bw_views_list"
+                   scope="session">
+      <view>
+        <name><bean:write name="view" property="name" /></name>
+        <logic:iterate name="view" property="collectionPaths" id="path">
+          <path><bean:write name="path"/></path>
+        </logic:iterate>
+      </view>
+    </logic:iterate>
+  </logic:present>
 </views>

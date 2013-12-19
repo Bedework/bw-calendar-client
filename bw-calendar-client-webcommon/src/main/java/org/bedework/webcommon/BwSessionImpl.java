@@ -227,10 +227,10 @@ public class BwSessionImpl implements BwSession {
       if (form.getEventDates() == null) {
         form.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),
                                                mstate.getCalInfo(),
-                                             form.getHour24(),
-                                             form.getEndDateType(),
-                                             config.getMinIncrement(),
-                                             form.getErr()));
+                                               form.getHour24(),
+                                               form.getEndDateType(),
+                                               config.getMinIncrement(),
+                                               form.getErr()));
       }
 
       Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
@@ -318,14 +318,6 @@ public class BwSessionImpl implements BwSession {
         col = cl.getHome();
       }
 
-      if (col != null) {
-        Set<String> cos = form.getCalendarsOpenState();
-
-        if (cos != null) {
-          col.setOpen(cos.contains(col.getPath()));
-        }
-      }
-
       embedClonedCollection(request, col,
                             BwRequest.bwCollectionListName);
     } catch (Throwable t) {
@@ -358,14 +350,6 @@ public class BwSessionImpl implements BwSession {
       }
 
       col = cl.getHome(p, false);
-
-      if (col != null) {
-        Set<String> cos = form.getCalendarsOpenState();
-
-        if (cos != null) {
-          col.setOpen(cos.contains(col.getPath()));
-        }
-      }
 
       embedClonedCollection(request, col,
                             BwRequest.bwUserCollectionListName);
@@ -523,7 +507,8 @@ public class BwSessionImpl implements BwSession {
   private void embedClonedCollection(final BwRequest request,
                                      final BwCalendar col,
                                      final String attrName) throws Throwable {
-    BwCalendar cloned = new Cloner(request.getClient()).deepClone(col);
+    BwCalendar cloned = new Cloner(request.getClient(),
+                                   request.getBwForm().getCalendarsOpenState()).deepClone(col);
 
     request.setSessionAttr(attrName, cloned);
   }
@@ -811,8 +796,12 @@ public class BwSessionImpl implements BwSession {
 
     private Client cl;
 
-    Cloner(Client cl) {
+    private Set<String> openStates;
+
+    Cloner(final Client cl,
+           final Set<String> openStates) {
       this.cl = cl;
+      this.openStates = openStates;
     }
 
     BwCalendar deepClone(final BwCalendar val) throws Throwable {
@@ -827,6 +816,10 @@ public class BwSessionImpl implements BwSession {
       BwCalendar clCol = clonedCols.get(val.getPath());
 
       if (clCol != null) {
+        if (openStates != null) {
+          clCol.setOpen(openStates.contains(clCol.getPath()));
+        }
+
         return clCol;
       }
 
@@ -834,6 +827,10 @@ public class BwSessionImpl implements BwSession {
 
       clCol.setCategories(cloneCategories(val));
       clCol.setProperties(cloneProperties(val));
+
+      if (openStates != null) {
+        clCol.setOpen(openStates.contains(clCol.getPath()));
+      }
 
       if (val.getAliasUri() != null) {
         BwCalendar aliased = cl.resolveAlias(val, false, false);

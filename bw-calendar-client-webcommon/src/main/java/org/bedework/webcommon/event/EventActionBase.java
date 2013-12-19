@@ -35,7 +35,6 @@ import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.mail.Message;
@@ -281,10 +280,10 @@ public abstract class EventActionBase extends BwAbstractAction {
       // DORECUR is this right?
       RecurringRetrievalMode rrm;
       if (ekey.getForExport()) {
-        rrm = new RecurringRetrievalMode(Rmode.overrides);
+        rrm = RecurringRetrievalMode.overrides;
         rid = null;
       } else {
-        rrm = new RecurringRetrievalMode(Rmode.expanded);
+        rrm = RecurringRetrievalMode.expanded;
       }
       Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
                                               ekey.getGuid(),
@@ -305,9 +304,8 @@ public abstract class EventActionBase extends BwAbstractAction {
       }
       key = ekey.getName();
 
-      RecurringRetrievalMode rrm =
-        new RecurringRetrievalMode(Rmode.overrides);
-      ev = cl.getEvent(cal.getPath(), ekey.getName(), rrm);
+      ev = cl.getEvent(cal.getPath(), ekey.getName(),
+                       RecurringRetrievalMode.overrides);
     }
 
     if (ev == null) {
@@ -341,14 +339,13 @@ public abstract class EventActionBase extends BwAbstractAction {
       return null;
     }
 
-    // DORECUR is this right?
-    RecurringRetrievalMode rrm = new RecurringRetrievalMode(Rmode.overrides);
     String key;
 
     if (!cal.getCollectionInfo().uniqueKey) {
       /* Use name */
       key = event.getName();
-      ei = cl.getEvent(cal.getPath(), key, rrm);
+      ei = cl.getEvent(cal.getPath(), key,
+                       RecurringRetrievalMode.overrides);
     } else {
       /* Use uid */
       String uid = event.getUid();
@@ -363,7 +360,8 @@ public abstract class EventActionBase extends BwAbstractAction {
       String rid = event.getRecurrenceId();
 
       Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
-                                              uid, rid, rrm,
+                                              uid, rid,
+                                              RecurringRetrievalMode.overrides,
                                               false);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());

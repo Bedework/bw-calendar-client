@@ -516,15 +516,13 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     // TODO - getResource a set of keys then move each - or bulk mod?
 
-    RecurringRetrievalMode rrm = new RecurringRetrievalMode(
-            RecurringRetrievalMode.Rmode.overrides);
-
-    Collection<EventInfo> eis = svci.getEventsHandler().getEvents(cal,
-                                                                  null,
-                                                                  null,
-                                                                  null,
-                                                                  null, // retrieveList
-                                                                  rrm);
+    Collection<EventInfo> eis = svci.getEventsHandler().
+            getEvents(cal,
+                      null,
+                      null,
+                      null,
+                      null, // retrieveList
+                      RecurringRetrievalMode.overrides);
 
     for (EventInfo ei: eis) {
       BwEvent ev = ei.getEvent();

@@ -1079,10 +1079,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
       String rid = request.getReqPar("recurrenceId");
       // DORECUR is this right?
-      RecurringRetrievalMode rrm = new RecurringRetrievalMode(mode);
+      RecurringRetrievalMode rrm;
       if (mode == Rmode.overrides) {
+        rrm = RecurringRetrievalMode.overrides;
         rid = null;
+      } else if (mode == Rmode.expanded) {
+        rrm = RecurringRetrievalMode.expanded;
+      } else {
+        rrm = new RecurringRetrievalMode(mode);
       }
+
       Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
                                               guid, rid, rrm,
                                               false);
@@ -1100,9 +1106,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         debugMsg("Get event by name");
       }
 
-      RecurringRetrievalMode rrm =
-        new RecurringRetrievalMode(Rmode.overrides);
-      ev = cl.getEvent(cal.getPath(), eventName, rrm);
+      ev = cl.getEvent(cal.getPath(), eventName,
+                       RecurringRetrievalMode.overrides);
     }
 
     if (ev == null) {

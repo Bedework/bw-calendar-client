@@ -45,7 +45,6 @@ import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwShareableDbentity;
@@ -56,6 +55,10 @@ import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SortTerm;
+import org.bedework.calfacade.indexing.BwIndexer;
+import org.bedework.calfacade.indexing.BwIndexer.Position;
+import org.bedework.calfacade.indexing.SearchResult;
+import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -69,10 +72,6 @@ import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.calfacade.indexing.BwIndexer;
-import org.bedework.calfacade.indexing.BwIndexer.Position;
-import org.bedework.calfacade.indexing.SearchResult;
-import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
@@ -1047,9 +1046,9 @@ public class ROClientImpl implements Client {
 
     RecurringRetrievalMode rrm;
     if (expand) {
-      rrm = new RecurringRetrievalMode(Rmode.expanded);
+      rrm = RecurringRetrievalMode.expanded;
     } else {
-      rrm = new RecurringRetrievalMode(Rmode.overrides);
+      rrm = RecurringRetrievalMode.overrides;
     }
 
     return svci.getEventsHandler().getEvents(null,
@@ -1387,7 +1386,8 @@ public class ROClientImpl implements Client {
             start,
             end,
             params.getPageSize(),
-            accessChecker);
+            accessChecker,
+            RecurringRetrievalMode.expanded);
 
     return lastSearch;
   }

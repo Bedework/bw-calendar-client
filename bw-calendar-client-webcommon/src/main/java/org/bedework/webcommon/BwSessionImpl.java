@@ -439,7 +439,7 @@ public class BwSessionImpl implements BwSession {
       String appType = cl.getAppType();
       if (BedeworkDefs.appTypeWebsubmit.equals(appType)) {
         // Use public
-        vals = cl.getContacts(cl.getPublicUser().getPrincipalRef());
+        vals = cl.getPublicContacts();
       } else {
         // Current owner
         vals = cl.getContacts();
@@ -681,7 +681,7 @@ public class BwSessionImpl implements BwSession {
               BedeworkDefs.appTypeWebpublic.equals(appType) ||
               BedeworkDefs.appTypeFeeder.equals(appType)) {
         // Use public
-        vals = cl.getCategories(cl.getPublicUser().getPrincipalRef());
+        vals = cl.getPublicCategories();
       } else {
         // Current owner
         vals = cl.getCategories();
@@ -737,8 +737,7 @@ public class BwSessionImpl implements BwSession {
         String appType = cl.getAppType();
         if (BedeworkDefs.appTypeWebsubmit.equals(appType)) {
           // Use public
-          vals = cl.getLocations(
-                  cl.getPublicUser().getPrincipalRef());
+          vals = cl.getPublicLocations();
         } else {
           // Current owner
           vals = cl.getLocations();

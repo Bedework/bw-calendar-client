@@ -784,6 +784,18 @@ public interface Client extends Serializable {
    */
   Collection<BwCategory> getCategories() throws CalFacadeException;
 
+  /** Return all public entities.
+   *
+   * <p>Returns an empty collection for none.
+   *
+   * <p>The returned objects may not be persistent objects but the result of a
+   * report query.
+   *
+   * @return Collection     of objects
+   * @throws CalFacadeException
+   */
+  Collection<BwCategory> getPublicCategories() throws CalFacadeException;
+
   /** Return the listed categories The
    * returned objects will be non-persistent copies of the database
    * entities. The returned list may be shorter than the supplied
@@ -794,20 +806,6 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   Collection<BwCategory> getCategories(Collection<String> uids) throws CalFacadeException;
-
-  /** Return all entities for the given owner and to which the current
-   * user has access.
-   *
-   * <p>Returns an empty collection for none.
-   *
-   * <p>The returned objects may not be persistent objects but the result of a
-   * report query.
-   *
-   * @param ownerHref   String principal href, null for current user
-   * @return Collection     of objects
-   * @throws CalFacadeException
-   */
-  Collection<BwCategory> getCategories(String ownerHref) throws CalFacadeException;
 
   /** Return all entities to which the current
    * user has edit access.
@@ -883,19 +881,17 @@ public interface Client extends Serializable {
    */
   Collection<BwContact> getContacts() throws CalFacadeException;
 
-  /** Return all entities for the given owner and to which the current
-   * user has access.
+  /** Return all public entities.
    *
    * <p>Returns an empty collection for none.
    *
    * <p>The returned objects may not be persistent objects but the result of a
    * report query.
    *
-   * @param ownerHref   String principal href, null for current user
    * @return Collection     of objects
    * @throws CalFacadeException
    */
-  Collection<BwContact> getContacts(String ownerHref) throws CalFacadeException;
+  Collection<BwContact> getPublicContacts() throws CalFacadeException;
 
   /** Return all entities to which the current
    * user has edit access.
@@ -999,19 +995,17 @@ public interface Client extends Serializable {
    */
   Collection<BwLocation> getLocations() throws CalFacadeException;
 
-  /** Return all entities for the given owner and to which the current
-   * user has access.
+  /** Return all public entiities.
    *
    * <p>Returns an empty collection for none.
    *
    * <p>The returned objects may not be persistent objects but the result of a
    * report query.
    *
-   * @param ownerHref   String principal href, null for current user
    * @return Collection     of objects
    * @throws CalFacadeException
    */
-  Collection<BwLocation> getLocations(String ownerHref) throws CalFacadeException;
+  Collection<BwLocation> getPublicLocations() throws CalFacadeException;
 
   /** Return all entities to which the current
    * user has edit access.

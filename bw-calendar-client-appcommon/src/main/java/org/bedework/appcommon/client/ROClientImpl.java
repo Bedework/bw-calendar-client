@@ -833,9 +833,9 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public Collection<BwCategory> getCategories(final String ownerHref)
+  public Collection<BwCategory> getPublicCategories()
           throws CalFacadeException {
-    return svci.getCategoriesHandler().get(ownerHref, null);
+    return svci.getCategoriesHandler().get(getPublicUser().getPrincipalRef(), null);
   }
 
   @Override
@@ -885,9 +885,9 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public Collection<BwContact> getContacts(final String ownerHref)
+  public Collection<BwContact> getPublicContacts()
           throws CalFacadeException {
-    return svci.getContactsHandler().get(ownerHref, null);
+    return svci.getContactsHandler().get(getPublicUser().getPrincipalRef(), null);
   }
 
   @Override
@@ -952,9 +952,9 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public Collection<BwLocation> getLocations(final String ownerHref)
+  public Collection<BwLocation> getPublicLocations()
           throws CalFacadeException {
-    return svci.getLocationsHandler().get(ownerHref, null);
+    return svci.getLocationsHandler().get(getPublicUser().getPrincipalRef(), null);
   }
 
   @Override

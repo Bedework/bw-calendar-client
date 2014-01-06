@@ -647,7 +647,7 @@ public abstract class EventActionBase extends BwAbstractAction {
     }
 
     if (!form.retrieveCtctId().getChanged()) {
-      /* Didn't select from list. Do  we allow auto-create */
+      /* Didn't select from list. Do we allow auto-create */
       if (form.getConfig().getAutoCreateContacts()) {
         c = form.getContact();
 

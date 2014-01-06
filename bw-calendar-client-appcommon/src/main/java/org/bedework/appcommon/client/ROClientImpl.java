@@ -379,11 +379,6 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public BwPrincipal getPublicUser() throws CalFacadeException {
-    return svci.getUsersHandler().getPublicUser();
-  }
-
-  @Override
   public BwPrincipal getCurrentPrincipal() throws CalFacadeException {
     if (currentPrincipal == null) {
       currentPrincipal = (BwPrincipal)svci.getPrincipal().clone();
@@ -835,7 +830,7 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwCategory> getPublicCategories()
           throws CalFacadeException {
-    return svci.getCategoriesHandler().get(getPublicUser().getPrincipalRef(), null);
+    return svci.getCategoriesHandler().getPublic();
   }
 
   @Override
@@ -887,7 +882,7 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwContact> getPublicContacts()
           throws CalFacadeException {
-    return svci.getContactsHandler().get(getPublicUser().getPrincipalRef(), null);
+    return svci.getContactsHandler().getPublic();
   }
 
   @Override
@@ -899,9 +894,7 @@ public class ROClientImpl implements Client {
   @Override
   public BwContact findContact(final BwString val)
           throws CalFacadeException {
-    return svci.getContactsHandler().findPersistent(val,
-                                                    getOwner()
-                                                            .getPrincipalRef());
+    return svci.getContactsHandler().findPersistent(val);
   }
 
   @Override
@@ -954,7 +947,7 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwLocation> getPublicLocations()
           throws CalFacadeException {
-    return svci.getLocationsHandler().get(getPublicUser().getPrincipalRef(), null);
+    return svci.getLocationsHandler().getPublic();
   }
 
   @Override
@@ -966,9 +959,7 @@ public class ROClientImpl implements Client {
   @Override
   public BwLocation findLocation(final BwString address)
           throws CalFacadeException {
-    return svci.getLocationsHandler().findPersistent(address,
-                                                     getOwner()
-                                                             .getPrincipalRef());
+    return svci.getLocationsHandler().findPersistent(address);
   }
 
   @Override
@@ -1711,14 +1702,14 @@ public class ROClientImpl implements Client {
   protected BwIndexer getIndexer(boolean publick) throws CalFacadeException {
     if (publick) {
       if (publicIndexer == null) {
-        publicIndexer = svci.getIndexer(true, getCurrentPrincipalHref());
+        publicIndexer = svci.getIndexer(true);
       }
 
       return publicIndexer;
     }
 
     if (userIndexer == null) {
-      userIndexer = svci.getIndexer(false, getCurrentPrincipalHref());
+      userIndexer = svci.getIndexer(false);
     }
 
     return userIndexer;

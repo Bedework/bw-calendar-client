@@ -274,12 +274,6 @@ public interface Client extends Serializable {
    */
   boolean isGuest();
 
-  /**
-   * @return public entity owner
-   * @throws CalFacadeException
-   */
-  BwPrincipal getPublicUser() throws CalFacadeException;
-
   /** Does the value appear to represent a valid principal?
    *
    * @param val

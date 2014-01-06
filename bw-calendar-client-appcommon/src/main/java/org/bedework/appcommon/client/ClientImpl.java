@@ -272,6 +272,7 @@ public class ClientImpl extends ROClientImpl {
       return eeer.entity;
     }
   }
+
   @Override
   public CheckEntityResult<BwContact> ensureContactExists(final BwContact val,
                                                           final String ownerHref)

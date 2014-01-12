@@ -1394,7 +1394,7 @@ public class ROClientImpl implements Client {
     }
 
     lastSearchEntries = formatSearchResult(lastSearch.getIndexer().
-            getSearchResult(lastSearch, pos));
+            getSearchResult(lastSearch, pos, PrivilegeDefs.privAny));
 
     return lastSearchEntries;
   }
@@ -1407,7 +1407,7 @@ public class ROClientImpl implements Client {
     }
 
     return formatSearchResult(lastSearch.getIndexer().
-            getSearchResult(lastSearch, start, num));
+            getSearchResult(lastSearch, start, num, PrivilegeDefs.privAny));
   }
 
   private List<SearchResultEntry> formatSearchResult(

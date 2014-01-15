@@ -20,6 +20,7 @@ package org.bedework.appcommon.client;
 
 import org.bedework.access.Ace;
 import org.bedework.access.Acl;
+import org.bedework.access.PrivilegeDefs;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.caldav.util.notifications.NotificationType;
@@ -88,7 +89,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:03

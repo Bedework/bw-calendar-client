@@ -50,10 +50,14 @@ public class FetchPrefsAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();
 
-    request.getSess().embedCategories(request, false,
-                                      BwSession.ownersEntity);
-    request.getSess().embedCategories(request, true,
-                                      BwSession.defaultEntity);
+    BwSession sess = request.getSess();
+
+    sess.embedCategories(request, false,
+                         BwSession.ownersEntity);
+    sess.embedCategories(request, true,
+                         BwSession.defaultEntity);
+    sess.embedAddContentCalendarCollections(request);
+    sess.embedLocations(request, BwSession.editableEntity);
 
     String str = request.getReqPar("user");
     if (str != null) {

@@ -843,6 +843,15 @@ public abstract class EventActionBase extends BwAbstractAction {
     ev.setAttendees(atts.getAttendees());
     ev.setRecipients(atts.getRecipients());
 
+    /* TODO - do we need this
+        if (ev.getRecipients() == null) {
+          ev.setRecipients(val);
+        } else {
+          Util.adjustCollection(val, ev.getRecipients());
+        }
+
+     */
+
     return forwardSuccess;
   }
 

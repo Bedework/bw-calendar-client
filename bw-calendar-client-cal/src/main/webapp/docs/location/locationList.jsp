@@ -16,7 +16,8 @@ try {
 <page>locationList</page>
 
 <locations>
-  <logic:iterate id="location" name="calForm" property="editableLocations" >
+  <logic:iterate id="location" name="bw_editable_locations_list"
+                 scope="session" >
     <location>
       <bw:emitText name="location" property="address.value" tagName="address" />
       <logic:present name="location" property="subaddress">

@@ -172,7 +172,7 @@ try {
     <misc>
       <export><bw:rewrite resourceURL="true" page="/misc/export.gdo?b=de"/></export>
       <showPage><bw:rewrite renderURL="true" page="/misc/showPage.rdo?b=de"/></showPage>
-      <async><bw:rewrite renderURL="true" page="/misc/async.rdo?b=de"/></async>
+      <async><bw:rewrite renderURL="true" page="/misc/async.do?b=de"/></async>
     </misc>
 
     <mail>

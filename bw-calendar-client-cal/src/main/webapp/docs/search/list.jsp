@@ -30,7 +30,7 @@ try {
     <resultSize>0</resultSize>
   </logic:notPresent>
 
-  <logic:notPresent name="bw_search_result" scope="request">
+  <logic:present name="bw_search_result" scope="request">
     <bean:define id="sres" name="bw_search_result" scope="request"/>
     <bw:emitText name="sres" property="found" tagName="resultSize" />
     <logic:iterate id="sre" name="bw_search_list" scope="request">

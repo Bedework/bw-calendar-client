@@ -12,7 +12,7 @@
 <page>inbox</page>
 
 <%--  Display inbox --%>
-<bean:define id="boxInfo" name="calForm" property="inBoxInfoRefreshed" />
+<bean:define id="boxInfo" name="calForm" property="inBoxInfo" />
 <inbox>
   <%@include file="/docs/schedule/inoutbox.jsp"%>
 </inbox>

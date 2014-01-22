@@ -135,7 +135,7 @@ public class ClientImpl extends ROClientImpl {
   public boolean deleteCollection(final BwCalendar val,
                                   final boolean emptyIt)
           throws CalFacadeException {
-    return svci.getCalendarsHandler().delete(val, emptyIt);
+    return svci.getCalendarsHandler().delete(val, emptyIt, true);
   }
 
   @Override

@@ -834,10 +834,12 @@ public class BwSessionImpl implements BwSession {
       if (val.getAliasUri() != null) {
         BwCalendar aliased = cl.resolveAlias(val, false, false);
 
-        clCol.setAliasCalType(aliased.getCalType());
-        BwCalendar clAliased = deepClone(aliased);
+        if (aliased != null) {
+          clCol.setAliasCalType(aliased.getCalType());
+          BwCalendar clAliased = deepClone(aliased);
 
-        clCol.setAliasTarget(clAliased);
+          clCol.setAliasTarget(clAliased);
+        }
       }
 
       clonedCols.put(val.getPath(), clCol);

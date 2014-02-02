@@ -153,7 +153,9 @@ public class InitAddEventAction extends EventActionBase {
 
     sess.embedContactCollection(request, BwSession.ownersEntity);
 
-    sess.embedContactCollection(request, BwSession.preferredEntity);
+    if (request.getClient().getPublicAdmin()) {
+      sess.embedContactCollection(request, BwSession.preferredEntity);
+    }
 
     sess.embedCategories(request, false, BwSession.ownersEntity);
     sess.embedLocations(request, BwSession.ownersEntity);

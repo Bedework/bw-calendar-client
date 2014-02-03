@@ -436,8 +436,7 @@ public class BwSessionImpl implements BwSession {
     if (kind == ownersEntity) {
       attrName = BwRequest.bwContactsListName;
 
-      String appType = cl.getAppType();
-      if (BedeworkDefs.appTypeWebsubmit.equals(appType)) {
+      if (cl.getWebSubmit()) {
         // Use public
         vals = cl.getPublicContacts();
       } else {
@@ -677,7 +676,7 @@ public class BwSessionImpl implements BwSession {
     if (kind == ownersEntity) {
 
       String appType = cl.getAppType();
-      if (BedeworkDefs.appTypeWebsubmit.equals(appType) ||
+      if (cl.getWebSubmit() ||
               BedeworkDefs.appTypeWebpublic.equals(appType) ||
               BedeworkDefs.appTypeFeeder.equals(appType)) {
         // Use public
@@ -735,7 +734,7 @@ public class BwSessionImpl implements BwSession {
 
       if (kind == ownersEntity) {
         String appType = cl.getAppType();
-        if (BedeworkDefs.appTypeWebsubmit.equals(appType)) {
+        if (cl.getWebSubmit()) {
           // Use public
           vals = cl.getPublicLocations();
         } else {

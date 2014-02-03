@@ -53,11 +53,12 @@ import java.util.Collection;
 public class ClientImpl extends ROClientImpl {
   public ClientImpl(final String id,
                     final String authUser,
-                    final String runAsUser)
+                    final String runAsUser,
+                    final String appType)
           throws CalFacadeException {
     this(id);
 
-    reinit(authUser, runAsUser);
+    reinit(authUser, runAsUser, appType);
   }
 
   protected ClientImpl(final String id) {
@@ -65,7 +66,8 @@ public class ClientImpl extends ROClientImpl {
   }
 
   public void reinit(final String authUser,
-                     final String runAsUser)
+                     final String runAsUser,
+                     final String appType)
           throws CalFacadeException {
     currentPrincipal = null;
 
@@ -82,6 +84,7 @@ public class ClientImpl extends ROClientImpl {
     pars.setLogId(id);
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
+    this.appType = appType;
   }
 
   @Override

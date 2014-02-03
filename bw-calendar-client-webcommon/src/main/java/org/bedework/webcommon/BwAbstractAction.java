@@ -1817,6 +1817,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             ((ROClientImpl)client).reinit(form.getCurrentUser(),
                                           user,
                                           calSuiteName,
+                                          form.getAppType(),
                                           true);
           } else if (publicAdmin) {
             ((AdminClientImpl)client).reinit(form.getCurrentUser(),
@@ -1825,7 +1826,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                              (AdminConfig)form.getConfig());
           } else {
             ((ClientImpl)client).reinit(form.getCurrentUser(),
-                                        user);
+                                        user,
+                                        form.getAppType());
           }
 
           client.requestIn(request.getConversationType());
@@ -1841,6 +1843,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                     form.getCurrentUser(),
                                     user,
                                     calSuiteName,
+                                    form.getAppType(),
                                     true);
         } else if (publicAdmin) {
           client = new AdminClientImpl(module.getModuleName(),
@@ -1851,7 +1854,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         } else {
           client = new ClientImpl(module.getModuleName(),
                                   form.getCurrentUser(),
-                                  user);
+                                  user,
+                                  form.getAppType());
         }
 
         module.setClient(client);

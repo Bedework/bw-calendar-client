@@ -116,7 +116,7 @@ public class ROClientImpl implements Client {
   private ClientState cstate;
 
   private transient CollectionCollator<BwCalendar> calendarCollator;
-  private String appType;
+  protected String appType;
 
   private BwIndexer publicIndexer;
   private BwIndexer userIndexer;
@@ -135,15 +135,26 @@ public class ROClientImpl implements Client {
 
   protected AccessChecker accessChecker = new AccessChecker();
 
+  /**
+   *
+   * @param id
+   * @param authUser
+   * @param runAsUser
+   * @param calSuiteName
+   * @param appType
+   * @param publicView
+   * @throws CalFacadeException
+   */
   public ROClientImpl(final String id,
                       final String authUser,
                       final String runAsUser,
                       final String calSuiteName,
+                      final String appType,
                       final boolean publicView)
           throws CalFacadeException {
     this(id);
 
-    reinit(authUser, runAsUser, calSuiteName, publicView);
+    reinit(authUser, runAsUser, calSuiteName, appType, publicView);
   }
 
   protected ROClientImpl(final String id) {
@@ -154,6 +165,7 @@ public class ROClientImpl implements Client {
   public void reinit(final String authUser,
                      final String runAsUser,
                      final String calSuiteName,
+                     final String appType,
                      final boolean publicView)
           throws CalFacadeException {
     currentPrincipal = null;
@@ -170,6 +182,7 @@ public class ROClientImpl implements Client {
                            false);    // sessionless
     pars.setLogId(id);
     svci = new CalSvcFactoryDefault().getSvc(pars);
+    this.appType = appType;
     this.publicView = publicView;
   }
 
@@ -273,8 +286,8 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public void setAppType(final String val) {
-    appType = val;
+  public boolean getWebSubmit() {
+    return BedeworkDefs.appTypeWebsubmit.equals(appType);
   }
 
   @Override

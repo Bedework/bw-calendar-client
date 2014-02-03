@@ -142,16 +142,17 @@ public interface Client extends Serializable {
    */
   boolean getPublicAdmin();
 
+  /**
+   *
+   * @return true if we are the web submit client.
+   */
+  boolean getWebSubmit();
+
   /** apptype
    *
    * @return boolean
    */
   String getAppType();
-
-  /**
-   * @param val
-   */
-  void setAppType(final String val);
 
   /** Get the (possibly cached) system pars using name supplied at init
    *

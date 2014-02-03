@@ -19,6 +19,7 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.TimeView;
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;

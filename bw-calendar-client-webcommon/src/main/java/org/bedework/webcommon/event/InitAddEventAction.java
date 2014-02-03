@@ -153,13 +153,15 @@ public class InitAddEventAction extends EventActionBase {
 
     sess.embedContactCollection(request, BwSession.ownersEntity);
 
-    if (request.getClient().getPublicAdmin()) {
+    Client cl = request.getClient();
+
+    if (cl.getPublicAdmin()) {
       sess.embedContactCollection(request, BwSession.preferredEntity);
+      sess.embedLocations(request, BwSession.preferredEntity);
     }
 
     sess.embedCategories(request, false, BwSession.ownersEntity);
     sess.embedLocations(request, BwSession.ownersEntity);
-    sess.embedLocations(request, BwSession.preferredEntity);
 
     //if (!request.setEventCalendar(ev)) {
     //  return forwardValidationError;

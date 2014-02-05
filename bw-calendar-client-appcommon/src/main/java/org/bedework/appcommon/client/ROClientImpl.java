@@ -21,6 +21,7 @@ package org.bedework.appcommon.client;
 import org.bedework.access.Ace;
 import org.bedework.access.Acl;
 import org.bedework.access.PrivilegeDefs;
+import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.caldav.util.notifications.NotificationType;

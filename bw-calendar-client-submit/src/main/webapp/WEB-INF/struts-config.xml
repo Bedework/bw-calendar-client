@@ -209,23 +209,22 @@
            List events
        ............................................................... -->
 
-
-    <action    path="/event/showPendingEvents"
-               type="org.bedework.webcommon.event.RenderEventListAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render"
-               validate="false">
-      <forward name="continue" path="/docs/event/eventList.jsp"/>
-    </action>
-
     <action    path="/event/initPendingEvents"
                type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action"
+               parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/event/showPendingEvents.rdo" redirect="true" />
+    </action>
+
+    <action    path="/event/showPendingEvents"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="continue" path="/docs/event/eventList.jsp"/>
     </action>
 
     <action    path="/event/showEvent"

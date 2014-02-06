@@ -13,9 +13,12 @@
 <% /* used by included file */
    String rpitemp; %>
 <locations>
-  <logic:iterate id="location" name="calForm" property="editableLocations" >
-    <%@include file="/docs/location/emitLocation.jsp"%>
-  </logic:iterate>
+  <logic:present name="bw_editable_locations_list" scope="session">
+    <logic:iterate id="location" name="bw_editable_locations_list"
+                   scope="session">
+      <%@include file="/docs/location/emitLocation.jsp"%>
+    </logic:iterate>
+  </logic:present>
 </locations>
 
 <%@include file="/docs/footer.jsp"%>

@@ -13,9 +13,12 @@
 <% /* used by included file */
    String rpitemp; %>
 <contacts>
-  <logic:iterate id="contact" name="calForm" property="editableContacts" >
-    <%@include file="/docs/contact/emitContact.jsp"%>
-  </logic:iterate>
+  <logic:present name="bw_editable_contacts_list" scope="session">
+    <logic:iterate id="contact" name="bw_editable_contacts_list"
+                   scope="session">
+      <%@include file="/docs/contact/emitContact.jsp"%>
+    </logic:iterate>
+  </logic:present>
 </contacts>
 
 <%@include file="/docs/footer.jsp"%>

@@ -79,13 +79,14 @@ public class FetchEventAction extends EventActionBase {
     sess.embedUserCollections(request);
 
     sess.embedContactCollection(request, BwSession.ownersEntity);
-
-    sess.embedContactCollection(request, BwSession.preferredEntity);
-
     sess.embedCategories(request, false, BwSession.ownersEntity);
 
     sess.embedLocations(request, BwSession.ownersEntity);
-    sess.embedLocations(request, BwSession.preferredEntity);
+
+    if (cl.getPublicAdmin()) {
+      sess.embedContactCollection(request, BwSession.preferredEntity);
+      sess.embedLocations(request, BwSession.preferredEntity);
+    }
 
     return fwd;
   }

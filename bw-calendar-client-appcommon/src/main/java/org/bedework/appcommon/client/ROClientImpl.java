@@ -1014,11 +1014,10 @@ public class ROClientImpl implements Client {
   public Collection<EventInfo> getEvent(final String path,
                                         final String guid,
                                         final String rid,
-                                        final RecurringRetrievalMode recurRetrieval,
-                                        final boolean scheduling)
+                                        final RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException {
     return svci.getEventsHandler().get(path, guid, rid,
-                                       recurRetrieval, scheduling);
+                                       recurRetrieval);
   }
 
   @Override

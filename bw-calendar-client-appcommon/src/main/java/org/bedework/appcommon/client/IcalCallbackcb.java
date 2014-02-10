@@ -123,7 +123,7 @@ public class IcalCallbackcb implements IcalCallback {
                              final RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException {
     return cl.getEvent(cal.getPath(), guid,
-                       rid, recurRetrieval, false);
+                       rid, recurRetrieval);
   }
 
   @Override

@@ -287,8 +287,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       }
       Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
                                               ekey.getGuid(),
-                                              rid, rrm,
-                                              false);
+                                              rid, rrm);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }
@@ -361,8 +360,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
       Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
                                               uid, rid,
-                                              RecurringRetrievalMode.overrides,
-                                              false);
+                                              RecurringRetrievalMode.overrides);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }

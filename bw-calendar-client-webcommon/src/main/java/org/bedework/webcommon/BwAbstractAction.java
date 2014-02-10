@@ -1090,8 +1090,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
-                                              guid, rid, rrm,
-                                              false);
+                                              guid, rid, rrm);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }

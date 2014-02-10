@@ -1074,15 +1074,13 @@ public interface Client extends Serializable {
    * @param guid
    * @param rid
    * @param recurRetrieval How recurring event is returned.
-   * @param scheduling
    * @return Collection of EventInfo
    * @throws CalFacadeException
    */
   Collection<EventInfo> getEvent(String path,
                                  String guid,
                                  String rid,
-                                 RecurringRetrievalMode recurRetrieval,
-                                 boolean scheduling)
+                                 RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException;
 
   /** Get events given the calendar and String name. Return null for not

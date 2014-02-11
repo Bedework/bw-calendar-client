@@ -614,14 +614,13 @@ public class TimeView implements Serializable {
     }
   }
 
-  /** Ensure we have the current set of events. If refresh is true will
-   * get a new set.
+  /** Ensure we have the current set of events.
    *
-   * @param cl
-   * @param refresh
+   * @param cl - the client
+   * @param refresh if true will get a new set.
    * @throws CalFacadeException
    */
-  public void getEvents(Client cl,
+  public void getEvents(final Client cl,
                         final boolean refresh) throws CalFacadeException {
     if (!refresh && (events != null)) {
       return;
@@ -637,7 +636,7 @@ public class TimeView implements Serializable {
     BwDateTime end = getBwDate(DateTimeUtil.isoDate(lastP1.getTime()));
     */
 
-    Collection<SearchResultEntry> sres = cl.getSearchResult(0, -1);
+    final Collection<SearchResultEntry> sres = cl.getSearchResult(0, -1);
     events = new ArrayList<>(sres.size());
 
     for (SearchResultEntry sre: sres) {

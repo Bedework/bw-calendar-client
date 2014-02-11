@@ -260,7 +260,7 @@ public class BwSessionImpl implements BwSession {
       if (mstate.getRefresh() ||
               mstate.getCurTimeView() == null) {
         refreshView(req);
-        mstate.setRefresh(false);
+//        mstate.setRefresh(false);
       }
     } catch (Throwable t) {
       // Not much we can do here

@@ -62,7 +62,7 @@ public class RenderMainAction extends BwAbstractAction {
     }
 
     if (tv != null) {
-      tv.getEvents(cl, mstate.getRefresh());
+      tv.getEvents(cl, fetch);
     }
 
     mstate.setRefresh(false);

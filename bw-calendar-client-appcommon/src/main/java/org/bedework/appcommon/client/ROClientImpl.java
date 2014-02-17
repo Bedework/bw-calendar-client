@@ -124,6 +124,15 @@ public class ROClientImpl implements Client {
   private SearchResult lastSearch;
   private List<SearchResultEntry> lastSearchEntries;
 
+  /* Set this whenever an update occurs. We may want to delay or flush
+   */
+  protected long lastUpdate;
+
+  /* Don't delay or flush until after end of request in which we
+     updated.
+   */
+  protected long requestEnd;
+
   protected class AccessChecker implements BwIndexer.AccessChecker {
     @Override
     public Acl.CurrentAccess checkAccess(final BwShareableDbentity ent,
@@ -138,12 +147,12 @@ public class ROClientImpl implements Client {
 
   /**
    *
-   * @param id
-   * @param authUser
-   * @param runAsUser
-   * @param calSuiteName
-   * @param appType
-   * @param publicView
+   * @param id identify the client - usually module name
+   * @param authUser account
+   * @param runAsUser account
+   * @param calSuiteName the calednar suite
+   * @param appType type of application: submit, admin etc
+   * @param publicView true for the public RO client
    * @throws CalFacadeException
    */
   public ROClientImpl(final String id,
@@ -189,7 +198,7 @@ public class ROClientImpl implements Client {
 
   @Override
   public Client copy(final String id) throws CalFacadeException {
-    ROClientImpl cl = new ROClientImpl(id);
+    final ROClientImpl cl = new ROClientImpl(id);
 
     cl.pars = (CalSvcIPars)pars.clone();
     cl.pars.setLogId(id);
@@ -240,6 +249,7 @@ public class ROClientImpl implements Client {
                          final int actionType,
                          final long reqTimeMillis)
           throws CalFacadeException {
+    requestEnd = System.currentTimeMillis();
     svci.postNotification(new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
                                            reqTimeMillis));
 
@@ -323,11 +333,11 @@ public class ROClientImpl implements Client {
   public void rollback() {
     try {
       svci.rollbackTransaction();
-    } catch (Throwable t) {}
+    } catch (Throwable ignored) {}
 
     try {
       svci.endTransaction();
-    } catch (Throwable t) {}
+    } catch (Throwable ignored) {}
   }
 
   @Override
@@ -353,7 +363,7 @@ public class ROClientImpl implements Client {
   @Override
   public String getCalendarAddress(final String user)
           throws CalFacadeException {
-    BwPrincipal u = svci.getUsersHandler().getUser(user);
+    final BwPrincipal u = svci.getUsersHandler().getUser(user);
     if (u == null) {
       return null;
     }
@@ -411,6 +421,7 @@ public class ROClientImpl implements Client {
     return getCurrentPrincipal().getPrincipalRef();
   }
 
+  @Override
   public String getCurrentCalendarAddress() throws CalFacadeException {
     if (currentCalendarAddress == null) {
       currentCalendarAddress = svci.getDirectories().principalToCaladdr(getCurrentPrincipal());
@@ -613,17 +624,14 @@ public class ROClientImpl implements Client {
   /** Set false to inhibit lastLocale stuff */
   public static boolean tryLastLocale = true;
 
-  /* (non-Javadoc)
-   * @see org.bedework.calsvci.PreferencesI#getUserLocale(java.util.Collection, java.util.Locale)
-   */
   @Override
   public Locale getUserLocale(final Collection<Locale> locales,
                               final Locale locale) throws CalFacadeException {
-    Collection<Locale> sysLocales = getSupportedLocales();
+    final Collection<Locale> sysLocales = getSupportedLocales();
 
     if (locale != null) {
       /* See if it's acceptable */
-      Locale l = BwLocale.matchLocales(sysLocales, locale);
+      final Locale l = BwLocale.matchLocales(sysLocales, locale);
       if (l != null) {
         if (debug) {
           debugMsg("Setting locale to " + l);
@@ -633,12 +641,12 @@ public class ROClientImpl implements Client {
     }
 
     /* See if the user expressed a preference */
-    Collection<BwProperty> properties = getPreferences().getProperties();
+    final Collection<BwProperty> properties = getPreferences().getProperties();
     String preferredLocaleStr = null;
     String lastLocaleStr = null;
 
     if (properties != null) {
-      for (BwProperty prop: properties) {
+      for (final BwProperty prop: properties) {
         if (preferredLocaleStr == null) {
           if (prop.getName().equals(BwPreferences.propertyPreferredLocale)) {
             preferredLocaleStr = prop.getValue();
@@ -664,8 +672,8 @@ public class ROClientImpl implements Client {
     }
 
     if (preferredLocaleStr != null) {
-      Locale l = BwLocale.matchLocales(sysLocales,
-                                       BwLocale.makeLocale(preferredLocaleStr));
+      final Locale l = BwLocale.matchLocales(sysLocales,
+                                             BwLocale.makeLocale(preferredLocaleStr));
       if (l != null) {
         if (debug) {
           debugMsg("Setting locale to " + l);
@@ -675,8 +683,8 @@ public class ROClientImpl implements Client {
     }
 
     if (lastLocaleStr != null) {
-      Locale l = BwLocale.matchLocales(sysLocales,
-                                       BwLocale.makeLocale(lastLocaleStr));
+      final Locale l = BwLocale.matchLocales(sysLocales,
+                                             BwLocale.makeLocale(lastLocaleStr));
       if (l != null) {
         if (debug) {
           debugMsg("Setting locale to " + l);
@@ -690,8 +698,8 @@ public class ROClientImpl implements Client {
     if (locales != null) {
       // We had an ACCEPT-LANGUAGE header
 
-      for (Locale l: locales) {
-        l = BwLocale.matchLocales(sysLocales, l);
+      for (final Locale loc: locales) {
+        final Locale l = BwLocale.matchLocales(sysLocales, loc);
         if (l != null) {
           if (debug) {
             debugMsg("Setting locale to " + l);
@@ -703,7 +711,7 @@ public class ROClientImpl implements Client {
 
     /* Use the first from supported locales -
      * there's always at least one in the collection */
-    Locale l = sysLocales.iterator().next();
+    final Locale l = sysLocales.iterator().next();
 
     if (debug) {
       debugMsg("Setting locale to " + l);
@@ -723,12 +731,14 @@ public class ROClientImpl implements Client {
   @Override
   public BwCalendar getCollection(final String path)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCalendarsHandler().get(path);
   }
 
   @Override
   public boolean collectionExists(final String path)
           throws CalFacadeException {
+    checkUpdate();
     return getCollection(path) != null;
   }
 
@@ -736,6 +746,7 @@ public class ROClientImpl implements Client {
   public BwCalendar getSpecial(final int calType,
                                final boolean create)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCalendarsHandler().getSpecial(calType, create);
   }
 
@@ -764,6 +775,7 @@ public class ROClientImpl implements Client {
                                  final boolean resolveSubAlias,
                                  final boolean freeBusy)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCalendarsHandler().resolveAlias(val,
                                                    resolveSubAlias,
                                                    freeBusy);
@@ -772,6 +784,7 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwCalendar> getChildren(final BwCalendar col)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCalendarsHandler().getChildren(col);
   }
 
@@ -791,12 +804,14 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwCalendar> getAddContentCollections(final boolean includeAliases)
           throws CalFacadeException {
+    checkUpdate();
     return getCalendarCollator().getCollatedCollection(
             svci.getCalendarsHandler().getAddContentCollections(includeAliases));
   }
 
   @Override
   public BwCalendar getPublicCalendars() throws CalFacadeException {
+    checkUpdate();
     return svci.getCalendarsHandler().getPublicCalendars();
   }
 
@@ -814,12 +829,14 @@ public class ROClientImpl implements Client {
   @Override
   public BwCategory getCategoryByName(final BwString name)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCategoriesHandler().find(name);
   }
 
   @Override
   public BwCategory getCategory(final String uid)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCategoriesHandler().get(uid);
   }
 
@@ -832,6 +849,7 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwCategory> getCategories()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCategoriesHandler().get();
   }
 
@@ -844,12 +862,14 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwCategory> getPublicCategories()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCategoriesHandler().getPublic();
   }
 
   @Override
   public Collection<BwCategory> getEditableCategories()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getCategoriesHandler().getEditable();
   }
 
@@ -878,6 +898,7 @@ public class ROClientImpl implements Client {
   @Override
   public BwContact getContact(final String uid)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getContactsHandler().get(uid);
   }
 
@@ -890,18 +911,21 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwContact> getContacts()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getContactsHandler().get();
   }
 
   @Override
   public Collection<BwContact> getPublicContacts()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getContactsHandler().getPublic();
   }
 
   @Override
   public Collection<BwContact> getEditableContacts()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getContactsHandler().getEditable();
   }
 
@@ -943,6 +967,7 @@ public class ROClientImpl implements Client {
   @Override
   public BwLocation getLocation(final String uid)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getLocationsHandler().get(uid);
   }
 
@@ -955,18 +980,21 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwLocation> getLocations()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getLocationsHandler().get();
   }
 
   @Override
   public Collection<BwLocation> getPublicLocations()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getLocationsHandler().getPublic();
   }
 
   @Override
   public Collection<BwLocation> getEditableLocations()
           throws CalFacadeException {
+    checkUpdate();
     return svci.getLocationsHandler().getEditable();
   }
 
@@ -1043,12 +1071,14 @@ public class ROClientImpl implements Client {
       return null;
     }
 
-    BwFilterDef fd = new BwFilterDef();
+    checkUpdate();
+
+    final BwFilterDef fd = new BwFilterDef();
     fd.setDefinition(filter);
 
     parseFilter(fd);
 
-    RecurringRetrievalMode rrm;
+    final RecurringRetrievalMode rrm;
     if (expand) {
       rrm = RecurringRetrievalMode.expanded;
     } else {
@@ -1121,18 +1151,21 @@ public class ROClientImpl implements Client {
 
   @Override
   public BwResource getResource(final String path) throws CalFacadeException {
+    checkUpdate();
     return svci.getResourcesHandler().get(path);
   }
 
   @Override
   public void getResourceContent(final BwResource val)
           throws CalFacadeException {
+    checkUpdate();
     svci.getResourcesHandler().getContent(val);
   }
 
   @Override
   public List<BwResource> getAllResources(final String path)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getResourcesHandler().getAll(path);
   }
 
@@ -1182,6 +1215,7 @@ public class ROClientImpl implements Client {
   @Override
   public EventInfo getStoredMeeting(final BwEvent ev)
           throws CalFacadeException {
+    checkUpdate();
     return svci.getScheduler().getStoredMeeting(ev);
   }
 
@@ -1254,6 +1288,7 @@ public class ROClientImpl implements Client {
 
   @Override
   public BwView getView(final String val) throws CalFacadeException {
+    checkUpdate();
     return svci.getViewsHandler().find(val);
   }
 
@@ -1308,7 +1343,7 @@ public class ROClientImpl implements Client {
 
   @Override
   public boolean getGroupSet() {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;
   }
 
   @Override
@@ -1318,7 +1353,7 @@ public class ROClientImpl implements Client {
 
   @Override
   public boolean getChoosingGroup() {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;
   }
 
   @Override
@@ -1368,6 +1403,7 @@ public class ROClientImpl implements Client {
 
   @Override
   public SearchResult search(final SearchParams params) throws CalFacadeException {
+    checkUpdate();
     cstate.setSearchParams(params);
 
     lastSearchEntries = null;
@@ -1397,7 +1433,8 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public List<SearchResultEntry> getSearchResult(Position pos) throws CalFacadeException {
+  public List<SearchResultEntry> getSearchResult(final Position pos) throws CalFacadeException {
+    checkUpdate();
     if (lastSearch == null) {
       return null;
     }
@@ -1418,55 +1455,10 @@ public class ROClientImpl implements Client {
     if (lastSearch == null) {
       return new ArrayList<>(0);
     }
+    checkUpdate();
 
     return formatSearchResult(lastSearch.getIndexer().
             getSearchResult(lastSearch, start, num, PrivilegeDefs.privAny));
-  }
-
-  private List<SearchResultEntry> formatSearchResult(
-          List<SearchResultEntry> entries) throws CalFacadeException {
-    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(this));
-
-    for (SearchResultEntry sre: entries) {
-      Object o = sre.getEntity();
-
-      if (o instanceof CategorisedEntity) {
-        restoreCategories((CategorisedEntity)o);
-      }
-
-      if (!(o instanceof EventInfo)) {
-        continue;
-      }
-
-      BwEvent ev = ((EventInfo)o).getEvent();
-
-      if (ev.getLocationUid() != null){
-        ev.setLocation(getLocation(ev.getLocationUid()));
-      }
-
-      EventFormatter ef = new EventFormatter(this,
-                                             trans,
-                                             (EventInfo)o);
-      sre.setEntity(ef);
-    }
-
-    return entries;
-  }
-
-  private void restoreCategories(final CategorisedEntity ce) throws CalFacadeException {
-    Set<String> uids = ce.getCategoryUids();
-    if (Util.isEmpty(uids)) {
-      return;
-    }
-
-//    Set<String> catUids = new TreeSet<>();
-
-    for (Object o: uids) {
-      String uid = (String)o;
-//      catUids.add(uid);
-
-      ce.addCategory(getCategory(uid));
-    }
   }
 
   @Override
@@ -1502,15 +1494,15 @@ public class ROClientImpl implements Client {
   @Override
   public Collection<BwCalSuite> getContextCalSuites()
           throws CalFacadeException {
-    Map<String, SubContext> suiteToContextMap = new HashMap<>();
+    final Map<String, SubContext> suiteToContextMap = new HashMap<>();
 
-    for (SubContext subContext : getSyspars().getContexts()) {
+    for (final SubContext subContext : getSyspars().getContexts()) {
       suiteToContextMap.put(subContext.getCalSuite(), subContext);
     }
 
-    Collection<BwCalSuite> suites = svci.getCalSuitesHandler().getAll();
-    for (BwCalSuite cs : suites) {
-      SubContext subContext = suiteToContextMap.get(cs.getName());
+    final Collection<BwCalSuite> suites = svci.getCalSuitesHandler().getAll();
+    for (final BwCalSuite cs : suites) {
+      final SubContext subContext = suiteToContextMap.get(cs.getName());
 
       if (subContext != null) {
         cs.setContext(subContext.getContextName());
@@ -1571,7 +1563,7 @@ public class ROClientImpl implements Client {
                                   final String rc)
           throws CalFacadeException {
     try {
-      BwResource r = svci.getResourcesHandler().
+      final BwResource r = svci.getResourcesHandler().
               get(Util.buildPath(false,
                                  getCSResourcesPath(suite, rc),
                                  "/",
@@ -1659,7 +1651,7 @@ public class ROClientImpl implements Client {
    * ------------------------------------------------------------ */
 
   /**
-   * @param msg
+   * @param msg the message
    */
   protected void debugMsg(final String msg) {
     Logger.getLogger(this.getClass()).debug(msg);
@@ -1667,25 +1659,25 @@ public class ROClientImpl implements Client {
 
   protected String getCSResourcesPath(final BwCalSuite suite,
                                       final String rc) throws CalFacadeException {
-    if (rc == "global") {
+    if (rc.equals("global")) {
       return getBasicSyspars().getGlobalResourcesPath();
     }
 
-    BwPrincipal eventsOwner = getPrincipal(suite.getGroup().getOwnerHref());
+    final BwPrincipal eventsOwner = getPrincipal(suite.getGroup().getOwnerHref());
 
-    String home = svci.getPrincipalInfo().getCalendarHomePath(eventsOwner);
+    final String home = svci.getPrincipalInfo().getCalendarHomePath(eventsOwner);
 
-    BwPreferences prefs = getPreferences(eventsOwner.getPrincipalRef());
+    final BwPreferences prefs = getPreferences(eventsOwner.getPrincipalRef());
 
     String col = null;
 
-    if (rc == "admin") {
+    if (rc.equals("admin")) {
       col = prefs.getAdminResourcesDirectory();
 
       if (col == null) {
         col = ".adminResources";
       }
-    } else if (rc == "calsuite") {
+    } else if (rc.equals("calsuite")) {
       col = prefs.getSuiteResourcesDirectory();
 
       if (col == null) {
@@ -1706,13 +1698,13 @@ public class ROClientImpl implements Client {
 
   protected CollectionCollator<BwCalendar> getCalendarCollator() {
     if (calendarCollator == null) {
-      calendarCollator = new CollectionCollator<BwCalendar>();
+      calendarCollator = new CollectionCollator<>();
     }
 
     return calendarCollator;
   }
 
-  protected BwIndexer getIndexer(boolean publick) throws CalFacadeException {
+  protected BwIndexer getIndexer(final boolean publick) throws CalFacadeException {
     if (publick) {
       if (publicIndexer == null) {
         publicIndexer = svci.getIndexer(true);
@@ -1728,18 +1720,108 @@ public class ROClientImpl implements Client {
     return userIndexer;
   }
 
+  private final static long indexerDelay = 1010; // Just over a sec for the indexer
+
+  protected <T> T update(final T val) {
+    updated();
+    return val;
+  }
+
+  protected void updated() {
+    lastUpdate = System.currentTimeMillis();
+  }
+
+  protected void checkUpdate() throws CalFacadeException {
+    if (debug) {
+      debugMsg("checkUpdate: \n" +
+                       " req=" + requestEnd + "\n" +
+                       "last=" + lastUpdate + "\n" +
+                       "wait=" + (indexerDelay -
+                                          (System.currentTimeMillis() - lastUpdate)));
+    }
+
+    if (lastUpdate == 0) {
+      return;
+    }
+
+    if (requestEnd < lastUpdate) {
+      // We don't wait if this conversation caused the update
+      return;
+    }
+
+    final long toWait = indexerDelay -
+            (System.currentTimeMillis() - lastUpdate);
+
+    if (toWait > 0) {
+      try {
+        Thread.sleep(toWait);
+      } catch (InterruptedException ie) {
+        throw new CalFacadeException(ie);
+      }
+
+      lastUpdate = 0; // Only wait once
+    }
+  }
+
   /* ------------------------------------------------------------
    *                   private methods
    * ------------------------------------------------------------ */
+
+  private List<SearchResultEntry> formatSearchResult(
+          final List<SearchResultEntry> entries) throws CalFacadeException {
+    final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(this));
+
+    for (final SearchResultEntry sre: entries) {
+      final Object o = sre.getEntity();
+
+      if (o instanceof CategorisedEntity) {
+        restoreCategories((CategorisedEntity)o);
+      }
+
+      if (!(o instanceof EventInfo)) {
+        continue;
+      }
+
+      final BwEvent ev = ((EventInfo)o).getEvent();
+      restoreCategories(ev);
+
+      if (ev.getLocationUid() != null){
+        ev.setLocation(getLocation(ev.getLocationUid()));
+      }
+
+      final EventFormatter ef = new EventFormatter(this,
+                                                   trans,
+                                                   (EventInfo)o);
+      sre.setEntity(ef);
+    }
+
+    return entries;
+  }
+
+  private void restoreCategories(final CategorisedEntity ce) throws CalFacadeException {
+    final Set<String> uids = ce.getCategoryUids();
+    if (Util.isEmpty(uids)) {
+      return;
+    }
+
+//    Set<String> catUids = new TreeSet<>();
+
+    for (final Object o: uids) {
+      final String uid = (String)o;
+//      catUids.add(uid);
+
+      ce.addCategory(getCategory(uid));
+    }
+  }
 
   private Collection<Locale> getSupportedLocales() throws CalFacadeException {
     if (supportedLocales != null) {
       return supportedLocales;
     }
 
-    supportedLocales = new ArrayList<Locale>();
+    supportedLocales = new ArrayList<>();
 
-    String ll = getSystemProperties().getLocaleList();
+    final String ll = getSystemProperties().getLocaleList();
 
     if (ll == null) {
       supportedLocales.add(BwLocale.getLocale());
@@ -1750,7 +1832,7 @@ public class ROClientImpl implements Client {
       int pos = 0;
 
       while (pos < ll.length()) {
-        int nextPos = ll.indexOf(",", pos);
+        final int nextPos = ll.indexOf(",", pos);
         if (nextPos < 0) {
           supportedLocales.add(BwLocale.makeLocale(ll.substring(pos)));
           break;

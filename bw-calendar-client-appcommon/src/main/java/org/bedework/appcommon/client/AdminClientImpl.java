@@ -110,7 +110,7 @@ public class AdminClientImpl extends ClientImpl {
 
   @Override
   public Client copy(final String id) throws CalFacadeException {
-    AdminClientImpl cl = new AdminClientImpl(id);
+    final AdminClientImpl cl = new AdminClientImpl(id);
 
     cl.pars = (CalSvcIPars)pars.clone();
     cl.pars.setLogId(id);
@@ -151,6 +151,7 @@ public class AdminClientImpl extends ClientImpl {
   public void addUser(final String account)
           throws CalFacadeException {
     svci.getUsersHandler().add(account);
+    updated();
   }
 
   @Override
@@ -159,15 +160,19 @@ public class AdminClientImpl extends ClientImpl {
     final UserAuth ua = svci.getUserAuth();
     BwAuthUser au = ua.getUser(userid);
 
-    if (au == null) {
-      // No authuser entry for this user.
-      if (!superUser) {
-        return null;
-      }
-      au = BwAuthUser.makeAuthUser(getCurrentPrincipalHref(),
-                                   UserAuth.publicEventUser);
-      ua.updateUser(au);
+    if (au != null) {
+      return au;
     }
+
+    // No authuser entry for this user.
+    if (!superUser) {
+      return null;
+    }
+
+    au = BwAuthUser.makeAuthUser(getCurrentPrincipalHref(),
+                                 UserAuth.publicEventUser);
+    ua.updateUser(au);
+    updated();
 
     return au;
   }
@@ -176,6 +181,7 @@ public class AdminClientImpl extends ClientImpl {
   public void updateAuthUser(final BwAuthUser val)
           throws CalFacadeException {
     svci.getUserAuth().updateUser(val);
+    updated();
     authUsers = null; // force refresh
   }
 
@@ -197,18 +203,21 @@ public class AdminClientImpl extends ClientImpl {
   public void addAdminGroup(final BwAdminGroup group)
           throws CalFacadeException {
     svci.getAdminDirectories().addGroup(group);
+    updated();
   }
 
   @Override
   public void removeAdminGroup(final BwAdminGroup group)
           throws CalFacadeException {
     svci.getAdminDirectories().removeGroup(group);
+    updated();
   }
 
   @Override
   public void updateAdminGroup(final BwAdminGroup group)
           throws CalFacadeException {
     svci.getAdminDirectories().updateGroup(group);
+    updated();
   }
 
   @Override
@@ -216,6 +225,7 @@ public class AdminClientImpl extends ClientImpl {
                                   final BwPrincipal val)
           throws CalFacadeException {
     svci.getAdminDirectories().addMember(group, val);
+    updated();
   }
 
   @Override
@@ -223,6 +233,7 @@ public class AdminClientImpl extends ClientImpl {
                                      final BwPrincipal val)
           throws CalFacadeException {
     svci.getAdminDirectories().removeMember(group, val);
+    updated();
   }
 
   /* ------------------------------------------------------------
@@ -254,10 +265,10 @@ public class AdminClientImpl extends ClientImpl {
                                        final String rootCollectionPath,
                                        final String submissionsPath)
           throws CalFacadeException {
-    return svci.getCalSuitesHandler().add(name,
-                                          adminGroupName,
-                                          rootCollectionPath,
-                                          submissionsPath);
+    return update(svci.getCalSuitesHandler().add(name,
+                                                 adminGroupName,
+                                                 rootCollectionPath,
+                                                 submissionsPath));
   }
 
   @Override
@@ -270,12 +281,14 @@ public class AdminClientImpl extends ClientImpl {
                                       adminGroupName,
                                       rootCollectionPath,
                                       submissionsPath);
+    updated();
   }
 
   @Override
   public void deleteCalSuite(final BwCalSuiteWrapper val)
           throws CalFacadeException {
     svci.getCalSuitesHandler().delete(val);
+    updated();
   }
 
   @Override
@@ -296,6 +309,7 @@ public class AdminClientImpl extends ClientImpl {
                             final String rc)
           throws CalFacadeException {
     svci.getResourcesHandler().save(getCSResourcesDir(suite, rc), res);
+    updated();
   }
 
   @Override
@@ -308,11 +322,12 @@ public class AdminClientImpl extends ClientImpl {
                                                              suite,
                                                              rc), "/",
                                                      name));
+    updated();
   }
 
   private String getCSResourcesDir(final BwCalSuite suite,
                                   final String rc) throws CalFacadeException {
-    String path = getCSResourcesPath(suite, rc);
+    final String path = getCSResourcesPath(suite, rc);
 
     if (path == null) {
       throw new CalFacadeException(CalFacadeException.noCalsuiteResCol);
@@ -333,14 +348,14 @@ public class AdminClientImpl extends ClientImpl {
     resCol.setSummary(resCol.getName());
     resCol.setCreatorHref(suite.getOwnerHref());
 
-    if (rc == "calsuite") {
+    if (rc.equals("calsuite")) {
       // Owned by the suite
       resCol.setOwnerHref(suite.getOwnerHref());
     } else {
       resCol.setOwnerHref(svci.getUsersHandler().getPublicUser().getPrincipalRef());
     }
 
-    String parentPath = path.substring(0, path.lastIndexOf("/"));
+    final String parentPath = path.substring(0, path.lastIndexOf("/"));
 
     resCol = addCollection(resCol, parentPath);
 
@@ -349,16 +364,18 @@ public class AdminClientImpl extends ClientImpl {
      */
 
     try {
-      Collection<Privilege> readPrivs = new ArrayList<Privilege>();
+      final Collection<Privilege> readPrivs = new ArrayList<>();
       readPrivs.add(Access.read);
 
-      Collection<Ace> aces = new ArrayList<Ace>();
+      final Collection<Ace> aces = new ArrayList<>();
       aces.add(Ace.makeAce(AceWho.all, readPrivs, null));
 
       changeAccess(resCol, aces, true);
     } catch (AccessException ae) {
       throw new CalFacadeException(ae);
     }
+
+    updated();
 
     return resCol.getPath();
   }

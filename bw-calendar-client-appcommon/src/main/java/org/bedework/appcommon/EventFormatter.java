@@ -42,13 +42,6 @@ public class EventFormatter extends EventTimeZonesRegistry
    */
   private EventInfo eventInfo;
 
-  /** The view currently in place.
-   */
-  //private TimeView view;
-
-  /* Set so that questions can be asked about the time */
-  private MyCalendarVO today;
-
   /* Set dynamically on request to represent start date/time */
   private DateTimeFormatter start;
 

@@ -24,12 +24,14 @@ import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.indexing.IndexKeys;
+import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.indexing.IndexException;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
@@ -44,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /** This class represents a view of the calendar from a startDate to an
  * endDate. The getTimePeriodInfo method always returns a tree structure
@@ -76,6 +80,22 @@ public class TimeView implements Serializable {
   private static DateFormat fullDf = DateFormat.getDateInstance(DateFormat.FULL);
 
   private static DateFormat shortDf = DateFormat.getDateInstance(DateFormat.SHORT);
+
+  private IndexKeys keys = new IndexKeys();
+
+  /* Fetched when required
+   */
+  protected Map<String, EventFormatter> events;
+
+  /** set on the first call to getTimePeriodInfo
+   */
+  private TimeViewDailyInfo[] tvdis;
+
+  private CalFmt curDayFmt;
+  private CalFmt firstDayFmt;
+  private CalFmt lastDayFmt;
+
+  private FilterBase filter;
 
   /**
    *
@@ -172,20 +192,6 @@ public class TimeView implements Serializable {
       return s.substring(f.getBeginIndex(), f.getEndIndex());
     }*/
   }
-
-  /* Fetched when required
-   */
-  protected Collection<EventFormatter> events;
-
-  /** set on the first call to getTimePeriodInfo
-   */
-  private TimeViewDailyInfo[] tvdis;
-
-  private CalFmt curDayFmt;
-  private CalFmt firstDayFmt;
-  private CalFmt lastDayFmt;
-
-  private FilterBase filter;
 
   //private static final TimezoneCache tzcache = new TimezoneCache(false);
 
@@ -361,7 +367,7 @@ public class TimeView implements Serializable {
      */
     boolean today = date.isToday();
 
-    for (EventFormatter ef: events) {
+    for (EventFormatter ef: events.values()) {
       EventInfo ei = ef.getEventInfo();
       BwEvent ev = ei.getEvent();
 
@@ -374,6 +380,12 @@ public class TimeView implements Serializable {
         continue;
       }
 
+      if (ev.inDateTimeRange(start, end)) {
+        al.add(ef);
+      }
+    }
+
+    /*
       //boolean floating = ev.getDtstart().getFloating();
 
       String evStart;
@@ -397,7 +409,7 @@ public class TimeView implements Serializable {
 
              ((evstart < end) and ((evend > start) or
                  ((evstart = evend) and (evend >= start))))
-      */
+      * /
 
       int evstSt;
 
@@ -432,10 +444,10 @@ public class TimeView implements Serializable {
               ") with dates " + evStart + "-" + evEnd +
               ": " + ev.getSummary());
         }
-        */
+        * /
         al.add(ef);
       }
-    }
+    }*/
 
     return al;
   }
@@ -637,12 +649,39 @@ public class TimeView implements Serializable {
     */
 
     final Collection<SearchResultEntry> sres = cl.getSearchResult(0, -1);
-    events = new ArrayList<>(sres.size());
+    events = new HashMap<>(sres.size());
 
     for (SearchResultEntry sre: sres) {
       if (sre.getEntity() instanceof EventFormatter) {
-        events.add((EventFormatter)sre.getEntity());
+        EventFormatter ef = (EventFormatter)sre.getEntity();
+
+        events.put(makeKey(ef.getEvent()), ef);
       }
+    }
+  }
+
+  /** Update an event in our cache so it appears in the users display
+   *
+   * @param cl
+   * @param ei
+   * @throws CalFacadeException
+   */
+  public void putEvent(final Client cl,
+                       final EventInfo ei) throws CalFacadeException {
+    EventFormatter ef = new EventFormatter(cl,
+                                           new IcalTranslator(new IcalCallbackcb(cl)),
+                                           ei);
+
+    events.put(makeKey(ef.getEvent()), ef);
+  }
+
+  private String makeKey(BwEvent ev) throws CalFacadeException {
+    try {
+      return keys.makeKeyVal("event",
+                             ev.getHref(),
+                             ev.getRecurrenceId());
+    } catch (IndexException ie) {
+      throw new CalFacadeException(ie);
     }
   }
 

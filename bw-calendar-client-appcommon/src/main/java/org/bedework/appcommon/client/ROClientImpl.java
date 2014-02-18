@@ -132,6 +132,7 @@ public class ROClientImpl implements Client {
      updated.
    */
   protected long requestEnd;
+  private String viewMode;
 
   protected class AccessChecker implements BwIndexer.AccessChecker {
     @Override
@@ -1274,7 +1275,7 @@ public class ROClientImpl implements Client {
   }
 
   /* ------------------------------------------------------------
-   *                     Views
+   *                     Synch
    * ------------------------------------------------------------ */
 
   @Override
@@ -1285,6 +1286,26 @@ public class ROClientImpl implements Client {
   /* ------------------------------------------------------------
    *                     Views
    * ------------------------------------------------------------ */
+
+  @Override
+  public void setViewMode(final String val)
+          throws CalFacadeException {
+    viewMode = val;
+  }
+
+  @Override
+  public String getViewMode() throws CalFacadeException {
+    if (viewMode != null) {
+      return viewMode;
+    }
+
+    viewMode = getPreferences().getDefaultViewMode();
+    if (viewMode == null) {
+      viewMode = "grid";
+    }
+
+    return viewMode;
+  }
 
   @Override
   public BwView getView(final String val) throws CalFacadeException {
@@ -1399,6 +1420,12 @@ public class ROClientImpl implements Client {
   public void postMessage(final Message val)
           throws CalFacadeException {
     svci.getMailer().post(val);
+  }
+
+  @Override
+  public void clearSearch() {
+    cstate.setSearchParams(null);
+    lastSearch = null;
   }
 
   @Override

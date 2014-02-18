@@ -138,13 +138,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   @Override
   public String performAction(final Request request,
                               final MessageResources messages) throws Throwable {
-    HttpServletRequest req = request.getRequest();
-    BwActionFormBase form = (BwActionFormBase)request.getForm();
+    final BwActionFormBase form = (BwActionFormBase)request.getForm();
     String adminUserId = null;
 
-    BwCallback cb = getCb(request, form);
+    final BwCallback cb = getCb(request, form);
 
-    int status = cb.in(request);
+    final int status = cb.in(request);
     if (status != HttpServletResponse.SC_OK) {
       request.getResponse().setStatus(status);
       getLogger().error("Callback.in status=" + status);
@@ -153,9 +152,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     setConfig(request);
 
-    boolean guestMode = form.getConfig().getGuestMode();
-
-    if (guestMode) {
+    if (form.getConfig().getGuestMode()) {
       form.assignCurrentUser(null);
     } else {
       adminUserId = form.fetchCurrentAdminUser();
@@ -164,7 +161,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    BwSession bsess = getState(request, form, messages, adminUserId);
+    final BwSession bsess = getState(request, form, messages, adminUserId);
 
     if (bsess == null) {
       /* An error should have been emitted.*/
@@ -521,7 +518,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
 
-    if (startStr == null) {
+    final boolean listMode = Client.listViewMode.equals(cl.getViewMode());
+
+    if (listMode && (startStr == null)) {
       String lim = mstate.getSearchLimits();
       if (lim != null) {
         if ("none".equals(lim)) {
@@ -542,12 +541,22 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     //}
 
     if ((startStr == null) && (endStr == null)) {
-      if (!form.getListAllEvents()) {
-        params.setFromDate(todaysDateTime());
+      if (listMode) {
+        if (!form.getListAllEvents()) {
+          params.setFromDate(todaysDateTime());
 
-        if (days > 0) {
-          params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
-                                                               0, 0)));
+          if (days > 0) {
+            params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
+                                                                 0, 0)));
+          }
+        }
+      } else {
+        TimeView tv = mstate.getCurTimeView();
+        if (tv != null) {
+          params.setFromDate(BwDateTimeUtil.getDateTime(tv.getFirstDay().getTime()));
+          params.setToDate(BwDateTimeUtil.getDateTime(tv.getLastDay().getTime()));
+        } else {
+          params.setFromDate(todaysDateTime());
         }
       }
     } else if ((endStr != null) || (days > 0)) {
@@ -628,7 +637,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         BwCreatorFilter crefilter = new BwCreatorFilter(null);
         crefilter.setEntity(cl.getCurrentPrincipalHref());
 
-        filter= FilterBase.addAndChild(filter, crefilter);
+        filter = FilterBase.addAndChild(filter, crefilter);
       }
     }
 

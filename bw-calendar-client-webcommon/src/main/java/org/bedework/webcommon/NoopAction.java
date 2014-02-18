@@ -33,14 +33,11 @@ public class NoopAction extends BwAbstractAction {
     if (form.getNewSession()) {
       request.refresh();
 
-      Client cl = request.getClient();
+      final Client cl = request.getClient();
 
-      String defViewMode = cl.getPreferences().getDefaultViewMode();
-
-      if ("list".equals(defViewMode)) {
+      if (Client.listViewMode.equals(cl.getViewMode())) {
         BwModuleState mstate = request.getModule().getState();
         TimeView tv = mstate.getCurTimeView();
-        boolean fetch = false;
 
         SearchParams params = cl.getSearchParams();
 

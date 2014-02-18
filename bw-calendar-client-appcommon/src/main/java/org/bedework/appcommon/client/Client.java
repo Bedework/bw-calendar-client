@@ -1416,6 +1416,23 @@ public interface Client extends Serializable {
    *                     Views
    * ------------------------------------------------------------ */
 
+  static final String listViewMode = "list";
+  static final String gridViewMode = "grid";
+
+  /** Set the view mode
+   *
+   * @param val "list" or "grid" or null to revert to default
+   * @throws CalFacadeException
+   */
+  void setViewMode(String val) throws CalFacadeException;
+
+  /**
+   *
+   * @return  "list" or "grid"
+   * @throws CalFacadeException
+   */
+  String getViewMode() throws CalFacadeException;
+
   /** Find the named view.
    *
    * @param  val     String view name - null means default
@@ -1574,6 +1591,12 @@ public interface Client extends Serializable {
   /* ------------------------------------------------------------
    *                     SearchNextAction
    * ------------------------------------------------------------ */
+
+  /** Called to reset any search. Signals to the application it needs
+   * to rebuild the search
+   *
+   */
+  void clearSearch();
 
   /** Called to search an index. If params.publick is false use the
    * current principal to identify the index.

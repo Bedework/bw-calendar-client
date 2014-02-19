@@ -587,7 +587,7 @@ public class BwSessionImpl implements BwSession {
       }
 
       mstate.setCurTimeView(tv);
-      cl.clearSearch();
+      //cl.clearSearch();
     } catch (Throwable t) {
       // Not much we can do here
       req.getErr().emit(t);

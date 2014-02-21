@@ -1439,11 +1439,11 @@ public class ROClientImpl implements Client {
     String end = null;
 
     if (params.getFromDate() != null) {
-      start = params.getFromDate().getDtval();
+      start = params.getFromDate().getDate();
     }
 
     if (params.getToDate() != null) {
-      end = params.getToDate().getDtval();
+      end = params.getToDate().getDate();
     }
 
     lastSearch = getIndexer(params.getPublick()).search(

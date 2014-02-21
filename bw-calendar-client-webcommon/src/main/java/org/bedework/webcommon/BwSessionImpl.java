@@ -587,7 +587,10 @@ public class BwSessionImpl implements BwSession {
       }
 
       mstate.setCurTimeView(tv);
-      //cl.clearSearch();
+
+      if (BedeworkDefs.appTypeWebuser.equals(cl.getAppType())) {
+        cl.clearSearch();
+      }
     } catch (Throwable t) {
       // Not much we can do here
       req.getErr().emit(t);

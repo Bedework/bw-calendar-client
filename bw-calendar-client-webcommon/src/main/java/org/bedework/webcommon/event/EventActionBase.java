@@ -811,7 +811,13 @@ public abstract class EventActionBase extends BwAbstractAction {
       }
     }
 
-    int maxAttendees = cl.getAuthProperties().getMaxAttendeesPerInstance();
+    Integer maxAttendees;
+
+    if (cl.getAuthProperties().getMaxAttendeesPerInstance() == null) {
+      maxAttendees = 250;
+    } else {
+      maxAttendees = cl.getAuthProperties().getMaxAttendeesPerInstance();
+    }
 
     if ((atts.getAttendees() != null) &&
         (atts.getAttendees().size() == maxAttendees)) {

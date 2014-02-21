@@ -553,8 +553,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       } else {
         TimeView tv = mstate.getCurTimeView();
         if (tv != null) {
-          params.setFromDate(BwDateTimeUtil.getDateTime(tv.getFirstDay().getTime()));
-          params.setToDate(BwDateTimeUtil.getDateTime(tv.getLastDay().getTime()));
+          params.setFromDate(tv.getViewStart());
+          params.setToDate(tv.getViewEnd());
         } else {
           params.setFromDate(todaysDateTime());
         }

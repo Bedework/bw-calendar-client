@@ -83,6 +83,9 @@ public class TimeView implements Serializable {
 
   private IndexKeys keys = new IndexKeys();
 
+  protected BwDateTime viewStart;
+  protected BwDateTime viewEnd;
+
   /* Fetched when required
    */
   protected Map<String, EventFormatter> events;
@@ -234,6 +237,9 @@ public class TimeView implements Serializable {
     this.showData = showData;
     this.filter = filter;
     debug = Logger.getLogger(this.getClass()).isDebugEnabled();
+
+    viewStart = getBwDate(firstDay);
+    viewEnd = getBwDate(lastDay).getNextDay();
   }
 
   /**
@@ -253,6 +259,14 @@ public class TimeView implements Serializable {
     }
 
     return trans;
+  }
+
+  public BwDateTime getViewStart() {
+    return viewStart;
+  }
+
+  public BwDateTime getViewEnd() {
+    return viewEnd;
   }
 
   /** Override this for a single day view
@@ -683,6 +697,12 @@ public class TimeView implements Serializable {
     } catch (IndexException ie) {
       throw new CalFacadeException(ie);
     }
+  }
+
+  private BwDateTime getBwDate(final Calendar date) throws CalFacadeException {
+    String dateStr = new MyCalendarVO(date.getTime()).getDateDigits();
+
+    return getBwDate(dateStr);
   }
 
   private BwDateTime getBwDate(final String date) throws CalFacadeException {

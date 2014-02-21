@@ -41,7 +41,7 @@ public interface BwSession extends Serializable {
 
   /**
    * Call to reset state and flush objects.
-   * @param req
+   * @param req - current request
    */
   void reset(Request req);
 
@@ -71,13 +71,24 @@ public interface BwSession extends Serializable {
 
   /** Prepare state of session for render
    *
-   * @param req
+   * @param req - current request
    */
   void prepareRender(BwRequest req);
 
+  /** Embed the current users calendars. For admin or guest mode this is the
+   * same as calling embedPublicCalendars.
+   *
+   * <p>For the websubmit application we embed the root of the submission
+   * calendars.
+   *
+   * @param request - current request
+   * @throws Throwable
+   */
+  void embedCollections(final BwRequest request) throws Throwable;
+
   /**
    *
-   * @param req
+   * @param req - current request
    * @throws Throwable
    */
   void embedFilters(final BwRequest req) throws Throwable;
@@ -85,7 +96,7 @@ public interface BwSession extends Serializable {
   /** Get the current view according to the current setting of curViewPeriod.
    * May be called when we change the view or if we need a refresh
    *
-   * @param req
+   * @param req - current request
    * @return current time view
    */
   TimeView getCurTimeView(BwRequest req);
@@ -97,7 +108,7 @@ public interface BwSession extends Serializable {
 
   /** Make these available
    *
-   * @param request
+   * @param request - current request
    * @throws Throwable
    */
   void embedUserCollections(BwRequest request) throws Throwable;
@@ -108,7 +119,7 @@ public interface BwSession extends Serializable {
    * <p>Caldav currently does not allow collections inside collections so that
    * calendar collections are the leaf nodes only.
    *
-   * @param request
+   * @param request - current request
    * @throws Throwable
    */
   void embedAddContentCalendarCollections(BwRequest request) throws Throwable;
@@ -123,9 +134,9 @@ public interface BwSession extends Serializable {
    * specifically want a list of public categories (for search of public events
    * perhaps.)
    *
-   * @param request
-   * @param refresh
-   * @param kind
+   * @param request - current request
+   * @param refresh - true to force refresh
+   * @param kind of entity
    * @throws Throwable
    * @return collection of categories
    */
@@ -142,8 +153,8 @@ public interface BwSession extends Serializable {
 
   /**
    *
-   * @param request
-   * @param kind
+   * @param request - current request
+   * @param kind of entity
    * @throws Throwable
    */
   void embedContactCollection(BwRequest request,
@@ -151,8 +162,8 @@ public interface BwSession extends Serializable {
 
   /** Called by jsp when editing an event
    *
-   * @param request
-   * @param kind
+   * @param request - current request
+   * @param kind of entity
    * @throws Throwable
    */
   void embedLocations(final BwRequest request,

@@ -42,21 +42,19 @@ import java.util.Set;
  * @author Mike Douglass   douglm - rpi.edu
  */
 public class OpenCloseAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
     if (form.getGuest()) {
       return forwardNoAccess; // First line of defense
     }
 
-    BwCalendar cal = request.getCalendar(true);
+    final BwCalendar cal = request.getCalendar(true);
     if (cal == null) {
       return forwardNotFound;
     }
 
-    String path = cal.getPath();
+    final String path = cal.getPath();
 
     if ((cal.getCalType() != BwCalendar.calTypeAlias) &&
         !cal.getCollectionInfo().childrenAllowed) {
@@ -64,7 +62,7 @@ public class OpenCloseAction extends BwAbstractAction {
       return forwardSuccess;
     }
 
-    boolean open = request.getBooleanReqPar("open", true);
+    final boolean open = request.getBooleanReqPar("open", true);
 
     Set<String> cos = form.getCalendarsOpenState();
     if ((cos == null) && !open) {
@@ -84,6 +82,7 @@ public class OpenCloseAction extends BwAbstractAction {
       cos.remove(path);
     }
 
+    request.getSess().embedCollections(request);
     request.getSess().embedCategories(request, false,
                                       BwSession.ownersEntity);
 

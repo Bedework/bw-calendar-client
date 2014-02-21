@@ -295,15 +295,8 @@ public class BwSessionImpl implements BwSession {
                        request.getClient().getAddContentCollections(publicAdmin));
   }
 
-  /** Embed the current users calendars. For admin or guest mode this is the
-   * same as calling embedPublicCalendars.
-   *
-   * <p>For the websubmit application we embed the root of the submission
-   * calendars.
-   *
-   * @param request
-   */
-  protected void embedCollections(final BwRequest request) throws Throwable {
+  @Override
+  public void embedCollections(final BwRequest request) throws Throwable {
     BwCalendar col = null;
     BwActionFormBase form = request.getBwForm();
     Client cl = request.getClient();

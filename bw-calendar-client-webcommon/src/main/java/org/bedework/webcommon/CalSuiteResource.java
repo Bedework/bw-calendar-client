@@ -29,7 +29,7 @@ import java.util.List;
 
 /** How we expose a calsuite resource
  *
- * @author Mike Douglass douglm - bedework.edu
+ * @author Mike Douglass douglm - rpi.edu
  */
 public class CalSuiteResource implements Serializable {
   private BwResource resource;
@@ -69,7 +69,7 @@ public class CalSuiteResource implements Serializable {
    *
    * @return String calsuite resource type name
    */
-  public String getRClass() {
+  public String getRclass() {
     return rclass;
   }
 

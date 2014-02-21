@@ -28,7 +28,7 @@
 
   <bean:define id="presentationState"
                name="bw_presentationstate" scope="request" />
-  <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" /><%--
+  <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" />
 
   <page>attendeeWidget</page>
 

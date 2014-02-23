@@ -121,6 +121,7 @@ public class DeleteEventAction extends EventActionBase {
 
     form.getMsg().emit(ClientMessage.deletedEvents, 1);
     request.refresh();
+    cl.clearSearchEntries();
 
     return forwardSuccess;
   }

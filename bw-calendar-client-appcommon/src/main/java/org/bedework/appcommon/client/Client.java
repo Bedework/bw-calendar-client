@@ -1598,6 +1598,11 @@ public interface Client extends Serializable {
    */
   void clearSearch();
 
+  /** Called to force a refetch
+   *
+   */
+  void clearSearchEntries();
+
   /** Called to search an index. If params.publick is false use the
    * current principal to identify the index.
    *

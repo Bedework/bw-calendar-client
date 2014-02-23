@@ -1429,6 +1429,11 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public void clearSearchEntries() {
+    lastSearchEntries = null;
+  }
+
+  @Override
   public SearchResult search(final SearchParams params) throws CalFacadeException {
     checkUpdate();
     cstate.setSearchParams(params);

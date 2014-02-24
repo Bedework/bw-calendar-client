@@ -25,7 +25,7 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.CalSuiteResource;
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.webcommon.RenderAction;
 
 /**
@@ -39,37 +39,32 @@ import org.bedework.webcommon.RenderAction;
  * @author eric.wittmann@redhat.com
  */
 public class RenderResourceAction extends RenderAction {
-  /**
-   * Constructor.
-   */
-  public RenderResourceAction() {
-  }
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    String name = form.getResourceName();
+    final String name = form.getResourceName();
     if (name == null) {
       request.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
+
     String rclass = form.getResourceClass();
     if (rclass == null) {
-      rclass = "calsuite";
+      rclass = CalSuiteResource.resourceClassCalSuite;
     }
 
-    if (rclass.equals("global") || rclass.equals("admin")) {
+    if (rclass.equals(CalSuiteResource.resourceClassGlobal) ||
+            rclass.equals(CalSuiteResource.resourceClassAdmin)) {
       if (!form.getCurUserSuperUser()) {
         return forwardNoAccess;
       }
     }
-    String mod = request.getReqPar("mod");
 
-    BwResource resource = cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
+    final String mod = request.getReqPar("mod");
+    final BwResource resource = cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
+
     if (resource == null) {
       request.getErr().emit(ClientError.unknownResource, name);
       return forwardRetry;

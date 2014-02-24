@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon;
+package org.bedework.appcommon;
 
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
@@ -32,18 +32,21 @@ import java.util.List;
  * @author Mike Douglass douglm - rpi.edu
  */
 public class CalSuiteResource implements Serializable {
+  public final static String resourceClassAdmin = "admin";
+  public final static String resourceClassCalSuite = "calsuite";
+  public final static String resourceClassGlobal = "global";
+
   private BwResource resource;
 
   private String rclass;
 
   private String type;
 
-  private List<Param> params;
   private String extra;
 
   /**
-   * @param resource
-   * @param rclass
+   * @param resource the actual resource
+   * @param rclass its class
    */
   public CalSuiteResource(final BwResource resource,
                           final String rclass) {
@@ -81,11 +84,11 @@ public class CalSuiteResource implements Serializable {
     if (extra == null) {
       extra = resource.getContentTypeExtra();
 
-      ContentType ct = ContentType.decode("x/x;" + extra);
+      final ContentType ct = ContentType.decode("x/x;" + extra);
 
-      params = ct.getParams();
+      final List<Param> params = ct.getParams();
 
-      for (Param p: params) {
+      for (final Param p: params) {
         if ("type".equals(p.getName())) {
           type = p.getValue();
           break;

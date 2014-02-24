@@ -18,12 +18,11 @@
 */
 package org.bedework.webcommon.resources;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calsvci.CalSuitesI.ResourceClass;
-import org.bedework.calsvci.CalSvcI;
-import org.bedework.webcommon.BwActionFormBase;
-import org.bedework.webcommon.CalSuiteResource;
+import org.bedework.calfacade.svc.BwCalSuite;
+import org.bedework.appcommon.CalSuiteResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,27 +33,21 @@ import java.util.List;
  * @author eric.wittmann@redhat.com
  */
 public class RenderGlobalResourcesAction extends RenderResourcesAction {
-  /**
-   * Constructor.
-   */
-  public RenderGlobalResourcesAction() {
-  }
-
-  /**
-   * Gets the resources to be displayed in the UI.
-   * @param form
-   * @param svc
-   * @throws CalFacadeException
-   */
-  protected List<CalSuiteResource> getResources(BwActionFormBase form, CalSvcI svc)
+  @Override
+  protected List<CalSuiteResource> getResources(final Client cl,
+                                                final BwCalSuite currentCalSuite)
       throws CalFacadeException {
-    List<CalSuiteResource> resources = new ArrayList<CalSuiteResource>();
-    List<BwResource> bres = svc.getCalSuitesHandler().getResources(null, ResourceClass.global);
+    final List<CalSuiteResource> resources = new ArrayList<>();
+    final List<BwResource> bres = cl.getCSResources(null,
+                                                    CalSuiteResource.resourceClassGlobal);
+
     if (bres != null) {
-      for (BwResource r: bres) {
-        resources.add(new CalSuiteResource(r, "global"));
+      for (final BwResource r: bres) {
+        resources.add(new CalSuiteResource(r,
+                                           CalSuiteResource.resourceClassGlobal));
       }
     }
+
     return resources;
   }
 }

@@ -26,6 +26,7 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.appcommon.CalSuiteResource;
 
 /** Add a new resource for a calendar suite.
  *
@@ -47,18 +48,10 @@ import org.bedework.webcommon.BwRequest;
  * @author eric.wittmann@redhat.com
  */
 public class AddResourceAction extends BwAbstractAction {
-  /**
-   * Constructor.
-   */
-  public AddResourceAction() {
-  }
-
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -67,27 +60,31 @@ public class AddResourceAction extends BwAbstractAction {
     }
 
     String rclass = request.getReqPar("class");
-    String name = request.getReqPar("name");
+    final String name = request.getReqPar("name");
     String contentType = request.getReqPar("ct");
-    String type = request.getReqPar("type");
+    final String type = request.getReqPar("type");
 
     if (rclass == null) {
-      rclass = "calsuite";
+      rclass = CalSuiteResource.resourceClassCalSuite;
     }
+
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
       return forwardNotAdded;
     }
+
     if (contentType == null) {
       form.getErr().emit(ValidationError.missingContentType);
       return forwardNotAdded;
     }
+
     if (type == null) {
       form.getErr().emit(ValidationError.missingType);
       return forwardNotAdded;
     }
 
-    if (rclass.equals("global") || rclass.equals("admin")) {
+    if (rclass.equals(CalSuiteResource.resourceClassGlobal) ||
+            rclass.equals(CalSuiteResource.resourceClassAdmin)) {
       if (!form.getCurUserSuperUser()) {
         return forwardNoAccess;
       }
@@ -95,18 +92,17 @@ public class AddResourceAction extends BwAbstractAction {
 
     BwResource r = cl.getCSResource(form.getCurrentCalSuite(),
                                     name, rclass);
-    if (r != null)
+    if (r != null) {
       return forwardDuplicate;
+    }
 
     r = new BwResource();
     r.setName(name);
 
-    BwResourceContent rc = new BwResourceContent();
+    final BwResourceContent rc = new BwResourceContent();
     r.setContent(rc);
 
-    if (type != null) {
-      contentType += "\ttype=" + type;
-    }
+    contentType += "\ttype=" + type;
     r.setContentType(contentType);
 
     cl.addCSResource(form.getCurrentCalSuite(), r, rclass);

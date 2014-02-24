@@ -19,6 +19,7 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.appcommon.AdminConfig;
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwPreferences;
@@ -327,10 +328,14 @@ public class AdminClientImpl extends ClientImpl {
 
   private String getCSResourcesDir(final BwCalSuite suite,
                                   final String rc) throws CalFacadeException {
-    final String path = getCSResourcesPath(suite, rc);
+    String path = getCSResourcesPath(suite, rc);
 
     if (path == null) {
       throw new CalFacadeException(CalFacadeException.noCalsuiteResCol);
+    }
+
+    if (path.endsWith("/")) {
+      path = path.substring(0, path.length() - 1);
     }
 
     if (collectionExists(path)) {
@@ -348,14 +353,21 @@ public class AdminClientImpl extends ClientImpl {
     resCol.setSummary(resCol.getName());
     resCol.setCreatorHref(suite.getOwnerHref());
 
-    if (rc.equals("calsuite")) {
+    if (rc.equals(CalSuiteResource.resourceClassCalSuite)) {
       // Owned by the suite
       resCol.setOwnerHref(suite.getOwnerHref());
     } else {
       resCol.setOwnerHref(svci.getUsersHandler().getPublicUser().getPrincipalRef());
     }
 
-    final String parentPath = path.substring(0, path.lastIndexOf("/"));
+    int lastSlashPos = path.lastIndexOf("/");
+    String parentPath;
+
+    if (lastSlashPos == 0) {
+      parentPath = "/";
+    } else {
+      parentPath = path.substring(0, lastSlashPos);
+    }
 
     resCol = addCollection(resCol, parentPath);
 

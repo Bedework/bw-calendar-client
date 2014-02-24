@@ -19,6 +19,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;

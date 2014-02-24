@@ -22,6 +22,7 @@ import org.bedework.access.Ace;
 import org.bedework.access.Acl;
 import org.bedework.access.PrivilegeDefs;
 import org.bedework.appcommon.BedeworkDefs;
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.caldav.util.notifications.NotificationType;
@@ -334,11 +335,11 @@ public class ROClientImpl implements Client {
   public void rollback() {
     try {
       svci.rollbackTransaction();
-    } catch (Throwable ignored) {}
+    } catch (final Throwable ignored) {}
 
     try {
       svci.endTransaction();
-    } catch (Throwable ignored) {}
+    } catch (final Throwable ignored) {}
   }
 
   @Override
@@ -1605,7 +1606,7 @@ public class ROClientImpl implements Client {
       }
 
       return r;
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       if (CalFacadeException.collectionNotFound.equals(cfe.getMessage())) {
         // Collection does not exist (yet)
 
@@ -1691,7 +1692,7 @@ public class ROClientImpl implements Client {
 
   protected String getCSResourcesPath(final BwCalSuite suite,
                                       final String rc) throws CalFacadeException {
-    if (rc.equals("global")) {
+    if (rc.equals(CalSuiteResource.resourceClassGlobal)) {
       return getBasicSyspars().getGlobalResourcesPath();
     }
 
@@ -1703,13 +1704,13 @@ public class ROClientImpl implements Client {
 
     String col = null;
 
-    if (rc.equals("admin")) {
+    if (rc.equals(CalSuiteResource.resourceClassAdmin)) {
       col = prefs.getAdminResourcesDirectory();
 
       if (col == null) {
         col = ".adminResources";
       }
-    } else if (rc.equals("calsuite")) {
+    } else if (rc.equals(CalSuiteResource.resourceClassCalSuite)) {
       col = prefs.getSuiteResourcesDirectory();
 
       if (col == null) {
@@ -1787,7 +1788,7 @@ public class ROClientImpl implements Client {
     if (toWait > 0) {
       try {
         Thread.sleep(toWait);
-      } catch (InterruptedException ie) {
+      } catch (final InterruptedException ie) {
         throw new CalFacadeException(ie);
       }
 
@@ -1873,9 +1874,9 @@ public class ROClientImpl implements Client {
         supportedLocales.add(BwLocale.makeLocale(ll.substring(pos, nextPos)));
         pos = nextPos + 1;
       }
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       throw cfe;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       throw new CalFacadeException(CalFacadeException.badSystemLocaleList,
                                    ll);
     }

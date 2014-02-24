@@ -46,15 +46,7 @@ import org.bedework.webcommon.BwRequest;
  * @author eric.wittmann@redhat.com
  */
 public class RemoveResourceAction extends BwAbstractAction {
-  /**
-   * Constructor.
-   */
-  public RemoveResourceAction() {
-  }
-
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+  @Override
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();

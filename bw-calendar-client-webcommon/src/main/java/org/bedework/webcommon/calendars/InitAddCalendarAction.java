@@ -24,6 +24,7 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
 /** This action sets the state ready for adding a calendar.
  *
@@ -37,7 +38,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"continue"      continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class InitAddCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -52,6 +53,7 @@ public class InitAddCalendarAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defense
     }
 
+    BwSession sess = request.getSess();
     BwCalendar cal = request.getCalendar(true);
 
     if ((cal == null) || !cal.getCollectionInfo().childrenAllowed) {
@@ -68,6 +70,8 @@ public class InitAddCalendarAction extends BwAbstractAction {
      */
     form.setCalendar(null);
     form.assignAddingCalendar(true);
+
+    sess.embedCategories(request, false, BwSession.ownersEntity);
 
     return forwardContinue;
   }

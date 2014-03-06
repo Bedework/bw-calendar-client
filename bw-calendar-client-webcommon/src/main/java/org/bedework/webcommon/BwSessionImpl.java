@@ -833,6 +833,7 @@ public class BwSessionImpl implements BwSession {
         if (aliased != null) {
           clCol.setAliasCalType(aliased.getCalType());
           BwCalendar clAliased = deepClone(aliased);
+          clonedCols.put(clAliased.getPath(), clAliased);
 
           clCol.setAliasTarget(clAliased);
         }

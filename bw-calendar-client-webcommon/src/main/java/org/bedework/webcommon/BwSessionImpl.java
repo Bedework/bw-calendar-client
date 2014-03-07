@@ -793,6 +793,19 @@ public class BwSessionImpl implements BwSession {
 
     private Set<String> openStates;
 
+    private static class CloneResult {
+      /* true if we found it in the map */
+      boolean alreadyCloned;
+
+      BwCalendar col;
+
+      CloneResult(final BwCalendar col,
+                  final boolean alreadyCloned) {
+        this.col = col;
+        this.alreadyCloned = alreadyCloned;
+      }
+    }
+
     Cloner(final Client cl,
            final Set<String> openStates) {
       this.cl = cl;
@@ -800,14 +813,18 @@ public class BwSessionImpl implements BwSession {
     }
 
     BwCalendar deepClone(final BwCalendar val) throws Throwable {
-      BwCalendar clCol = cloneOne(val);
+      final CloneResult cr = cloneOne(val);
 
-      clCol.setChildren(getChildren(val));
+      if (cr.alreadyCloned) {
+        return cr.col;
+      }
 
-      return clCol;
+      cr.col.setChildren(getChildren(val));
+
+      return cr.col;
     }
 
-    BwCalendar cloneOne(final BwCalendar val) throws Throwable {
+    private CloneResult cloneOne(final BwCalendar val) throws Throwable {
       BwCalendar clCol = clonedCols.get(val.getPath());
 
       if (clCol != null) {
@@ -815,7 +832,7 @@ public class BwSessionImpl implements BwSession {
           clCol.setOpen(openStates.contains(clCol.getPath()));
         }
 
-        return clCol;
+        return new CloneResult(clCol, true);
       }
 
       clCol = val.shallowClone();
@@ -828,11 +845,11 @@ public class BwSessionImpl implements BwSession {
       }
 
       if (val.getAliasUri() != null) {
-        BwCalendar aliased = cl.resolveAlias(val, false, false);
+        final BwCalendar aliased = cl.resolveAlias(val, false, false);
 
         if (aliased != null) {
           clCol.setAliasCalType(aliased.getCalType());
-          BwCalendar clAliased = deepClone(aliased);
+          final BwCalendar clAliased = deepClone(aliased);
           clonedCols.put(clAliased.getPath(), clAliased);
 
           clCol.setAliasTarget(clAliased);
@@ -841,32 +858,36 @@ public class BwSessionImpl implements BwSession {
 
       clonedCols.put(val.getPath(), clCol);
 
-      return clCol;
+      return new CloneResult(clCol, false);
     }
 
     private Collection<BwCalendar> getChildren(final BwCalendar col) throws Throwable {
-      Collection<BwCalendar> children = cl.getChildren(col);
-      Collection<BwCalendar> cloned = new ArrayList<>(children.size());
+      final Collection<BwCalendar> children = cl.getChildren(col);
+      final Collection<BwCalendar> cloned = new ArrayList<>(children.size());
 
       if (!Util.isEmpty(children)) {
-        for (BwCalendar c:children) {
-          BwCalendar clCol = cloneOne(c);
-          cloned.add(clCol);
+        for (final BwCalendar c:children) {
+          final CloneResult cr = cloneOne(c);
+          cloned.add(cr.col);
 
-          clCol.setChildren(getChildren(c));
+          if (!cr.alreadyCloned) {
+            // Clone the subtree
+            cr.col.setChildren(getChildren(c));
+          }
         }
       }
 
       return cloned;
     }
 
-    Set<BwCategory> cloneCategories(final BwCalendar val) {
+    private Set<BwCategory> cloneCategories(final BwCalendar val) {
       if (val.getNumCategories() == 0) {
         return null;
       }
-      TreeSet<BwCategory> ts = new TreeSet<>();
 
-      for (BwCategory cat: val.getCategories()) {
+      final TreeSet<BwCategory> ts = new TreeSet<>();
+
+      for (final BwCategory cat: val.getCategories()) {
         BwCategory clCat = clonedCats.get(cat.getUid());
 
         if (clCat == null) {
@@ -880,13 +901,14 @@ public class BwSessionImpl implements BwSession {
       return ts;
     }
 
-    Set<BwProperty> cloneProperties(final BwCalendar val) {
+    private Set<BwProperty> cloneProperties(final BwCalendar val) {
       if (val.getNumProperties() == 0) {
         return null;
       }
-      TreeSet<BwProperty> ts = new TreeSet<>();
 
-      for (BwProperty p: val.getProperties()) {
+      final TreeSet<BwProperty> ts = new TreeSet<>();
+
+      for (final BwProperty p: val.getProperties()) {
         ts.add((BwProperty)p.clone());
       }
 

@@ -21,6 +21,7 @@ package org.bedework.webcommon.admingroup;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.AdminUtil;
+import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -28,7 +29,7 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class SwitchAGAction extends FetchAGsAction {
+public class SwitchAGAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -43,17 +44,18 @@ public class SwitchAGAction extends FetchAGsAction {
     }
     */
 
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     cl.setGroupSet(false);
     cl.setChoosingGroup(false);
 
-    forceRefresh();
-    super.doAction(request, form);
+    cl.refreshAdminGroups();
+    request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+                           cl.getAdminGroups());
 
     // Back to main menu. Abstract action will do the rest.
 
-    int temp = AdminUtil.checkGroup(request, false);
+    final int temp = AdminUtil.checkGroup(request, false);
     if (temp == forwardNoAction) {
       form.getErr().emit(ClientError.chooseGroupSuppressed);
       return forwardError;

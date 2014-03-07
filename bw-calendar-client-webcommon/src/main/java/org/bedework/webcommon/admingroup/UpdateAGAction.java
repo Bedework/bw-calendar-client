@@ -184,7 +184,7 @@ public class UpdateAGAction extends BwAbstractAction {
         cl.updateAdminGroup(updgrp);
       }
 
-      FetchAGsAction.forceRefresh();
+      cl.refreshAdminGroups();
     } catch (CalFacadeException cfe) {
       String msg = cfe.getMessage();
 

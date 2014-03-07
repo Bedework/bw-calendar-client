@@ -501,10 +501,59 @@ public class ROClientImpl implements Client {
     return svci.getAdminDirectories().getAdminGroupsIdPrefix();
   }
 
+  /* The list of cloned admin groups for the use of the user client
+   */
+  private static Collection<BwGroup> adminGroupsInfo;
+
+  private static long lastAdminGroupsInfoRefresh;
+  private static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
+
+  private static volatile Object adminGroupLocker = new Object();
+
   @Override
-  public Collection<BwGroup> getAdminGroups(final boolean getMembers)
+  public Collection<BwGroup> getAdminGroups()
           throws CalFacadeException {
-    return svci.getAdminDirectories().getAll(getMembers);
+    if ((adminGroupsInfo != null) &&
+            (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
+                                                   adminGroupsInfoRefreshInterval))) {
+      return adminGroupsInfo;
+    }
+
+    synchronized (adminGroupLocker) {
+      if ((adminGroupsInfo != null) &&
+              (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
+                                                     adminGroupsInfoRefreshInterval))) {
+        return adminGroupsInfo;
+      }
+
+      adminGroupsInfo = new ArrayList<>();
+
+      final Collection<BwGroup> ags =
+              svci.getAdminDirectories().getAll(true);
+
+      for (final BwGroup g: ags) {
+        final BwGroup cg = (BwGroup)g.clone();
+
+        final Collection<BwGroup> mgs = getAllAdminGroups(g);
+
+        for (final BwGroup mg: mgs) {
+          final BwGroup cmg = (BwGroup)mg.clone();
+
+          cg.addGroup(cmg);
+        }
+
+        adminGroupsInfo.add(cg);
+      }
+
+      lastAdminGroupsInfoRefresh = System.currentTimeMillis();
+    }
+
+    return adminGroupsInfo;
+  }
+
+  @Override
+  public void refreshAdminGroups() {
+    lastAdminGroupsInfoRefresh = 0;
   }
 
   @Override

@@ -31,6 +31,8 @@ public class AdminRenderAction extends BwAbstractAction {
     Client cl = request.getClient();
 
     form.assignCalSuites(cl.getContextCalSuites());
+    request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+                           request.getClient().getAdminGroups());
 
     return forwardSuccess;
   }

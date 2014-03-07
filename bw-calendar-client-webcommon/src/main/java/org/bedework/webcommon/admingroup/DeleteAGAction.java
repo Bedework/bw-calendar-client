@@ -72,7 +72,7 @@ public class DeleteAGAction extends BwAbstractAction {
     cl.removeAdminGroup(updgrp);
     form.setUpdAdminGroup(null);
     form.getMsg().emit(ClientMessage.deletedGroup);
-    FetchAGsAction.forceRefresh();
+    cl.refreshAdminGroups();
 
     return forwardContinue;
   }

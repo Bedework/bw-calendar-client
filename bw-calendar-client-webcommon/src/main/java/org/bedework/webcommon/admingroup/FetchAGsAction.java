@@ -18,14 +18,9 @@
 */
 package org.bedework.webcommon.admingroup;
 
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwGroup;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /** This action fetches all admin groups
  *
@@ -36,59 +31,11 @@ import java.util.Collection;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class FetchAGsAction extends BwAbstractAction {
-  /* The list of admin groups displayed for the use of the user client
-   */
-  private static Collection<BwGroup> adminGroupsInfo;
-
-  private static long lastAdminGroupsInfoRefresh;
-  private static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
-
-  private static volatile Object locker = new Object();
-
-  static void forceRefresh() {
-    lastAdminGroupsInfoRefresh = 0;
-  }
-
   @Override
   public int doAction(BwRequest request,
                       BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    refreshAdminGroupsInfo: {
-      if (System.currentTimeMillis() > (lastAdminGroupsInfoRefresh +
-                                                adminGroupsInfoRefreshInterval)) {
-        synchronized (locker) {
-          if (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
-                                                    adminGroupsInfoRefreshInterval)) {
-            // Somebody else got there
-            break refreshAdminGroupsInfo;
-          }
-
-          adminGroupsInfo = new ArrayList<>();
-
-          Collection<BwGroup> ags = cl.getAdminGroups(true);
-
-          for (BwGroup g: ags) {
-            BwGroup cg = (BwGroup)g.clone();
-
-            Collection<BwGroup> mgs = cl.getAllAdminGroups(g);
-
-            for (BwGroup mg: mgs) {
-              BwGroup cmg = (BwGroup)mg.clone();
-
-              cg.addGroup(cmg);
-            }
-
-            adminGroupsInfo.add(cg);
-          }
-
-          lastAdminGroupsInfoRefresh = System.currentTimeMillis();
-        }
-      }
-    }
-
     request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                           adminGroupsInfo);
+                           request.getClient().getAdminGroups());
 
     return forwardSuccess;
   }

@@ -129,6 +129,8 @@ public class AdminUtil implements ForwardDefs {
           // Make them do it again.
 
           form.assignCalSuites(cl.getContextCalSuites());
+          request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+                                 request.getClient().getAdminGroups());
 
           return forwardChooseGroup;
         }
@@ -140,6 +142,8 @@ public class AdminUtil implements ForwardDefs {
           }
 
           form.assignCalSuites(cl.getContextCalSuites());
+          request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+                                 request.getClient().getAdminGroups());
           // We require a group
           return forwardChooseGroup;
         }
@@ -193,6 +197,8 @@ public class AdminUtil implements ForwardDefs {
       form.setUserAdminGroups(adgs);
 
       form.assignCalSuites(cl.getContextCalSuites());
+      request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+                             request.getClient().getAdminGroups());
       cl.setChoosingGroup(true); // reset
 
       return forwardChooseGroup;

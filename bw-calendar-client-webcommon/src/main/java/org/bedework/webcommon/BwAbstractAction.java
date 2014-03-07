@@ -263,13 +263,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     bsess.prepareRender(bwreq);
 
-    /* Set up ready for the action - may reset svci */
-
-    int temp = actionSetup(bwreq, form);
-    if (temp != forwardNoAction) {
-      return forwards[temp];
-    }
-
     try{
       String tzid = prefs.getDefaultTzid();
 
@@ -300,6 +293,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         ps.setSkinName(skinName);
         ps.setSkinNameSticky(true);
       }
+    }
+
+    /* Set up ready for the action - may reset svci */
+
+    int temp = actionSetup(bwreq, form);
+    if (temp != forwardNoAction) {
+      return forwards[temp];
     }
 
     /* see if we got cancelled */

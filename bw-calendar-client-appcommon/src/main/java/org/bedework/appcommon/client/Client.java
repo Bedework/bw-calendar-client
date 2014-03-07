@@ -405,11 +405,15 @@ public interface Client extends Serializable {
   String getAdminGroupsIdPrefix() throws CalFacadeException;
 
   /**
-   * @param getMembers
    * @return groups
    * @throws CalFacadeException  for errors
    */
-  Collection<BwGroup> getAdminGroups(boolean getMembers) throws CalFacadeException;
+  Collection<BwGroup> getAdminGroups() throws CalFacadeException;
+
+  /**
+   * Force a refetch of the groups when getAdminGroups is called
+   */
+  void refreshAdminGroups();
 
   /** Return all groups of which the given principal is a member. Never returns null.
    *

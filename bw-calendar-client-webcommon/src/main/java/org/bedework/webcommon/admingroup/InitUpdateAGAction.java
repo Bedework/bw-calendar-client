@@ -18,6 +18,8 @@
 */
 package org.bedework.webcommon.admingroup;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -30,18 +32,20 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class InitUpdateAGAction extends FetchAGsAction {
+public class InitUpdateAGAction extends BwAbstractAction {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
     /** Check access
      */
     if (!form.getCurUserSuperUser()) {
       return forwardNoAccess;
     }
 
-    forceRefresh();
-    super.doAction(request, form);
+    final Client cl = request.getClient();
+    cl.refreshAdminGroups();
+    request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+                           cl.getAdminGroups());
 
     /** Set the objects to null so we get new ones.
      */

@@ -844,6 +844,8 @@ public class BwSessionImpl implements BwSession {
         clCol.setOpen(openStates.contains(clCol.getPath()));
       }
 
+      clonedCols.put(val.getPath(), clCol);
+
       if (val.getAliasUri() != null) {
         final BwCalendar aliased = cl.resolveAlias(val, false, false);
 
@@ -855,8 +857,6 @@ public class BwSessionImpl implements BwSession {
           clCol.setAliasTarget(clAliased);
         }
       }
-
-      clonedCols.put(val.getPath(), clCol);
 
       return new CloneResult(clCol, false);
     }

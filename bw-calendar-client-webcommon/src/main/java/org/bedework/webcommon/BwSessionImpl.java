@@ -212,6 +212,8 @@ public class BwSessionImpl implements BwSession {
                        mstate.getSearchResult());
 
     try {
+      mstate.updateViewStartDate(req);
+
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
 
       if (mstate.getEventDates() == null) {

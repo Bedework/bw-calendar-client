@@ -18,9 +18,7 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
@@ -363,9 +361,9 @@ public class BwRequest extends Request {
   public String getDate() {
     String date = getReqPar("date");
 
-    if (!CheckData.checkDateString(date)) {
-      return new MyCalendarVO(new Date(System.currentTimeMillis())).getDateDigits();
-    }
+//    if (!CheckData.checkDateString(date)) {
+  //    return new MyCalendarVO(new Date(System.currentTimeMillis())).getDateDigits();
+    //}
 
     return date;
   }

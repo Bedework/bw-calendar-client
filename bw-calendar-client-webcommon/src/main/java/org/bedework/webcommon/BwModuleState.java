@@ -186,6 +186,18 @@ public class BwModuleState implements Serializable {
     return viewStartDate;
   }
 
+  public void updateViewStartDate(BwRequest req) throws Throwable {
+    if (req.present("viewStartDate.year")) {
+      getViewStartDate().setYear(req.getIntReqPar("viewStartDate.year"));
+    }
+    if (req.present("viewStartDate.month")) {
+      getViewStartDate().setMonth(req.getIntReqPar("viewStartDate.month"));
+    }
+    if (req.present("viewStartDate.day")) {
+      getViewStartDate().setDay(req.getIntReqPar("viewStartDate.day"));
+    }
+  }
+
   /** Date of the view as a MyCalendar object
    *
    * @param val

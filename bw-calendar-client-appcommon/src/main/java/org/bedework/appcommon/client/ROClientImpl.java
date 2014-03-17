@@ -25,6 +25,7 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
+import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
@@ -124,6 +125,9 @@ public class ROClientImpl implements Client {
   private BwIndexer userIndexer;
   private SearchResult lastSearch;
   private List<SearchResultEntry> lastSearchEntries;
+
+  private boolean defaultFilterContextSet;
+  private FilterBase defaultFilterContext;
 
   /* Set this whenever an update occurs. We may want to delay or flush
    */
@@ -506,16 +510,16 @@ public class ROClientImpl implements Client {
   private static Collection<BwGroup> adminGroupsInfo;
 
   private static long lastAdminGroupsInfoRefresh;
-  private static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
+  static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
 
-  private static volatile Object adminGroupLocker = new Object();
+  private static final Object adminGroupLocker = new Object();
 
   @Override
   public Collection<BwGroup> getAdminGroups()
           throws CalFacadeException {
     if ((adminGroupsInfo != null) &&
             (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
-                                                   adminGroupsInfoRefreshInterval))) {
+                                              adminGroupsInfoRefreshInterval))) {
       return adminGroupsInfo;
     }
 
@@ -1505,6 +1509,7 @@ public class ROClientImpl implements Client {
             params.getQuery(),
             params.getFilter(),
             params.getSort(),
+            getDefaultFilterContext(),
             start,
             end,
             params.getPageSize(),
@@ -1848,6 +1853,31 @@ public class ROClientImpl implements Client {
   /* ------------------------------------------------------------
    *                   private methods
    * ------------------------------------------------------------ */
+
+  private FilterBase getDefaultFilterContext() throws CalFacadeException {
+    if (defaultFilterContextSet) {
+      return defaultFilterContext;
+    }
+
+    final BwView preferred = getView(null);
+
+    if (preferred == null) {
+      defaultFilterContextSet = true;
+      return defaultFilterContext;
+    }
+
+    final String fexpr = "view=\"" + preferred.getName() +"\"";
+
+    final BwFilterDef fd = new BwFilterDef();
+    fd.setDefinition(fexpr);
+
+    parseFilter(fd);
+
+    defaultFilterContextSet = true;
+    defaultFilterContext = fd.getFilters();
+
+    return defaultFilterContext;
+  }
 
   private List<SearchResultEntry> formatSearchResult(
           final List<SearchResultEntry> entries) throws CalFacadeException {

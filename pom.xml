@@ -44,8 +44,8 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git://github.com/Bedework/bw-calendar-client.git</connection>
-		<developerConnection>scm:git:git://github.com/Bedework/bw-calendar-client.git</developerConnection>
+		<connection>scm:git:git@github.com:Bedework/bw-calendar-client.git</connection>
+		<developerConnection>scm:git:git@github.com:Bedework/bw-calendar-client.git</developerConnection>
 		<url>https://github.com/Bedework/bw-calendar-client</url>
 	</scm>
 

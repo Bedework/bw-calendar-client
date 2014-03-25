@@ -1656,8 +1656,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       form.assignNewSession(true);
 
-      s = new BwSessionImpl(isPortlet,
-                            form.getConfig(),
+      s = new BwSessionImpl(form.getConfig(),
                             form.getCurrentUser(),
                             appName);
 

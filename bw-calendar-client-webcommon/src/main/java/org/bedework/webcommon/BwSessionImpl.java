@@ -40,14 +40,11 @@ import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -55,6 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** This ought to be made pluggable. We need a session factory which uses
  * CalEnv to figure out which implementation to use.
@@ -67,8 +65,8 @@ import java.util.TreeSet;
  * @author Mike Douglass   douglm     rpi.edu
  */
 public class BwSessionImpl implements BwSession {
-  private static final String refreshTimeAttr = "bw_refresh_time";
-  private static final long refreshRate = 1 * 60 * 1000;
+  //private static final String refreshTimeAttr = "bw_refresh_time";
+  //private static final long refreshRate = 1 * 60 * 1000;
 
   /** Not completely valid in the j2ee world but it's only used to count sessions.
    */
@@ -76,33 +74,21 @@ public class BwSessionImpl implements BwSession {
     long totalSessions = 0;
   }
 
-  private final boolean isPortlet;
-
   private final ConfigCommon config;
 
-  private boolean publicAdmin;
+  private final boolean publicAdmin;
 
   private BwAuthUserPrefs curAuthUserPrefs;
 
-  private static volatile HashMap<String, Counts> countsMap =
-    new HashMap<>();
+  private static final ConcurrentHashMap<String, Counts> countsMap =
+    new ConcurrentHashMap<>();
   private long sessionNum = 0;
 
   /** The current user - null for guest
    */
   private String user;
 
-  /** The application root
-   */
-  //private String appRoot;
-
-  /** The application name
-   */
-  private String appName;
-
   private AuthProperties authpars;
-
-  private SystemProperties syspars;
 
   private transient CollectionCollator<BwContact> contactCollator;
   private transient CollectionCollator<BwCategory> categoryCollator;
@@ -110,20 +96,16 @@ public class BwSessionImpl implements BwSession {
 
   /** Constructor for a Session
    *
-   * @param isPortlet
-   * @param config
+   * @param config     our config
    * @param user       String user id
    * @param appName    String identifying particular application
    * @throws Throwable
    */
-  public BwSessionImpl(final boolean isPortlet,
-                       final ConfigCommon config,
+  public BwSessionImpl(final ConfigCommon config,
                        final String user,
                        final String appName) throws Throwable {
-    this.isPortlet = isPortlet;
     this.config = config;
     this.user = user;
-    this.appName = appName;
 
     publicAdmin = config.getPublicAdmin();
 
@@ -132,7 +114,7 @@ public class BwSessionImpl implements BwSession {
 
   @Override
   public void reset(final Request req) {
-    req.setSessionAttr(refreshTimeAttr, new Long(0));
+    req.setSessionAttr(changeTokenAttr, "");
   }
 
   /* NOTE: This is NOT intended to turn a relative URL into an
@@ -170,20 +152,6 @@ public class BwSessionImpl implements BwSession {
     return sessionNum;
   }
 
-  /**
-   * @param val
-   */
-  public void setAppName(final String val) {
-    appName = val;
-  }
-
-  /**
-   * @return app name
-   */
-  public String getAppName() {
-    return appName;
-  }
-
   @Override
   public void setUser(final String val) {
     user = val;
@@ -201,9 +169,9 @@ public class BwSessionImpl implements BwSession {
 
   @Override
   public void prepareRender(final BwRequest req) {
-    BwActionFormBase form = req.getBwForm();
-    Client cl = req.getClient();
-    BwModuleState mstate = req.getModule().getState();
+    final BwActionFormBase form = req.getBwForm();
+    final Client cl = req.getClient();
+    final BwModuleState mstate = req.getModule().getState();
 
     req.setRequestAttr(BwRequest.bwSearchParamsName,
                        cl.getSearchParams());
@@ -238,16 +206,16 @@ public class BwSessionImpl implements BwSession {
       final String lastChangeToken = (String)req.getSessionAttr(changeTokenAttr);
       final String changeToken = cl.getCurrentChangeToken();
 
-      boolean needRefresh = (lastChangeToken == null) ||
+      final boolean needRefresh = (lastChangeToken == null) ||
               !lastChangeToken.equals(changeToken);
 
       req.setSessionAttr(changeTokenAttr, changeToken);
 
-      Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
-      long now = System.currentTimeMillis();
+      //Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
+      //long now = System.currentTimeMillis();
 
-      if (!mstate.getRefresh() ||
-              (lastRefresh == null) || (now - lastRefresh > refreshRate)) {
+      if (!mstate.getRefresh() || needRefresh) {
+//              (lastRefresh == null) || (now - lastRefresh > refreshRate)) {
         // Implant various objects for the pages.
         embedFilters(req);
         embedCollections(req);
@@ -259,12 +227,12 @@ public class BwSessionImpl implements BwSession {
         authpars = cl.getAuthProperties().cloneIt();
         form.setAuthPars(authpars);
 
-        syspars = cl.getSystemProperties();
-        form.setEventRegAdminToken(syspars.getEventregAdminToken());
+        form.setEventRegAdminToken(
+                cl.getSystemProperties().getEventregAdminToken());
 
         form.setCurrentGroups(cl.getCurrentPrincipal().getGroups());
 
-        req.setSessionAttr(refreshTimeAttr, now);
+        //req.setSessionAttr(refreshTimeAttr, now);
       }
 
       if (mstate.getRefresh() ||
@@ -272,10 +240,9 @@ public class BwSessionImpl implements BwSession {
         refreshView(req);
 //        mstate.setRefresh(false);
       }
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       // Not much we can do here
       form.getErr().emit(t);
-      return;
     }
   }
 
@@ -285,8 +252,9 @@ public class BwSessionImpl implements BwSession {
                        req.getClient().getAllFilters());
   }
 
+  @Override
   public TimeView getCurTimeView(final BwRequest req) {
-    BwModuleState mstate = req.getModule().getState();
+    final BwModuleState mstate = req.getModule().getState();
 
     if (mstate.getCurTimeView() == null) {
       refreshView(req);
@@ -295,6 +263,7 @@ public class BwSessionImpl implements BwSession {
     return mstate.getCurTimeView();
   }
 
+  @Override
   public AuthProperties getAuthpars() {
     return authpars;
   }
@@ -307,9 +276,9 @@ public class BwSessionImpl implements BwSession {
 
   @Override
   public void embedCollections(final BwRequest request) throws Throwable {
-    BwCalendar col = null;
-    BwActionFormBase form = request.getBwForm();
-    Client cl = request.getClient();
+    final BwCalendar col;
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
 
     try {
       if (form.getSubmitApp()) {
@@ -323,7 +292,7 @@ public class BwSessionImpl implements BwSession {
 
       embedClonedCollection(request, col,
                             BwRequest.bwCollectionListName);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       request.getErr().emit(t);
     }
   }
@@ -336,13 +305,13 @@ public class BwSessionImpl implements BwSession {
 
   @Override
   public void embedUserCollections(final BwRequest request) throws Throwable {
-    BwCalendar col = null;
-    BwActionFormBase form = request.getBwForm();
-    Client cl = request.getClient();
-    boolean publicAdmin = form.getConfig().getPublicAdmin();
+    final BwCalendar col;
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
+    final boolean publicAdmin = form.getConfig().getPublicAdmin();
 
     try {
-      BwPrincipal p;
+      final BwPrincipal p;
 
       if ((publicAdmin) && (form.getCurrentCalSuite() != null)) {
         // Use calendar suite owner
@@ -356,7 +325,7 @@ public class BwSessionImpl implements BwSession {
 
       embedClonedCollection(request, col,
                             BwRequest.bwUserCollectionListName);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       request.getErr().emit(t);
     }
   }
@@ -369,12 +338,13 @@ public class BwSessionImpl implements BwSession {
   public Collection<BwCategory> embedCategories(final BwRequest request,
                                                 final boolean refresh,
                                                 final int kind) throws Throwable {
-    String attrName;
+    final String attrName;
     Collection <BwCategory> vals;
 
     if (kind == ownersEntity) {
       attrName = BwRequest.bwCategoriesListName;
 
+      //noinspection unchecked
       vals = (Collection<BwCategory>)request.getSessionAttr(BwRequest.bwCategoriesListName);
       if (!refresh && vals  != null) {
         return vals;
@@ -384,6 +354,7 @@ public class BwSessionImpl implements BwSession {
     } else if (kind == editableEntity) {
       attrName = BwRequest.bwEditableCategoriesListName;
 
+      //noinspection unchecked
       vals = (Collection<BwCategory>)request.getSessionAttr(BwRequest.bwEditableCategoriesListName);
       if (!refresh && vals  != null) {
         return vals;
@@ -393,12 +364,13 @@ public class BwSessionImpl implements BwSession {
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredCategoriesListName;
 
-      Client cl = request.getClient();
+      final Client cl = request.getClient();
 
       vals = cl.getCategories(curAuthUserPrefs.getCategoryPrefs().getPreferred());
     } else if (kind == defaultEntity) {
       attrName = BwRequest.bwDefaultCategoriesListName;
 
+      //noinspection unchecked
       vals = (Set<BwCategory>)request.getSessionAttr(BwRequest.bwDefaultCategoriesListName);
       if (!refresh && vals  != null) {
         return vals;
@@ -406,12 +378,12 @@ public class BwSessionImpl implements BwSession {
 
       vals = new TreeSet<>();
 
-      Client cl = request.getClient();
+      final Client cl = request.getClient();
 
-      Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
+      final Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
 
-      for (String uid: catuids) {
-        BwCategory cat = cl.getCategory(uid);
+      for (final String uid: catuids) {
+        final BwCategory cat = cl.getCategory(uid);
 
         if (cat != null) {
           vals.add(cat);
@@ -430,11 +402,11 @@ public class BwSessionImpl implements BwSession {
    * ==================================================================== */
 
   @Override
-  public void embedContactCollection(BwRequest request,
+  public void embedContactCollection(final BwRequest request,
                                      final int kind) throws Throwable {
-    Client cl = request.getClient();
-    Collection<BwContact> vals = null;
-    String attrName;
+    final Client cl = request.getClient();
+    final Collection<BwContact> vals;
+    final String attrName;
 
     if (kind == ownersEntity) {
       attrName = BwRequest.bwContactsListName;
@@ -469,8 +441,8 @@ public class BwSessionImpl implements BwSession {
   @Override
   public void embedLocations(final BwRequest request,
                              final int kind) throws Throwable {
-    Collection<BwLocation> vals = null;
-    String attrName;
+    final Collection<BwLocation> vals;
+    final String attrName;
 
     if (kind == ownersEntity) {
       attrName = BwRequest.bwLocationsListName;
@@ -496,7 +468,7 @@ public class BwSessionImpl implements BwSession {
    * ==================================================================== */
 
   /**
-   * @param val
+   * @param val prefs
    */
   void setCurAuthUserPrefs(final BwAuthUserPrefs val) {
     curAuthUserPrefs = val;
@@ -509,16 +481,17 @@ public class BwSessionImpl implements BwSession {
   private void embedClonedCollection(final BwRequest request,
                                      final BwCalendar col,
                                      final String attrName) throws Throwable {
-    BwCalendar cloned = new Cloner(request.getClient(),
-                                   request.getBwForm().getCalendarsOpenState()).deepClone(col);
+    final BwCalendar cloned = new Cloner(request.getClient(),
+                                         request.getBwForm().getCalendarsOpenState()).deepClone(
+            col);
 
     request.setSessionAttr(attrName, cloned);
   }
 
   private void refreshView(final BwRequest req) {
-    BwModuleState mstate = req.getModule().getState();
-    BwActionFormBase form = req.getBwForm();
-    Client cl = req.getClient();
+    final BwModuleState mstate = req.getModule().getState();
+    final BwActionFormBase form = req.getBwForm();
+    final Client cl = req.getClient();
 
     try {
       /* First ensure we have the view period set */
@@ -532,7 +505,7 @@ public class BwSessionImpl implements BwSession {
           if (vn == null) {
             vn = "week";
           }
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
           System.out.println("Exception setting current view");
           vn = "week";
         }
@@ -562,7 +535,7 @@ public class BwSessionImpl implements BwSession {
         mstate.setCurViewPeriod(BedeworkDefs.dayView);
       }
 
-      FilterBase filter = getFilter(req, null);
+      final FilterBase filter = getFilter(req, null);
       TimeView tv = null;
 
       switch (mstate.getCurViewPeriod()) {
@@ -594,7 +567,7 @@ public class BwSessionImpl implements BwSession {
       if (BedeworkDefs.appTypeWebuser.equals(cl.getAppType())) {
         cl.clearSearch();
       }
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       // Not much we can do here
       req.getErr().emit(t);
     }
@@ -602,14 +575,15 @@ public class BwSessionImpl implements BwSession {
 
   /** If a name is defined fetch it, or use the current filter if it exists
    *
-   * @param filterName
+   * @param req the request
+   * @param filterName a filter name
    * @return BwFilter or null
    * @throws Throwable
    */
   private FilterBase getFilter(final BwRequest req,
                                final String filterName) throws Throwable {
-    BwActionFormBase form = req.getBwForm();
-    Client cl = req.getClient();
+    final BwActionFormBase form = req.getBwForm();
+    final Client cl = req.getClient();
 
     BwFilterDef fdef = null;
 
@@ -632,7 +606,7 @@ public class BwSessionImpl implements BwSession {
     if (fdef.getFilters() == null) {
       try {
         cl.parseFilter(fdef);
-      } catch (CalFacadeException cfe) {
+      } catch (final CalFacadeException cfe) {
         req.getErr().emit(cfe);
       }
     }
@@ -640,49 +614,30 @@ public class BwSessionImpl implements BwSession {
     return fdef.getFilters();
   }
 
-  /**
-    Does the given string represent a rootless URI?  A URI is rootless
-    if it is not absolute (that is, does not contain a scheme like 'http')
-    and does not start with a '/'
-    @param uri String to test
-    @return Is the string a rootless URI?  If the string is not a valid
-      URI at all (for example, it is null), returns false
-   */
-  private boolean rootlessUri(final String uri) {
-    try {
-      return !((uri == null) || uri.startsWith("/") || new URI(uri).isAbsolute());
-    } catch (URISyntaxException e) {  // not a URI at all
-      return false;
-    }
-  }
-
   private void setSessionNum(final String name) {
     try {
-      synchronized (countsMap) {
-        Counts c = countsMap.get(name);
+      Counts c = countsMap.get(name);
 
-        if (c == null) {
-          c = new Counts();
-          countsMap.put(name, c);
-        }
-
-        sessionNum = c.totalSessions;
-        c.totalSessions++;
+      if (c == null) {
+        c = new Counts();
+        c = countsMap.putIfAbsent(name, c);
       }
-    } catch (Throwable t) {
+
+      sessionNum = c.totalSessions;
+      c.totalSessions++;
+    } catch (final Throwable ignored) {
     }
   }
 
   private Collection<BwCategory> getCategoryCollection(final BwRequest request,
                                                        final int kind,
                                                        final boolean forEventUpdate) throws Throwable {
-    BwActionFormBase form = request.getBwForm();
-    Client cl = request.getClient();
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
     Collection<BwCategory> vals = null;
 
     if (kind == ownersEntity) {
-
-      String appType = cl.getAppType();
+      final String appType = cl.getAppType();
       if (cl.getWebSubmit() ||
               BedeworkDefs.appTypeWebpublic.equals(appType) ||
               BedeworkDefs.appTypeFeeder.equals(appType)) {
@@ -692,12 +647,12 @@ public class BwSessionImpl implements BwSession {
         // Current owner
         vals = cl.getCategories();
 
-        BwEvent ev = form.getEvent();
+        final BwEvent ev = form.getEvent();
 
         if (!publicAdmin && forEventUpdate &&
                 (ev != null) &&
                 (ev.getCategories() != null)) {
-          for (BwCategory cat: ev.getCategories()) {
+          for (final BwCategory cat: ev.getCategories()) {
             if (!cat.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
               vals.add(cat);
             }
@@ -717,7 +672,7 @@ public class BwSessionImpl implements BwSession {
 
   private CollectionCollator<BwCategory> getCategoryCollator() {
     if (categoryCollator == null) {
-      categoryCollator = new CollectionCollator<BwCategory>();
+      categoryCollator = new CollectionCollator<>();
     }
 
     return categoryCollator;
@@ -735,12 +690,11 @@ public class BwSessionImpl implements BwSession {
                                               final int kind,
                                               final boolean forEventUpdate) {
     try {
-      BwActionFormBase form = request.getBwForm();
-      Client cl = request.getClient();
+      final BwActionFormBase form = request.getBwForm();
+      final Client cl = request.getClient();
       Collection<BwLocation> vals = null;
 
       if (kind == ownersEntity) {
-        String appType = cl.getAppType();
         if (cl.getWebSubmit()) {
           // Use public
           vals = cl.getPublicLocations();
@@ -748,10 +702,10 @@ public class BwSessionImpl implements BwSession {
           // Current owner
           vals = cl.getLocations();
 
-          BwEvent ev = form.getEvent();
+          final BwEvent ev = form.getEvent();
 
           if (!publicAdmin && forEventUpdate && (ev != null)) {
-            BwLocation loc = ev.getLocation();
+            final BwLocation loc = ev.getLocation();
 
             if ((loc != null) &&
                     (!loc.getOwnerHref().equals(cl.getCurrentPrincipalHref()))) {
@@ -769,7 +723,7 @@ public class BwSessionImpl implements BwSession {
       }
 
       return getLocationCollator().getCollatedCollection(vals);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       t.printStackTrace();
       request.getErr().emit(t);
       return new ArrayList<>();
@@ -778,7 +732,7 @@ public class BwSessionImpl implements BwSession {
 
   private CollectionCollator<BwLocation> getLocationCollator() {
     if (locationCollator == null) {
-      locationCollator = new CollectionCollator<BwLocation>();
+      locationCollator = new CollectionCollator<>();
     }
 
     return locationCollator;
@@ -795,13 +749,13 @@ public class BwSessionImpl implements BwSession {
   }
 
   private static class Cloner {
-    private Map<String, BwCalendar> clonedCols = new HashMap<>();
+    private final Map<String, BwCalendar> clonedCols = new HashMap<>();
 
-    private Map<String, BwCategory> clonedCats = new HashMap<>();
+    private final Map<String, BwCategory> clonedCats = new HashMap<>();
 
-    private Client cl;
+    private final Client cl;
 
-    private Set<String> openStates;
+    private final Set<String> openStates;
 
     private static class CloneResult {
       /* true if we found it in the map */

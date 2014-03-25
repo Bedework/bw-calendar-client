@@ -85,7 +85,7 @@ public class BwSessionImpl implements BwSession {
   private BwAuthUserPrefs curAuthUserPrefs;
 
   private static volatile HashMap<String, Counts> countsMap =
-    new HashMap<String, Counts>();
+    new HashMap<>();
   private long sessionNum = 0;
 
   /** The current user - null for guest
@@ -234,6 +234,14 @@ public class BwSessionImpl implements BwSession {
                                                config.getMinIncrement(),
                                                form.getErr()));
       }
+
+      final String lastChangeToken = (String)req.getSessionAttr(changeTokenAttr);
+      final String changeToken = cl.getCurrentChangeToken();
+
+      boolean needRefresh = (lastChangeToken == null) ||
+              !lastChangeToken.equals(changeToken);
+
+      req.setSessionAttr(changeTokenAttr, changeToken);
 
       Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
       long now = System.currentTimeMillis();

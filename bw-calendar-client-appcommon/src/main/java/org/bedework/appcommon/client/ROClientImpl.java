@@ -298,6 +298,11 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public String getCurrentChangeToken() throws CalFacadeException {
+    return getIndexer(publicAdmin || publicView).currentChangeToken();
+  }
+
+  @Override
   public boolean getPublicAdmin() {
     return publicAdmin;
   }

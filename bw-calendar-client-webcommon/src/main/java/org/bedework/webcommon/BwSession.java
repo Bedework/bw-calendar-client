@@ -35,6 +35,8 @@ import java.util.Collection;
  * @author Mike Douglass   douglm   rpi.edu
  */
 public interface BwSession extends Serializable {
+  static final String changeTokenAttr = "bw_change_token";
+
   /** ===================================================================
    *                     Property methods
    *  =================================================================== */

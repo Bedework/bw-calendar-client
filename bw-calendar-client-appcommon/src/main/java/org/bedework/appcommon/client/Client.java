@@ -137,6 +137,12 @@ public interface Client extends Serializable {
   void endTransaction() throws CalFacadeException;
 
   /**
+   * @return a change token for the current indexed data
+   * @throws CalFacadeException
+   */
+  String getCurrentChangeToken() throws CalFacadeException;
+
+  /**
    *
    * @return true if we are doing public admin.
    */

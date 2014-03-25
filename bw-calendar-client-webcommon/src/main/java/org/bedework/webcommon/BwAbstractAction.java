@@ -263,6 +263,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     bsess.prepareRender(bwreq);
 
+    if (debug) {
+      debugMsg("current change token: " +
+                       bwreq.getSessionAttr(BwSession.changeTokenAttr));
+    }
+
     try{
       String tzid = prefs.getDefaultTzid();
 

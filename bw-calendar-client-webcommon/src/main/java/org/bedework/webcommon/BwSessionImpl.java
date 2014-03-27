@@ -271,7 +271,7 @@ public class BwSessionImpl implements BwSession {
   @Override
   public void embedAddContentCalendarCollections(final BwRequest request) throws Throwable {
     request.setSessionAttr(BwRequest.bwAddContentCollectionListName,
-                       request.getClient().getAddContentCollections(publicAdmin));
+                       request.getClient().getAddContentCollections(!publicAdmin));
   }
 
   @Override

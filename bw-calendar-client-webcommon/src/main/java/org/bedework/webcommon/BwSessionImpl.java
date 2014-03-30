@@ -783,7 +783,10 @@ public class BwSessionImpl implements BwSession {
         return cr.col;
       }
 
-      cr.col.setChildren(getChildren(val));
+      if ((val.getCalType() != BwCalendar.calTypeAlias) &&
+              (val.getCalType() != BwCalendar.calTypeExtSub)) {
+        cr.col.setChildren(getChildren(val));
+      }
 
       return cr.col;
     }
@@ -810,7 +813,8 @@ public class BwSessionImpl implements BwSession {
 
       clonedCols.put(val.getPath(), clCol);
 
-      if (val.getAliasUri() != null) {
+      if ((val.getCalType() == BwCalendar.calTypeAlias) &&
+              (val.getAliasUri() != null)) {
         final BwCalendar aliased = cl.resolveAlias(val, false, false);
 
         if (aliased != null) {

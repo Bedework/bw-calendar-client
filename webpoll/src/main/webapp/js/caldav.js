@@ -65,7 +65,7 @@ function PollQueryReport(url, props) {
 		contentType : "application/xml; charset=utf-8",
 		headers : {
 			"Prefer" : "return=minimal",
-			"Depth" : "0"
+			"Depth" : "1"
 		},
 		data : '<?xml version="1.0" encoding="utf-8" ?>' +
 			'<C:calendar-query' + buildXMLNS(nsmap) + '>' +
@@ -91,14 +91,14 @@ function TimeRangeExpandedSummaryQueryReport(url, start, end) {
 		contentType : "application/xml; charset=utf-8",
 		headers : {
 			"Prefer" : "return=minimal",
-			"Depth" : "0"
+			"Depth" : "1"
 		},
 		data : '<?xml version="1.0" encoding="utf-8" ?>' +
 			'<C:calendar-query' + buildXMLNS(nsmap) + '>' +
 				'<D:prop>' +
 				'<C:calendar-data content-type="application/calendar+json">' +
 					'<C:expand start="' + jcaldate.jsDateToiCal(start) + '" end="' + jcaldate.jsDateToiCal(end) + '"/>' +
-					'<C:comp name="VCALENDAR">' + 
+					'<C:comp name="VCALENDAR">' +
 						'<C:allprop/>' +
 						'<C:comp name="VEVENT">' +
 							'<C:prop name="UID"/><C:prop name="DTSTART"/><C:prop name="DTEND"/><C:prop name="DURATION"/><C:prop name="SUMMARY"/>' +
@@ -224,7 +224,7 @@ CalDAVSession = function(user) {
 	//this.host = "http://172.16.105.104:8080/ucaldav";
 	//this.host = "https://cyrus.local:8543";
 	this.host = "";
-	
+
 	if (user === undefined) {
 		this.auth = null;
 	} else {
@@ -483,7 +483,7 @@ CalDAVPrincipal.prototype.isBusy = function(user, start, end, whenDone) {
   				}
   			}
   		});
-  		
+
   		if (whenDone) {
   			whenDone(result)
   		}
@@ -507,7 +507,7 @@ CalDAVPrincipal.prototype.eventsForTimeRange = function(start, end, whenDone) {
 		if (whenDone) {
 			whenDone(results);
 		}
-		
+
 	}).fail(function(jqXHR, status, error) {
   		alert(status + error);
   	});
@@ -588,7 +588,7 @@ CalendarResource.prototype.saveResource = function(whenDone) {
 				// Check for returned data and ETag
 				this.etag = jqXHR.getResponseHeader("Etag");
 				this.object = new CalendarObject(response);
-				
+
 				if (whenDone) {
 					whenDone();
 				}
@@ -619,7 +619,7 @@ CalendarResource.prototype.saveResource = function(whenDone) {
 		// Check for returned data and ETag
 		this.etag = jqXHR.getResponseHeader("Etag");
 		this.object = new CalendarObject(response);
-		
+
 		if (whenDone) {
 			whenDone();
 		}
@@ -748,7 +748,7 @@ CalendarComponent.prototype.dtend = function(value) {
 				offset = jcalduration.parseText(duration).getTotalSeconds() * 1000;
 				dtend = new Date(this.dtstart().getTime() + offset);
 			}
-		} 
+		}
 		return jcaldate.jCalTojsDate(dtend);
 	} else {
 		if (this.dtend() - value !== 0) {
@@ -797,7 +797,7 @@ CalendarComponent.prototype.changeVoterResponse = function(response) {
 		}
 	} else {
 		this.data.removePropertiesMatchingValue(function(propdata) {
-			return propdata[0] == "voter" && gSession.currentPrincipal.matchingAddress(propdata[3]); 
+			return propdata[0] == "voter" && gSession.currentPrincipal.matchingAddress(propdata[3]);
 		});
 	}
 }
@@ -947,7 +947,7 @@ CalendarComponent.registerComponentType("vevent", CalendarEvent);
 
 // Create this event as the poll winner
 CalendarEvent.prototype.pickAsWinner = function() {
-	
+
 	// Adjust VPOLL to mark winner and set status
 	var vpoll = this.parent;
 	vpoll.data.updateProperty("status", "CONFIRMED");

@@ -21,6 +21,7 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.SearchParams;
+import org.bedework.calfacade.exc.CalFacadeException;
 
 /** Ensure the time view data is refreshed
  *
@@ -28,11 +29,11 @@ import org.bedework.appcommon.client.SearchParams;
  */
 public class RenderMainAction extends BwAbstractAction {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    BwModuleState mstate = request.getModule().getState();
-    Client cl = request.getClient();
-    TimeView tv = mstate.getCurTimeView();
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final BwModuleState mstate = request.getModule().getState();
+    final Client cl = request.getClient();
+    final TimeView tv = mstate.getCurTimeView();
     boolean fetch = mstate.getRefresh();
 
     SearchParams params = cl.getSearchParams();
@@ -41,7 +42,7 @@ public class RenderMainAction extends BwAbstractAction {
       /* Set up the search parameters */
 
       params = new SearchParams();
-      int forward = setSearchParams(request, params);
+      final int forward = setSearchParams(request, params);
 
       if (forward != forwardSuccess) {
         return forward;
@@ -56,9 +57,13 @@ public class RenderMainAction extends BwAbstractAction {
 
     if (fetch) {
       /* Do the search */
-      mstate.setSearchResult(cl.search(params));
-      request.setRequestAttr(BwRequest.bwSearchResultName,
-                             mstate.getSearchResult());
+      try {
+        mstate.setSearchResult(cl.search(params));
+        request.setRequestAttr(BwRequest.bwSearchResultName,
+                               mstate.getSearchResult());
+      } catch (final CalFacadeException cfe) {
+        request.getErr().emit(cfe);
+      }
     }
 
     if (tv != null) {

@@ -190,6 +190,87 @@
     </action>
 
   <!-- ...............................................................
+             Actions for ongoing
+         ............................................................... -->
+
+    <action    path="/main/setOngoingList"
+               type="org.bedework.webcommon.search.SearchParamsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start;mdl=ongoing"
+               validate="false">
+      <forward name="success" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="noViewDef" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="error" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="noAction" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="cancelled" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="noAccess" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showOngoingList.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/showOngoingList"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only;mdl=ongoing;refaction=/main/showOngoingList.rdo"
+               validate="false">
+      <forward name="success" path="/docs/event/eventList.jsp"/>
+      <forward name="error" path="/docs/asyncError.jsp" />
+      <forward name="noAction" path="/docs/asyncError.jsp" />
+      <forward name="cancelled" path="/docs/asyncError.jsp" />
+      <forward name="noAccess" path="/docs/asyncError.jsp" />
+      <forward name="notFound" path="/docs/asyncError.jsp" />
+    </action>
+
+    <!-- ...............................................................
+         Actions for mainEventList
+     ............................................................... -->
+
+    <action    path="/main/setMainEventList"
+               type="org.bedework.webcommon.search.SearchParamsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start;mdl=mainEventList"
+               validate="false">
+      <forward name="success" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="noViewDef" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="error" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="noAction" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="cancelled" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="noAccess" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showMainEventList.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/nextMainEventList"
+               type="org.bedework.webcommon.search.SearchNextAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start;mdl=mainEventList"
+               validate="false">
+      <forward name="success" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="noViewDef" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="error" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="noAction" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="cancelled" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="noAccess" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showMainEventList.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/showMainEventList"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only;mdl=mainEventList;refaction=/main/showMainEventList.rdo"
+               validate="false">
+      <forward name="success" path="/docs/event/eventList.jsp"/>
+      <forward name="error" path="/docs/asyncError.jsp" />
+      <forward name="noAction" path="/docs/asyncError.jsp" />
+      <forward name="cancelled" path="/docs/asyncError.jsp" />
+      <forward name="noAccess" path="/docs/asyncError.jsp" />
+      <forward name="notFound" path="/docs/asyncError.jsp" />
+    </action>
+
+  <!-- ...............................................................
            Display an event
        ............................................................... -->
 
@@ -216,12 +297,25 @@
     </action>
 
     <action    path="/main/showEventList"
-               type="org.bedework.webcommon.event.RenderEventListAction"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only;refaction=/main/showEventList.rdo"
                validate="false">
-      <forward name="continue" path="/docs/event/eventList.jsp"/>
+      <forward name="success" path="/docs/event/eventList.jsp"/>
+    </action>
+
+    <!-- ...............................................................
+           Display a list of events - no forwarding
+       ............................................................... -->
+
+    <action    path="/main/eventsFeed"
+               type="org.bedework.webcommon.search.SearchParamsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only"
+               validate="false">
+      <forward name="success" path="/docs/event/eventList.jsp"/>
     </action>
 
   <!-- ===============================================================
@@ -265,6 +359,34 @@
                validate="false">
     </action>
 
+
+    <!-- ===============================================================
+                      Asynchronous calls and generic pages
+         =============================================================== -->
+
+    <!-- an action for setting values into the form asynchronously -->
+    <action    path="/misc/async"
+               type="org.bedework.webcommon.NoopAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only;mdl=async"
+               validate="false">
+      <forward name="success" path="/docs/async.jsp" />
+      <forward name="error" path="/docs/asyncError.jsp" />
+      <forward name="noAction" path="/docs/asyncError.jsp" />
+      <forward name="cancelled" path="/docs/asyncError.jsp" />
+      <forward name="noAccess" path="/docs/asyncError.jsp" />
+      <forward name="notFound" path="/docs/asyncError.jsp" />
+    </action>
+
+    <action    path="/misc/showPage"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=only"
+               validate="false">
+      <forward name="success" path="/docs/showPage.jsp" />
+    </action>
 
     <!-- ===============================================================
                          Calendar Actions

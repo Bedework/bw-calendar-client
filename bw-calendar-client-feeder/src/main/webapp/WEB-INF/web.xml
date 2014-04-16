@@ -95,6 +95,14 @@
     <dispatcher>REQUEST</dispatcher>
   </filter-mapping>
 
+  <filter-mapping>
+    <filter-name>XSLT Filter</filter-name>
+    <url-pattern>/main/eventsFeed.do</url-pattern>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+
   <!-- Mapping for freebusy service -->
   <filter-mapping>
     <filter-name>SvcI Filter</filter-name>

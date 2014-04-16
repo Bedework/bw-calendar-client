@@ -21,20 +21,23 @@ package org.bedework.webcommon.search;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
-import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResultEntry;
+import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.event.EventActionBase;
 
 import net.fortuna.ical4j.model.Calendar;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Action to set up parameters for search.
@@ -43,13 +46,14 @@ import java.util.Collection;
  *      <li>"calPath"  calendar for event.</li>
  *      <li>"start"             start date</li>
  *      <li>"end"               end date</li>
- *      <li>"listAllEvents"     (if no start/end) true/false.</li>
  *      <li>"days"              (if no start/end) integer number of days</li>
  *      <li>"searchLimits"      "beforeToday", "fromToday", "none"</li>
  *      <li>"filterName"        name of predefined filter</li>
  *      <li>"fexpr"             filter expression</li>
  *      <li>"cat"               (if no filterName) multi-valued category names</li>
  *      <li>"forExport"         true if the intent is to export the list.</li>
+ *      <li>"f=y"               If this is from the URL builder and we
+ *                              do everything in one action.</li>
  * </ul>
  * <p>Forwards to:<ul>
  *      <li>"noAction"     when request seems wrong.</li>
@@ -60,11 +64,25 @@ public class SearchParamsAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    BwModuleState mstate = request.getModule().getState();
-    SearchParams params = new SearchParams();
-    Client cl = request.getClient();
+    final BwModuleState mstate = request.getModule().getState();
+    final SearchParams params = new SearchParams();
+    final Client cl = request.getClient();
+    final boolean forFeederOneShot = "y".equals(request.getReqPar("f"));
 
-    int forward = setSearchParams(request, params);
+    String changeToken = null;
+
+    if (forFeederOneShot) {
+      changeToken = cl.getCurrentChangeToken();
+
+      final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
+
+      if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
+        request.getResponse().setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+        return forwardNull;
+      }
+    }
+
+    final int forward = setSearchParams(request, params);
     if (forward != forwardSuccess) {
       return forward;
     }
@@ -81,22 +99,23 @@ public class SearchParamsAction extends EventActionBase {
 
     if ((params.getFormat() != null) &&
         (params.getFormat().equals("text/calendar"))) {
-      Collection<SearchResultEntry> sres = cl.getSearchResult(
+      final Collection<SearchResultEntry> sres = cl.getSearchResult(
               Position.current);
       if (sres.size() == 0) {
         return forwardNull;
       }
 
-      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(request.getClient()));
+      final IcalTranslator trans =
+              new IcalTranslator(new IcalCallbackcb(request.getClient()));
 
-      Collection<EventInfo> eis = new ArrayList<>(sres.size());
-      for (SearchResultEntry sre: sres) {
+      final Collection<EventInfo> eis = new ArrayList<>(sres.size());
+      for (final SearchResultEntry sre: sres) {
         if (sre.getEntity() instanceof EventInfo) {
           eis.add((EventInfo)sre.getEntity());
         }
       }
 
-      Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
+      final Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
 
       request.getResponse().setHeader("Content-Disposition",
                                       "Attachment; Filename=\"" +
@@ -113,6 +132,22 @@ public class SearchParamsAction extends EventActionBase {
     mstate.setSearchResult(cl.search(params));
     request.setRequestAttr(BwRequest.bwSearchResultName,
                            mstate.getSearchResult());
+
+    if (!forFeederOneShot) {
+      return forwardSuccess;
+    }
+
+    /* Embed the result */
+
+    request.setRequestAttr(BwRequest.bwSearchListName,
+                           cl.getSearchResult(Position.current));
+
+    /* Ensure we have categories embedded in session */
+    request.getSess().embedCategories(request, false,
+                                      BwSession.ownersEntity);
+
+    /* Add an etag */
+    request.getResponse().addHeader("etag", changeToken);
 
     return forwardSuccess;
   }

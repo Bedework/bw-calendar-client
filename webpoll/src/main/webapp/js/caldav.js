@@ -141,10 +141,29 @@ function UserSearchReport(url, text) {
 		headers : {
 			"Depth" : "0"
 		},
-		data : '<?xml version="1.0" encoding="utf-8" ?>'
-			+ '<CS:calendarserver-principal-search context="user"' + buildXMLNS(nsmap) + '>' + '<CS:search-token>' + xmlEncode(text) + '</CS:search-token>'
-			+ '<CS:limit><CS:nresults>20</CS:nresults></CS:limit>' + '<D:prop>' + '<D:displayname />' + '<C:calendar-user-address-set />' + '</D:prop>'
-			+ '</CS:calendarserver-principal-search>',
+		data : '<?xml version="1.0" encoding="utf-8" ?>' +
+//			+ '<CS:calendarserver-principal-search context="user"' + buildXMLNS(nsmap) + '>' + '<CS:search-token>' + xmlEncode(text) + '</CS:search-token>'
+//			+ '<CS:limit><CS:nresults>20</CS:nresults></CS:limit>' + '<D:prop>' + '<D:displayname />' + '<C:calendar-user-address-set />' + '</D:prop>'
+//			+ '</CS:calendarserver-principal-search>',
+			'<D:principal-property-search' + buildXMLNS(nsmap) + '>' +
+				'<D:property-search>' +
+					'<D:prop>' +
+						'<C:calendar-user-type />' +
+					'</D:prop>' +
+					'<D:match>INDIVIDUAL</D:match>' +
+				'</D:property-search>' +
+				'<D:property-search>' +
+					'<D:prop>' +
+						'<D:displayname />' +
+					'</D:prop>' +
+					'<D:match>' + xmlEncode(text) + '</D:match>' +
+				'</D:property-search>' +
+				'<D:prop>' +
+					'<D:displayname />' +
+					'<C:calendar-user-address-set />' +
+				'</D:prop>' +
+				'<D:apply-to-principal-collection-set />' +
+			'</D:principal-property-search>'
 	});
 }
 
@@ -262,8 +281,11 @@ CalDAVSession.prototype.currentUserPropfind = function(whenDone) {
 
 // Search for calendar users matching a string
 CalDAVSession.prototype.calendarUserSearch = function(item, whenDone) {
-	UserSearchReport(joinURLs(this.host, "/principals/"), item).done(function(response) {
-		var msr = new MultiStatusResponse(response, "/principals/");
+//	UserSearchReport(joinURLs(this.host, "/principals/"), item).done(function(response) {
+//		var msr = new MultiStatusResponse(response, "/principals/");
+	var principalurl = this.currentPrincipal.url;
+	UserSearchReport(joinURLs(this.host, principalurl), item).done(function(response) {
+		var msr = new MultiStatusResponse(response, principalurl);
 		var results = [];
 		msr.doToEachChildResource(function(url, response_node) {
 			var cn = msr.getResourcePropertyText(response_node, "D:displayname");

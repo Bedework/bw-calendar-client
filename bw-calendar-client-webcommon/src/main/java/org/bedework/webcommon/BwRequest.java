@@ -63,6 +63,9 @@ public class BwRequest extends Request {
   /** module state stored in request */
   public final static String moduleStateName = "bw_module_state";
 
+  /** cache prefix stored in session */
+  public final static String bwCachePrefixName = "bw_cache_prefix";
+
   /** auth user list stored in session */
   public final static String bwAuthUsersListName = "bw_auth_users";
 

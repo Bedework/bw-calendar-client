@@ -311,6 +311,9 @@ try {
     </appvar>
   </logic:iterate>
 
+  <logic:present name="bw_cache_prefix" scope="session" >
+    <cachePrefix><bean:write name="bw_cache_prefix" scope="session" /></cachePrefix>
+  </logic:present>
   <%-- Inbox state
   <inboxState>
     <logic:present name="calForm" property="inBoxInfoRefreshed" >

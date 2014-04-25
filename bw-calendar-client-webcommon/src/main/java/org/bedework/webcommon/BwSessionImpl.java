@@ -182,6 +182,11 @@ public class BwSessionImpl implements BwSession {
     try {
       mstate.updateViewStartDate(req);
 
+      final String cacheUrl = cl.getSystemProperties().getCacheUrlPrefix();
+      if (cacheUrl != null) {
+        req.setSessionAttr(BwRequest.bwCachePrefixName, cacheUrl);
+      }
+
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
 
       if (mstate.getEventDates() == null) {

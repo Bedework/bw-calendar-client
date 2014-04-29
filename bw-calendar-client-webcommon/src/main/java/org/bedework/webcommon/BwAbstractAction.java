@@ -538,30 +538,32 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    AuthProperties authp = cl.getAuthProperties();
+    final AuthProperties authp = cl.getAuthProperties();
 
-    int days = request.getIntReqPar("days", -32767);
+    final int days = request.getIntReqPar("days", -32767);
 //    if (days < 0) {
   //    days = authp.getDefaultWebCalPeriod();
     //}
 
     if ((startStr == null) && (endStr == null)) {
-      if (listMode) {
-        if (!form.getListAllEvents()) {
-          params.setFromDate(todaysDateTime());
+      if (!cl.getWebSubmit()) {
+        if (listMode) {
+          if (!form.getListAllEvents()) {
+            params.setFromDate(todaysDateTime());
 
-          if (days > 0) {
-            params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
-                                                                 0, 0)));
+            if (days > 0) {
+              params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
+                                                                   0, 0)));
+            }
           }
-        }
-      } else {
-        TimeView tv = mstate.getCurTimeView();
-        if (tv != null) {
-          params.setFromDate(tv.getViewStart());
-          params.setToDate(tv.getViewEnd());
         } else {
-          params.setFromDate(todaysDateTime());
+          final TimeView tv = mstate.getCurTimeView();
+          if (tv != null) {
+            params.setFromDate(tv.getViewStart());
+            params.setToDate(tv.getViewEnd());
+          } else {
+            params.setFromDate(todaysDateTime());
+          }
         }
       }
     } else if ((endStr != null) || (days > 0)) {
@@ -571,12 +573,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         max = authp.getMaxWebCalPeriod();
       }
 
-      BwTimeRange tr = BwDateTimeUtil.getPeriod(startStr,
-                                                endStr,
-                                                java.util.Calendar.DATE,
-                                                days,
-                                                java.util.Calendar.DATE,
-                                                max);
+      final BwTimeRange tr =
+              BwDateTimeUtil.getPeriod(startStr,
+                                       endStr,
+                                       java.util.Calendar.DATE,
+                                       days,
+                                       java.util.Calendar.DATE,
+                                       max);
 
       if (tr == null) {
         form.getErr().emit(ClientError.badRequest, "dates");
@@ -592,7 +595,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
               false, null));
     }
 
-    int offset = request.getIntReqPar("offset", -1);
+    final int offset = request.getIntReqPar("offset", -1);
 
     if (offset > 0) {
       params.setCurOffset(offset);
@@ -621,13 +624,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     params.setQuery(request.getReqPar("query"));
 
     FilterBase filter = null;
-    BwFilterDef fd = request.getFilterDef();
+    final BwFilterDef fd = request.getFilterDef();
 
     if (fd != null) {
       filter = fd.getFilters();
     }
 
-    if (cl.getPublicAdmin()) {
+    if (cl.getWebSubmit() || cl.getPublicAdmin()) {
       boolean ignoreCreator = false;
 
 //      if ((cal != null) &&
@@ -639,7 +642,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       if (!ignoreCreator) {
-        BwCreatorFilter crefilter = new BwCreatorFilter(null);
+        final BwCreatorFilter crefilter = new BwCreatorFilter(null);
         crefilter.setEntity(cl.getCurrentPrincipalHref());
 
         filter = FilterBase.addAndChild(filter, crefilter);

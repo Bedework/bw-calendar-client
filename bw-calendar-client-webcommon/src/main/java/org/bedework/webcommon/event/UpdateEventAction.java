@@ -638,6 +638,8 @@ public class UpdateEventAction extends EventActionBase {
       form.getMsg().emit(ClientMessage.updatedEvent);
     }
 
+    cl.clearSearchEntries();
+
     return forwardSuccess;
   }
 

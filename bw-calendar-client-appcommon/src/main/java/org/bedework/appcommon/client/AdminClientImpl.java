@@ -96,6 +96,7 @@ public class AdminClientImpl extends ClientImpl {
                            true,
                            false, // Allow non-admin super user
                            false, // service
+                           false, // public submission
                            conf.getAllowEditAllCategories(),
                            conf.getAllowEditAllLocations(),
                            conf.getAllowEditAllContacts(),

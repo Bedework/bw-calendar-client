@@ -31,7 +31,7 @@ import java.util.List;
  * @author Mike Douglass douglm - rpi.edu
  */
 public class SearchParams implements Serializable {
-  private boolean publick;
+  private boolean publicIndexRequested;
 
   /* null if times not limited. */
   private BwDateTime fromDate;
@@ -58,15 +58,15 @@ public class SearchParams implements Serializable {
    *
    * @param val
    */
-  public void setPublick(final boolean val) {
-    publick = val;
+  public void setPublicIndexRequested(final boolean val) {
+    publicIndexRequested = val;
   }
 
   /**
    * @return boolean
    */
-  public boolean getPublick() {
-    return publick;
+  public boolean getPublicIndexRequested() {
+    return publicIndexRequested;
   }
 
   /** if null no date time limiting
@@ -204,7 +204,7 @@ public class SearchParams implements Serializable {
   public String toString() {
     ToString ts = new ToString(this);
 
-    ts.append("publick", getPublick())
+    ts.append("publicIndexRequested", getPublicIndexRequested())
             .append("fromDate", getFromDate())
             .append("toDate", getToDate())
             .append("query", getQuery())

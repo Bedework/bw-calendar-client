@@ -116,7 +116,7 @@ public class ROClientImpl implements Client {
 
   private Collection<Locale>supportedLocales;
 
-  private ClientState cstate;
+  private final ClientState cstate;
 
   private transient CollectionCollator<BwCalendar> calendarCollator;
   protected String appType;
@@ -185,6 +185,7 @@ public class ROClientImpl implements Client {
                      final boolean publicView)
           throws CalFacadeException {
     currentPrincipal = null;
+    this.appType = appType;
 
     pars = new CalSvcIPars(authUser,
                            runAsUser,
@@ -192,13 +193,13 @@ public class ROClientImpl implements Client {
                            false, // publicAdmin,
                            false, // Allow non-admin super user
                            false, // service
+                           getWebSubmit(),
                            false, // adminCanEditAllPublicCategories,
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
                            false);    // sessionless
     pars.setLogId(id);
     svci = new CalSvcFactoryDefault().getSvc(pars);
-    this.appType = appType;
     this.publicView = publicView;
   }
 
@@ -299,7 +300,7 @@ public class ROClientImpl implements Client {
 
   @Override
   public String getCurrentChangeToken() throws CalFacadeException {
-    return getIndexer(publicAdmin || publicView).currentChangeToken();
+    return getIndexer().currentChangeToken();
   }
 
   @Override
@@ -357,6 +358,11 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public boolean isDefaultIndexPublic() {
+    return getWebSubmit() || getPublicAdmin() || isGuest();
+  }
+
+  @Override
   public boolean isPrincipal(final String val)
           throws CalFacadeException {
     return svci.getDirectories().isPrincipal(val);
@@ -397,6 +403,11 @@ public class ROClientImpl implements Client {
   public BwPrincipal calAddrToPrincipal(final String cua)
           throws CalFacadeException {
     return svci.getDirectories().caladdrToPrincipal(cua);
+  }
+
+  @Override
+  public void unindex(final String href) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   /* ------------------------------------------------------------
@@ -1510,7 +1521,13 @@ public class ROClientImpl implements Client {
       end = params.getToDate().getDate();
     }
 
-    lastSearch = getIndexer(params.getPublick()).search(
+    boolean publicIndex = isDefaultIndexPublic();
+
+    if (params.getPublicIndexRequested()) {
+      publicIndex = true;
+    }
+
+    lastSearch = getIndexer(publicIndex).search(
             params.getQuery(),
             params.getFilter(),
             params.getSort(),
@@ -1794,6 +1811,10 @@ public class ROClientImpl implements Client {
     }
 
     return calendarCollator;
+  }
+
+  protected BwIndexer getIndexer() throws CalFacadeException {
+    return getIndexer(isDefaultIndexPublic());
   }
 
   protected BwIndexer getIndexer(final boolean publick) throws CalFacadeException {

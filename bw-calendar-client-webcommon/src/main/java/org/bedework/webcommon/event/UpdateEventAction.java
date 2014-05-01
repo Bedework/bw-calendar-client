@@ -109,9 +109,9 @@ public class UpdateEventAction extends EventActionBase {
     String submitterEmail = null;
     //String submitter = null;
 
-    boolean sendInvitations = request.present("submitAndSend");
-    boolean publishEvent = request.present("publishEvent");
-    boolean updateSubmitEvent = request.present("updateSubmitEvent");
+    final boolean sendInvitations = request.present("submitAndSend");
+    final boolean publishEvent = request.present("publishEvent");
+    final boolean updateSubmitEvent = request.present("updateSubmitEvent");
 
     if ((publicAdmin && !form.getAuthorisedUser()) ||
         form.getGuest()) {
@@ -295,6 +295,18 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Collection ------------------------------ */
 
+    /* TODO - If we are publishing this we should do it as a MOVE
+              Allows the back end to remove the index etry from the old
+              location. For the moment do it explicitly here
+     */
+
+    final String submissionsRoot = form.getConfig().getSubmissionRoot();
+
+    if (publishEvent) {
+      // Unindex from old location
+      cl.unindex(ei.getEvent().getHref());
+    }
+
     if (!request.setEventCalendar(ei, changes)) {
       return forwardRetry;
     }
@@ -304,8 +316,6 @@ public class UpdateEventAction extends EventActionBase {
     if (colPath != null) {
       evCol = cl.getCollection(colPath);
     }
-
-    String submissionsRoot = form.getConfig().getSubmissionRoot();
 
     if (publishEvent) {
       /* Event MUST NOT be in a submission calendar */

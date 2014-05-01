@@ -510,15 +510,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   protected int setSearchParams(final BwRequest request,
                                 final SearchParams params) throws Throwable {
-    BwActionFormBase form = request.getBwForm();
-    BwModuleState mstate = request.getModule().getState();
-    Client cl = request.getClient();
+    final BwActionFormBase form = request.getBwForm();
+    final BwModuleState mstate = request.getModule().getState();
+    final Client cl = request.getClient();
 
-    if (cl.getPublicAdmin() || cl.isGuest()) {
-      params.setPublick(true);
-    } else {
-      params.setPublick(request.present("public"));
-    }
+    params.setPublicIndexRequested(request.present("public"));
 
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
@@ -526,11 +522,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final boolean listMode = Client.listViewMode.equals(cl.getViewMode());
 
     if (listMode && (startStr == null)) {
-      String lim = mstate.getSearchLimits();
-      if (lim != null) {
-        if ("none".equals(lim)) {
-          // no limits
-        } else if ("beforeToday".equals(lim)) {
+      final String lim = mstate.getSearchLimits();
+      if ((lim != null) && (!"none".equals(lim))) {  // there are limits
+        if ("beforeToday".equals(lim)) {
           endStr = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
         } else if ("fromToday".equals(lim)) {
           startStr = DateTimeUtil.isoDate(new java.util.Date());
@@ -546,7 +540,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     //}
 
     if ((startStr == null) && (endStr == null)) {
-      if (!cl.getWebSubmit()) {
+      if (!cl.getWebSubmit() && !cl.getPublicAdmin()) {
         if (listMode) {
           if (!form.getListAllEvents()) {
             params.setFromDate(todaysDateTime());
@@ -631,7 +625,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (cl.getWebSubmit() || cl.getPublicAdmin()) {
-      boolean ignoreCreator = false;
+      boolean ignoreCreator = cl.getPublicAdmin() && form.getListAllEvents();
 
 //      if ((cal != null) &&
 //              (cal.getPath().startsWith(form.getConfig().getSubmissionRoot()))) {

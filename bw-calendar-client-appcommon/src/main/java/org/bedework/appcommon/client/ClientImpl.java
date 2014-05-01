@@ -71,6 +71,7 @@ public class ClientImpl extends ROClientImpl {
                      final String appType)
           throws CalFacadeException {
     currentPrincipal = null;
+    this.appType = appType;
 
     pars = new CalSvcIPars(authUser,
                            runAsUser,
@@ -78,6 +79,7 @@ public class ClientImpl extends ROClientImpl {
                            false, // publicAdmin,
                            false, // Allow non-admin super user
                            false, // service
+                           getWebSubmit(),
                            false, // adminCanEditAllPublicCategories,
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
@@ -85,7 +87,6 @@ public class ClientImpl extends ROClientImpl {
     pars.setLogId(id);
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
-    this.appType = appType;
   }
 
   @Override
@@ -98,6 +99,11 @@ public class ClientImpl extends ROClientImpl {
     cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
 
     return cl;
+  }
+
+  @Override
+  public void unindex(final String href) throws CalFacadeException {
+    getIndexer().unindexEntity(href);
   }
 
   /* ------------------------------------------------------------

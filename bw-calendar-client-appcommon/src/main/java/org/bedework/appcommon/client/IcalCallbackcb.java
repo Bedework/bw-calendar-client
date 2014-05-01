@@ -35,12 +35,12 @@ import java.util.Collection;
  */
 public class IcalCallbackcb implements IcalCallback {
   private int strictness = conformanceRelaxed;
-  private Client cl;
+  private final Client cl;
 
   /**
-   * @param cl
+   * @param cl the client
    */
-  public IcalCallbackcb(Client cl) {
+  public IcalCallbackcb(final Client cl) {
     this.cl = cl;
   }
 

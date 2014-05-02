@@ -83,6 +83,7 @@ public class OpenCloseAction extends BwAbstractAction {
     }
 
     request.getSess().embedCollections(request);
+    request.getSess().embedUserCollections(request);
     request.getSess().embedCategories(request, false,
                                       BwSession.ownersEntity);
 

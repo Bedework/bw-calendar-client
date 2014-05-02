@@ -296,12 +296,19 @@ public interface Client extends Serializable {
    */
   boolean isPrincipal(String val) throws CalFacadeException;
 
-  /**
+  /** This may change as we switch groups.
    *
    * @return the current principal we are acting for
    * @throws CalFacadeException
    */
   BwPrincipal getCurrentPrincipal() throws CalFacadeException;
+
+  /** This will not change.
+   *
+   * @return the principal we authenticated as
+   * @throws CalFacadeException
+   */
+  BwPrincipal getAuthPrincipal() throws CalFacadeException;
 
   /** Get the current principal to set as owner
    *

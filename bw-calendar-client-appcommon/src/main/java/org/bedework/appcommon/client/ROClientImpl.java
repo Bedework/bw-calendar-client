@@ -434,6 +434,11 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public BwPrincipal getAuthPrincipal() throws CalFacadeException {
+    return svci.getPrincipalInfo().getAuthPrincipal();
+  }
+
+  @Override
   public BwPrincipal getOwner() throws CalFacadeException {
     return getCurrentPrincipal();
   }

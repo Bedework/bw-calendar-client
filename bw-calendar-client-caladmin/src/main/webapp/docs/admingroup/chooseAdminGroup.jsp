@@ -12,7 +12,7 @@
 %>
 
 <groups>
-  <logic:iterate id="adminGroup" name="bw_admin_groups" scope="session" >
+  <logic:iterate id="adminGroup" name="bw_user_admin_groups" scope="session" >
     <group>
       <name><bean:write name="adminGroup" property="account" /></name>
       <desc><bean:write name="adminGroup" property="description" /></desc>

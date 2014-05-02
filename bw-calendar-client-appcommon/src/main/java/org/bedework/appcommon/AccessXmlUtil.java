@@ -53,9 +53,6 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
       this.cl = cl;
     }
 
-    /* (non-Javadoc)
-     * @see AccessXmlUtil.AccessXmlCb#makeHref(java.lang.String, int)
-     */
     public String makeHref(final String id, final int whoType) throws AccessException {
       try {
         return tagUtil.filter(cl.makePrincipalUri(id, whoType));
@@ -64,9 +61,6 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
       }
     }
 
-    /* (non-Javadoc)
-     * @see AccessXmlUtil.AccessXmlCb#getPrincipal()
-     */
     public AccessPrincipal getPrincipal() throws AccessException {
       try {
         return cl.getCurrentPrincipal();
@@ -75,9 +69,6 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
       }
     }
 
-    /* (non-Javadoc)
-     * @see AccessXmlUtil.AccessXmlCb#getPrincipal(java.lang.String)
-     */
     public AccessPrincipal getPrincipal(final String href) throws AccessException {
       try {
         return cl.getPrincipal(href);

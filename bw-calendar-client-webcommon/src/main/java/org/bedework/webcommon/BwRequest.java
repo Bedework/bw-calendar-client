@@ -72,6 +72,9 @@ public class BwRequest extends Request {
   /** admin group info list stored in session */
   public final static String bwAdminGroupsInfoName = "bw_admin_groups";
 
+  /** admin groups for this user info list stored in session */
+  public final static String bwUserAdminGroupsInfoName = "bw_user_admin_groups";
+
   /** Search pars stored in session */
   public final static String bwSearchParamsName = "bw_search_params";
 

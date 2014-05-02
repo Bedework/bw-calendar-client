@@ -178,10 +178,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   /** The groups of which our user is a member
    */
-  private Collection<BwGroup> userAdminGroups;
-
-  /** The groups of which our user is a member
-   */
   private Collection<BwGroup> currentGroups;
 
   /* ....................................................................
@@ -1320,21 +1316,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public String getAdminGroupName() {
     return adminGroupName;
-  }
-
-  /** The groups of which our user is a member
-   *
-   * @param val
-   */
-  public void setUserAdminGroups(final Collection<BwGroup> val) {
-    userAdminGroups = val;
-  }
-
-  /**
-   * @return user admin groups
-   */
-  public Collection<BwGroup> getUserAdminGroups() {
-    return userAdminGroups;
   }
 
   /** The groups of which our user is a member

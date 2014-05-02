@@ -109,9 +109,9 @@ public class AdminUtil implements ForwardDefs {
    */
   public static int checkGroup(final BwRequest request,
                                final boolean initCheck) throws Throwable {
-    BwActionFormBase form = (BwActionFormBase)request.getForm();
+    final BwActionFormBase form = (BwActionFormBase)request.getForm();
 
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     if (cl.getGroupSet()) {
       return forwardNoAction;
@@ -124,26 +124,26 @@ public class AdminUtil implements ForwardDefs {
             client is not trying to bypass the group setting.
          */
 
-        String reqpar = request.getReqPar("adminGroupName");
+        final String reqpar = request.getReqPar("adminGroupName");
         if (reqpar == null) {
           // Make them do it again.
 
           form.assignCalSuites(cl.getContextCalSuites());
-          request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                                 request.getClient().getAdminGroups());
+//          request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+//                                 request.getClient().getAdminGroups());
 
           return forwardChooseGroup;
         }
 
-        BwAdminGroup adg = (BwAdminGroup)cl.findGroup(reqpar);
+        final BwAdminGroup adg = (BwAdminGroup)cl.findGroup(reqpar);
         if (adg == null) {
           if (getLogger().isDebugEnabled()) {
             logIt("No user admin group with name " + reqpar);
           }
 
           form.assignCalSuites(cl.getContextCalSuites());
-          request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                                 request.getClient().getAdminGroups());
+//          request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
+//                                 request.getClient().getAdminGroups());
           // We require a group
           return forwardChooseGroup;
         }
@@ -155,9 +155,9 @@ public class AdminUtil implements ForwardDefs {
           otherwise we ask them to select the group
        */
 
-      Collection<BwGroup> adgs;
+      final Collection<BwGroup> adgs;
 
-      BwPrincipal p = cl.getCurrentPrincipal();
+      final BwPrincipal p = cl.getAuthPrincipal();
       if (p == null) {
         return forwardNoAccess;
       }
@@ -174,7 +174,7 @@ public class AdminUtil implements ForwardDefs {
             page. The only exception will be superUser.
          */
 
-        boolean noGroupAllowed =
+        final boolean noGroupAllowed =
           ((AdminConfig)form.getConfig()).getNoGroupAllowed();
         if (cl.isSuperUser() || noGroupAllowed) {
           cl.setAdminGroupName(null);
@@ -194,15 +194,14 @@ public class AdminUtil implements ForwardDefs {
 
       /** Go ahead and present the possible groups
        */
-      form.setUserAdminGroups(adgs);
+      request.setSessionAttr(BwRequest.bwUserAdminGroupsInfoName,
+                             adgs);
 
       form.assignCalSuites(cl.getContextCalSuites());
-      request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                             request.getClient().getAdminGroups());
       cl.setChoosingGroup(true); // reset
 
       return forwardChooseGroup;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       form.getErr().emit(t);
       return forwardError;
     }

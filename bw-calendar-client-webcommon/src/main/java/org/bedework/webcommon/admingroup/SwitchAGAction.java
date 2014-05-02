@@ -50,8 +50,6 @@ public class SwitchAGAction extends BwAbstractAction {
     cl.setChoosingGroup(false);
 
     cl.refreshAdminGroups();
-    request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                           cl.getAdminGroups());
 
     // Back to main menu. Abstract action will do the rest.
 

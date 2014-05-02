@@ -72,6 +72,7 @@ public class SearchParamsAction extends EventActionBase {
     String changeToken = null;
 
     if (forFeederOneShot) {
+      form.setNocache(false);
       changeToken = cl.getCurrentChangeToken();
 
       final String ifNoneMatch = request.getRequest().getHeader("if-none-match");

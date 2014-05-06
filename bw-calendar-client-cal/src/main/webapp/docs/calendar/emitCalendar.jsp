@@ -13,9 +13,11 @@
   </logic:equal>
 
   <bw:getChildren id="children" name="calendar" />
-  <logic:iterate name="children" id="cal">
-    <bean:define id="calendar" name="cal" toScope="session" />
-    <jsp:include page="/docs/calendar/emitCalendar.jsp" />
-  </logic:iterate>
+  <logic:present name="children">
+    <logic:iterate name="children" id="cal">
+      <bean:define id="calendar" name="cal" toScope="session" />
+      <jsp:include page="/docs/calendar/emitCalendar.jsp" />
+    </logic:iterate>
+  </logic:present>
 </calendar>
 

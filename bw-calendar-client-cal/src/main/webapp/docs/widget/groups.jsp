@@ -9,6 +9,13 @@
 <bedework>
   <page>groupWidget</page>
 
+  <logic:iterate id="appvar" name="calForm" property="appVars">
+    <appvar>
+      <key><bean:write name="appvar" property="key" /></key>
+      <value><bean:write name="appvar" property="value" /></value>
+    </appvar>
+  </logic:iterate>
+
   <logic:iterate id="msg" name="calForm" property="msg.msgList">
     <message>
       <id><bean:write name="msg" property="msgId" /></id>
@@ -29,7 +36,7 @@
 
   <bean:define id="presentationState"
                name="bw_presentationstate" scope="request" />
-  <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" /><%--
+  <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" />
 
   <%-- List of groups  --%>
   <groups>

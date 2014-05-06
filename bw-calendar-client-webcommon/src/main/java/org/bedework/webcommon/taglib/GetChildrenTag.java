@@ -60,24 +60,20 @@ public class GetChildrenTag extends NameScopePropertyTag {
   public GetChildrenTag() {
   }
 
-  /* (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#setId(java.lang.String)
-   */
-  public void setId(String val) {
+  @Override
+  public void setId(final String val) {
     id = val;
   }
 
-  /* (non-Javadoc)
-   * @see javax.servlet.jsp.tagext.TagSupport#getId()
-   */
+  @Override
   public String getId() {
     return id;
   }
 
   /**
-   * @param val
+   * @param val name of form
    */
-  public void setForm(String val) {
+  public void setForm(final String val) {
     form = val;
   }
 
@@ -88,50 +84,51 @@ public class GetChildrenTag extends NameScopePropertyTag {
     return form;
   }
 
-  /** Called at end of Tag
-   *
-   * @return int      either EVAL_PAGE or SKIP_PAGE
-   */
+  @Override
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the value */
-      Object o = getObject(false);
-      if (!(o instanceof BwCalendar)) {
-        JspException e =
-          new JspException("Property is not instance of BwCalendar");
-        TagUtils.getInstance().saveException(pageContext, e);
-        throw e;
-      }
-
-      BwCalendar col = (BwCalendar)o;
-
+      final Object o = getObject(false);
       Collection<BwCalendar> cs;
 
-      if (col == null) {
-        cs = new ArrayList();
+      if (o == null) {
+        cs = new ArrayList<>();
       } else {
+        if (!(o instanceof BwCalendar)) {
+          final JspException e =
+                  new JspException("Property is not instance of BwCalendar");
+          TagUtils.getInstance().saveException(pageContext, e);
+          throw e;
+        }
+
+        final BwCalendar col = (BwCalendar)o;
+
         cs = col.getChildren();
       }
 
-      if (cs != null) {
-        Set<String> cos = null;
-
+      if (cs == null) {
+        Logger.getLogger(getClass()).warn("Children == null for " + o);
+        cs = new ArrayList<>();
+      } else {
         if (getForm() == null) {
           // Assume always open
-          for (BwCalendar c: cs) {
+          for (final BwCalendar c: cs) {
             if (c instanceof CalendarWrapper) {
-              CalendarWrapper ccw = (CalendarWrapper)c;
+              final CalendarWrapper ccw = (CalendarWrapper)c;
               ccw.setOpen(true);
             }
           }
         } else {
-          cos = (Set<String>)getObject(getForm(), null, "calendarsOpenState",
-                                       false);
+          //noinspection unchecked
+          final Set<String> cos =
+                  (Set<String>)getObject(getForm(), null,
+                                         "calendarsOpenState",
+                                         false);
 
           if (cos != null) {
-            for (BwCalendar c: cs) {
+            for (final BwCalendar c: cs) {
               if (c instanceof CalendarWrapper) {
-                CalendarWrapper ccw = (CalendarWrapper)c;
+                final CalendarWrapper ccw = (CalendarWrapper)c;
                 ccw.setOpen(cos.contains(c.getPath()));
               }
             }
@@ -144,16 +141,15 @@ public class GetChildrenTag extends NameScopePropertyTag {
         if (getScope() != null) {
           inScope = TagUtils.getInstance().getScope(getScope());
         }
-      } catch (JspException e) {
+      } catch (final JspException e) {
         Logger.getLogger(getClass()).warn("toScope was invalid name " +
                                           "so we default to PAGE_SCOPE", e);
       }
 
       pageContext.setAttribute(id, cs, inScope);
-    } catch(Throwable t) {
+    } catch(final Throwable t) {
       Logger.getLogger(getClass()).debug(this, t);
       throw new JspTagException("Error: " + t.getMessage());
-    } finally {
     }
 
     return EVAL_PAGE;

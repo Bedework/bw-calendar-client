@@ -147,7 +147,7 @@
     </action>
 
     <action    path="/setup"
-               type="org.bedework.webcommon.NoopAction"
+               type="org.bedework.webcommon.MainAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=only"
@@ -1701,6 +1701,7 @@
                parameter="actionType=action;conversation=only"
                validate="false">
       <forward name="success" path="/widget/showCategories.rdo" redirect="true" />
+      <forward name="listEvents" path="/widget/showCategories.rdo" redirect="true" />
     </action>
 
     <action    path="/widget/showGroups"
@@ -1719,6 +1720,7 @@
                parameter="actionType=action;conversation=only"
                validate="false">
       <forward name="success" path="/widget/showGroups.rdo" redirect="true" />
+      <forward name="listEvents" path="/widget/showGroups.rdo" redirect="true" />
     </action>
 
     <!-- Update the attendee list and recalculate freebusy -->

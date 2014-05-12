@@ -180,7 +180,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         form.setRequestedLocale(null);
       } else {
         try {
-          Locale loc = BwLocale.makeLocale(reqLoc);
+          Locale loc = Util.makeLocale(reqLoc);
           form.setRequestedLocale(loc); // Make it stick
         } catch (Throwable t) {
           // Ignore bad parameter?

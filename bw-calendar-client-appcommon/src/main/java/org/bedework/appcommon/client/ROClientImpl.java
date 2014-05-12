@@ -749,7 +749,7 @@ public class ROClientImpl implements Client {
 
     if (preferredLocaleStr != null) {
       final Locale l = BwLocale.matchLocales(sysLocales,
-                                             BwLocale.makeLocale(preferredLocaleStr));
+                                             makeLocale(preferredLocaleStr));
       if (l != null) {
         if (debug) {
           debugMsg("Setting locale to " + l);
@@ -760,7 +760,7 @@ public class ROClientImpl implements Client {
 
     if (lastLocaleStr != null) {
       final Locale l = BwLocale.matchLocales(sysLocales,
-                                             BwLocale.makeLocale(lastLocaleStr));
+                                             makeLocale(lastLocaleStr));
       if (l != null) {
         if (debug) {
           debugMsg("Setting locale to " + l);
@@ -1881,6 +1881,14 @@ public class ROClientImpl implements Client {
     }
   }
 
+  protected Locale makeLocale(final String val) throws CalFacadeException {
+    try {
+      return Util.makeLocale(val);
+    } catch (final Throwable t) {
+      throw new CalFacadeException(t);
+    }
+  }
+
   /* ------------------------------------------------------------
    *                   private methods
    * ------------------------------------------------------------ */
@@ -1977,11 +1985,11 @@ public class ROClientImpl implements Client {
       while (pos < ll.length()) {
         final int nextPos = ll.indexOf(",", pos);
         if (nextPos < 0) {
-          supportedLocales.add(BwLocale.makeLocale(ll.substring(pos)));
+          supportedLocales.add(makeLocale(ll.substring(pos)));
           break;
         }
 
-        supportedLocales.add(BwLocale.makeLocale(ll.substring(pos, nextPos)));
+        supportedLocales.add(makeLocale(ll.substring(pos, nextPos)));
         pos = nextPos + 1;
       }
     } catch (final CalFacadeException cfe) {

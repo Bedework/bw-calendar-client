@@ -73,7 +73,7 @@ public class FetchEventAction extends EventActionBase {
       resetEvent(request);
     }
 
-    BwSession sess = request.getSess();
+    final BwSession sess = request.getSess();
 
     sess.embedAddContentCalendarCollections(request);
     sess.embedUserCollections(request);

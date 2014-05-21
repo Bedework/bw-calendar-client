@@ -32,6 +32,7 @@ import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.EventKey;
 import org.bedework.webcommon.event.EventActionBase;
@@ -90,7 +91,7 @@ public class AttendeeRespond extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -100,7 +101,7 @@ public class AttendeeRespond extends EventActionBase {
 
     if (request.present("initUpdate")) {
 //      ei = sched.initAttendeeUpdate(ei);
-      EventInfo ei = form.getEventInfo();
+      final EventInfo ei = form.getEventInfo();
       if (ei == null) {
         // It's gone!!
         return forwardNoAction;
@@ -108,28 +109,32 @@ public class AttendeeRespond extends EventActionBase {
 
       form.setEventKey(new EventKey(ei.getEvent(), true));
 
+      initSession(request);
+
       return forwardSuccess;
     }
 
-    EventInfo ei = refetchEvent(request);
+    final EventInfo ei = refetchEvent(request);
     if (ei == null) {
       // It's gone!!
       return forwardNoAction;
     }
 
-    BwEvent ev = ei.getEvent();
+    final BwEvent ev = ei.getEvent();
 
-    String methStr = request.getReqPar("method");
+    final String methStr = request.getReqPar("method");
 
     if ("REFRESH".equals(methStr)) {
       ScheduleResult sr = cl.requestRefresh(ei,
                                             request.getReqPar("comment"));
       emitScheduleStatus(form, sr, false);
 
+      initSession(request);
+
       return forwardSuccess;
     }
 
-    int method = ev.getScheduleMethod();
+    final int method = ev.getScheduleMethod();
 
     if (method == ScheduleMethods.methodTypeCancel) {
       //ScheduleResult sr = sched.processCancel(ei);
@@ -140,13 +145,13 @@ public class AttendeeRespond extends EventActionBase {
 
     if ("COUNTER".equals(methStr)) {
       /* Update the event from the incoming request parameters */
-      boolean publicAdmin = cl.getPublicAdmin();
+      final boolean publicAdmin = cl.getPublicAdmin();
 
       /* ------------------------ Text fields ------------------------------ */
       setEventText(request, ev, true, null);
 
       /* -------------------------- Dates ------------------------------ */
-      int res = form.getEventDates().updateEvent(ei);
+      final int res = form.getEventDates().updateEvent(ei);
       if (res == forwardValidationError) {
         return res;
       }
@@ -175,8 +180,9 @@ public class AttendeeRespond extends EventActionBase {
       }
 
       /* -------------------------- Categories ------------------------------ */
-      SetEntityCategoriesResult secr = setEntityCategories(request, null,
-                                                           ev, null);
+      final SetEntityCategoriesResult secr =
+              setEntityCategories(request, null,
+                                  ev, null);
       if (secr.rcode != forwardSuccess) {
         return secr.rcode;
       }
@@ -184,10 +190,11 @@ public class AttendeeRespond extends EventActionBase {
 
     /* ------------------ final validation -------------------------- */
 
-    Collection<ValidationError>  ves = BwWebUtil.validateEvent(cl,
-                                                               false,
-                                                               false,
-                                                               ev);
+    final Collection<ValidationError>  ves =
+            BwWebUtil.validateEvent(cl,
+                                    false,
+                                    false,
+                                    ev);
 
     if (ves != null) {
       for (org.bedework.calfacade.exc.ValidationError ve: ves) {
@@ -204,7 +211,7 @@ public class AttendeeRespond extends EventActionBase {
      * e.g. secretary.
      */
 
-    String partStat = request.getReqPar("partstat");
+    final String partStat = request.getReqPar("partstat");
 
     setupAttendeeRespond(cl,
                          ei,
@@ -218,7 +225,21 @@ public class AttendeeRespond extends EventActionBase {
 
     emitScheduleStatus(form, ur.schedulingResult, false);
 
+    initSession(request);
+
     return forwardSuccess;
+  }
+
+  private void initSession(final BwRequest request) throws Throwable {
+    final BwSession sess = request.getSess();
+
+    sess.embedAddContentCalendarCollections(request);
+    sess.embedUserCollections(request);
+
+    sess.embedContactCollection(request, BwSession.ownersEntity);
+    sess.embedCategories(request, false, BwSession.ownersEntity);
+
+    sess.embedLocations(request, BwSession.ownersEntity);
   }
 
   private String setupAttendeeRespond(final Client cl,

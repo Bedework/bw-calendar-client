@@ -310,7 +310,9 @@ public class AdminClientImpl extends ClientImpl {
                             final BwResource res,
                             final String rc)
           throws CalFacadeException {
-    svci.getResourcesHandler().save(getCSResourcesDir(suite, rc), res);
+    svci.getResourcesHandler().save(getCSResourcesDir(suite, rc),
+                                    res,
+                                    false);
     updated();
   }
 

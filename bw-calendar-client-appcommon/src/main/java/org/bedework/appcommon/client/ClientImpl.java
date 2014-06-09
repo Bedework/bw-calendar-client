@@ -436,7 +436,7 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public void saveResource(final String path,
                            final BwResource val) throws CalFacadeException {
-    svci.getResourcesHandler().save(path, val);
+    svci.getResourcesHandler().save(path, val, false);
     updated();
   }
 

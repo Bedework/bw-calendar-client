@@ -37,10 +37,9 @@ public final class ClientConfigurations extends ConfBase {
   /* Name of the property holding the location of the config data */
   private static final String confuriPname = "org.bedework.clients.confuri";
 
-  private static volatile Object lock = new Object();
+  private static final Object lock = new Object();
 
-  private Map<String, ConfigCommon> clientConfigs =
-      new HashMap<String, ConfigCommon>();
+  private final Map<String, ConfigCommon> clientConfigs = new HashMap<>();
 
   private static ClientConfigurations configs;
 
@@ -102,15 +101,15 @@ public final class ClientConfigurations extends ConfBase {
       setConfigPname(confuriPname);
 
       loadClientConfigs();
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       throw cfe;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       throw new CalFacadeException(t);
     }
   }
 
   /**
-   * @param name
+   * @param name of config
    * @return client config identified by name - or null.
    * @throws CalFacadeException
    */
@@ -119,14 +118,15 @@ public final class ClientConfigurations extends ConfBase {
   }
 
   private void loadClientConfigs() throws Throwable {
-    List<String> names = getStore().getConfigs();
+    final List<String> names = getStore().getConfigs();
 
-    for (String cn: names) {
-      ObjectName objectName = createObjectName("client-config", cn);
+    for (final String cn: names) {
+      final ObjectName objectName = createObjectName("client-config", cn);
 
       /* Read the config so we can get the mbean class name. */
 
-      ConfigCommonImpl cCfg = (ConfigCommonImpl)getStore().getConfig(cn);
+      final ConfigCommonImpl cCfg =
+              (ConfigCommonImpl)getStore().getConfig(cn);
 
       if (cCfg == null) {
         error("Unable to read client configuration " + cn);
@@ -143,10 +143,10 @@ public final class ClientConfigurations extends ConfBase {
       }
 
       @SuppressWarnings("unchecked")
-      ClientConf<ConfigCommonImpl> cc = (ClientConf<ConfigCommonImpl>)makeObject(mbeanClassName);
+      final ClientConf<ConfigCommonImpl> cc =
+              (ClientConf<ConfigCommonImpl>)makeObject(mbeanClassName);
       cc.init(getStore(), objectName.toString(), cCfg);
 
-      cc.saveConfig();
       clientConfigs.put(cn, cc);
 
       register(new ObjectName(cc.getServiceName()), cc);
@@ -157,7 +157,7 @@ public final class ClientConfigurations extends ConfBase {
   public void stop() {
     try {
       getManagementContext().stop();
-    } catch (Throwable t){
+    } catch (final Throwable t){
       t.printStackTrace();
     }
   }

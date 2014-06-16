@@ -54,6 +54,8 @@ public class YearView extends TimeView {
           curDay.getNextYear().getDateDigits(),
           showData,
           filter);
+
+    viewPeriod = BedeworkDefs.yearView;
   }
 }
 

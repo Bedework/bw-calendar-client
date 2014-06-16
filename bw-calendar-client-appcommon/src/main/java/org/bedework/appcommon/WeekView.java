@@ -49,6 +49,8 @@ public class WeekView extends TimeView {
           curDay.getNextWeek().getDateDigits(),
           true,  // showdata
           filter);
+
+    viewPeriod = BedeworkDefs.weekView;
   }
 }
 

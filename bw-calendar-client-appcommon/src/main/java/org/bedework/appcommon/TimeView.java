@@ -71,6 +71,7 @@ public class TimeView implements Serializable {
 
   protected IcalTranslator trans;
   protected String periodName;
+  protected int viewPeriod;
   protected Calendar firstDay;
   protected Calendar lastDay;
   protected String prevDate;
@@ -283,6 +284,14 @@ public class TimeView implements Serializable {
    */
   public String getPeriodName() {
     return periodName;
+  }
+
+  /** This method returns the view period as defined in BedeworkDefs
+   *
+   * @return  int  view period
+   */
+  public int getViewPeriod() {
+    return viewPeriod;
   }
 
   /**

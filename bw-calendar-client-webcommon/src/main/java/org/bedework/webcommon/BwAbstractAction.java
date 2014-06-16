@@ -1518,7 +1518,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if ((newViewTypeI >= 0) &&
-        (newViewTypeI != mstate.getCurViewPeriod())) {
+        (newViewTypeI != mstate.getCurTimeView().getViewPeriod())) {
       // Change of view
       newView = true;
     }

@@ -47,6 +47,8 @@ public class DayView extends TimeView {
           curDay.getTomorrow().getDateDigits(),
           true,  // showdata
           filter);
+
+    viewPeriod = BedeworkDefs.dayView;
   }
 
   /** Overridden because this is a single day view

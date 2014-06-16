@@ -49,6 +49,8 @@ public class MonthView extends TimeView {
           curDay.getNextMonth().getDateDigits(),
           true,  // showdata
           filter);
+
+    viewPeriod = BedeworkDefs.monthView;
   }
 }
 

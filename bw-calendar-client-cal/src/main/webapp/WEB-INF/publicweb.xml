@@ -133,15 +133,23 @@
     </init-param>
 
     <!-- Bedework parameters -->
+
+    <!-- Path prefix must match the value for the servlet mapping
+          but with leading and trailing "/"-->
     <init-param>
-      <!-- True for a CalWS-SOAP service. False for CalDAV -->
-      <param-name>calws</param-name>
-      <param-value>false</param-value>
+      <param-name>pathPrefix</param-name>
+      <param-value>/caldav/</param-value>
     </init-param>
 
     <init-param>
       <!-- Only applies if debug on - causes responses to be wrapped. -->
       <param-name>dumpContent</param-name>
+      <param-value>true</param-value>
+    </init-param>
+
+    <init-param>
+      <!-- Don't drop the session on exit -->
+      <param-name>web-version</param-name>
       <param-value>true</param-value>
     </init-param>
 

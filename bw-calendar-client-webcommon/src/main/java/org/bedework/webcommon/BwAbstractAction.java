@@ -595,25 +595,21 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       params.setCurOffset(offset);
     }
 
-    params.setPageSize(cl.getPreferences().getPageSize());
-    if (params.getPageSize() < 0) {
-      params.setPageSize(20);
+    int count = request.getIntReqPar("count", -1);
+
+    if (count < 0) {
+      count = cl.getPreferences().getPageSize();
     }
 
-    /*
-    BwCalendar cal = request.getCalendar(false);
-
-    if ((cal == null) && (cl.getPublicAdmin())) {
-      BwCalSuite cs = cl.getCalSuite();
-      if (cs != null) {
-        cal = cl.getCollection(cs.getRootCollectionPath());
-      }
+    if (count < 0) {
+      count = 20;
     }
 
-    if (cal != null) {
-      params.setCollection(cal);
+    if (count > 250) {
+      count = 250;
     }
-    */
+
+    params.setPageSize(count);
 
     params.setQuery(request.getReqPar("query"));
 

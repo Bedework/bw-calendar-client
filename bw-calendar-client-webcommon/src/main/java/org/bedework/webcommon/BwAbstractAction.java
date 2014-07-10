@@ -109,7 +109,7 @@ import javax.servlet.http.HttpSession;
 public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
   /** Name of the init parameter holding our name */
-  private static final String appNameInitParameter = "rpiappname";
+  private static final String appNameInitParameter = "bwappname";
 
   static HashMap<String, Integer> viewTypeMap =
           new HashMap<String, Integer>();

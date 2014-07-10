@@ -5,16 +5,12 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
-  <display-name>@DISPLAY-NAME@</display-name>
+  <display-name>Bedework Public Events Admin Client</display-name>
 
-  <context-param>
-    <param-name>rpiappname</param-name>
-    <param-value>@APP-NAME@</param-value>
-  </context-param>
-
+  <!--This selects the client configuration file -->
   <context-param>
     <param-name>bwappname</param-name>
-    <param-value>@BW-APP-NAME@</param-value>
+    <param-value>CalAdmin</param-value>
   </context-param>
 
   <context-param>
@@ -34,7 +30,7 @@
     </init-param>
     <init-param>
       <param-name>ignoreContentType</param-name>
-      <param-value>@IGNORE-CONTENT-TYPE@</param-value>
+      <param-value>false</param-value>
     </init-param>
   </filter>
 
@@ -101,7 +97,7 @@
   <servlet>
     <servlet-name>action</servlet-name>
     <servlet-class>
-      @SERVLET-CLASS@
+      org.apache.struts.action.ActionServlet
     </servlet-class>
 
     <load-on-startup>1</load-on-startup>
@@ -109,31 +105,31 @@
     <security-role-ref>
       <description>A user with full administrative privileges</description>
       <role-name>admin</role-name>
-      <role-link>@SECURITY-PREFIX@.admin</role-link>
+      <role-link>bedework.admin</role-link>
     </security-role-ref>
 
     <security-role-ref>
       <description>A user with some administrative privileges</description>
       <role-name>contentadmin</role-name>
-      <role-link>@SECURITY-PREFIX@.contentadmin</role-link>
+      <role-link>bedework.contentadmin</role-link>
     </security-role-ref>
 
     <security-role-ref>
       <description>Somebody who can add alerts</description>
       <role-name>alerts</role-name>
-      <role-link>@SECURITY-PREFIX@.alerts</role-link>
+      <role-link>bedework.alerts</role-link>
     </security-role-ref>
 
     <security-role-ref>
       <description>Somebody who owns events</description>
       <role-name>owner</role-name>
-      <role-link>@SECURITY-PREFIX@.owner</role-link>
+      <role-link>bedework.owner</role-link>
     </security-role-ref>
 
     <security-role-ref>
       <description>A user</description>
       <role-name>user</role-name>
-      <role-link>@SECURITY-PREFIX@.user</role-link>
+      <role-link>bedework.user</role-link>
     </security-role-ref>
   </servlet>
 
@@ -251,7 +247,7 @@
     </auth-constraint>
     <user-data-constraint>
       <description>no description</description>
-      <transport-guarantee>@TRANSPORT-GUARANTEE@</transport-guarantee>
+      <transport-guarantee>${app.transport.guarantee}</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
 
@@ -267,36 +263,37 @@
 
   <login-config>
     <auth-method>FORM</auth-method>
-    <realm-name>@SECURITY-DOMAIN@</realm-name>
+    <realm-name>${app.security.domain}</realm-name>
     <form-login-config>
       <form-login-page>/docs/login/login.html</form-login-page>
       <form-error-page>/docs/login/error.html</form-error-page>
     </form-login-config>
   </login-config>
 
+  <!-- These aren't used -->
   <security-role>
     <description>A user with full administrative privileges</description>
-    <role-name>@SECURITY-PREFIX@.admin</role-name>
+    <role-name>bedework.admin</role-name>
   </security-role>
 
   <security-role>
     <description>A user with some administrative privileges</description>
-    <role-name>@SECURITY-PREFIX@.contentadmin</role-name>
+    <role-name>bedework.contentadmin</role-name>
   </security-role>
 
   <security-role>
     <description>Somebody who can add alerts</description>
-    <role-name>@SECURITY-PREFIX@.alerts</role-name>
+    <role-name>bedework.alerts</role-name>
   </security-role>
 
   <security-role>
     <description>Somebody who owns events</description>
-    <role-name>@SECURITY-PREFIX@.owner</role-name>
+    <role-name>bedework.owner</role-name>
   </security-role>
 
   <security-role>
     <description>A user</description>
-    <role-name>@SECURITY-PREFIX@.user</role-name>
+    <role-name>bedework.user</role-name>
   </security-role>
 
   <!-- Insert ejb-ref here -->

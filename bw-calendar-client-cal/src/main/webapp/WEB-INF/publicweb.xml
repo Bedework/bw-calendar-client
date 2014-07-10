@@ -5,16 +5,12 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
-  <display-name>@DISPLAY-NAME@</display-name>
+  <display-name>Bedework Public Events Client</display-name>
 
-  <context-param>
-    <param-name>rpiappname</param-name>
-    <param-value>@APP-NAME@</param-value>
-  </context-param>
-
+  <!-- identifies which configuration we load -->
   <context-param>
     <param-name>bwappname</param-name>
-    <param-value>@BW-APP-NAME@</param-value>
+    <param-value>${app.config.name}</param-value>
   </context-param>
 
   <context-param>
@@ -34,7 +30,7 @@
     </init-param>
     <init-param>
       <param-name>ignoreContentType</param-name>
-      <param-value>@IGNORE-CONTENT-TYPE@</param-value>
+      <param-value>false</param-value>
     </init-param>
   </filter>
 
@@ -115,7 +111,7 @@
   <servlet>
     <servlet-name>action</servlet-name>
     <servlet-class>
-      @SERVLET-CLASS@
+      org.apache.struts.action.ActionServlet
     </servlet-class>
 
     <load-on-startup>1</load-on-startup>

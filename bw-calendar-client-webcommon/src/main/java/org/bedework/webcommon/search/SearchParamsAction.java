@@ -69,10 +69,17 @@ public class SearchParamsAction extends EventActionBase {
     final SearchParams params = new SearchParams();
     final Client cl = request.getClient();
     final boolean forFeederOneShot = "y".equals(request.getReqPar("f"));
+    final String outFormat = params.getFormat();
+    boolean generateCalendarContent = false;
+
+    if ((outFormat != null) &&
+            (outFormat.equals("text/calendar"))) {
+      generateCalendarContent = true;
+    }
 
     String changeToken = null;
 
-    if (forFeederOneShot) {
+    if (forFeederOneShot || generateCalendarContent) {
       form.setNocache(false);
       changeToken = cl.getCurrentChangeToken();
 
@@ -105,8 +112,7 @@ public class SearchParamsAction extends EventActionBase {
     /* Do the search */
     mstate.setSearchResult(cl.search(params));
 
-    if ((params.getFormat() != null) &&
-        (params.getFormat().equals("text/calendar"))) {
+    if (generateCalendarContent) {
       final Collection<SearchResultEntry> sres = cl.getSearchResult(
               Position.current);
       if (sres.size() == 0) {
@@ -132,11 +138,14 @@ public class SearchParamsAction extends EventActionBase {
 
       request.getResponse().setHeader("Content-Disposition",
                                       "Attachment; Filename=\"" +
-                                      contentName + "\"");
+                                              contentName + "\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");
 
       IcalTranslator.writeCalendar(ical, request.getResponse().getWriter());
       request.getResponse().getWriter().close();
+
+      /* Add an etag */
+      request.getResponse().addHeader("etag", changeToken);
 
       return forwardNull;
     }

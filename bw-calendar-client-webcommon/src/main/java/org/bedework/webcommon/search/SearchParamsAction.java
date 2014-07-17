@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.search;
 
+import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
@@ -83,7 +84,10 @@ public class SearchParamsAction extends EventActionBase {
       }
     }
 
-    final int forward = setSearchParams(request, params);
+    final boolean listMode = Client.listViewMode.equals(cl.getViewMode()) ||
+            forFeederOneShot;
+
+    final int forward = setSearchParams(request, params, listMode);
     if (forward != forwardSuccess) {
       return forward;
     }
@@ -98,6 +102,9 @@ public class SearchParamsAction extends EventActionBase {
 
     request.setRequestAttr(BwRequest.bwSearchParamsName, params);
 
+    /* Do the search */
+    mstate.setSearchResult(cl.search(params));
+
     if ((params.getFormat() != null) &&
         (params.getFormat().equals("text/calendar"))) {
       final Collection<SearchResultEntry> sres = cl.getSearchResult(
@@ -111,16 +118,21 @@ public class SearchParamsAction extends EventActionBase {
 
       final Collection<EventInfo> eis = new ArrayList<>(sres.size());
       for (final SearchResultEntry sre: sres) {
-        if (sre.getEntity() instanceof EventInfo) {
-          eis.add((EventInfo)sre.getEntity());
+        if (sre.getEntity() instanceof EventFormatter) {
+          eis.add(((EventFormatter)sre.getEntity()).getEventInfo());
         }
       }
 
       final Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
 
+      String contentName = form.getContentName();
+      if (contentName == null) {
+        contentName = "calendar.ics";
+      }
+
       request.getResponse().setHeader("Content-Disposition",
                                       "Attachment; Filename=\"" +
-                                      form.getContentName() + "\"");
+                                      contentName + "\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");
 
       IcalTranslator.writeCalendar(ical, request.getResponse().getWriter());
@@ -129,8 +141,6 @@ public class SearchParamsAction extends EventActionBase {
       return forwardNull;
     }
 
-    /* Do the search */
-    mstate.setSearchResult(cl.search(params));
     request.setRequestAttr(BwRequest.bwSearchResultName,
                            mstate.getSearchResult());
 

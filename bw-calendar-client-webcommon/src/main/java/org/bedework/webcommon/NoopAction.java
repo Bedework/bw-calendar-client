@@ -45,7 +45,7 @@ public class NoopAction extends BwAbstractAction {
           /* Set up the search parameters */
 
           params = new SearchParams();
-          int forward = setSearchParams(request, params);
+          int forward = setSearchParams(request, params, true);
 
           if (forward != forwardSuccess) {
             return forward;

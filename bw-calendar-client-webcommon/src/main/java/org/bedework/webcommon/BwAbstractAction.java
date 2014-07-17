@@ -509,7 +509,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   protected int setSearchParams(final BwRequest request,
-                                final SearchParams params) throws Throwable {
+                                final SearchParams params,
+                                final boolean listMode) throws Throwable {
     final BwActionFormBase form = request.getBwForm();
     final BwModuleState mstate = request.getModule().getState();
     final Client cl = request.getClient();
@@ -518,8 +519,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
-
-    final boolean listMode = Client.listViewMode.equals(cl.getViewMode());
 
     if (listMode && (startStr == null)) {
       final String lim = mstate.getSearchLimits();

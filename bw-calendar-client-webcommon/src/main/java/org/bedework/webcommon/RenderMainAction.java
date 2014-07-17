@@ -42,7 +42,8 @@ public class RenderMainAction extends BwAbstractAction {
       /* Set up the search parameters */
 
       params = new SearchParams();
-      final int forward = setSearchParams(request, params);
+      final boolean listMode = Client.listViewMode.equals(cl.getViewMode());
+      final int forward = setSearchParams(request, params, listMode);
 
       if (forward != forwardSuccess) {
         return forward;

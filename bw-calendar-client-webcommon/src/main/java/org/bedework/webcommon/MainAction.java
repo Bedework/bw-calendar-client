@@ -34,6 +34,7 @@ public class MainAction extends BwAbstractAction {
 
     final Client cl = request.getClient();
 
+    /* If not in list mode set up later */
     if (!Client.listViewMode.equals(cl.getViewMode())) {
       return forwardSuccess;
     }
@@ -47,7 +48,7 @@ public class MainAction extends BwAbstractAction {
       /* Set up the search parameters */
 
       params = new SearchParams();
-      final int forward = setSearchParams(request, params);
+      final int forward = setSearchParams(request, params, true);
 
       if (forward != forwardSuccess) {
         return forward;

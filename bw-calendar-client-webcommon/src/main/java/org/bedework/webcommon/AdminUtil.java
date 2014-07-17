@@ -55,7 +55,13 @@ public class AdminUtil implements ForwardDefs {
     BwAuthUser au = cl.getAuthUser(form.getCurrentUser());
 
     if (au == null) {
-      return forwardNoAccess;
+      if (!cl.isSuperUser()) {
+        return forwardNoAccess;
+      }
+
+      au = BwAuthUser.makeAuthUser(cl.getCurrentPrincipalHref(),
+                                   UserAuth.publicEventUser);
+      cl.updateAuthUser(au);
     }
 
     // Refresh current auth user prefs.

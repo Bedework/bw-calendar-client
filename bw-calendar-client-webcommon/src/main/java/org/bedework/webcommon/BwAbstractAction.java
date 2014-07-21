@@ -1460,7 +1460,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   protected void gotoDateView(final BwRequest request,
                               final String date,
                               int newViewTypeI) throws Throwable {
-    BwModuleState mstate = request.getModule().getState();
+    final BwModuleState mstate = request.getModule().getState();
 
     //BwActionFormBase form = request.getBwForm();
     /* We get a new view if either the date changed or the view changed.
@@ -1474,7 +1474,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     MyCalendarVO dt;
 
     if (newViewTypeI == BedeworkDefs.todayView) {
-      Date jdt = new Date(System.currentTimeMillis());
+      final Date jdt = new Date(System.currentTimeMillis());
       dt = new MyCalendarVO(jdt);
       newView = true;
       newViewTypeI = BedeworkDefs.dayView;
@@ -1482,7 +1482,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       if (newViewTypeI == BedeworkDefs.dayView) {
         // selected specific day to display from personal event entry screen.
 
-        Date jdt = BwDateTimeUtil.getDate(mstate.getViewStartDate().getDateTime());
+        final Date jdt = BwDateTimeUtil.getDate(mstate.getViewStartDate().getDateTime());
         dt = new MyCalendarVO(jdt);
         newView = true;
       } else {
@@ -1525,16 +1525,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    TimeDateComponents viewStart = mstate.getViewStartDate();
+    final TimeDateComponents viewStart = mstate.getViewStartDate();
 
     if (!newView) {
       /* See if we were given an explicit date as view start date components.
          If so we'll set a new view of the same period as the current.
        */
-      int year = viewStart.getYear();
+      final int year = viewStart.getYear();
 
       if (checkDateInRange(request, year)) {
-        String vsdate = viewStart.getDateTime().getDtval().substring(0, 8);
+        final String vsdate = viewStart.getDateTime().getDtval().substring(0, 8);
         if (debug) {
           debugMsg("vsdate=" + vsdate);
         }
@@ -1542,7 +1542,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         if (!(vsdate.equals(request.getSess().getCurTimeView(request).getFirstDayFmt().getDateDigits()))) {
           newView = true;
           newViewTypeI = mstate.getCurViewPeriod();
-          Date jdt = DateTimeUtil.fromISODate(vsdate);
+          final Date jdt = DateTimeUtil.fromISODate(vsdate);
           dt = new MyCalendarVO(jdt);
         }
       }
@@ -1552,14 +1552,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       mstate.setCurViewPeriod(newViewTypeI);
       mstate.setViewMcDate(dt);
       mstate.setRefresh(true);
+      request.getClient().clearSearch();
     }
 
-    TimeView tv = request.getSess().getCurTimeView(request);
+    final TimeView tv = request.getSess().getCurTimeView(request);
 
     /** Set first day, month and year
      */
 
-    Calendar firstDay = tv.getFirstDay();
+    final Calendar firstDay = tv.getFirstDay();
 
     viewStart.setDay(firstDay.get(Calendar.DATE));
     viewStart.setMonth(firstDay.get(Calendar.MONTH) + 1);

@@ -691,9 +691,9 @@ public class BwSessionImpl implements BwSession {
     return contactCollator;
   }
 
-  private Collection<BwLocation> getLocations(final BwRequest request,
-                                              final int kind,
-                                              final boolean forEventUpdate) {
+  public Collection<BwLocation> getLocations(final BwRequest request,
+                                             final int kind,
+                                             final boolean forEventUpdate) {
     try {
       final BwActionFormBase form = request.getBwForm();
       final Client cl = request.getClient();

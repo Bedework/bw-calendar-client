@@ -21,6 +21,7 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.util.struts.Request;
 
@@ -161,6 +162,10 @@ public interface BwSession extends Serializable {
    */
   void embedContactCollection(BwRequest request,
                               final int kind) throws Throwable;
+
+  Collection<BwLocation> getLocations(final BwRequest request,
+                                      final int kind,
+                                      final boolean forEventUpdate);
 
   /** Called by jsp when editing an event
    *

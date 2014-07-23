@@ -32,7 +32,7 @@ import java.io.Serializable;
  */
 public class EntityDates implements Serializable {
   protected String principalHref;
-  private CalendarInfo calInfo;
+  private final CalendarInfo calInfo;
 
   protected boolean hour24;
 
@@ -46,11 +46,11 @@ public class EntityDates implements Serializable {
 
   /** Constructor
    *
-   * @param principalHref
-   * @param calInfo
-   * @param hour24
-   * @param minIncrement
-   * @param err
+   * @param principalHref of current user
+   * @param calInfo calendar info
+   * @param hour24 24 hour mode flag
+   * @param minIncrement for minutes
+   * @param err for messages
    */
   public EntityDates(final String principalHref,
                      final CalendarInfo calInfo,
@@ -65,8 +65,26 @@ public class EntityDates implements Serializable {
   }
 
   /**
+   * @param val 24 hour mode flag
+   */
+  public void setHour24(final boolean val) {
+    if (val != hour24) {
+      forLabels = null;
+      hour24 = val;
+    }
+  }
+
+  /**
+   * @return 24 hour mode flag
+   */
+  public boolean getHour24() {
+    return hour24;
+  }
+
+  /**
    * @return  TimeDateComponents for labels
    */
+  @SuppressWarnings("UnusedDeclaration")
   public TimeDateComponents getForLabels() {
     if (forLabels == null) {
       getNowTimeComponents();
@@ -81,15 +99,16 @@ public class EntityDates implements Serializable {
    */
   public TimeDateComponents getNowTimeComponents() {
     try {
-      TimeDateComponents tc = new TimeDateComponents(calInfo, minIncrement,
-                                                     hour24);
+      final TimeDateComponents tc =
+              new TimeDateComponents(calInfo, minIncrement,
+                                     hour24);
 
       tc.setNow();
 
       forLabels = tc;
 
       return tc;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       err.emit(t);
       return null;
     }

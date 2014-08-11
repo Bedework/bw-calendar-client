@@ -47,12 +47,10 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class UpdateViewAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -60,15 +58,15 @@ public class UpdateViewAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    String name = request.getReqPar("name");
+    final String name = request.getReqPar("name");
 
     if (name == null) {
       request.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
 
-    String add = request.getReqPar("add");
-    String remove = request.getReqPar("remove");
+    final String add = request.getReqPar("add");
+    final String remove = request.getReqPar("remove");
 
     if (add != null) {
       if (!cl.collectionExists(add)) {
@@ -89,23 +87,7 @@ public class UpdateViewAction extends BwAbstractAction {
       }
     }
 
-    /*
-    boolean makeDefaultView = false;
-
-    String str = request.getReqPar("makedefaultview");
-    if (str != null) {
-      makeDefaultView = str.equals("true");
-    }
-
-    /* XXX Update prefs here * /
-
-    if (changed) {
-      form.getErr().emit("org.bedework.client.notadded");
-      return forwardNotAdded;
-    }
-    */
-
-    BwView view = cl.getView(name);
+    final BwView view = cl.getView(name);
 
     if (view == null) {
       request.getErr().emit(ClientError.unknownView, name);
@@ -113,6 +95,7 @@ public class UpdateViewAction extends BwAbstractAction {
     }
 
     form.setView(view);
+    request.getSess().embedViews(request);
 
     return forwardSuccess;
   }

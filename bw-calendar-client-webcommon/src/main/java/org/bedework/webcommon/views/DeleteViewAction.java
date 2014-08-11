@@ -45,12 +45,10 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class DeleteViewAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -58,14 +56,14 @@ public class DeleteViewAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    String name = request.getReqPar("name");
+    final String name = request.getReqPar("name");
 
     if (name == null) {
       request.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
 
-    BwView view = cl.getView(name);
+    final BwView view = cl.getView(name);
 
     if (view == null) {
       request.getErr().emit(ClientError.unknownView, name);
@@ -74,6 +72,8 @@ public class DeleteViewAction extends BwAbstractAction {
 
     cl.removeView(view);
     request.getMsg().emit(ClientMessage.deletedView);
+    request.getSess().embedViews(request);
+
     return forwardSuccess;
   }
 }

@@ -30,7 +30,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
 public class InitAddCategoryAction extends BwAbstractAction {
   /* (non-Javadoc)

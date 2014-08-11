@@ -34,7 +34,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class DeleteCategoryAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -43,7 +43,7 @@ public class DeleteCategoryAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -54,9 +54,9 @@ public class DeleteCategoryAction extends BwAbstractAction {
 
     form.setPropRefs(null);
 
-    BwCategory key = form.getCategory();
+    final BwCategory key = form.getCategory();
 
-    Client.DeleteReffedEntityResult drer = cl.deleteCategory(key);
+    final Client.DeleteReffedEntityResult drer = cl.deleteCategory(key);
 
     if (drer == null) {
       form.getErr().emit(ClientError.unknownCategory, key);

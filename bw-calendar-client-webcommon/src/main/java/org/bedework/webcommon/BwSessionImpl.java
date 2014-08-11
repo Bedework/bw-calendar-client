@@ -471,6 +471,57 @@ public class BwSessionImpl implements BwSession {
                            getLocationCollator().getCollatedCollection(vals));
   }
 
+  @Override
+  public void embedViews(final BwRequest request) throws Throwable {
+    request.setSessionAttr(BwRequest.bwViewsListName,
+                           request.getClient().getAllViews());
+  }
+
+  @Override
+  public Collection<BwLocation> getLocations(final BwRequest request,
+                                             final int kind,
+                                             final boolean forEventUpdate) {
+    try {
+      final BwActionFormBase form = request.getBwForm();
+      final Client cl = request.getClient();
+      Collection<BwLocation> vals = null;
+
+      if (kind == ownersEntity) {
+        if (cl.getWebSubmit()) {
+          // Use public
+          vals = cl.getPublicLocations();
+        } else {
+          // Current owner
+          vals = cl.getLocations();
+
+          final BwEvent ev = form.getEvent();
+
+          if (!publicAdmin && forEventUpdate && (ev != null)) {
+            final BwLocation loc = ev.getLocation();
+
+            if ((loc != null) &&
+                    (!loc.getOwnerHref().equals(cl.getCurrentPrincipalHref()))) {
+              vals.add(loc);
+            }
+          }
+        }
+      } else if (kind == editableEntity) {
+        vals = cl.getEditableLocations();
+      }
+
+      if (vals == null) {
+        // Won't need this with 1.5
+        throw new Exception("Software error - bad kind " + kind);
+      }
+
+      return getLocationCollator().getCollatedCollection(vals);
+    } catch (final Throwable t) {
+      t.printStackTrace();
+      request.getErr().emit(t);
+      return new ArrayList<>();
+    }
+  }
+
   /* ====================================================================
    *                   Package methods
    * ==================================================================== */
@@ -694,50 +745,6 @@ public class BwSessionImpl implements BwSession {
     return contactCollator;
   }
 
-  public Collection<BwLocation> getLocations(final BwRequest request,
-                                             final int kind,
-                                             final boolean forEventUpdate) {
-    try {
-      final BwActionFormBase form = request.getBwForm();
-      final Client cl = request.getClient();
-      Collection<BwLocation> vals = null;
-
-      if (kind == ownersEntity) {
-        if (cl.getWebSubmit()) {
-          // Use public
-          vals = cl.getPublicLocations();
-        } else {
-          // Current owner
-          vals = cl.getLocations();
-
-          final BwEvent ev = form.getEvent();
-
-          if (!publicAdmin && forEventUpdate && (ev != null)) {
-            final BwLocation loc = ev.getLocation();
-
-            if ((loc != null) &&
-                    (!loc.getOwnerHref().equals(cl.getCurrentPrincipalHref()))) {
-              vals.add(loc);
-            }
-          }
-        }
-      } else if (kind == editableEntity) {
-        vals = cl.getEditableLocations();
-      }
-
-      if (vals == null) {
-        // Won't need this with 1.5
-        throw new Exception("Software error - bad kind " + kind);
-      }
-
-      return getLocationCollator().getCollatedCollection(vals);
-    } catch (final Throwable t) {
-      t.printStackTrace();
-      request.getErr().emit(t);
-      return new ArrayList<>();
-    }
-  }
-
   private CollectionCollator<BwLocation> getLocationCollator() {
     if (locationCollator == null) {
       locationCollator = new CollectionCollator<>();
@@ -749,11 +756,6 @@ public class BwSessionImpl implements BwSession {
   protected void embedPrefs(final BwRequest request) throws Throwable {
     request.setSessionAttr(BwRequest.bwPreferencesName,
                            request.getClient().getPreferences());
-  }
-
-  protected void embedViews(final BwRequest request) throws Throwable {
-    request.setSessionAttr(BwRequest.bwViewsListName,
-                           request.getClient().getAllViews());
   }
 
   private static class Cloner {

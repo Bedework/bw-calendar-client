@@ -33,7 +33,7 @@ import org.bedework.webcommon.RenderAction;
  *      <li>"success"      subscribed ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
 public class RenderViewAction extends RenderAction {
   /* (non-Javadoc)

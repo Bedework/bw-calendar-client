@@ -44,12 +44,10 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass
  */
 public class AddViewAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -57,7 +55,7 @@ public class AddViewAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    String name = request.getReqPar("name");
+    final String name = request.getReqPar("name");
 
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
@@ -66,12 +64,12 @@ public class AddViewAction extends BwAbstractAction {
 
     boolean makeDefaultView = false;
 
-    String str = request.getReqPar("makedefaultview");
+    final String str = request.getReqPar("makedefaultview");
     if (str != null) {
       makeDefaultView = str.equals("y");
     }
 
-    BwView view = new BwView();
+    final BwView view = new BwView();
     view.setName(name);
 
     if (!cl.addView(view, makeDefaultView)) {
@@ -81,6 +79,7 @@ public class AddViewAction extends BwAbstractAction {
 
     form.setView(view);
     form.setViewName(view.getName());
+    request.getSess().embedViews(request);
     //form.setSubscriptions(svc.getSubscriptions());
 
     return forwardSuccess;

@@ -163,6 +163,18 @@ public interface BwSession extends Serializable {
   void embedContactCollection(BwRequest request,
                               final int kind) throws Throwable;
 
+  /**
+   * @param request - current request
+   * @throws Throwable
+   */
+  void embedViews(final BwRequest request) throws Throwable;
+
+  /**
+   * @param request - current request
+   * @param kind of entity
+   * @param forEventUpdate if we are updating an event
+   * @return the locations
+   */
   Collection<BwLocation> getLocations(final BwRequest request,
                                       final int kind,
                                       final boolean forEventUpdate);

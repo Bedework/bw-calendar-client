@@ -216,7 +216,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     form.setGuest(bsess.isGuest());
 
-    BwPreferences prefs = cl.getPreferences();
+    final BwPreferences prefs = cl.getPreferences();
 
     if (form.getGuest()) {
       // force public view on - off by default

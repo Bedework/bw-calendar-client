@@ -99,6 +99,10 @@ try {
     </error>
   </logic:iterate>
 
+  <bean:define id="preferences"
+               name="bw_preferences" scope="session" />
+  <bw:emitText name="preferences" property="preferredEndType" />
+
   <bean:define id="presentationState"
                name="bw_presentationstate" scope="request" />
   <bw:emitText name="presentationState" property="appRoot" tagName="appRoot" /><%--

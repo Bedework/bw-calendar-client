@@ -611,6 +611,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     params.setPageSize(count);
 
     params.setQuery(request.getReqPar("query"));
+    params.setRelevance(request.getBooleanReqPar("relevance", false));
 
     FilterBase filter = null;
     final BwFilterDef fd = request.getFilterDef();

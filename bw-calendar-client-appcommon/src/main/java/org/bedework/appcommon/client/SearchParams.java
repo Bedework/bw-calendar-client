@@ -41,6 +41,8 @@ public class SearchParams implements Serializable {
 
   private String query;
 
+  private boolean relevance;
+
   private FilterBase filter;
 
   private List<SortTerm> sort;
@@ -110,6 +112,20 @@ public class SearchParams implements Serializable {
    */
   public String getQuery() {
     return query;
+  }
+
+  /**
+   * @param val true for a relevance style query
+   */
+  public void setRelevance(final boolean val) {
+    relevance = val;
+  }
+
+  /**
+   * @return true for a relevance style query
+   */
+  public boolean getRelevance() {
+    return relevance;
   }
 
   /** if null no filtering
@@ -208,6 +224,7 @@ public class SearchParams implements Serializable {
             .append("fromDate", getFromDate())
             .append("toDate", getToDate())
             .append("query", getQuery())
+            .append("relevance", getRelevance())
             .append("filter", getFilter())
             .append("format", getFormat())
             .append("forExport", getForExport())

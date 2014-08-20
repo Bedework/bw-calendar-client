@@ -1534,6 +1534,7 @@ public class ROClientImpl implements Client {
 
     lastSearch = getIndexer(publicIndex).search(
             params.getQuery(),
+            params.getRelevance(),
             params.getFilter(),
             params.getSort(),
             getDefaultFilterContext(),

@@ -18,42 +18,26 @@
 */
 package org.bedework.webcommon.location;
 
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwLocation;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwSession;
 
-/** This action sets the state ready for adding a location.
+/** This action fetches all editable locations and embeds them in the session.
  *
  * <p>Forwards to:<ul>
- *      <li>"noAccess"     user not authorised.</li>
- *      <li>"continue"     continue on to update page.</li>
+ *      <li>"success"      ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm rpi.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
-public class InitAddLocationAction extends BwAbstractAction {
+public class InitUpdateAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    request.getSess().embedLocations(request,
+                                     BwSession.editableEntity);
 
-    /** Check access
-     */
-    if (cl.isGuest() ||
-        (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
-    /** Set the objects to null so we get new ones.
-     */
-    form.assignAddingLocation(true);
-    form.setLocation(BwLocation.makeLocation());
-    form.setLocationAddress(null);
-    form.setLocationSubaddress(null);
-
-    return forwardContinue;
+    return forwardSuccess;
   }
 }
-

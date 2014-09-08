@@ -1325,7 +1325,7 @@
     </action>
 
     <action    path="/location/initUpdate"
-               type="org.bedework.webcommon.NoopAction"
+               type="org.bedework.webcommon.location.InitUpdateAction"
                name="calForm"
                scope="session"
                parameter="actionType=action"

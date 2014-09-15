@@ -170,17 +170,21 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     form.setSession(bsess);
 
-    BwRequest bwreq = new BwRequest(request, bsess, this);
+    final BwRequest bwreq = new BwRequest(request, bsess, this);
 
-    Collection<Locale> reqLocales = request.getLocales();
-    String reqLoc = request.getReqPar("locale");
+    if (bwreq.present("refresh")) {
+      bwreq.refresh();
+    }
+
+    final Collection<Locale> reqLocales = request.getLocales();
+    final String reqLoc = request.getReqPar("locale");
 
     if (reqLoc != null) {
       if ("default".equals(reqLoc)) {
         form.setRequestedLocale(null);
       } else {
         try {
-          Locale loc = Util.makeLocale(reqLoc);
+          final Locale loc = Util.makeLocale(reqLoc);
           form.setRequestedLocale(loc); // Make it stick
         } catch (Throwable t) {
           // Ignore bad parameter?
@@ -190,15 +194,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     checkMvarReq(bwreq);
 
-    Client cl = bwreq.getClient();
+    final Client cl = bwreq.getClient();
 
-    Locale loc = cl.getUserLocale(reqLocales,
+    final Locale loc = cl.getUserLocale(reqLocales,
                                   form.getRequestedLocale());
-    BwModuleState mstate = bwreq.getModule().getState();
+    final BwModuleState mstate = bwreq.getModule().getState();
 
     if (loc != null) {
       BwLocale.setLocale(loc);
-      Locale cloc = form.getCurrentLocale();
+      final Locale cloc = form.getCurrentLocale();
       if ((cloc == null) | (!cloc.equals(loc))) {
         mstate.setRefresh(true);
       }

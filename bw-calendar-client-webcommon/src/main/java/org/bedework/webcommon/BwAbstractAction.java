@@ -249,7 +249,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       bsess.embedFilters(bwreq);
 
       if (!cl.getPublicAdmin()) {
-        String viewType = request.getReqPar("viewType");
+        final String viewType = request.getReqPar("viewType");
         if (viewType != null) {
           mstate.setViewType(viewType);
         } else {
@@ -306,14 +306,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /* Set up ready for the action - may reset svci */
 
-    int temp = actionSetup(bwreq, form);
+    final int temp = actionSetup(bwreq, form);
     if (temp != forwardNoAction) {
       return forwards[temp];
     }
 
     /* see if we got cancelled */
 
-    String reqpar = request.getReqPar("cancelled");
+    final String reqpar = request.getReqPar("cancelled");
 
     if (reqpar != null) {
       /** Set the objects to null so we get new ones.
@@ -329,14 +329,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         form.setInBoxInfo(ib);
       } else {
         ib.refresh(cl, false);
-      }
-
-      InOutBoxInfo ob = form.getOutBoxInfo();
-      if (ob == null) {
-        ob = new InOutBoxInfo(cl, false);
-        form.setOutBoxInfo(ob);
-      } else {
-        ob.refresh(cl, false);
       }
 
       NotificationInfo ni = form.getNotificationInfo();

@@ -436,13 +436,12 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private String snsubject;
 
   /* ....................................................................
-   *                   Notifications, Inbox and Outbox
+   *                   Notifications, Inbox
    * .................................................................... */
 
   private NotificationInfo notificationInfo;
 
   private InOutBoxInfo inBoxInfo;
-  private InOutBoxInfo outBoxInfo;
 
   private UpdateFromTimeZonesInfo updateFromTimeZonesInfo;
 
@@ -2582,20 +2581,6 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public InOutBoxInfo getInBoxInfo() {
     return inBoxInfo;
-  }
-
-  /**
-   * @param val
-   */
-  public void setOutBoxInfo(final InOutBoxInfo val) {
-    outBoxInfo = val;
-  }
-
-  /**
-   * @return InOutBoxInfo
-   */
-  public InOutBoxInfo getOutBoxInfo() {
-    return outBoxInfo;
   }
 
   /* ....................................................................

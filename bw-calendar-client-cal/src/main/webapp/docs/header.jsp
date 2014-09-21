@@ -214,7 +214,6 @@ try {
 
       <schedule>
         <showInbox><bw:rewrite renderURL="true" page="/schedule/showInbox.rdo?b=de"/></showInbox>
-        <showOutbox><bw:rewrite renderURL="true" page="/schedule/showOutbox.rdo?b=de"/></showOutbox>
         <initAttendeeRespond><bw:rewrite actionURL="true" page="/schedule/initAttendeeRespond.do?b=de"/></initAttendeeRespond>
         <attendeeRespond><bw:rewrite actionURL="true" page="/schedule/attendeeRespond.do?b=de"/></attendeeRespond>
         <initAttendeeReply><bw:rewrite actionURL="true" page="/schedule/initAttendeeReply.do?b=de"/></initAttendeeReply>
@@ -367,19 +366,9 @@ try {
     </logic:present>
   </inboxState>--%>
 
-  <%-- Outbox state
-  <outboxState>
-    <logic:present name="calForm" property="outBoxInfo" >
-      <bean:define id="outBoxInfo" name="calForm" property="outBoxInfo" />
-      <bw:emitText name="outBoxInfo" property="changed" />
-      <bw:emitText name="outBoxInfo" property="numActive" />
-      <bw:emitText name="outBoxInfo" property="numProcessed" />
-    </logic:present>
-  </outboxState>--%>
-
   <schedulingMessages>
-    <logic:present name="calForm" property="inBoxInfoRefreshed" >
-      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfoRefreshed" />
+    <logic:present name="calForm" property="inBoxInfo" >
+      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfo" />
       <%@include file="/docs/schedule/schedMessages.jsp"%>
     </logic:present>
   </schedulingMessages>

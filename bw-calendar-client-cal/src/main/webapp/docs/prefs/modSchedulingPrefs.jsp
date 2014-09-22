@@ -15,10 +15,7 @@
   <user><bean:write name="userPrefs" property="ownerHref"/></user>
   <%--inbox>
     <bw:emitAcl name="inBoxInfo" property="currentAccess" />
-  </inbox>
-  <outbox>
-    <bw:emitAcl name="outBoxInfo" property="currentAccess" />
-  </outbox --%>
+  </inbox --%>
   <bw:emitText name="userPrefs" property="scheduleAutoRespond"/>
   <bw:emitText name="userPrefs" property="scheduleAutoCancelAction"/>
   <bw:emitText name="userPrefs" property="scheduleDoubleBook"/>

@@ -737,19 +737,6 @@
       <forward name="validationError" path="/event/showEventMore.rdo" redirect="true" />
     </action>
 
-    <!-- ...............................................................
-         Show the outbox
-         ............................................................... -->
-
-    <action    path="/schedule/showOutbox"
-               type="org.bedework.webcommon.RenderAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render;conversation=end"
-               validate="false">
-      <forward name="success" path="/docs/schedule/outbox.jsp" />
-    </action>
-
   <!-- ===============================================================
                     Export (download) and Import
        =============================================================== -->
@@ -1557,7 +1544,7 @@
     </action>
 
     <!-- the following needs to call a different action to display the
-         inbox and outbox access information  -->
+         inbox access information  -->
     <action    path="/prefs/fetchSchedulingForUpdate"
                type="org.bedework.webcommon.pref.FetchPrefsAction"
                name="calForm"

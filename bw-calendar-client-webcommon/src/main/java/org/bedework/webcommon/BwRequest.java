@@ -135,6 +135,12 @@ public class BwRequest extends Request {
   /** editable location list stored in session */
   public final static String bwEditableLocationsListName = "bw_editable_locations_list";
 
+  /** requested uid stored in session */
+  public final static String bwReqUidName = "bw_req_uid";
+
+  /** vpoll tab requests stored in session */
+  public final static String bwReqVpollTabName = "bw_req_vpoll_tab";
+
   /**
    * @param request
    * @param sess

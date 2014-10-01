@@ -1380,6 +1380,19 @@
     </action>
 
     <!-- ===============================================================
+                                VPOLL
+         =============================================================== -->
+
+    <action    path="/vpoll/managePolls"
+               type="org.bedework.webcommon.VpollAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="success" path="/docs/vpoll/managePolls.jsp" />
+    </action>
+
+    <!-- ===============================================================
                        Subscriptions
                        Not any more - supported through add collection code
          ===============================================================

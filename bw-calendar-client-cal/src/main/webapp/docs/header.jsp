@@ -270,6 +270,10 @@ try {
         <updateSchedulingPrefs><bw:rewrite actionURL="true" page="/prefs/updateSchedulingPrefs.do?b=de"/></updateSchedulingPrefs>
       </prefs>
 
+      <vpoll>
+        <managePolls><bw:rewrite actionURL="true" page="/vpoll/managePolls?b=de"/></managePolls>
+      </vpoll>
+
       <misc>
         <upload><bw:rewrite actionURL="true" page="/misc/upload.do?b=de"/></upload>
         <initUpload><bw:rewrite renderURL="true" page="/misc/initUpload.rdo?b=de"/></initUpload>

@@ -13,6 +13,7 @@
 
     <event>
       <bw:emitText name="event" property="name" />
+      <bw:emitText name="event" property="entityType" />
 
       <bw:emitText name="event" property="scheduleState" />
       <bw:emitText name="event" property="scheduleMethod" />

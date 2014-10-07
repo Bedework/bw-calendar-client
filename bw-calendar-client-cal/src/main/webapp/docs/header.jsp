@@ -271,7 +271,7 @@ try {
       </prefs>
 
       <vpoll>
-        <managePolls><bw:rewrite actionURL="true" page="/vpoll/managePolls?b=de"/></managePolls>
+        <managePolls><bw:rewrite renderURL="true" page="/vpoll/managePolls.rdo?b=de"/></managePolls>
       </vpoll>
 
       <misc>
@@ -372,8 +372,8 @@ try {
 
   <schedulingMessages>
     <logic:present name="calForm" property="inBoxInfo" >
-      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfo" />
-      <%@include file="/docs/schedule/schedMessages.jsp"%>
+      <bean:define id="boxInfo" name="calForm" property="inBoxInfo" />
+      <%@include file="/docs/schedule/inoutbox.jsp"%>
     </logic:present>
   </schedulingMessages>
 

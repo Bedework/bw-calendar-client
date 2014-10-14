@@ -271,7 +271,7 @@ try {
       </prefs>
 
       <vpoll>
-        <managePolls><bw:rewrite renderURL="true" page="/vpoll/managePolls.rdo?b=de"/></managePolls>
+        <initManageVpoll><bw:rewrite actionURL="true" page="/vpoll/initManageVpoll.do?b=de"/></initManageVpoll>
       </vpoll>
 
       <misc>

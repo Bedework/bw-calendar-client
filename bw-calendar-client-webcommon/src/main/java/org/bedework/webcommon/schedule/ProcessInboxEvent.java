@@ -27,12 +27,12 @@ import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
+import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.event.EventActionBase;
-
-import org.bedework.util.timezones.DateTimeUtil;
 
 import java.util.Collection;
 import java.util.Date;
@@ -66,31 +66,57 @@ import java.util.Date;
  * </ul>
  */
 public class ProcessInboxEvent extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    boolean preserveInbox = request.present("preserveInbox");
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
+
+    if (!request.present("calPath")) {
+      // Just continue
+
+      request.setSessionAttr(BwRequest.bwDefaultEventCalendar,
+                             cl.getPreferences().getDefaultCalendarPath());
+      return forwardContinue;
+    }
+
+    final boolean preserveInbox = request.present("preserveInbox");
     form.assignAddingEvent(false);
 
-    Rmode mode;
+    final Rmode mode;
     if (!request.present("recurrenceId")) {
       mode = Rmode.overrides;
     } else {
       mode = Rmode.expanded;
     }
-    EventInfo einf = findEvent(request, mode);
+    final EventInfo einf = findEvent(request, mode);
     if (einf == null) {
       // Disappeared while we sat there I guess.
       return forwardNoAction;
     }
 
+    request.removeSessionAttr(BwRequest.bwReqUidName);
+
+    if (einf.getEvent().getEntityType() == IcalDefs.entityTypeVpoll) {
+      form.setRequestedUid(einf.getEvent().getUid());
+      final String tab = request.getReqPar("tab");
+
+      if (tab == null) {
+        request.removeSessionAttr(BwRequest.bwReqVpollTabName);
+      } else {
+        request.setSessionAttr(BwRequest.bwReqVpollTabName, tab);
+      }
+
+      if (!preserveInbox) {
+        // Delete the inbox copy
+        cl.deleteEvent(einf, false);
+      }
+
+      return forwardContinue;
+    }
+
     // Try to fetch the real copy.
 
-    EventInfo colEi = cl.getStoredMeeting(einf.getEvent());
+    final EventInfo colEi = cl.getStoredMeeting(einf.getEvent());
     if (colEi == null) {
       // Copy the inbox copy - will embed it in form
       copyEvent(request, einf.getEvent());
@@ -110,25 +136,25 @@ public class ProcessInboxEvent extends EventActionBase {
     }
 
     form.setEventInfo(colEi, false);
-    BwEvent ev = colEi.getEvent();
+    final BwEvent ev = colEi.getEvent();
 
     // Not export - just set up for display
 
     if (ev.getRrules() != null) {
-      Collection<RecurRuleComponents> rrcs = RecurRuleComponents.fromEventRrules(ev);
+      final Collection<RecurRuleComponents> rrcs = RecurRuleComponents.fromEventRrules(ev);
 
       form.setRruleComponents(rrcs);
     } else {
       form.setRruleComponents(null);
     }
 
-    EventFormatter ef = new EventFormatter(cl,
-                                           new IcalTranslator(new IcalCallbackcb(cl)),
-                                           colEi);
+    final EventFormatter ef = new EventFormatter(cl,
+                                                 new IcalTranslator(new IcalCallbackcb(cl)),
+                                                 colEi);
 
     form.setCurEventFmt(ef);
 
-    Date evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtstart().getDate());
+    final Date evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtstart().getDate());
 
     /* Set the date using the current user timezone */
     setViewDate(request, DateTimeUtil.isoDate(evdt).substring(0, 8));

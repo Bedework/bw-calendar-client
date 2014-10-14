@@ -55,7 +55,7 @@ public class DeleteEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -63,13 +63,13 @@ public class DeleteEventAction extends EventActionBase {
       return forwardNoAccess; // First line of defence
     }
 
-    boolean publicAdmin = cl.getPublicAdmin();
-    boolean submitApp = form.getSubmitApp();
-    boolean publicEvents = publicAdmin || submitApp;
+    final boolean publicAdmin = cl.getPublicAdmin();
+    final boolean submitApp = form.getSubmitApp();
+    final boolean publicEvents = publicAdmin || submitApp;
 
     String submitterEmail = null;
 
-    EventInfo ei = findEvent(request, Rmode.entityOnly);
+    final EventInfo ei = findEvent(request, Rmode.entityOnly);
 
     if (ei == null) {
       // Do nothing
@@ -77,12 +77,12 @@ public class DeleteEventAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    BwEvent ev = ei.getEvent();
+    final BwEvent ev = ei.getEvent();
 
     if (publicAdmin) {
       // We might need the submitters info */
 
-      List<BwXproperty> xps = ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
+      final List<BwXproperty> xps = ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
 
       if (!Util.isEmpty(xps)) {
         submitterEmail = xps.iterator().next().getValue();
@@ -94,12 +94,12 @@ public class DeleteEventAction extends EventActionBase {
         form.getErr().emit(ClientError.unknownEvent);
         return forwardNoAction;
       }
-    } catch (CalFacadeAccessException cfe) {
+    } catch (final CalFacadeAccessException cfe) {
       if (publicEvents) {
         ev.setDeleted(true);
         try {
           cl.updateEvent(ei, true, null);
-        } catch (CalFacadeAccessException cfe1) {
+        } catch (final CalFacadeAccessException cfe1) {
           form.getErr().emit(ClientError.noAccess);
           return forwardNoAction;
         }
@@ -107,7 +107,7 @@ public class DeleteEventAction extends EventActionBase {
         try {
           /* Can't really delete it - try annotating it */
           cl.markDeleted(ev);
-        } catch (CalFacadeAccessException cfe1) {
+        } catch (final CalFacadeAccessException cfe1) {
           form.getErr().emit(ClientError.noAccess);
           return forwardNoAction;
         }

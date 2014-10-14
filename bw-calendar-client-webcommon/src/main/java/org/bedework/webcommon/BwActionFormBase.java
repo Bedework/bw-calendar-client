@@ -100,6 +100,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private Locale requestedLocale;
 
+  private String requestedUid;
+
   /* This should be a cloned copy only */
   private AuthProperties authpars;
 
@@ -539,6 +541,23 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public Locale getRequestedLocale() {
     return requestedLocale;
+  }
+
+  /** One shot from a request.
+   *
+   * @param val
+   */
+  public void setRequestedUid(final String val) {
+    requestedUid = val;
+  }
+
+  /**
+   * @return uid or null
+   */
+  public String getRequestedUid() {
+    String uid = requestedUid;
+    requestedUid = null; // Only one go
+    return uid;
   }
 
   /** Result of last action - only needed for rendering till another action changes it

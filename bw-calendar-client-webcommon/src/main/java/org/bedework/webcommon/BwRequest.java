@@ -141,6 +141,9 @@ public class BwRequest extends Request {
   /** vpoll tab requests stored in session */
   public final static String bwReqVpollTabName = "bw_req_vpoll_tab";
 
+  /** default event calendar stored in session */
+  public final static String bwDefaultEventCalendar = "bw_default_event_calendar";
+
   /**
    * @param request
    * @param sess

@@ -1383,11 +1383,21 @@
                                 VPOLL
          =============================================================== -->
 
+    <action    path="/vpoll/initManageVpoll"
+               type="org.bedework.webcommon.schedule.ProcessInboxEvent"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="continue" path="/vpoll/managePolls.rdo" redirect="true" />
+      <forward name="success" path="/vpoll/managePolls.rdo" redirect="true" />
+    </action>
+
     <action    path="/vpoll/managePolls"
                type="org.bedework.webcommon.VpollAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render;conversation=end"
+               parameter="actionType=render;conversation=end;refinterval=1500"
                validate="false">
       <forward name="success" path="/docs/vpoll/managePolls.jsp" />
     </action>

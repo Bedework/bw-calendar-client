@@ -6,6 +6,8 @@
   <event>
     <entityType><bean:write name="event" property="entityType"/></entityType>
     <scheduleMethod><bean:write name="event" property="scheduleMethod"/></scheduleMethod>
+    <name><bean:write name="event" property="name"/></name>
+    <created><bean:write name="event" property="created"/></created>
     <start><%-- start date and time --%>
       <noStart><bean:write name="event" property="noStart"/></noStart>
       <bean:define id="date" name="eventFmt"
@@ -64,12 +66,12 @@
                   <bean:define id="xparName" name="xpar" property="name"/>
                   <% String xparStart = "<" + (String)xparName + ">";
                      String xparEnd = "</" + (String)xparName + ">";%>
-                  <%=xparStart%><![CDATA[<bean:write name="xpar" property="value" />]]><%=xparEnd%>
+                  <%=xparStart%><![CDATA[<bean:write name="xpar" property="value" filter="false"/>]]><%=xparEnd%>
                 </logic:iterate>
                 </parameters>
               </logic:present>
               <values>
-                <text><![CDATA[<bean:write name="xprop" property="value"/>]]></text>
+                <text><![CDATA[<bean:write name="xprop" property="value" filter="false"/>]]></text>
               </values>
             <%=xpropEnd%>
           </logic:equal>
@@ -79,6 +81,11 @@
 
     <logic:present  name="event" property="percentComplete">
       <bw:emitText name="event" property="percentComplete"/>
+    </logic:present>
+
+    <logic:present  name="event" property="geo">
+      <bw:emitText name="event" property="geo.latitude" tagName="latitude"/>
+      <bw:emitText name="event" property="geo.longitude" tagName="longitude"/>
     </logic:present>
 
     <logic:notPresent name="detailView" scope="request"><%-- look for short form --%>

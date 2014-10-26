@@ -300,6 +300,10 @@ try {
     </logic:present>
   </syspars>
 
+  <logic:present name="bw_feature_flags" scope="session" >
+      <featureFlags><bean:write name="bw_feature_flags" scope="session" /></featureFlags>
+  </logic:present>
+
   <myCalendars>
     <jsp:include page="/docs/calendar/emitCalendars.jsp"/>
   </myCalendars>

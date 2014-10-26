@@ -325,6 +325,10 @@ try {
   <logic:present name="bw_cache_prefix" scope="session" >
     <cachePrefix><bean:write name="bw_cache_prefix" scope="session" /></cachePrefix>
   </logic:present>
+
+  <logic:present name="bw_feature_flags" scope="session" >
+      <featureFlags><bean:write name="bw_feature_flags" scope="session" /></featureFlags>
+  </logic:present>
   <%-- Inbox state
   <inboxState>
     <logic:present name="calForm" property="inBoxInfoRefreshed" >

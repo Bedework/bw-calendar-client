@@ -119,7 +119,6 @@ try {
   <personaluri><bean:write name="bwconfig" property="personalCalendarUri"/></personaluri>
   <publicuri><bean:write name="bwconfig" property="publicCalendarUri"/></publicuri>
   <adminuri><bean:write name="bwconfig" property="publicAdminUri"/></adminuri>
-  <bean:define id="personalUri"><bean:write name="bwconfig" property="personalCalendarUri"/></bean:define>
 
   <urlPrefixes>
     <%-- Use URL prefixes when writing hyperlinks; these use the "genurl"
@@ -133,8 +132,12 @@ try {
 
     <main>
       <initialise><genurl:rewrite forward="initialise"/></initialise>
+      <eventsFeed><bw:rewrite actionURL="true" page="/main/eventsFeed.do?b=de"/></eventsFeed>
       <setSelection><bw:rewrite actionURL="true" page="/main/setSelection.do?b=de"/></setSelection>
       <setSelectionList><bw:rewrite actionURL="true" page="/main/setSelectionList.do?b=de"/></setSelectionList>
+      <setMainEventList><bw:rewrite actionURL="true" page="/main/setMainEventList.do?b=de"/></setMainEventList>
+      <nextMainEventList><bw:rewrite actionURL="true" page="/main/nextMainEventList.do?b=de"/></nextMainEventList>
+      <setOngoingList><bw:rewrite actionURL="true" page="/main/setOngoingList.do?b=de"/></setOngoingList>
       <setViewPeriod><bw:rewrite actionURL="true" page="/main/setViewPeriod.do?b=de"/></setViewPeriod>
       <listEvents><bw:rewrite actionURL="true" page="/main/listEvents.do?b=de"/></listEvents>
       <showPage><bw:rewrite actionURL="true" page="/main/showPage.do?b=de"/></showPage>
@@ -160,6 +163,7 @@ try {
     <misc>
       <export><bw:rewrite resourceURL="true" page="/misc/export.gdo?b=de"/></export>
       <showPage><bw:rewrite renderURL="true" page="/misc/showPage.rdo?b=de"/></showPage>
+      <async><bw:rewrite renderURL="true" page="/misc/async.do?b=de"/></async>
     </misc>
 
     <mail>
@@ -257,7 +261,7 @@ try {
 
   <confirmationid><bean:write name="calForm" property="confirmationId"/></confirmationid><%--
         Value: String - a 16 character random string used to allow users to confirm
-        additions to thier private calendar.  DEPRECATED. --%>
+        additions to their private calendar.  DEPRECATED. --%>
 
   <logic:iterate id="appvar" name="calForm" property="appVars">
     <appvar><%--
@@ -342,11 +346,18 @@ try {
   </outboxState>--%>
 
   <schedulingMessages>
-    <logic:present name="calForm" property="inBoxInfo" >
-      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfo" />
+    <logic:present name="calForm" property="inBoxInfoRefreshed" >
+      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfoRefreshed" />
       <%@include file="/docs/schedule/schedMessages.jsp"%>
     </logic:present>
   </schedulingMessages>
+
+  <notifications>
+    <logic:present name="calForm" property="notificationInfo" >
+      <bean:define id="notificationInfo" name="calForm" property="notificationInfo" />
+      <%@include file="/docs/notifications/notificationInfo.jsp"%>
+    </logic:present>
+  </notifications>
 
   <selectionState><%--
     What type of information have we selected to display?  Used to
@@ -364,6 +375,13 @@ try {
         <logic:iterate id="view" name="bw_views_list" scope="session">
         <view>
           <name><bean:write name="view" property="name"/></name>
+          <paths>
+            <logic:present name="view" property="collectionPaths">
+              <logic:iterate name="view" property="collectionPaths" id="path">
+                <path><bean:write name="path"/></path>
+              </logic:iterate>
+            </logic:present>
+          </paths>
         </view>
       </logic:iterate>
     </logic:present>
@@ -393,15 +411,18 @@ try {
     </logic:present>
   </syspars>
 
-<%-- ****************************************************************
-      the following code should not be produced in the public client
-     **************************************************************** --%>
-  <logic:equal name="calForm" property="guest" value="false">
+  <logic:present name="calForm" property="imageUploadDirectory" >
+    <bw:emitText name="calForm" property="imageUploadDirectory" />
+  </logic:present>
+
+  <logic:present name="bw_feature_flags" scope="session" >
+      <featureFlags><bean:write name="bw_feature_flags" scope="session" /></featureFlags>
+  </logic:present>
+
+  <%-- Output the calendar tree --%>
     <myCalendars>
       <jsp:include page="/docs/calendar/emitCalendars.jsp"/>
     </myCalendars>
-  </logic:equal>
-
 <%
 } catch (Throwable t) {
   t.printStackTrace();

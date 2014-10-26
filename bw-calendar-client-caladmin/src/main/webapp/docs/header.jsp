@@ -317,6 +317,10 @@ try {
     <bw:emitText name="calForm" property="imageUploadDirectory" />
   </logic:present>
 
+  <logic:present name="bw_feature_flags" scope="session" >
+      <featureFlags><bean:write name="bw_feature_flags" scope="session" /></featureFlags>
+  </logic:present>
+
   <logic:iterate id="appvar" name="calForm" property="appVars">
     <appvar><%--
         Application variables can be set arbitrarily by the stylesheet designer.

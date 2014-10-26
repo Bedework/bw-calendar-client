@@ -137,6 +137,10 @@ try {
     </appvar>
   </logic:iterate>
 
+  <logic:present name="bw_feature_flags" scope="session" >
+    <featureFlags><bean:write name="bw_feature_flags" scope="session" /></featureFlags>
+  </logic:present>
+
 
 <%
 } catch (Throwable t) {

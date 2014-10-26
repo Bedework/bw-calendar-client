@@ -187,6 +187,11 @@ public class BwSessionImpl implements BwSession {
         req.setSessionAttr(BwRequest.bwCachePrefixName, cacheUrl);
       }
 
+      final String featureFlags = cl.getSystemProperties().getFeatureFlags();
+      if (featureFlags != null) {
+        req.setSessionAttr(BwRequest.bwFeatureFlagsName, featureFlags);
+      }
+
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
 
       if (mstate.getEventDates() == null) {

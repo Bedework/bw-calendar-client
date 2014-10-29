@@ -12,21 +12,12 @@
 
 <%@include file="/docs/event/eventListRoot.jsp"%>
 
-<%--  Generate form elements to be exposed --%>
-<formElements>
-  <genurl:form action="event/fetchForDisplay.do">
-    <listAllSwitchFalse>
-      <html:radio name="calForm" property="listAllEvents"
-                    value="false"
-                    onclick="document.calForm.submit();" />
-    </listAllSwitchFalse>
-    <listAllSwitchTrue>
-      <html:radio name="calForm" property="listAllEvents"
-                    value="true"
-                    onclick="document.calForm.submit();" />
-    </listAllSwitchTrue>
-  </genurl:form>
-</formElements>
+  <%-- Output the categories for UI filtering: --%>
+  <categories>
+    <logic:iterate id="category" name="bw_categories_list" scope="session">
+      <%@include file="/docs/category/emitCategory.jsp"%>
+    </logic:iterate>
+  </categories>
 
 <%@include file="/docs/footer.jsp"%>
 

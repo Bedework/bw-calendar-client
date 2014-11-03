@@ -568,9 +568,9 @@ public abstract class EventActionBase extends BwAbstractAction {
     // The user selected one from the list
 
     try {
-      String uid = form.retrieveLocId().getVal();
-      BwLocation loc = cl.getLocation(uid);
-      BwLocation eloc = event.getLocation();
+      final String uid = form.retrieveLocId().getVal();
+      final BwLocation loc = cl.getPersistentLocation(uid);
+      final BwLocation eloc = event.getLocation();
 
       if ((loc == null) || !loc.getPublick()) {
         // Somebody's faking
@@ -678,7 +678,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     if (uid != null) {
       try {
-        c = cl.getContact(uid);
+        c = cl.getPersistentContact(uid);
       } catch (Throwable t) {
         form.getErr().emit(t);
         return false;

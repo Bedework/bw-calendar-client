@@ -1144,7 +1144,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      */
     if (loc == null) {
       if (form.getLocationUid() != null) {
-        loc = cl.getLocation(form.getLocationUid());
+        loc = cl.getPersistentLocation(form.getLocationUid());
       }
     }
 

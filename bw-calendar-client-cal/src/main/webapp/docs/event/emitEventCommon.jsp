@@ -2,6 +2,7 @@
 <%@ taglib uri='struts-logic' prefix='logic' %>
 <%@ taglib uri='bedework' prefix='bw' %>
 
+<bean:define id="event" name="eventFmt" property="event"  />
 <%-- Output a single event. This page handles fields common to all views --%>
   <event>
     <entityType><bean:write name="event" property="entityType"/></entityType>
@@ -90,17 +91,17 @@
 
     <logic:notPresent name="detailView" scope="request"><%-- look for short form --%>
       <logic:notPresent name="allView" scope="request">
-        <jsp:include page="/docs/event/emitEventShort.jsp"/>
+        <%@ include file="/docs/event/emitEventShort.jsp"%>
       </logic:notPresent>
     </logic:notPresent>
 
     <logic:present name="detailView" scope="request">
-      <jsp:include page="/docs/event/emitEventDetail.jsp"/>
+      <%@ include file="/docs/event/emitEventDetail.jsp"%>
     </logic:present>
 
     <logic:present name="allView" scope="request">
-      <jsp:include page="/docs/event/emitEventDetail.jsp"/>
-      <jsp:include page="/docs/event/emitEventAll.jsp"/>
+      <%@ include file="/docs/event/emitEventDetail.jsp"%>
+      <%@ include file="/docs/event/emitEventAll.jsp" %>
     </logic:present>
 
     <%-- ****************************************************************

@@ -90,7 +90,8 @@ public class AdminClientImpl extends ClientImpl {
           throws CalFacadeException {
     currentPrincipal = null;
 
-    pars = new CalSvcIPars(authUser,
+    pars = new CalSvcIPars(id,
+                           authUser,
                            runAsUser,
                            calSuiteName,
                            true,
@@ -101,7 +102,6 @@ public class AdminClientImpl extends ClientImpl {
                            conf.getAllowEditAllLocations(),
                            conf.getAllowEditAllContacts(),
                            false);    // sessionless
-    pars.setLogId(id);
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
 

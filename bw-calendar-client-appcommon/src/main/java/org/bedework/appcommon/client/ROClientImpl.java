@@ -187,7 +187,8 @@ public class ROClientImpl implements Client {
     currentPrincipal = null;
     this.appType = appType;
 
-    pars = new CalSvcIPars(authUser,
+    pars = new CalSvcIPars(id,
+                           authUser,
                            runAsUser,
                            calSuiteName,
                            false, // publicAdmin,
@@ -198,7 +199,6 @@ public class ROClientImpl implements Client {
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
                            false);    // sessionless
-    pars.setLogId(id);
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
   }

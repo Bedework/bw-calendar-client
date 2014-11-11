@@ -39,22 +39,20 @@ import java.util.List;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
 public class DeleteCalendarAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
 
-    String calPath = form.getCalendarPath();
-    BwCalendar cal = cl.getCollection(calPath);
+    final String calPath = form.getCalendarPath();
+    final BwCalendar cal = cl.getCollection(calPath);
     if (cal == null) {
       form.getErr().emit(ClientError.unknownCalendar, calPath);
       return forwardNotFound;
@@ -75,11 +73,11 @@ public class DeleteCalendarAction extends BwAbstractAction {
      */
 
     boolean reffed = false;
-    boolean autoRemove = !cl.getPublicAdmin() &&
+    final boolean autoRemove = !cl.getPublicAdmin() &&
       (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
 
-    for (BwView v: cl.getAllViews()) {
-      List<String> paths = v.getCollectionPaths();
+    for (final BwView v: cl.getAllViews()) {
+      final List<String> paths = v.getCollectionPaths();
 
       if ((paths != null) && paths.contains(cal.getPath())) {
         if (autoRemove) {
@@ -105,7 +103,7 @@ public class DeleteCalendarAction extends BwAbstractAction {
         form.getErr().emit(ClientError.unknownCalendar, calPath);
         return forwardNotFound;
       }
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       if (CalFacadeException.collectionNotEmpty.equals(cfe.getMessage())) {
         form.getErr().emit(ClientError.referencedCalendar, calPath);
         return forwardInUse;

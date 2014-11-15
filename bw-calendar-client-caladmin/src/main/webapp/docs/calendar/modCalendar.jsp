@@ -10,6 +10,7 @@
 <creating><bean:write name="calForm" property="addingCalendar"/></creating>
 
 <%@include file="/docs/calendar/displayCalendarCommon.jsp"%>
+<%@include file="/docs/calendar/subscriptionStatus.jsp"%>
 
 <%@include file="/docs/calendar/emitCalendars.jsp"%>
 

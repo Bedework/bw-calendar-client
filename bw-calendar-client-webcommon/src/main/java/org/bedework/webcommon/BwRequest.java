@@ -39,7 +39,6 @@ import org.apache.struts.action.Action;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * @author douglm
@@ -146,6 +145,9 @@ public class BwRequest extends Request {
 
   /** default event calendar stored in session */
   public final static String bwDefaultEventCalendar = "bw_default_event_calendar";
+
+  /** subscription status stored in session */
+  public final static String bwSubscriptionStatus = "bw_subscription_status";
 
   /**
    * @param request

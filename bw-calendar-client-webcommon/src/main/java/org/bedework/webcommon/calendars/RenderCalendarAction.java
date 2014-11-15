@@ -22,6 +22,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.wrappers.CalendarWrapper;
+import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -40,9 +41,6 @@ import java.util.Set;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class RenderCalendarAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -50,7 +48,7 @@ public class RenderCalendarAction extends BwAbstractAction {
      * the form so we can display the page
      */
 
-    String calPath = form.getCalPath();
+    final String calPath = form.getCalPath();
 
     if (calPath == null) {
       // bogus request
@@ -58,8 +56,8 @@ public class RenderCalendarAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    Client cl = request.getClient();
-    BwCalendar calendar = cl.getCollection(calPath);
+    final Client cl = request.getClient();
+    final BwCalendar calendar = cl.getCollection(calPath);
 
     if (debug) {
       if (calendar == null) {
@@ -67,10 +65,10 @@ public class RenderCalendarAction extends BwAbstractAction {
       } else {
         logIt("Retrieved calendar " + calendar.getId());
 
-        Set<String> cos = form.getCalendarsOpenState();
+        final Set<String> cos = form.getCalendarsOpenState();
 
         if ((cos != null) && (calendar instanceof CalendarWrapper)) {
-          CalendarWrapper ccw = (CalendarWrapper)calendar;
+          final CalendarWrapper ccw = (CalendarWrapper)calendar;
           ccw.setOpen(cos.contains(calendar.getPath()));
         }
       }
@@ -86,9 +84,11 @@ public class RenderCalendarAction extends BwAbstractAction {
     if (calendar == null) {
       form.getErr().emit(ClientError.unknownCalendar, calPath);
       return forwardNotFound;
-    } else {
-      form.assignBeforeCalendar((BwCalendar)calendar.clone());
     }
+
+    form.assignBeforeCalendar((BwCalendar)calendar.clone());
+    final SynchStatusResponse ssr = cl.getSynchStatus(calPath);
+    request.setSessionAttr(BwRequest.bwSubscriptionStatus, ssr);
 
     return forwardSuccess;
   }

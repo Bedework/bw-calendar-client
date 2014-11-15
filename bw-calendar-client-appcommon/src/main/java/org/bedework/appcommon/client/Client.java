@@ -49,6 +49,9 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SortTerm;
+import org.bedework.calfacade.indexing.BwIndexer.Position;
+import org.bedework.calfacade.indexing.SearchResult;
+import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -56,11 +59,9 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
+import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
-import org.bedework.calfacade.indexing.BwIndexer.Position;
-import org.bedework.calfacade.indexing.SearchResult;
-import org.bedework.calfacade.indexing.SearchResultEntry;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -711,6 +712,14 @@ public interface Client extends Serializable {
    */
   void moveCollection(BwCalendar val,
                       BwCalendar newParent) throws CalFacadeException;
+
+  /**
+   *
+   * @param path to collection
+   * @return never null - requestStatus set for not an external subscription.
+   * @throws CalFacadeException
+   */
+  SynchStatusResponse getSynchStatus(String path) throws CalFacadeException;
 
   /** A virtual path might be for example "/user/adgrp_Eng/Lectures/Lectures"
    * which has two two components<ul>

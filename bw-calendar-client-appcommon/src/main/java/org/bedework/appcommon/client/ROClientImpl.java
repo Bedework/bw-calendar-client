@@ -74,6 +74,7 @@ import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
+import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.icalendar.IcalTranslator;
@@ -869,6 +870,11 @@ public class ROClientImpl implements Client {
                              final BwCalendar newParent)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public SynchStatusResponse getSynchStatus(final String path) throws CalFacadeException {
+    return svci.getCalendarsHandler().getSynchStatus(path);
   }
 
   @Override

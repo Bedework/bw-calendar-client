@@ -73,7 +73,7 @@ public class ClientImpl extends ROClientImpl {
     currentPrincipal = null;
     this.appType = appType;
 
-    pars = new CalSvcIPars(id,
+    pars = new CalSvcIPars("client-" + id,
                            authUser,
                            runAsUser,
                            null,  // calSuiteName,

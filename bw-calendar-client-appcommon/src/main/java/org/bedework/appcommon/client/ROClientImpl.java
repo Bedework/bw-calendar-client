@@ -188,7 +188,7 @@ public class ROClientImpl implements Client {
     currentPrincipal = null;
     this.appType = appType;
 
-    pars = new CalSvcIPars(id,
+    pars = new CalSvcIPars("roclient-" + id,
                            authUser,
                            runAsUser,
                            calSuiteName,

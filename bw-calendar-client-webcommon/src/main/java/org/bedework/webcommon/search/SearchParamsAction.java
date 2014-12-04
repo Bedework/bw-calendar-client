@@ -27,6 +27,9 @@ import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.util.xml.XmlEmit;
+import org.bedework.util.xml.XmlEmit.NameSpace;
+import org.bedework.util.xml.tagdefs.XcalTags;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
@@ -35,6 +38,7 @@ import org.bedework.webcommon.event.EventActionBase;
 
 import net.fortuna.ical4j.model.Calendar;
 
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -69,27 +73,6 @@ public class SearchParamsAction extends EventActionBase {
     final SearchParams params = new SearchParams();
     final Client cl = request.getClient();
     final boolean forFeederOneShot = "y".equals(request.getReqPar("f"));
-    final String outFormat = params.getFormat();
-    boolean generateCalendarContent = false;
-
-    if ((outFormat != null) &&
-            (outFormat.equals("text/calendar"))) {
-      generateCalendarContent = true;
-    }
-
-    String changeToken = null;
-
-    if (forFeederOneShot || generateCalendarContent) {
-      form.setNocache(false);
-      changeToken = cl.getCurrentChangeToken();
-
-      final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
-
-      if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
-        request.getResponse().setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-        return forwardNull;
-      }
-    }
 
     final boolean listMode = Client.listViewMode.equals(cl.getViewMode()) ||
             forFeederOneShot;
@@ -97,6 +80,45 @@ public class SearchParamsAction extends EventActionBase {
     final int forward = setSearchParams(request, params, listMode);
     if (forward != forwardSuccess) {
       return forward;
+    }
+
+    final String outFormat = params.getFormat();
+    boolean generateCalendarContent = false;
+    boolean generateIcal = false;
+    boolean generateXcal = false;
+
+    if (outFormat != null) {
+      switch (outFormat) {
+        case "text/calendar":
+          generateCalendarContent = true;
+          generateIcal = true;
+          break;
+        case "application/calendar+xml":
+          generateCalendarContent = true;
+          generateXcal = true;
+          break;
+        case "application/calendar+json":
+          generateCalendarContent = true;
+          break;
+      }
+    }
+
+    final HttpServletResponse response = request.getResponse();
+
+    if (forFeederOneShot || generateCalendarContent) {
+      form.setNocache(false);
+
+      final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
+
+      if (ifNoneMatch != null) {
+        final String changeToken = cl.getCurrentChangeToken();
+
+        if ((changeToken != null) && changeToken.equals(
+                ifNoneMatch)) {
+          response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+          return forwardNull;
+        }
+      }
     }
 
     params.setForExport(request.getBooleanReqPar("forExport", false));
@@ -129,23 +151,45 @@ public class SearchParamsAction extends EventActionBase {
         }
       }
 
-      final Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
-
       String contentName = form.getContentName();
       if (contentName == null) {
-        contentName = "calendar.ics";
+        if (generateIcal) {
+          contentName = "calendar.ics";
+        } else if (generateXcal) {
+          contentName = "calendar.xcs";
+        } else {
+          contentName = "calendar.jcs";
+        }
       }
 
-      request.getResponse().setHeader("Content-Disposition",
-                                      "Attachment; Filename=\"" +
-                                              contentName + "\"");
-      request.getResponse().setContentType("text/calendar; charset=UTF-8");
-
-      IcalTranslator.writeCalendar(ical, request.getResponse().getWriter());
-      request.getResponse().getWriter().close();
+      response.setHeader("Content-Disposition",
+                         "Attachment; Filename=\"" +
+                                 contentName + "\"");
+      response.setContentType(outFormat + "; charset=UTF-8");
 
       /* Add an etag */
-      request.getResponse().addHeader("etag", changeToken);
+      response.addHeader("etag", cl.getCurrentChangeToken());
+      response.setContentLength(-1);
+
+      try (Writer wtr = response.getWriter()) {
+        if (generateIcal) {
+          final Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
+
+          IcalTranslator.writeCalendar(ical, wtr);
+        } else if (generateXcal) {
+          final XmlEmit xml = new XmlEmit();
+
+          xml.addNs(new NameSpace(XcalTags.namespace, "X"), true);
+
+          xml.startEmit(wtr);
+
+          trans.writeXmlCalendar(eis, ScheduleMethods.methodTypePublish,
+                                 xml);
+        } else {
+          trans.writeJcal(eis, ScheduleMethods.methodTypePublish,
+                          wtr);
+        }
+      }
 
       return forwardNull;
     }
@@ -167,7 +211,7 @@ public class SearchParamsAction extends EventActionBase {
                                       BwSession.ownersEntity);
 
     /* Add an etag */
-    request.getResponse().addHeader("etag", changeToken);
+    response.addHeader("etag", cl.getCurrentChangeToken());
 
     return forwardSuccess;
   }

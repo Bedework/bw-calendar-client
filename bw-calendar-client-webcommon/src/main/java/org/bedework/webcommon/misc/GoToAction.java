@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.misc;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -34,6 +35,9 @@ public class GoToAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
+
+    cl.setViewMode(Client.gridViewMode);
 
     gotoDateView(request,
                  request.getDate(),

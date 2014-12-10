@@ -81,8 +81,12 @@ public class SearchParamsAction extends EventActionBase {
     final boolean listMode = Client.listViewMode.equals(cl.getViewMode()) ||
             forFeederOneShot;
 
-    final boolean gridMode = listMode &&
+    final boolean gridMode = !listMode &&
             Client.gridViewMode.equals(cl.getViewMode());
+
+    if (debug) {
+      debugMsg("Client mode is " + cl.getViewMode());
+    }
 
     final int forward = setSearchParams(request, params, listMode);
     if (forward != forwardSuccess) {

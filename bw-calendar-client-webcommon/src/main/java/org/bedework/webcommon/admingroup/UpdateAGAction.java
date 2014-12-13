@@ -55,13 +55,10 @@ import org.bedework.webcommon.BwWebUtil;
  * @author Mike Douglass   douglm rpi.edu
  */
 public class UpdateAGAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     /* Check access
      */
@@ -74,9 +71,9 @@ public class UpdateAGAction extends BwAbstractAction {
     }
 
     cl.setChoosingGroup(false); // reset
-    boolean add = form.getAddingAdmingroup();
+    final boolean add = form.getAddingAdmingroup();
 
-    BwAdminGroup updgrp = form.getUpdAdminGroup();
+    final BwAdminGroup updgrp = form.getUpdAdminGroup();
 
     if (updgrp == null) {
       // That's not right
@@ -87,12 +84,12 @@ public class UpdateAGAction extends BwAbstractAction {
       if (request.getReqPar("addGroupMember") != null) {
         /** Add a user to the group we are updating.
          */
-        String mbr = BwWebUtil.checkNull(form.getUpdGroupMember());
+        final String mbr = BwWebUtil.checkNull(form.getUpdGroupMember());
         if (mbr == null) {
           return forwardContinue;
         }
 
-        String kind = request.getReqPar("kind");
+        final String kind = request.getReqPar("kind");
         if (!validateKind(kind, form)) {
           return forwardRetry;
         }
@@ -102,7 +99,7 @@ public class UpdateAGAction extends BwAbstractAction {
           return forwardRetry;
         }
 
-        BwPrincipal newMbr = null;
+        final BwPrincipal newMbr;
 
         if ("user".equals(kind)) {
           BwPrincipal p = cl.getUser(mbr);
@@ -119,7 +116,7 @@ public class UpdateAGAction extends BwAbstractAction {
 
           BwAuthUser au = cl.getAuthUser(p.getAccount());
 
-          if ((au != null) && (au.getUsertype() == UserAuth.noPrivileges)) {
+          if ((au != null) && au.isUnauthorized()) {
             return forwardNotAllowed;
           }
 
@@ -145,14 +142,14 @@ public class UpdateAGAction extends BwAbstractAction {
       } else if (request.getReqPar("removeGroupMember") != null) {
         /** Remove a user or group from the group we are updating.
          */
-        String mbr = request.getReqPar("removeGroupMember");
+        final String mbr = request.getReqPar("removeGroupMember");
 
-        String kind = request.getReqPar("kind");
+        final String kind = request.getReqPar("kind");
         if (!validateKind(kind, form)) {
           return forwardRetry;
         }
 
-        BwPrincipal oldMbr = null;
+        final BwPrincipal oldMbr;
 
         if ("user".equals(kind)) {
           oldMbr = cl.getUser(mbr);
@@ -185,17 +182,20 @@ public class UpdateAGAction extends BwAbstractAction {
       }
 
       cl.refreshAdminGroups();
-    } catch (CalFacadeException cfe) {
-      String msg = cfe.getMessage();
+    } catch (final CalFacadeException cfe) {
+      final String msg = cfe.getMessage();
 
-      if (CalFacadeException.duplicateAdminGroup.equals(msg)) {
-        form.getErr().emit(ClientError.duplicateGroup, updgrp.getAccount());
-        return forwardRetry;
-      } else if (CalFacadeException.alreadyOnGroupPath.equals(msg)) {
-        form.getErr().emit(ClientError.onGroupPath, updgrp.getAccount());
-        return forwardRetry;
-      } else {
-        throw cfe;
+      switch (msg) {
+        case CalFacadeException.duplicateAdminGroup:
+          form.getErr().emit(ClientError.duplicateGroup,
+                             updgrp.getAccount());
+          return forwardRetry;
+        case CalFacadeException.alreadyOnGroupPath:
+          form.getErr().emit(ClientError.onGroupPath,
+                             updgrp.getAccount());
+          return forwardRetry;
+        default:
+          throw cfe;
       }
     }
 
@@ -217,21 +217,20 @@ public class UpdateAGAction extends BwAbstractAction {
                                         final BwActionFormBase form) throws Throwable {
     boolean ok = true;
 
-    BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
+    final BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
 
     if (updAdminGroup == null) {
       // bogus call.
       return false;
     }
 
-    updAdminGroup.setAccount(Util.checkNull(
-            updAdminGroup.getAccount()));
+    updAdminGroup.setAccount(Util.checkNull(updAdminGroup.getAccount()));
 
     if (updAdminGroup.getAccount() == null) {
       form.getErr().emit(ValidationError.missingName);
       ok = false;
     } else {
-      DirectoryInfo di =  cl.getDirectoryInfo();
+      final DirectoryInfo di =  cl.getDirectoryInfo();
       String href = di.getBwadmingroupPrincipalRoot();
       if (!href.endsWith("/")) {
         href += "/";
@@ -240,16 +239,14 @@ public class UpdateAGAction extends BwAbstractAction {
       updAdminGroup.setPrincipalRef(href + updAdminGroup.getAccount());
     }
 
-    updAdminGroup.setDescription(Util.checkNull(
-            updAdminGroup.getDescription()));
+    updAdminGroup.setDescription(Util.checkNull(updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
       form.getErr().emit(ValidationError.missingDescription);
       ok = false;
     }
 
-    String adminGroupGroupOwner = Util.checkNull(
-            form.getAdminGroupGroupOwner());
+    final String adminGroupGroupOwner = Util.checkNull(form.getAdminGroupGroupOwner());
     if (adminGroupGroupOwner == null) {
       form.getErr().emit(ValidationError.missingGroupOwner);
       ok = false;
@@ -257,8 +254,7 @@ public class UpdateAGAction extends BwAbstractAction {
       updAdminGroup.setGroupOwnerHref(cl.getUserAlways(adminGroupGroupOwner).getPrincipalRef());
     }
 
-    String adminGroupEventOwner = Util.checkNull(
-            form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = Util.checkNull(form.getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       adminGroupEventOwner = updAdminGroup.getAccount();
     }
@@ -266,7 +262,7 @@ public class UpdateAGAction extends BwAbstractAction {
       form.getErr().emit(ValidationError.missingEventOwner);
       ok = false;
     } else {
-      String prefix = cl.getAdminGroupsIdPrefix();
+      final String prefix = cl.getAdminGroupsIdPrefix();
 
       if (cl.isPrincipal(adminGroupEventOwner)) {
         // XXX For the moment just strip down to the account
@@ -287,7 +283,7 @@ public class UpdateAGAction extends BwAbstractAction {
                                      final BwActionFormBase form) throws Throwable {
     boolean ok = true;
 
-    BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
+    final BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
 
     if (updAdminGroup == null) {
       // bogus call.
@@ -296,21 +292,19 @@ public class UpdateAGAction extends BwAbstractAction {
 
     /* We should see if somebody tried to change the name of the group */
 
-    updAdminGroup.setDescription(Util.checkNull(
-            updAdminGroup.getDescription()));
+    updAdminGroup.setDescription(Util.checkNull(updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
       form.getErr().emit(ValidationError.missingDescription);
       ok = false;
     }
 
-    String adminGroupGroupOwner = Util.checkNull(
-            form.getAdminGroupGroupOwner());
-    BwPrincipal updAgowner = cl.getPrincipal(updAdminGroup.getGroupOwnerHref());
+    final String adminGroupGroupOwner = Util.checkNull(form.getAdminGroupGroupOwner());
+    final BwPrincipal updAgowner = cl.getPrincipal(updAdminGroup.getGroupOwnerHref());
 
     if ((adminGroupGroupOwner != null) &&
         (!adminGroupGroupOwner.equals(updAgowner.getAccount()))) {
-      BwPrincipal aggo = cl.getUser(adminGroupGroupOwner);
+      final BwPrincipal aggo = cl.getUser(adminGroupGroupOwner);
 
       if (aggo == null) {
         form.getErr().emit(ClientError.unknownUser, adminGroupGroupOwner);
@@ -320,16 +314,15 @@ public class UpdateAGAction extends BwAbstractAction {
       updAdminGroup.setGroupOwnerHref(aggo.getPrincipalRef());
     }
 
-    String adminGroupEventOwner = Util.checkNull(
-            form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = Util.checkNull(form.getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       // no change
       return ok;
     }
 
-    BwPrincipal ageo = cl.getUser(adminGroupEventOwner);
+    final BwPrincipal ageo = cl.getUser(adminGroupEventOwner);
 
-    String prefix = cl.getAdminGroupsIdPrefix();
+    final String prefix = cl.getAdminGroupsIdPrefix();
 
     if (!adminGroupEventOwner.startsWith(prefix)) {
       adminGroupEventOwner = prefix + adminGroupEventOwner;

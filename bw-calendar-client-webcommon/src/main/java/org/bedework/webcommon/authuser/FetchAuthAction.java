@@ -33,15 +33,13 @@ import org.bedework.webcommon.BwRequest;
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class FetchAuthAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -51,12 +49,12 @@ public class FetchAuthAction extends BwAbstractAction {
 
     /** User requested a user from the list or by entering the id.
      */
-    String userid = form.getEditAuthUserId();
+    final String userHref = form.getEditAuthUserId();
 
-    BwAuthUser au = cl.getAuthUser(userid);
+    final BwAuthUser au = cl.getAuthUser(userHref);
 
     if (au == null) {
-      form.getErr().emit(ClientError.unknownUserid, userid);
+      form.getErr().emit(ClientError.unknownUserid, userHref);
       return forwardNotFound;
     }
 

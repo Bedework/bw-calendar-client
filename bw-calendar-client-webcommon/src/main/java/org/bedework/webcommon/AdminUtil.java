@@ -42,15 +42,15 @@ import java.util.Collection;
 public class AdminUtil implements ForwardDefs {
   /** Called just before action.
    *
-   * @param request
+   * @param request request object
    * @return int foward index
    * @throws Throwable
    */
   public static int actionSetup(final BwRequest request) throws Throwable {
-    boolean debug = getLogger().isDebugEnabled();
+    final boolean debug = getLogger().isDebugEnabled();
 
-    BwActionFormBase form = (BwActionFormBase)request.getForm();
-    Client cl = request.getClient();
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
 
     BwAuthUser au = cl.getAuthUser(form.getCurrentUser());
 
@@ -65,7 +65,7 @@ public class AdminUtil implements ForwardDefs {
     }
 
     // Refresh current auth user prefs.
-    BwAuthUserPrefs prefs = au.getPrefs();
+    final BwAuthUserPrefs prefs = au.getPrefs();
 
     ((BwSessionImpl)request.getSess()).setCurAuthUserPrefs(prefs);
     form.setCurAuthUserPrefs(prefs);
@@ -73,12 +73,10 @@ public class AdminUtil implements ForwardDefs {
       // First time through here for this session. svci is still set up for the
       // authenticated user. Set access rights.
 
-      int rights = au.getUsertype();
+      form.assignCurUserPublicEvents(au.isPublicEventUser());
+      form.assignCurUserContentAdminUser(au.isContentAdminUser());
 
-      form.assignCurUserPublicEvents((rights & UserAuth.publicEventUser) != 0);
-      form.assignCurUserContentAdminUser((rights & UserAuth.contentAdminUser) != 0);
-
-      form.assignAuthorisedUser(rights != UserAuth.noPrivileges);
+      form.assignAuthorisedUser(!au.isUnauthorized());
     }
 
     if (debug) {
@@ -89,7 +87,7 @@ public class AdminUtil implements ForwardDefs {
       logIt("-------- isSuperUser: " + form.getCurUserSuperUser());
     }
 
-    int temp = checkGroup(request, true);
+    final int temp = checkGroup(request, true);
 
     if (temp != forwardNoAction) {
       if (debug) {
@@ -215,10 +213,10 @@ public class AdminUtil implements ForwardDefs {
 
   private static int setGroup(final BwRequest request,
                               final BwAdminGroup adg) throws Throwable {
-    BwActionFormBase form = request.getBwForm();
-    Client cl = request.getClient();
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
 
-    boolean debug = getLogger().isDebugEnabled();
+    final boolean debug = getLogger().isDebugEnabled();
 
     cl.getMembers(adg);
 
@@ -232,7 +230,7 @@ public class AdminUtil implements ForwardDefs {
 
     //int access = getAccess(request, getMessages());
 
-    BwPrincipal p = cl.getPrincipal(adg.getOwnerHref());
+    final BwPrincipal p = cl.getPrincipal(adg.getOwnerHref());
 
     if ((p == null) ||
         !((BwAbstractAction)request.getAction()).checkSvci(request,
@@ -258,8 +256,8 @@ public class AdminUtil implements ForwardDefs {
    *
    * <p>If none is found we return null.
    *
-   * @param request
-   * @param cl
+   * @param request the request object
+   * @param cl client
    * @return calendar suite wrapper
    * @throws Throwable
    */
@@ -270,7 +268,7 @@ public class AdminUtil implements ForwardDefs {
       return null;
     }
 
-    BwAdminGroup adg = (BwAdminGroup)cl.findGroup(groupName);
+    final BwAdminGroup adg = (BwAdminGroup)cl.findGroup(groupName);
 
     return findCalSuite(request, cl, adg);
   }
@@ -283,9 +281,9 @@ public class AdminUtil implements ForwardDefs {
    *
    * <p>If none is found we return null.
    *
-   * @param request
-   * @param cl
-   * @param adg
+   * @param request the request object
+   * @param cl client
+   * @param adg admin group
    * @return calendar suite wrapper
    * @throws Throwable
    */
@@ -306,13 +304,13 @@ public class AdminUtil implements ForwardDefs {
         return cs;
       }
 
-      for (BwGroup parent: cl.findGroupParents(adg)) {
+      for (final BwGroup parent: cl.findGroupParents(adg)) {
         cs = findCalSuite(request, cl, (BwAdminGroup)parent);
         if (cs != null) {
           return cs;
         }
       }
-    } catch (CalFacadeAccessException cfe) {
+    } catch (final CalFacadeAccessException cfe) {
       // Access is set incorrectly
       request.getErr().emit(ClientError.noCalsuiteAccess, adg.getPrincipalRef());
     }
@@ -321,14 +319,7 @@ public class AdminUtil implements ForwardDefs {
   }
 
   /**
-   * @param msg
-   */
-  public static void debugOut(final String msg) {
-    getLogger().debug(msg);
-  }
-
-  /**
-   * @param msg
+   * @param msg the message
    */
   public static void logIt(final String msg) {
     getLogger().info(msg);
@@ -343,32 +334,23 @@ public class AdminUtil implements ForwardDefs {
 
   /** Info message
    *
-   * @param msg
+   * @param msg the message
    */
   public static void info(final String msg) {
     getLogger().info(msg);
   }
 
-  /** Warning message
-   *
-   * @param msg
-   */
-  public void warn(final String msg) {
-    getLogger().warn(msg);
-  }
-
   /**
-   * @param msg
+   * @param msg the message
    */
   public void debugMsg(final String msg) {
     getLogger().debug(msg);
   }
 
   /**
-   * @param t
+   * @param t Throwable
    */
   public void error(final Throwable t) {
     getLogger().error(this, t);
   }
-
 }

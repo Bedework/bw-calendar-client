@@ -803,12 +803,44 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     editAuthUserType |= UserAuth.publicEventUser;
   }
 
+  /** Only called if the flag is set - it's a checkbox.
+   *
+   * @param val
+   */
+  public void setEditAuthUserContentAdmin(final boolean val) {
+    editAuthUserType |= UserAuth.contentAdminUser;
+  }
+
+  /** Only called if the flag is set - it's a checkbox.
+   *
+   * @param val
+   */
+  public void setEditAuthUserApprover(final boolean val) {
+    editAuthUserType |= UserAuth.approverUser;
+  }
+
   /**
    *
    * @return boolean
    */
   public boolean getEditAuthUserPublicEvents() {
-    return (editAuthUser.getUsertype() & UserAuth.publicEventUser) != 0;
+    return editAuthUser.isPublicEventUser();
+  }
+
+  /**
+   *
+   * @return boolean
+   */
+  public boolean getEditAuthUserContentAdmin() {
+    return editAuthUser.isContentAdminUser();
+  }
+
+  /**
+   *
+   * @return boolean
+   */
+  public boolean getEditAuthUserApprover() {
+    return editAuthUser.isApproverUser();
   }
 
   /** New auth user rights
@@ -838,6 +870,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public void setEditAuthUser(final BwAuthUser val) {
     editAuthUser = val;
+    editAuthUserType = 0;
   }
 
   /**

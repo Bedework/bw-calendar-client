@@ -10,17 +10,12 @@
 <page>modAuthUser</page>
 <tab>users</tab>
 
-<!-- Mod pages contain only formElements for now; we do this to
-     take advantage of Struts' form processing features -->
 <formElements>
   <genurl:form action="authuser/update" >
-    <account><bean:write name="calForm" property="editAuthUser.user.account" /></account>
+    <userHref><bean:write name="calForm" property="editAuthUser.userHref" /></userHref>
     <publicEvents><html:checkbox property="editAuthUserPublicEvents" /></publicEvents>
-    <email></email><!-- should come from a directory, not internal -->
-    <phone></phone><!-- should come from a directory, not internal -->
-    <dept></dept><!-- should come from a directory, not internal -->
-    <lastname></lastname><!-- should come from a directory, not internal -->
-    <firstname></firstname><!-- should come from a directory, not internal -->
+    <contentAdmin><html:checkbox property="editAuthUserContentAdmin" /></contentAdmin>
+    <approver><html:checkbox property="editAuthUserApprover" /></approver>
 
     <submitButtons>
       <button type="update">modAuthUser</button>

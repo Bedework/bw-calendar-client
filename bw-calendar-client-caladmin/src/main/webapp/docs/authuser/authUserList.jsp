@@ -16,8 +16,10 @@
 <authUsers>
   <logic:iterate id="authUser" name="bw_auth_users" scope="session" >
     <authUser>
-      <account><bean:write name="authUser" property="user.account" /></account>
+      <userHref><bean:write name="authUser" property="userHref" /></userHref>
       <publicEventUser><bean:write name="authUser" property="publicEventUser"/></publicEventUser>
+      <contentAdminUser><bean:write name="authUser" property="contentAdminUser"/></contentAdminUser>
+      <approverUser><bean:write name="authUser" property="approverUser"/></approverUser>
     </authUser>
   </logic:iterate>
 </authUsers>

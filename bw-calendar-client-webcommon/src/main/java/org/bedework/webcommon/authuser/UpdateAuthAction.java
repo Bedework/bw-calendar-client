@@ -33,15 +33,13 @@ import org.bedework.webcommon.BwRequest;
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class UpdateAuthAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -51,10 +49,13 @@ public class UpdateAuthAction extends BwAbstractAction {
 
     /** We are just updating from the current form values.
      */
-    BwAuthUser au = validateAuthUser(form);
+    final BwAuthUser au = form.getEditAuthUser();
+
     if (au == null) {
       return forwardRetry;
     }
+
+    au.setUsertype(form.getEditAuthUserType());
 
     if (debug) {
       debugMsg("Update authUser " + au);
@@ -65,20 +66,6 @@ public class UpdateAuthAction extends BwAbstractAction {
     form.getMsg().emit(ClientMessage.updatedAuthuser);
 
     return forwardContinue;
-  }
-
-  /**
-   *
-   * @param form
-   * @return BwAuthUser  null means something wrong, message emitted
-   * @throws Throwable
-   */
-  public BwAuthUser validateAuthUser(BwActionFormBase form) throws Throwable {
-    BwAuthUser au = form.getEditAuthUser();
-
-    au.setUsertype(form.getEditAuthUserType());
-
-    return au;
   }
 }
 

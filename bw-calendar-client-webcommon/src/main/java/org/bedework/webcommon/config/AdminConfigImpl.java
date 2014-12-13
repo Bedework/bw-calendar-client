@@ -20,6 +20,7 @@
 package org.bedework.webcommon.config;
 
 import org.bedework.appcommon.AdminConfig;
+import org.bedework.util.misc.ToString;
 
 /**
  * @author douglm
@@ -38,6 +39,8 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
   private boolean noGroupAllowed;
 
   private String adminGroupsIdPrefix;
+
+  private boolean workflowEnabled;
 
   @Override
   public void setCategoryOptional(final boolean val) {
@@ -100,8 +103,31 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
   }
 
   @Override
+  public void setWorkflowEnabled(final boolean val) {
+    workflowEnabled = val;
+  }
+
+  @Override
+  public boolean getWorkflowEnabled() {
+    return workflowEnabled;
+  }
+
+  /* ====================================================================
+   *                   Object methods
+   * ==================================================================== */
+
+  @Override
+  public String toString() {
+    final ToString ts = new ToString(this);
+
+    ts.append("workflowEnabled", getWorkflowEnabled());
+
+    return ts.toString();
+  }
+
+  @Override
   public Object clone() {
-    AdminConfigImpl conf = new AdminConfigImpl();
+    final AdminConfigImpl conf = new AdminConfigImpl();
 
     copyTo(conf);
 

@@ -77,6 +77,13 @@ try {
   <publicuri><bean:write name="bwconfig" property="publicCalendarUri"/></publicuri>
   <adminuri><bean:write name="bwconfig" property="publicAdminUri"/></adminuri>
 
+  <logic:equal name="bwconfig" property="workflowEnabled" value="true" >
+      <workflowEnabled>true</workflowEnabled>
+  </logic:equal>
+  <logic:notEqual name="bwconfig" property="workflowEnabled" value="true" >
+      <workflowEnabled>false</workflowEnabled>
+  </logic:notEqual>
+
   <!-- Path to calendar for public event submissions -->
   <submissionsRoot>
     <encoded><bean:write name="calForm" property="encodedSubmissionRoot"/></encoded>

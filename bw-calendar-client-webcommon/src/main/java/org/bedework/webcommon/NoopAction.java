@@ -18,59 +18,19 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.TimeView;
-import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.SearchParams;
-
 /** This is a no-op action
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
-public class NoopAction extends BwAbstractAction {
+public class NoopAction extends MainAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (form.getNewSession()) {
-      request.refresh();
-
-      final Client cl = request.getClient();
-
-      if (Client.listViewMode.equals(cl.getViewMode())) {
-        BwModuleState mstate = request.getModule().getState();
-        TimeView tv = mstate.getCurTimeView();
-
-        SearchParams params = cl.getSearchParams();
-
-        if (params == null) {
-          /* Set up the search parameters */
-
-          params = new SearchParams();
-          int forward = setSearchParams(request, params, true);
-
-          if (forward != forwardSuccess) {
-            return forward;
-          }
-
-          if (tv != null) {
-            tv.refreshEvents();
-          }
-
-          /* Do the search */
-          mstate.setSearchResult(cl.search(params));
-          request.setRequestAttr(BwRequest.bwSearchResultName,
-                                 mstate.getSearchResult());
-        }
-
-        if (tv != null) {
-          tv.getEvents(cl, mstate.getRefresh());
-        }
-
-        mstate.setRefresh(false);
-
-        return forwardListEvents;
-      }
+    // TODO is this correct?
+    if (!form.getNewSession()) {
+      return forwardSuccess;
     }
 
-    return forwardSuccess;
+    return super.doAction(request, form);
   }
 }

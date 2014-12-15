@@ -592,10 +592,12 @@ public class BwSessionImpl implements BwSession {
 
       /* Now get a view object */
 
-      if ((mstate.getCurViewPeriod() == BedeworkDefs.todayView) ||
-              (mstate.getViewMcDate() == null)) {
+      if (mstate.getViewMcDate() == null) {
         mstate.setViewMcDate(new MyCalendarVO(new Date(
                 System.currentTimeMillis())));
+      }
+
+      if (mstate.getCurViewPeriod() == BedeworkDefs.todayView) {
         mstate.setCurViewPeriod(BedeworkDefs.dayView);
       }
 

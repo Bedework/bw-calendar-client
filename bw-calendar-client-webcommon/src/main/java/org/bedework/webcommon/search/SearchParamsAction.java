@@ -211,6 +211,9 @@ public class SearchParamsAction extends EventActionBase {
                            mstate.getSearchResult());
 
     if (!forFeederOneShot) {
+      if (!gridMode) {
+        return forwardListEvents;
+      }
       return forwardSuccess;
     }
 

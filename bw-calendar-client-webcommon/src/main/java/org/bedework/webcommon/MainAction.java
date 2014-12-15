@@ -30,16 +30,28 @@ public class MainAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    final BwModuleState mstate = request.getModule().getState();
     request.refresh();
 
     final Client cl = request.getClient();
 
+    final boolean listMode = Client.listViewMode.equals(cl.getViewMode());
+
+    final boolean gridMode = !listMode &&
+            Client.gridViewMode.equals(cl.getViewMode());
+
+    if (debug) {
+      debugMsg("Client mode is " + cl.getViewMode());
+    }
+
     /* If not in list mode set up later */
-    if (!Client.listViewMode.equals(cl.getViewMode())) {
+    if (gridMode) {
+      gotoDateView(request,
+                   request.getDate(),
+                   request.getViewTypeI());
       return forwardSuccess;
     }
 
-    final BwModuleState mstate = request.getModule().getState();
     final TimeView tv = mstate.getCurTimeView();
 
     SearchParams params = cl.getSearchParams();

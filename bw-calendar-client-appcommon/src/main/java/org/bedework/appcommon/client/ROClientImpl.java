@@ -221,6 +221,7 @@ public class ROClientImpl implements Client {
   public void requestIn(final int conversationType)
           throws CalFacadeException {
     svci.postNotification(new HttpEvent(SysEventBase.SysCode.WEB_IN));
+    svci.setState("Request in");
 
     if (conversationType == Request.conversationTypeUnknown) {
       svci.open();
@@ -236,12 +237,14 @@ public class ROClientImpl implements Client {
               /* if a conversation is already started on entry, end it
                   with no processing of changes. */
       if (svci.isOpen()) {
+        svci.setState("Request in - close");
         svci.endTransaction();
       }
     }
 
     if (conversationType == Request.conversationTypeProcessAndOnly) {
       if (svci.isOpen()) {
+        svci.setState("Request in - flush");
         svci.flushAll();
         svci.endTransaction();
         svci.close();
@@ -250,6 +253,7 @@ public class ROClientImpl implements Client {
 
     svci.open();
     svci.beginTransaction();
+    svci.setState("Request in - started");
   }
 
   @Override
@@ -260,6 +264,7 @@ public class ROClientImpl implements Client {
     requestEnd = System.currentTimeMillis();
     svci.postNotification(new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
                                            reqTimeMillis));
+    svci.setState("Request out");
 
     if (!isOpen()) {
       return;
@@ -277,6 +282,7 @@ public class ROClientImpl implements Client {
     }
 
     svci.endTransaction();
+    svci.setState("Request out - ended");
   }
 
   @Override
@@ -1788,7 +1794,13 @@ public class ROClientImpl implements Client {
 
     final String home = svci.getPrincipalInfo().getCalendarHomePath(eventsOwner);
 
-    final BwPreferences prefs = getPreferences(eventsOwner.getPrincipalRef());
+    final BwPreferences prefs;
+
+    if (superUser) {
+      prefs = getPreferences(eventsOwner.getPrincipalRef());
+    } else {
+      prefs = getPreferences();
+    }
 
     String col = null;
 

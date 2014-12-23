@@ -1388,7 +1388,11 @@ public class ROClientImpl implements Client {
 
     viewMode = getPreferences().getDefaultViewMode();
     if (viewMode == null) {
-      viewMode = "grid";
+      if (getPublicAdmin()) {
+        viewMode = listViewMode;
+      } else {
+        viewMode = gridViewMode;
+      }
     }
 
     return viewMode;

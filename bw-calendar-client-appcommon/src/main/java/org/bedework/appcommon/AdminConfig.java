@@ -87,17 +87,4 @@ public interface AdminConfig extends ConfigCommon {
    */
   @MBeanInfo("Prefix for the admin group id")
   String getAdminGroupsIdPrefix();
-
-  /**
-   *
-   * @param val True if public events workflow enabled
-   */
-  void setWorkflowEnabled(boolean val);
-
-  /**
-   *
-   * @return True if public events workflow enabled
-   */
-  @MBeanInfo("True if public events workflow enabled")
-  boolean getWorkflowEnabled();
 }

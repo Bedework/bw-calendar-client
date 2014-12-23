@@ -101,10 +101,10 @@ public class UpdateEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
-    boolean publicAdmin = cl.getPublicAdmin();
-    boolean submitApp = form.getSubmitApp();
+    final boolean publicAdmin = cl.getPublicAdmin();
+    final boolean submitApp = form.getSubmitApp();
 
     String submitterEmail = null;
     //String submitter = null;
@@ -145,7 +145,7 @@ public class UpdateEventAction extends EventActionBase {
     }*/
 
     /* This should be done by a wrapper */
-    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
+    final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     /*
     BwEventAnnotation ann = null;
@@ -170,7 +170,7 @@ public class UpdateEventAction extends EventActionBase {
       /* recurring turned on - if "freq" is null or "NONE" we get a null rrule
        * which mean leave the recurrences alone.
        */
-      String rrule = getRrule(request, form);
+      final String rrule = getRrule(request, form);
       Collection<String> oldRrules = null;
 
       if (form.getErrorsEmitted()) {
@@ -180,12 +180,12 @@ public class UpdateEventAction extends EventActionBase {
       }
 
       if (rrule != null) {
-        Collection<String> rrules = ev.getRrules();
+        final Collection<String> rrules = ev.getRrules();
 
         boolean rruleChanged = false;
 
         if (rrules == null) {
-          Set<String> newRrules = new TreeSet<String>();
+          final Set<String> newRrules = new TreeSet<>();
           newRrules.add(rrule);
           ev.setRrules(newRrules);
           rruleChanged = true;
@@ -193,15 +193,15 @@ public class UpdateEventAction extends EventActionBase {
           if (rrules.size() == 0) {
             rruleChanged = true;
           } else if (rrules.size() > 1) {
-            oldRrules = new ArrayList<String>(rrules);
+            oldRrules = new ArrayList<>(rrules);
             rrules.clear();
             rruleChanged = true;
           } else {
-            String oldRrule = rrules.iterator().next();
+            final String oldRrule = rrules.iterator().next();
             rruleChanged = !rrule.equals(oldRrule);
 
             if (rruleChanged) {
-              oldRrules = new ArrayList<String>(rrules);
+              oldRrules = new ArrayList<>(rrules);
               rrules.clear();
             }
           }
@@ -213,7 +213,7 @@ public class UpdateEventAction extends EventActionBase {
           cte = changes.getEntry(PropertyInfoIndex.RRULE);
           cte.setChanged(oldRrules, ev.getRrules());
           cte.setRemovedValues(oldRrules);
-          cte.setAddedValues(new TreeSet<String>(ev.getRrules()));
+          cte.setAddedValues(new TreeSet<>(ev.getRrules()));
         }
       }
 
@@ -225,7 +225,7 @@ public class UpdateEventAction extends EventActionBase {
       // Turned recurring off
       /* Clear out any recurrence info */
 
-      Collection<String> rrules = ev.getRrules();
+      final Collection<String> rrules = ev.getRrules();
 
       if (!Util.isEmpty(rrules)) {
         cte = changes.getEntry(PropertyInfoIndex.RRULE);
@@ -253,7 +253,7 @@ public class UpdateEventAction extends EventActionBase {
     /* ----------------------- Change attendee list ------------------------- */
 
     if (request.present("editEventAttendees")) {
-      int res = initMeeting(request, form, true);
+      final int res = initMeeting(request, form, true);
 
       if (res != forwardSuccess) {
         return res;
@@ -265,7 +265,7 @@ public class UpdateEventAction extends EventActionBase {
     /* -------------------- Turn event into meeting ------------------------- */
 
     if (request.present("makeEventIntoMeeting")) {
-      int res = initMeeting(request, form, true);
+      final int res = initMeeting(request, form, true);
 
       if (res != forwardSuccess) {
         return res;
@@ -286,7 +286,7 @@ public class UpdateEventAction extends EventActionBase {
       return forwardEventDatesInited;
     }
 
-    boolean adding = form.getAddingEvent();
+    final boolean adding = form.getAddingEvent();
 
     if (request.hasDelete()) {
       // Delete button in form
@@ -296,7 +296,7 @@ public class UpdateEventAction extends EventActionBase {
     /* -------------------------- Collection ------------------------------ */
 
     /* TODO - If we are publishing this we should do it as a MOVE
-              Allows the back end to remove the index etry from the old
+              Allows the back end to remove the index entry from the old
               location. For the moment do it explicitly here
      */
 
@@ -311,11 +311,7 @@ public class UpdateEventAction extends EventActionBase {
       return forwardRetry;
     }
 
-    String colPath = ev.getColPath();
-    BwCalendar evCol = null;
-    if (colPath != null) {
-      evCol = cl.getCollection(colPath);
-    }
+    final String colPath = ev.getColPath();
 
     if (publishEvent) {
       /* Event MUST NOT be in a submission calendar */
@@ -339,12 +335,12 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ---------------------- Uploaded image ----------------------------- */
 
-    List<BwXproperty> extras = new ArrayList<BwXproperty>();
+    final List<BwXproperty> extras = new ArrayList<>();
 
-    FormFile ff = form.getEventImageUpload();
+    final FormFile ff = form.getEventImageUpload();
 
     if ((ff != null) && (ff.getFileSize() > 0)) {
-      ProcessedImage pi = processImage(request, ff);
+      final ProcessedImage pi = processImage(request, ff);
 
       if (!pi.OK) {
         if (!pi.retry) {
@@ -376,7 +372,7 @@ public class UpdateEventAction extends EventActionBase {
     if ((publishEvent || updateSubmitEvent)) {
       // We might need the submitters info */
 
-      List<BwXproperty> xps = ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
+      final List<BwXproperty> xps = ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
 
       if (!Util.isEmpty(xps)) {
         submitterEmail = xps.iterator().next().getValue();
@@ -416,7 +412,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Aliases ------------------------------ */
 
-    Set<BwCategory> cats = setEventAliases(request, ev);
+    final Set<BwCategory> cats = setEventAliases(request, ev);
     if (publicAdmin && !updateSubmitEvent && Util.isEmpty(cats)) {
       form.getErr().emit(ValidationError.missingTopic);
       return forwardRetry;
@@ -424,7 +420,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Categories ------------------------------ */
 
-    SetEntityCategoriesResult secr = setEntityCategories(request, cats,
+    final SetEntityCategoriesResult secr = setEntityCategories(request, cats,
                                                          ev, changes);
     if (secr.rcode != forwardSuccess) {
       cl.rollback();
@@ -433,7 +429,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ------------------------- Link ---------------------------- */
 
-    String link = Util.checkNull(form.getEventLink());
+    final String link = Util.checkNull(form.getEventLink());
     if ((link != null) && (Util.validURI(link) == null)) {
       form.getErr().emit(ValidationError.invalidUri);
       return forwardRetry;
@@ -446,7 +442,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ------------------------- Cost ---------------------------- */
 
-    String cost = Util.checkNull(form.getEventCost());
+    final String cost = Util.checkNull(form.getEventCost());
     if (!Util.equalsString(ev.getCost(), cost)) {
       changes.changed(PropertyInfoIndex.COST, ev.getCost(), cost);
       ev.setCost(cost);
@@ -454,7 +450,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ------------------------- Transparency ---------------------------- */
 
-    String transp = Util.checkNull(form.getTransparency());
+    final String transp = Util.checkNull(form.getTransparency());
     if (!Util.equalsString(ev.getTransparency(), transp)) {
       changes.changed(PropertyInfoIndex.TRANSP, ev.getTransparency(),
                       transp);
@@ -469,7 +465,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* Set the status for the event, confirmed, tentative or canceled
      */
-    String fStatus = form.getEventStatus();
+    final String fStatus = form.getEventStatus();
 
     if (!Util.equalsString(fStatus, ev.getStatus())) {
       /* Changing the status */
@@ -487,13 +483,14 @@ public class UpdateEventAction extends EventActionBase {
     /* If we're updating but not publishing a submitted event, treat it as
      * if it were the submit app.
      */
-    List<ValidationError>  ves = BwWebUtil.validateEvent(cl,
-                                updateSubmitEvent || submitApp,
-                                publicAdmin,
-                                ev);
+    final List<ValidationError> ves =
+            BwWebUtil.validateEvent(cl,
+                                    updateSubmitEvent || submitApp,
+                                    publicAdmin,
+                                    ev);
 
     if (ves != null) {
-      for (org.bedework.calfacade.exc.ValidationError ve: ves) {
+      for (final ValidationError ve: ves) {
         form.getErr().emit(ve.getErrorCode(), ve.getExtra());
       }
       return forwardRetry;

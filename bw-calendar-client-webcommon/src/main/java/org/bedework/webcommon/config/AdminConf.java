@@ -88,14 +88,4 @@ public class AdminConf extends ClientConf<AdminConfigImpl>
   public String getAdminGroupsIdPrefix() {
     return getConfig().getAdminGroupsIdPrefix();
   }
-
-  @Override
-  public void setWorkflowEnabled(final boolean val) {
-    getConfig().setWorkflowEnabled(val);
-  }
-
-  @Override
-  public boolean getWorkflowEnabled() {
-    return getConfig().getWorkflowEnabled();
-  }
 }

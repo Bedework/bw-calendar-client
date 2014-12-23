@@ -303,8 +303,12 @@ public class BwSessionImpl implements BwSession {
         col = cl.getHome();
       }
 
-      embedClonedCollection(request, col,
-                            BwRequest.bwCollectionListName);
+      if (col == null) {
+        request.getErr().emit("No home collection");
+      } else {
+        embedClonedCollection(request, col,
+                              BwRequest.bwCollectionListName);
+      }
     } catch (final Throwable t) {
       request.getErr().emit(t);
     }

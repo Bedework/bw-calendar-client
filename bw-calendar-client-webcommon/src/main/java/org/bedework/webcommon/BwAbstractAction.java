@@ -209,6 +209,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setCurrentLocale(loc);
     }
 
+    form.assignWorkflowEnabled(cl.getSystemProperties().getWorkflowEnabled());
+    form.assignWorkflowRoot(cl.getSystemProperties().getWorkflowRoot());
     form.assignCurUserSuperUser(cl.isSuperUser());
     form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
     form.assignUserMaintOK(cl.getUserMaintOK());

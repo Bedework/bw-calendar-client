@@ -40,8 +40,6 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
 
   private String adminGroupsIdPrefix;
 
-  private boolean workflowEnabled;
-
   @Override
   public void setCategoryOptional(final boolean val) {
     categoryOptional = val;
@@ -102,16 +100,6 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
     return adminGroupsIdPrefix;
   }
 
-  @Override
-  public void setWorkflowEnabled(final boolean val) {
-    workflowEnabled = val;
-  }
-
-  @Override
-  public boolean getWorkflowEnabled() {
-    return workflowEnabled;
-  }
-
   /* ====================================================================
    *                   Object methods
    * ==================================================================== */
@@ -120,7 +108,7 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
   public String toString() {
     final ToString ts = new ToString(this);
 
-    ts.append("workflowEnabled", getWorkflowEnabled());
+    ts.append("adminGroupsIdPrefix", getAdminGroupsIdPrefix());
 
     return ts.toString();
   }

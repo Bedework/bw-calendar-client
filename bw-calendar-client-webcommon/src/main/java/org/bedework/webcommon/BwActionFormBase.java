@@ -115,6 +115,9 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private BwSession sess;
 
+  private boolean workflowEnabled;
+  private String workflowRoot;
+
   /** true if this is a guest (unauthenticated) user
    */
   private boolean guest;
@@ -640,6 +643,14 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public DirectoryInfo getDirInfo() {
     return dirInfo;
+  }
+
+  public void assignWorkflowEnabled(final boolean val) {
+    workflowEnabled = val;
+  }
+
+  public boolean getWorkflowEnabled() {
+    return workflowEnabled;
   }
 
   /* ====================================================================
@@ -1658,18 +1669,52 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return String path.
    */
   public String getEncodedSubmissionRoot() {
-    String appType = getAppType();
+    final String appType = getAppType();
 
     if (appTypeWebsubmit.equals(appType) ||
         appTypeWebadmin.equals(appType)) {
       try {
         return URLEncoder.encode(getConfig().getSubmissionRoot(), "UTF-8");
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         getErr().emit(t);
       }
     }
 
     return "";
+  }
+
+  /** Return the encoded root of the workflow collections
+   *
+   * @return String path.
+   */
+  public String getEncodedWorkflowRoot() {
+    final String appType = getAppType();
+
+    if (appTypeWebadmin.equals(appType)) {
+      try {
+        return URLEncoder.encode(getWorkflowRoot(), "UTF-8");
+      } catch (final Throwable t) {
+        getErr().emit(t);
+      }
+    }
+
+    return "";
+  }
+
+  /**
+   *
+   * @param val root of the workflow collections
+   */
+  public void assignWorkflowRoot(final String val) {
+    workflowRoot = val;
+  }
+
+  /** Return the unencoded root of the workflow collections
+   *
+   * @return String path.
+   */
+  public String getWorkflowRoot() {
+    return workflowRoot;
   }
 
   /**

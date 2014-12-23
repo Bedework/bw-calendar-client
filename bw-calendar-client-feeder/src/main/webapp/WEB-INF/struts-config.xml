@@ -109,7 +109,7 @@
     <!-- ........... PUBLIC and PERSONAL clients ...... -->
 
     <action    path="/main/initialise"
-               type="org.bedework.webcommon.RenderMAinAction"
+               type="org.bedework.webcommon.RenderMainAction"
                name="calForm"
                scope="session"
                parameter="actionType=render;conversation=only"
@@ -176,6 +176,7 @@
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showMain.rdo" redirect="true" />
       <forward name="noViewDef" path="/main/showMain.rdo" redirect="true" />
     </action>
 
@@ -186,6 +187,7 @@
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/main/showEventList.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showEventList.rdo" redirect="true" />
       <forward name="noViewDef" path="/main/showEventList.rdo" redirect="true" />
     </action>
 
@@ -200,6 +202,7 @@
                parameter="actionType=action;conversation=start;mdl=ongoing"
                validate="false">
       <forward name="success" path="/main/showOngoingList.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showOngoingList.rdo" redirect="true" />
       <forward name="noViewDef" path="/main/showOngoingList.rdo" redirect="true" />
       <forward name="error" path="/main/showOngoingList.rdo" redirect="true" />
       <forward name="noAction" path="/main/showOngoingList.rdo" redirect="true" />
@@ -233,6 +236,7 @@
                parameter="actionType=action;conversation=start;mdl=mainEventList"
                validate="false">
       <forward name="success" path="/main/showMainEventList.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showMainEventList.rdo" redirect="true" />
       <forward name="noViewDef" path="/main/showMainEventList.rdo" redirect="true" />
       <forward name="error" path="/main/showMainEventList.rdo" redirect="true" />
       <forward name="noAction" path="/main/showMainEventList.rdo" redirect="true" />
@@ -294,6 +298,7 @@
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/main/showEventList.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showEventList.rdo" redirect="true" />
     </action>
 
     <action    path="/main/showEventList"
@@ -316,6 +321,7 @@
                parameter="actionType=action;conversation=only"
                validate="false">
       <forward name="success" path="/docs/event/eventList.jsp"/>
+      <forward name="listEvents" path="/docs/event/eventList.jsp"/>
     </action>
 
   <!-- ===============================================================
@@ -499,6 +505,7 @@
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/search/showResult.rdo" redirect="true" />
+      <forward name="listEvents" path="/search/showResult.rdo" redirect="true" />
     </action>
 
 

@@ -171,6 +171,7 @@
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/main/showPendingTab.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showPendingTab.rdo" redirect="true" />
     </action>
 
     <action    path="/main/showPendingTab"
@@ -180,6 +181,25 @@
                parameter="actionType=render;conversation=end"
                validate="false">
       <forward name="success" path="/docs/tabPendingEvents.jsp"/>
+    </action>
+
+    <action    path="/main/initApprovalQueueTab"
+               type="org.bedework.webcommon.search.SearchParamsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/showApprovalQueueTab"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="success" path="/docs/tabApprovalQueueEvents.jsp"/>
     </action>
 
     <action    path="/main/showCalsuiteTab"
@@ -248,6 +268,7 @@
                parameter="actionType=action"
                validate="false">
       <forward name="success" path="/event/showUpdateList.rdo" redirect="true" />
+      <forward name="listEvents" path="/event/showUpdateList.rdo" redirect="true" />
     </action>
 
   <!-- ...............................................................
@@ -1710,7 +1731,7 @@
                type="org.bedework.webcommon.search.RenderSearchResultAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render"
+               parameter="actionType=render;conversation=only;mdl=searchResults;refaction=/search/showResult.rdo"
                validate="false">
       <forward name="success" path="/docs/search/list.jsp" />
     </action>
@@ -1719,17 +1740,18 @@
                type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action"
+               parameter="actionType=action;conversation=start;mdl=searchResults"
                validate="false">
       <forward name="noAction" path="/main/showMain.rdo" redirect="true" />
       <forward name="success" path="/search/showResult.rdo" redirect="true" />
+      <forward name="listEvents" path="/search/showResult.rdo" redirect="true" />
     </action>
 
     <action    path="/search/next"
                type="org.bedework.webcommon.search.SearchNextAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action"
+               parameter="actionType=action;conversation=start;mdl=searchResults"
                validate="false">
       <forward name="success" path="/search/showResult.rdo" redirect="true" />
     </action>

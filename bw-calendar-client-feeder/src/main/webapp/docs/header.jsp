@@ -292,8 +292,8 @@ try {
 
   <%-- Inbox state
   <inboxState>
-    <logic:present name="calForm" property="inBoxInfo" >
-      <bean:define id="inBoxInfo" name="calForm" property="inBoxInfo" />
+    <logic:present name="calForm" property="inBoxInfoRefreshed" >
+      <bean:define id="inBoxInfo" name="calForm" property="inBoxInfoRefreshed" />
       <bw:emitText name="inBoxInfo" property="changed" />
       <bw:emitText name="inBoxInfo" property="numActive" />
       <bw:emitText name="inBoxInfo" property="numProcessed" />

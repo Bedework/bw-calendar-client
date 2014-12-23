@@ -77,18 +77,24 @@ try {
   <publicuri><bean:write name="bwconfig" property="publicCalendarUri"/></publicuri>
   <adminuri><bean:write name="bwconfig" property="publicAdminUri"/></adminuri>
 
-  <logic:equal name="bwconfig" property="workflowEnabled" value="true" >
+  <logic:equal name="calForm" property="workflowEnabled" value="true" >
       <workflowEnabled>true</workflowEnabled>
   </logic:equal>
-  <logic:notEqual name="bwconfig" property="workflowEnabled" value="true" >
+  <logic:notEqual name="calForm" property="workflowEnabled" value="true" >
       <workflowEnabled>false</workflowEnabled>
   </logic:notEqual>
 
-  <!-- Path to calendar for public event submissions -->
+  <%-- Path to collections for public event submissions --%>
   <submissionsRoot>
     <encoded><bean:write name="calForm" property="encodedSubmissionRoot"/></encoded>
     <unencoded><bean:write name="bwconfig" property="submissionRoot"/></unencoded>
   </submissionsRoot>
+
+  <%-- Path to collections for public event workflow --%>
+  <workflowRoot>
+    <encoded><bean:write name="calForm" property="encodedWorkflowRoot"/></encoded>
+    <unencoded><bean:write name="calForm" property="workflowRoot"/></unencoded>
+  </workflowRoot>
 
   <%-- Use URL prefixes when writing hyperlinks; these use the "genurl"
        struts tag to correctly build up application links within the
@@ -98,6 +104,7 @@ try {
   <urlPrefixes>
     <setup><bw:rewrite actionURL="true" page="/setup.do?b=de"/></setup>
     <initPendingTab><bw:rewrite actionURL="true" page="/main/initPendingTab.do?b=de"/></initPendingTab>
+    <initApprovalQueueTab><bw:rewrite actionURL="true" page="/main/initApprovalQueueTab.do?b=de"/></initApprovalQueueTab>
     <showCalsuiteTab><bw:rewrite renderURL="true" page="/main/showCalsuiteTab.rdo?b=de"/></showCalsuiteTab>
     <showUsersTab><bw:rewrite renderURL="true" page="/main/showUsersTab.rdo?b=de"/></showUsersTab>
     <showSystemTab><bw:rewrite renderURL="true" page="/main/showSystemTab.rdo?b=de"/></showSystemTab>
@@ -116,12 +123,15 @@ try {
       <initUpdateEvent><bw:rewrite actionURL="true" page="/event/initUpdateEvent.do?b=de"/></initUpdateEvent>
       <delete><bw:rewrite actionURL="true" page="/event/delete.do?b=de"/></delete>
       <deletePending><bw:rewrite actionURL="true" page="/event/deletePending.do?b=de"/></deletePending>
+      <deleteApprovalQueue><bw:rewrite actionURL="true" page="/event/deleteApprovalQueue.do?b=de"/></deleteApprovalQueue>
       <fetchForDisplay><bw:rewrite actionURL="true" page="/event/fetchForDisplay.do?b=de"/></fetchForDisplay>
       <fetchForUpdate><bw:rewrite actionURL="true" page="/event/fetchForUpdate.do?b=de"/></fetchForUpdate>
       <fetchUpdateList><bw:rewrite actionURL="true" page="/event/fetchUpdateList.do?b=de"/></fetchUpdateList>
       <fetchForUpdatePending><bw:rewrite actionURL="true" page="/event/fetchForUpdatePending.do?b=de"/></fetchForUpdatePending>
+      <fetchForUpdateApprovalQueue><bw:rewrite actionURL="true" page="/event/fetchForUpdateApprovalQueue.do?b=de"/></fetchForUpdateApprovalQueue>
       <update><bw:rewrite actionURL="true" page="/event/update.do?b=de"/></update>
       <updatePending><bw:rewrite actionURL="true" page="/event/updatePending.do?b=de"/></updatePending>
+      <updateApprovalQueue><bw:rewrite actionURL="true" page="/event/updateApprovalQueue.do?b=de"/></updateApprovalQueue>
       <selectCalForEvent><bw:rewrite actionURL="true" page="/event/selectCalForEvent.do?b=de"/></selectCalForEvent>
       <initUpload><bw:rewrite renderURL="true" page="/event/initUpload.rdo?b=de"/></initUpload>
       <upload><bw:rewrite actionURL="true" page="/event/upload.do?b=de"/></upload>

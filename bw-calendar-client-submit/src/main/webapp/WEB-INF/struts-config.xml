@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
+
 <!DOCTYPE struts-config PUBLIC
           "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
           "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
@@ -9,9 +10,9 @@
 
    <!--
      The action-mappings below are divided into "normal" actions (suffixed
-     with ".do") and render actions (suffixed with ".rdo"). All normal actions
+     with ".do") and render actions (suffixed with ".rdo").  All normal actions
      (which are typically used to change the application's state) redirect
-     to a render action that returns a jsp page for display. Render actions
+     to a render action that returns a jsp page for display.  Render actions
      do not change state.
 
      The action-mappings are grouped together by function.
@@ -44,12 +45,12 @@
      conversation   start    - start of a multi-request conversation
                     continue - part-way through a multi-request conversation
                     end - end of a multi-request conversation
-                    only - if a conversation is started, end it on entry with no
-                      processing of changes.
-                      start a new conversation which we end on exit.
-                    processAndOnly - if a conversation is started, process changes
-                      and end it on entry.
-                      start a new conversation which we end on exit.
+                    only - if a conversation is already started on entry, end it
+                      with no processing of changes.
+                      Start a new conversation which we will end on exit.
+                    processAndOnly - if a conversation is already started on entry,
+                      process changes and end it.
+                      start a new conversation which we will end on exit.
      auth           yes/no does this action require authentication
 
      In the absence of a conversation parameter we assume that a conversation
@@ -65,7 +66,6 @@
      The conversation does not end at this point - when the user submits the
      updates we continue and if some invalid input is discovered we may
      re-present the form. The conversation would end after a successful update.
-
      -->
 
 <struts-config>
@@ -75,7 +75,13 @@
                     type="org.bedework.webcommon.BwActionFormBase"/>
   </form-beans>
 
-  <!-- ========== Global Forward Definitions ============================== -->
+  <!-- ========== Global Forward Definitions ===========================
+       We try to standardize the forwards a bit.
+       "success"  takes us back to the main page
+       "done"     is local to an action and should take us back one level
+                  for example, to the list of events.
+       "continue" should stay on the same page
+       ================================================================= -->
   <global-forwards>
     <!-- render forwards -->
     <forward name="initialise" path="/main/initialise.rdo"/>
@@ -161,6 +167,7 @@
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/main/showMain.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showMain.rdo" redirect="true" />
       <forward name="notFound" path="/main/showMain.rdo" redirect="true" />
       <forward name="noViewDef" path="/main/showMain.rdo" redirect="true" />
     </action>
@@ -216,6 +223,7 @@
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/event/showPendingEvents.rdo" redirect="true" />
+      <forward name="listEvents" path="/event/showPendingEvents.rdo" redirect="true" />
     </action>
 
     <action    path="/event/showPendingEvents"
@@ -224,7 +232,7 @@
                scope="session"
                parameter="actionType=render;conversation=end"
                validate="false">
-      <forward name="continue" path="/docs/event/eventList.jsp"/>
+      <forward name="success" path="/docs/event/eventList.jsp"/>
     </action>
 
     <action    path="/event/showEvent"
@@ -608,6 +616,7 @@
                validate="false">
       <forward name="noAction" path="/main/showMain.rdo" redirect="true" />
       <forward name="success" path="/search/showResult.rdo" redirect="true" />
+      <forward name="listEvents" path="/search/showResult.rdo" redirect="true" />
     </action>
 
     <!-- renderUrl -->

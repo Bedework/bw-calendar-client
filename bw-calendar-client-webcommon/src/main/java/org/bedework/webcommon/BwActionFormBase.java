@@ -153,6 +153,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private boolean curUserAlerts;
   private boolean curUserPublicEvents;
   private boolean curUserContentAdminUser;
+  private boolean curUserApproverUser;
 
   private BwFilterDef currentFilter;
 
@@ -1151,6 +1152,22 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public boolean getCurUserContentAdminUser() {
     return curUserContentAdminUser;
+  }
+
+  /** True for approver
+   *
+   * @param val boolean
+   */
+  public void assignCurUserApproverUser(final boolean val) {
+    curUserApproverUser = val;
+  }
+
+  /** True for approver
+   *
+   * @return boolean
+   */
+  public boolean getCurUserApproverUser() {
+    return curUserApproverUser;
   }
 
   /**

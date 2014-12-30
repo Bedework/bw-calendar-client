@@ -75,6 +75,7 @@ public class AdminUtil implements ForwardDefs {
 
       form.assignCurUserPublicEvents(au.isPublicEventUser());
       form.assignCurUserContentAdminUser(au.isContentAdminUser());
+      form.assignCurUserApproverUser(au.isApproverUser());
 
       form.assignAuthorisedUser(!au.isUnauthorized());
     }

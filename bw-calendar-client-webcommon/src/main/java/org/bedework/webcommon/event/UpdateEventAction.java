@@ -112,9 +112,15 @@ public class UpdateEventAction extends EventActionBase {
     final boolean sendInvitations = request.present("submitAndSend");
     final boolean publishEvent = request.present("publishEvent");
     final boolean updateSubmitEvent = request.present("updateSubmitEvent");
+    final boolean approveEvent = request.present("approveEvent");
 
     if ((publicAdmin && !form.getAuthorisedUser()) ||
         form.getGuest()) {
+      cl.rollback();
+      return forwardNoAccess;
+    }
+
+    if (approveEvent && !form.getCurUserApproverUser()) {
       cl.rollback();
       return forwardNoAccess;
     }
@@ -131,18 +137,11 @@ public class UpdateEventAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    if (publishEvent && (ev.getRecurrenceId() != null)) {
-      // Cannot publish an instance - only the master
+    if ((publishEvent || approveEvent) && (ev.getRecurrenceId() != null)) {
+      // Cannot publish/approve an instance - only the master
       cl.rollback();
       return forwardError;
     }
-
-    /*
-    BwEvent savedEv = form.retrieveSavedEvent();
-    if (savedEv == null) {
-      // Should barf
-      savedEv = new BwEventObj();
-    }*/
 
     /* This should be done by a wrapper */
     final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
@@ -301,10 +300,15 @@ public class UpdateEventAction extends EventActionBase {
      */
 
     final String submissionsRoot = form.getConfig().getSubmissionRoot();
+    final String workflowRoot = cl.getSystemProperties().getWorkflowRoot();
+    final String unindexLocation;
 
-    if (publishEvent) {
-      // Unindex from old location
-      cl.unindex(ei.getEvent().getHref());
+    if (publishEvent | approveEvent) {
+      // Will need to unindex from old location
+//      cl.unindex(ei.getEvent().getHref());
+      unindexLocation = ev.getHref();
+    } else {
+      unindexLocation = null;
     }
 
     if (!request.setEventCalendar(ei, changes)) {
@@ -316,6 +320,13 @@ public class UpdateEventAction extends EventActionBase {
     if (publishEvent) {
       /* Event MUST NOT be in a submission calendar */
       if (colPath.startsWith(submissionsRoot)) {
+        form.getErr().emit(ValidationError.inSubmissionsCalendar);
+        cl.rollback();
+        return forwardValidationError;
+      }
+    } else if (approveEvent) {
+      /* Event MUST NOT be in a workflow calendar */
+      if (colPath.startsWith(workflowRoot)) {
         form.getErr().emit(ValidationError.inSubmissionsCalendar);
         cl.rollback();
         return forwardValidationError;
@@ -500,7 +511,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Attendees ---------------------------- */
 
-    Attendees atts = form.getAttendees();
+    final Attendees atts = form.getAttendees();
 
     cte = changes.getEntry(PropertyInfoIndex.ATTENDEE);
 
@@ -509,13 +520,13 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     if (atts.getAddedAttendees() != null) {
-      for (BwAttendee att: atts.getAddedAttendees()) {
+      for (final BwAttendee att: atts.getAddedAttendees()) {
         cte.addAddedValue(att);
       }
     }
 
     if (atts.getDeletedAttendees() != null) {
-      for (BwAttendee att: atts.getDeletedAttendees()) {
+      for (final BwAttendee att: atts.getDeletedAttendees()) {
         cte.addRemovedValue(att);
       }
     }
@@ -536,7 +547,7 @@ public class UpdateEventAction extends EventActionBase {
 
       if (ev.getRecurring() &&
           (ei.getOverrideProxies() != null)) {
-        for (BwEvent oev: ei.getOverrideProxies()) {
+        for (final BwEvent oev: ei.getOverrideProxies()) {
           copyEntities(oev);
           changeOwner(oev, cl);
           oev.setColPath(ev.getColPath());
@@ -570,13 +581,17 @@ public class UpdateEventAction extends EventActionBase {
 
       /* -------------------------- Access ------------------------------ */
 
-      String aclStr = request.getReqPar("acl");
+      final String aclStr = request.getReqPar("acl");
       if (aclStr != null) {
-        Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
+        final Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
 
         cl.changeAccess(ev, acl.getAces(), true);
       }
-    } catch (CalFacadeException cfe) {
+
+      if (unindexLocation != null) {
+        cl.unindex(unindexLocation);
+      }
+    } catch (final CalFacadeException cfe) {
       cl.rollback();
 
       if (CalFacadeException.noRecurrenceInstances.equals(cfe.getMessage())) {
@@ -600,7 +615,8 @@ public class UpdateEventAction extends EventActionBase {
 
     if (publicAdmin) {
       /* See if we need to notify event registration system for add/update */
-      BwXproperty evregprop = ev.findXproperty(BwXproperty.bedeworkEventRegStart);
+      final BwXproperty evregprop =
+              ev.findXproperty(BwXproperty.bedeworkEventRegStart);
 
       if (evregprop != null) {
         // Registerable event
@@ -616,7 +632,7 @@ public class UpdateEventAction extends EventActionBase {
       ev = new BwEventObj();
       form.getEventDates().setNewEvent(ev);
 
-      TimeView tv = request.getSess().getCurTimeView(request);
+      final TimeView tv = request.getSess().getCurTimeView(request);
 
       form.getEventStartDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
       form.getEventEndDate().setDateTime(tv.getCurDayFmt().getDateTimeString());

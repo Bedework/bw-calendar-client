@@ -471,6 +471,68 @@
     </action>
 
     <!-- ===============================================================
+                       Approval Queue Event Actions
+         =============================================================== -->
+
+    <action    path="/event/showModFormApprovalQueue"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=continue;refinterval=900"
+               validate="false">
+      <forward name="success" path="/docs/event/modEventApprovalQueue.jsp"/>
+    </action>
+
+    <action    path="/event/fetchForUpdateApprovalQueue"
+               type="org.bedework.webcommon.event.FetchEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="noAction" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="error" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="continue" path="/event/showModFormApprovalQueue.rdo" redirect="true" />
+      <forward name="copy" path="/event/showModFormApprovalQueue.rdo" redirect="true" />
+    </action>
+
+    <action    path="/event/updateApprovalQueue"
+               type="org.bedework.webcommon.event.UpdateEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="validationError" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="duplicate" path="/event/showEditEvent.rdo" redirect="true" />
+      <forward name="success" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="retry" path="/event/showModFormApprovalQueue.rdo" redirect="true" />
+      <forward name="delete" path="/event/showDeleteConfirmApprovalQueue.rdo" redirect="true" />
+      <forward name="cancelled" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="copy" path="/event/showModFormApprovalQueue.rdo" redirect="true" />
+    </action>
+
+    <action    path="/event/showDeleteConfirmApprovalQueue"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=continue"
+               validate="false">
+      <forward name="success" path="/docs/event/deleteConfirm.jsp" />
+    </action>
+
+    <action    path="/event/deleteApprovalQueue"
+               type="org.bedework.webcommon.event.DeleteEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="cancelled" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="noAction" path="/event/showDeleteConfirmApprovalQueue.rdo" redirect="true" />
+      <forward name="continue" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+      <forward name="success" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+    </action>
+
+    <!-- ===============================================================
                          Calendar Actions
          =============================================================== -->
 

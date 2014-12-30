@@ -291,6 +291,9 @@ try {
     <bw:emitText name="calForm" property="curUserContentAdminUser"
                  tagName="contentAdminUser" />
 
+    <bw:emitText name="calForm" property="curUserApproverUser"
+                 tagName="approverUser" />
+
     <bw:emitText name="calForm" property="curUserSuperUser"
                  tagName="superUser" />
 

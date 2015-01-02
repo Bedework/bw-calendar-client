@@ -1708,6 +1708,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     final String appType = getAppType();
 
     if (appTypeWebadmin.equals(appType)) {
+      if (getWorkflowRoot() == null) {
+        return "";
+      }
+
       try {
         return URLEncoder.encode(getWorkflowRoot(), "UTF-8");
       } catch (final Throwable t) {

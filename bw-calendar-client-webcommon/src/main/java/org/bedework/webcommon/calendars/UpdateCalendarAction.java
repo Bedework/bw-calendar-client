@@ -58,7 +58,7 @@ import org.bedework.access.Acl;
  *      <li>"delete"       for confirmation.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class UpdateCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)
@@ -238,11 +238,12 @@ public class UpdateCalendarAction extends BwAbstractAction {
     BwActionFormBase form = request.getBwForm();
 
     BwCalendar cal = form.getCalendar();
-    int calType;
+    boolean extSub = false;
 
     String aliasUri = request.getReqPar("aliasUri");
 
     if (add) {
+      int calType;
       // See what type we are creating
       boolean cc = request.getBooleanReqPar("calendarCollection", false);
 
@@ -252,6 +253,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
           calType = BwCalendar.calTypeAlias;
         } else {
           calType = BwCalendar.calTypeExtSub;
+          extSub = true;
         }
       } else if (cc) {
         calType = BwCalendar.calTypeCalendarCollection;
@@ -268,6 +270,12 @@ public class UpdateCalendarAction extends BwAbstractAction {
     /* If non-null will set the calType */
     if (!Util.equalsString(aliasUri, cal.getAliasUri())) {
       cal.setAliasUri(aliasUri);
+    }
+
+    if (extSub) {
+      if (request.present("adminAllowCreateEprops")) {
+        cal.setSynchAdminCreateEprops(true);
+      }
     }
 
     int refreshRate = 15 * 60; // 15 mins refresh

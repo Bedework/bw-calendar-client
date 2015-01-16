@@ -189,10 +189,11 @@
       <taglib-uri>struts-logic</taglib-uri>
       <taglib-location>/WEB-INF/tlds/struts-logic.tld</taglib-location>
     </taglib>
+    <!-- Doesn't exist
     <taglib>
       <taglib-uri>struts-template</taglib-uri>
       <taglib-location>/WEB-INF/tlds/struts-template.tld</taglib-location>
-    </taglib>
+    </taglib>-->
 
     <taglib>
       <taglib-uri>bedework</taglib-uri>

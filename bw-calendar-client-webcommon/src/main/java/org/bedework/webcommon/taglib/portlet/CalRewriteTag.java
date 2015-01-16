@@ -33,22 +33,21 @@
  */
 package org.bedework.webcommon.taglib.portlet;
 
-import javax.servlet.ServletRequest; // for javadoc
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyContent;
-
 import org.apache.log4j.Logger;
-import org.apache.portals.bridges.struts.PortletServlet;
-import org.apache.portals.bridges.struts.config.PortletURLTypes; // javadoc
+//import org.apache.portals.bridges.struts.config.PortletURLTypes;
 import org.apache.struts.taglib.html.RewriteTag;
-import org.apache.struts.taglib.TagUtils;
+
+import javax.servlet.jsp.JspException;
+
+//import org.apache.portals.bridges.struts.PortletServlet;
+//import org.apache.portals.bridges.struts.config.PortletURLTypes;
 
 /** Supports the Struts html:rewrite tag to be used within uPortlet context for
  * generating urls for the bedework portlet.
  *
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @author <a href="mailto:satish@mun.ca">Satish Sekharan</a>
- * @author Mike Douglass    douglm at bedework.edu
+ * @author Mike Douglass    douglm at rpi.edu
  * @author Dave Brondsema
  * @version $Id: RewriteTag.java 2005-10-25 12:31:13Z satish $
  */
@@ -67,13 +66,13 @@ public class CalRewriteTag extends RewriteTag {
    */
   protected boolean resourceURL = false;
 
-  /** Indicates which type of a url must be generated: action, render or resource.
+  /* Indicates which type of a url must be generated: action, render or resource.
    * <p>If not specified, the type will be determined by
    * {@link PortletURLTypes#getType(String)}</p>.
    */
-  protected PortletURLTypes.URLType urlType = null;
+  //protected PortletURLTypes.URLType urlType = null;
 
-  /** Generates a PortletURL or a ResourceURL for the link when in the context of a
+  /* Generates a PortletURL or a ResourceURL for the link when in the context of a
    * {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}, otherwise
    * the default behaviour is maintained.
    *
@@ -81,8 +80,11 @@ public class CalRewriteTag extends RewriteTag {
    * @exception JspException if a JSP exception has occurred
    */
   public int doStartTag() throws JspException {
-    boolean debug = getLogger().isDebugEnabled();
+    //boolean debug = getLogger().isDebugEnabled();
 
+    return super.doStartTag();
+
+    /* Disable portal support for the time being - class loader errors in wildfly
     if (!TagsSupport.isPortletRequest(pageContext.getRequest())) {
       return super.doStartTag();
     }
@@ -126,6 +128,7 @@ public class CalRewriteTag extends RewriteTag {
     TagUtils.getInstance().write(pageContext, urlStr);
 
     return (SKIP_BODY);
+    */
   }
 
   /** Sets the resourceURL value.
@@ -182,7 +185,7 @@ public class CalRewriteTag extends RewriteTag {
    *
    * @return the link url
    * @exception JspException if a JSP exception has occurred
-   */
+   * /
   protected String commonStartTag(String urlStr) throws JspException {
     boolean debug = getLogger().isDebugEnabled();
 
@@ -198,14 +201,14 @@ public class CalRewriteTag extends RewriteTag {
 
     /* remove embedded anchor because calendar xsl stylesheet
      * adds extra parameters later during transformation
-     */
+     * /
     int pos = urlStr.indexOf('#');
     if (pos > -1) {
       urlStr = urlStr.substring(0, pos);
     }
 
     /* Remove bedework dummy request parameter -
-     * it's an encoded form of ?b=de */
+     * it's an encoded form of ?b=de * /
     urlStr = urlStr.replaceAll(TagsSupport.bedeworkDummyPar, "");
 
     //Generate valid xml markup for transformation
@@ -223,6 +226,7 @@ public class CalRewriteTag extends RewriteTag {
     urlType = null;
   }
 
+  */
   protected void trace(String msg) {
     getLogger().debug(msg);
   }

@@ -34,12 +34,7 @@
 package org.bedework.webcommon.taglib.portlet;
 
 import org.apache.log4j.Logger;
-import org.apache.portals.bridges.struts.PortletServlet;
-import org.apache.portals.bridges.struts.config.PortletURLTypes;
 import org.apache.struts.taglib.html.LinkTag;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
@@ -49,7 +44,7 @@ import javax.servlet.jsp.JspException;
  *
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @author <a href="mailto:satish@mun.ca">Satish Sekharan</a>
- * @author Mike Douglass    douglm at bedework.edu
+ * @author Mike Douglass    douglm at rpi.edu
  * @author Dave Brondsema
  * @version $Id: RewriteTag.java 2005-10-25 12:31:13Z satish $
  */
@@ -60,7 +55,7 @@ public class CalLinkTag extends LinkTag {
    * <p>If not specified, the type will be determined by
    * {@link PortletURLTypes#getType(String)}</p>.
    */
-  protected PortletURLTypes.URLType urlType = null;
+  //protected PortletURLTypes.URLType urlType = null;
 
   /** Generates a PortletURL or a ResourceURL for the link when in the context of a
    * {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}, otherwise
@@ -68,7 +63,7 @@ public class CalLinkTag extends LinkTag {
    *
    * @return the link url
    * @exception JspException if a JSP exception has occurred
-   */
+   * /
   protected String calculateURL() throws JspException {
     boolean debug = getLogger().isDebugEnabled();
 
@@ -89,7 +84,7 @@ public class CalLinkTag extends LinkTag {
       }
 
       /* Drop the context
-       */
+       * /
       int pos = urlStr.indexOf('/');
       if (pos > 0) {
         urlStr = urlStr.substring(pos);
@@ -107,18 +102,18 @@ public class CalLinkTag extends LinkTag {
 
       /* remove embedded anchor because calendar xsl stylesheet
        * adds extra parameters later during transformation
-       */
+       * /
       pos = urlStr.indexOf('#');
       if (pos > -1) {
         urlStr = urlStr.substring(0, pos);
       }
 
       if (urlType.equals(PortletURLTypes.URLType.RESOURCE)) {
-        /* Add bedework dummy request parameter */
+        /* Add bedework dummy request parameter * /
         urlStr = urlStr + TagsSupport.bedeworkDummyParUnencoded;
       } else {
         /* Remove bedework dummy request parameter -
-         * it's an encoded form of ?b=de */
+         * it's an encoded form of ?b=de * /
         urlStr = urlStr.replaceAll(TagsSupport.bedeworkDummyPar, "");
       }
 
@@ -151,4 +146,5 @@ public class CalLinkTag extends LinkTag {
 
     return log;
   }
+  */
 }

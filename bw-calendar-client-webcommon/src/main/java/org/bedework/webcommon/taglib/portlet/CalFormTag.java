@@ -34,26 +34,25 @@
 package org.bedework.webcommon.taglib.portlet;
 
 import org.apache.log4j.Logger;
-import org.apache.portals.bridges.struts.PortletServlet;
-import org.apache.portals.bridges.struts.config.PortletURLTypes;
 import org.apache.struts.taglib.html.FormTag;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
+
+//import org.apache.portals.bridges.struts.PortletServlet;
 
 /** Supports the Struts html:form tag to be used within uPortlet context for
  * generating urls for the bedework portlet.
  *
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @author <a href="mailto:satish@mun.ca">Satish Sekharan</a>
- * @author Mike Douglass    douglm at bedework.edu
+ * @author Mike Douglass    douglm at rpi.edu
  * @author Dave Brondsema
  * @version $Id: RewriteTag.java 2005-10-25 12:31:13Z satish $
  */
 public class CalFormTag extends FormTag {
   private transient Logger log;
 
-  /**
+  /*
    * Modifies the default generated form action url to be a valid Portlet ActionURL
    * when in the context of a {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}.
    * @return the formStartElement
@@ -70,6 +69,8 @@ public class CalFormTag extends FormTag {
       return e.getMessage();
     }
 
+    return formStartElement;
+    /*
     if (!PortletServlet.isPortletRequest(pageContext.getRequest())) {
       return formStartElement;
     }
@@ -85,7 +86,7 @@ public class CalFormTag extends FormTag {
     }
 
     /* Drop the context
-     */
+     * /
     int pos = urlStr.indexOf('/');
     if (pos > 0) {
       urlStr = urlStr.substring(pos);
@@ -104,14 +105,14 @@ public class CalFormTag extends FormTag {
 
     /* remove embedded anchor because calendar xsl stylesheet
      * adds extra parameters later during transformation
-     */
+     * /
     pos = urlStr.indexOf('#');
     if (pos > -1) {
       urlStr = urlStr.substring(0, pos);
     }
 
     /* Remove bedework dummy request parameter -
-     * it's an encoded form of ?b=de */
+     * it's an encoded form of ?b=de * /
     urlStr = urlStr.replaceAll(TagsSupport.bedeworkDummyPar, "");
 
     //Generate valid xml markup for transformation
@@ -123,6 +124,7 @@ public class CalFormTag extends FormTag {
 
     return formStartElement.substring(0, actionURLStart) +
            urlStr + formStartElement.substring(actionURLEnd);
+           */
   }
 
   private void trace(final String msg) {

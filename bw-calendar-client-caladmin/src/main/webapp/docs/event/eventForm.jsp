@@ -183,6 +183,35 @@
       </logic:equal>
     </location>
 
+    <logic:equal name="calForm" property="suggestionEnabled" value="true" >
+      <suggestTo>
+        <logic:present name="bw_preferred_admin_groups" scope="session">
+          <preferred>
+            <logic:iterate id="group"
+                           name="bw_preferred_admin_groups" scope="session">
+              <group>
+                <name><bean:write name="group" property="account" /></name>
+                <href><bean:write name="group" property="principalRef" /></href>
+                <description><bean:write name="group" property="description" /></description>
+              </group>
+            </logic:iterate>
+          </preferred>
+        </logic:present>
+        <logic:present name="bw_admin_groups" scope="session">
+          <all>
+            <logic:iterate id="group"
+                           name="bw_admin_groups" scope="session">
+              <group>
+                <name><bean:write name="group" property="account" /></name>
+                <href><bean:write name="group" property="principalRef" /></href>
+                <description><bean:write name="group" property="description" /></description>
+              </group>
+            </logic:iterate>
+          </all>
+        </logic:present>
+      </suggestTo>
+    </logic:equal>
+
     <categories>
       <logic:present name="bw_preferred_categories_list" scope="session">
         <preferred>

@@ -22,6 +22,7 @@ import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.calfacade.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
@@ -184,6 +185,12 @@ public class AdminClientImpl extends ClientImpl {
   /* ------------------------------------------------------------
    *                     Admin Groups
    * ------------------------------------------------------------ */
+
+  @Override
+  public BwGroup getAdminGroup(final String href)
+          throws CalFacadeException {
+    return (BwGroup)svci.getAdminDirectories().getPrincipal(href);
+  }
 
   @Override
   public void addAdminGroup(final BwAdminGroup group)

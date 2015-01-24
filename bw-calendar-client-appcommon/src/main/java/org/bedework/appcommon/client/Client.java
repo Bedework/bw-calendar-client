@@ -426,6 +426,13 @@ public interface Client extends Serializable {
   String getAdminGroupsIdPrefix() throws CalFacadeException;
 
   /**
+   * @param href  a principal href
+   * @return group
+   * @throws CalFacadeException  for errors
+   */
+  BwGroup getAdminGroup(String href) throws CalFacadeException;
+
+  /**
    * @return groups
    * @throws CalFacadeException  for errors
    */

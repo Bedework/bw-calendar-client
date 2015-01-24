@@ -44,8 +44,7 @@ public class InitUpdateAGAction extends BwAbstractAction {
 
     final Client cl = request.getClient();
     cl.refreshAdminGroups();
-    request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                           cl.getAdminGroups());
+    request.embedAdminGroups();
 
     /** Set the objects to null so we get new ones.
      */

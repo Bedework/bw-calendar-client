@@ -533,6 +533,12 @@ public class ROClientImpl implements Client {
     return svci.getAdminDirectories().getAdminGroupsIdPrefix();
   }
 
+  @Override
+  public BwGroup getAdminGroup(final String href)
+          throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
   /* The list of cloned admin groups for the use of the user client
    */
   private static Collection<BwGroup> adminGroupsInfo;

@@ -115,6 +115,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private BwSession sess;
 
+  private boolean suggestionEnabled;
   private boolean workflowEnabled;
   private String workflowRoot;
 
@@ -644,6 +645,14 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public DirectoryInfo getDirInfo() {
     return dirInfo;
+  }
+
+  public void assignSuggestionEnabled(final boolean val) {
+    suggestionEnabled = val;
+  }
+
+  public boolean getSuggestionEnabled() {
+    return suggestionEnabled;
   }
 
   public void assignWorkflowEnabled(final boolean val) {

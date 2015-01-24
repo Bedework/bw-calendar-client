@@ -32,10 +32,9 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchAGsAction extends BwAbstractAction {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                           request.getClient().getAdminGroups());
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    request.embedAdminGroups();
 
     return forwardSuccess;
   }

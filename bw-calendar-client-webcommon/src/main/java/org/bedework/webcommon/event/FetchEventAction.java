@@ -19,12 +19,17 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /** This action fetches events for editing
  *
@@ -37,29 +42,34 @@ import org.bedework.webcommon.BwSession;
  * @author Mike Douglass   douglm rpi.edu
  */
 public class FetchEventAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
-    if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
-      return forwardNoAccess;
+    if (cl.getPublicAdmin()) {
+      if (!form.getAuthorisedUser()) {
+        return forwardNoAccess;
+      }
+
+      if (form.getSuggestionEnabled()) {
+        embedPreferredAdminGroups(request);
+        request.embedAdminGroups();
+      }
     }
 
     form.assignAddingEvent(false);
 
-    Rmode mode;
+    final Rmode mode;
     if (!request.present("recurrenceId")) {
       mode = Rmode.overrides;
     } else {
       mode = Rmode.expanded;
     }
-    EventInfo einf = findEvent(request, mode);
 
-    int fwd = refreshEvent(request, einf);
+    final EventInfo einf = findEvent(request, mode);
+
+    final int fwd = refreshEvent(request, einf);
     form.setAttendees(new Attendees());
     form.setFbResponses(null);
     form.setFormattedFreeBusy(null);
@@ -89,5 +99,26 @@ public class FetchEventAction extends EventActionBase {
     }
 
     return fwd;
+  }
+
+  private void embedPreferredAdminGroups(final BwRequest request) throws Throwable {
+    final Client cl = request.getClient();
+
+    final Set<String> prefGroupHrefs = cl.getPreferences().getPreferredGroups();
+
+    final List<BwGroup> prefGroups = new ArrayList<>(prefGroupHrefs.size());
+
+    for (final String href: prefGroupHrefs) {
+      final BwGroup group = cl.getAdminGroup(href);
+
+      if (group == null) {
+        continue;
+      }
+
+      prefGroups.add(group);
+    }
+
+    request.setSessionAttr(BwRequest.bwPreferredAdminGroupsInfoName,
+                           prefGroups);
   }
 }

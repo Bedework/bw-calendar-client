@@ -77,6 +77,13 @@ try {
   <publicuri><bean:write name="bwconfig" property="publicCalendarUri"/></publicuri>
   <adminuri><bean:write name="bwconfig" property="publicAdminUri"/></adminuri>
 
+  <logic:equal name="calForm" property="suggestionEnabled" value="true" >
+      <suggestionEnabled>true</suggestionEnabled>
+  </logic:equal>
+  <logic:notEqual name="calForm" property="suggestionEnabled" value="true" >
+      <suggestionEnabled>false</suggestionEnabled>
+  </logic:notEqual>
+
   <logic:equal name="calForm" property="workflowEnabled" value="true" >
       <workflowEnabled>true</workflowEnabled>
   </logic:equal>
@@ -105,6 +112,7 @@ try {
     <setup><bw:rewrite actionURL="true" page="/setup.do?b=de"/></setup>
     <initPendingTab><bw:rewrite actionURL="true" page="/main/initPendingTab.do?b=de"/></initPendingTab>
     <initApprovalQueueTab><bw:rewrite actionURL="true" page="/main/initApprovalQueueTab.do?b=de"/></initApprovalQueueTab>
+    <initSuggestionQueueTab><bw:rewrite actionURL="true" page="/main/initSuggestionQueueTab.do?b=de"/></initSuggestionQueueTab>
     <showCalsuiteTab><bw:rewrite renderURL="true" page="/main/showCalsuiteTab.rdo?b=de"/></showCalsuiteTab>
     <showUsersTab><bw:rewrite renderURL="true" page="/main/showUsersTab.rdo?b=de"/></showUsersTab>
     <showSystemTab><bw:rewrite renderURL="true" page="/main/showSystemTab.rdo?b=de"/></showSystemTab>

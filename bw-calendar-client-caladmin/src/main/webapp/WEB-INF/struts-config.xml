@@ -202,6 +202,25 @@
       <forward name="success" path="/docs/tabApprovalQueueEvents.jsp"/>
     </action>
 
+    <action    path="/main/initSuggestionQueueTab"
+               type="org.bedework.webcommon.search.SearchParamsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="success" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+      <forward name="listEvents" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+    </action>
+
+    <action    path="/main/showSuggestionQueueTab"
+               type="org.bedework.webcommon.search.RenderSearchResultAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=end"
+               validate="false">
+      <forward name="success" path="/docs/tabSuggestionQueueEvents.jsp"/>
+    </action>
+
     <action    path="/main/showCalsuiteTab"
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
@@ -509,6 +528,43 @@
       <forward name="delete" path="/event/showDeleteConfirmApprovalQueue.rdo" redirect="true" />
       <forward name="cancelled" path="/main/showApprovalQueueTab.rdo" redirect="true" />
       <forward name="copy" path="/event/showModFormApprovalQueue.rdo" redirect="true" />
+    </action>
+
+    <action    path="/event/showModFormSuggestionQueue"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render;conversation=continue;refinterval=900"
+               validate="false">
+      <forward name="success" path="/docs/event/modEventSuggestionQueue.jsp"/>
+    </action>
+
+    <action    path="/event/fetchForUpdateSuggestionQueue"
+               type="org.bedework.webcommon.event.FetchEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start"
+               validate="false">
+      <forward name="noAction" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+      <forward name="notFound" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+      <forward name="error" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+      <forward name="continue" path="/event/showModFormSuggestionQueue.rdo" redirect="true" />
+      <forward name="copy" path="/event/showModFormSuggestionQueue.rdo" redirect="true" />
+    </action>
+
+    <action    path="/event/updateSuggestionQueue"
+               type="org.bedework.webcommon.event.UpdateEventAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="validationError" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+      <forward name="duplicate" path="/event/showEditEvent.rdo" redirect="true" />
+      <forward name="success" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+      <forward name="retry" path="/event/showModFormSuggestionQueue.rdo" redirect="true" />
+      <forward name="delete" path="/event/showDeleteConfirmSuggestionQueue.rdo" redirect="true" />
+      <forward name="cancelled" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
+      <forward name="copy" path="/event/showModFormSuggestionQueue.rdo" redirect="true" />
     </action>
 
     <action    path="/event/showDeleteConfirmApprovalQueue"

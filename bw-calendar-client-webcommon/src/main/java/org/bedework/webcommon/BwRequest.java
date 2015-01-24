@@ -74,6 +74,9 @@ public class BwRequest extends Request {
   /** admin group info list stored in session */
   public final static String bwAdminGroupsInfoName = "bw_admin_groups";
 
+  /** preferred admin group info list stored in session */
+  public final static String bwPreferredAdminGroupsInfoName = "bw_preferred_admin_groups";
+
   /** admin groups for this user info list stored in session */
   public final static String bwUserAdminGroupsInfoName = "bw_user_admin_groups";
 
@@ -617,12 +620,12 @@ public class BwRequest extends Request {
   }
 
   /**
-   * @param forExport
+   * @param forExport true if we are to export the event
    * @return EventKey
    * @throws Throwable
    */
   public EventKey makeEventKey(boolean forExport) throws Throwable {
-    String calPath = getReqPar("calPath");
+    final String calPath = getReqPar("calPath");
 
     if (calPath == null) {
       // bogus request
@@ -630,7 +633,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    BwCalendar cal = getClient().getCollection(calPath);
+    final BwCalendar cal = getClient().getCollection(calPath);
 
     if (cal == null) {
       // Assume no access
@@ -638,10 +641,10 @@ public class BwRequest extends Request {
       return null;
     }
 
-    String guid = getReqPar("guid");
+    final String guid = getReqPar("guid");
     String rid = null;
-    String eventName = getReqPar("eventName");
-    EventKey ekey;
+    final String eventName = getReqPar("eventName");
+    final EventKey ekey;
 
     if (guid != null) {
       if (getReqPar("master") != null) {
@@ -661,5 +664,10 @@ public class BwRequest extends Request {
     }
 
     return ekey;
+  }
+
+  public void embedAdminGroups() throws Throwable {
+    setSessionAttr(bwAdminGroupsInfoName,
+                   getClient().getAdminGroups());
   }
 }

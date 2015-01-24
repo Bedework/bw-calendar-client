@@ -18,21 +18,16 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.client.Client;
-
 /** This is a no-op action
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
 public class AdminRenderAction extends BwAbstractAction {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    form.assignCalSuites(cl.getContextCalSuites());
-    request.setSessionAttr(BwRequest.bwAdminGroupsInfoName,
-                           request.getClient().getAdminGroups());
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    form.assignCalSuites(request.getClient().getContextCalSuites());
+    request.embedAdminGroups();
 
     return forwardSuccess;
   }

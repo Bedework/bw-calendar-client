@@ -88,7 +88,8 @@ public class SearchParamsAction extends EventActionBase {
       debugMsg("Client mode is " + cl.getViewMode());
     }
 
-    final int forward = setSearchParams(request, params, listMode);
+    final int forward = setSearchParams(request, params,
+                                        cl.getViewMode());
     if (forward != forwardSuccess) {
       return forward;
     }
@@ -142,10 +143,12 @@ public class SearchParamsAction extends EventActionBase {
 
     request.setRequestAttr(BwRequest.bwSearchParamsName, params);
 
-    if (!gridMode) {
+//    if (!gridMode) {
       /* Do the search */
       mstate.setSearchResult(cl.search(params));
-    }
+  //  }
+
+    request.refresh();
 
     if (generateCalendarContent) {
       final Collection<SearchResultEntry> sres = cl.getSearchResult(

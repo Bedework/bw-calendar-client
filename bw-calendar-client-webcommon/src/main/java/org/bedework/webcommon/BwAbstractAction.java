@@ -509,7 +509,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   protected int setSearchParams(final BwRequest request,
                                 final SearchParams params,
-                                final boolean listMode) throws Throwable {
+                                final String viewMode) throws Throwable {
     final BwActionFormBase form = request.getBwForm();
     final BwModuleState mstate = request.getModule().getState();
     final Client cl = request.getClient();
@@ -519,7 +519,28 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
 
-    if (listMode && (startStr == null)) {
+    if (Client.gridViewMode.equals(viewMode)) {
+      filterAndQuery(request, params);
+
+      final TimeView tv = mstate.getCurTimeView();
+      if (tv == null) {
+        // Pretty much broken here
+        params.setFromDate(todaysDateTime());
+        return forwardSuccess;
+      }
+
+      // Ignore any end date
+      if (startStr == null) {
+        params.setFromDate(tv.getViewStart());
+        params.setToDate(tv.getViewEnd());
+        return forwardSuccess;
+      }
+
+      // Set current timeview to given date - rounded approopriately
+      return forwardSuccess;
+    }
+
+    if (startStr == null) {
       final String lim = mstate.getSearchLimits();
       if ((lim != null) && (!"none".equals(lim))) {  // there are limits
         if ("beforeToday".equals(lim)) {
@@ -539,22 +560,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if ((startStr == null) && (endStr == null)) {
       if (!cl.getWebSubmit() && !cl.getPublicAdmin()) {
-        if (listMode) {
-          if (!form.getListAllEvents()) {
-            params.setFromDate(todaysDateTime());
+        if (!form.getListAllEvents()) {
+          params.setFromDate(todaysDateTime());
 
-            if (days > 0) {
-              params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
-                                                                   0, 0)));
-            }
-          }
-        } else {
-          final TimeView tv = mstate.getCurTimeView();
-          if (tv != null) {
-            params.setFromDate(tv.getViewStart());
-            params.setToDate(tv.getViewEnd());
-          } else {
-            params.setFromDate(todaysDateTime());
+          if (days > 0) {
+            params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
+                                                                 0, 0)));
           }
         }
       }
@@ -609,6 +620,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     params.setPageSize(count);
 
+    filterAndQuery(request, params);
+
+    params.setSort(cl.parseSort(request.getReqPar("sort")));
+
+    params.setFormat(request.getReqPar("format"));
+
+    return forwardSuccess;
+  }
+
+  private void filterAndQuery(final BwRequest request,
+                              final SearchParams params) throws Throwable {
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
+
     params.setQuery(request.getReqPar("query"));
     params.setRelevance(request.getBooleanReqPar("relevance", false));
 
@@ -640,10 +665,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     params.setFilter(filter);
     params.setSort(cl.parseSort(request.getReqPar("sort")));
-
-    params.setFormat(request.getReqPar("format"));
-
-    return forwardSuccess;
   }
 
   protected BwDateTime todaysDateTime() throws Throwable {

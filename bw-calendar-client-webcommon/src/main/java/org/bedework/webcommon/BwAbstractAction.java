@@ -112,11 +112,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   private static final String appNameInitParameter = "bwappname";
 
   static HashMap<String, Integer> viewTypeMap =
-          new HashMap<String, Integer>();
+          new HashMap<>();
 
   static {
     for (int i = 0; i < BedeworkDefs.viewPeriodNames.length; i++) {
-      viewTypeMap.put(BedeworkDefs.viewPeriodNames[i], new Integer(i));
+      viewTypeMap.put(BedeworkDefs.viewPeriodNames[i], i);
     }
   }
 
@@ -276,7 +276,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     try{
-      String tzid = prefs.getDefaultTzid();
+      final String tzid = prefs.getDefaultTzid();
 
       if (tzid != null) {
         Timezones.setThreadDefaultTzid(tzid);
@@ -288,7 +288,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setDirInfo(cl.getDirectoryInfo());
     }
 
-    PresentationState ps = getPresentationState(request);
+    final PresentationState ps = getPresentationState(request);
 
     if (ps.getAppRoot() == null) {
       ps.setAppRoot(suffixRoot(request,
@@ -300,7 +300,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       if (ps.getSkinName() == null) {
         // No skin name supplied - use the default
-        String skinName = prefs.getSkinName();
+        final String skinName = prefs.getSkinName();
 
         ps.setSkinName(skinName);
         ps.setSkinNameSticky(true);
@@ -385,7 +385,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   public int actionSetup(final BwRequest request,
                          final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     if (cl.getPublicAdmin()) {
       return AdminUtil.actionSetup(request);
@@ -393,7 +393,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     // Not public admin.
 
-    ConfigCommon conf = form.getConfig();
+    final ConfigCommon conf = form.getConfig();
 
     /*
     if (form.getNewSession()) {
@@ -522,7 +522,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (Client.gridViewMode.equals(viewMode)) {
       filterAndQuery(request, params);
 
-      final TimeView tv = mstate.getCurTimeView();
+      TimeView tv = mstate.getCurTimeView();
       if (tv == null) {
         // Pretty much broken here
         params.setFromDate(todaysDateTime());
@@ -537,6 +537,19 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       // Set current timeview to given date - rounded approopriately
+
+      final BwDateTime bdt = BwDateTimeUtil.getDateTime(
+              XcalUtil.getIcalFormatDateTime(startStr),
+              true,
+              false, null);
+      gotoDateView(request,
+                   bdt.getDtval(),
+                   mstate.getCurViewPeriod());
+      tv = mstate.getCurTimeView();
+
+      params.setFromDate(tv.getViewStart());
+      params.setToDate(tv.getViewEnd());
+
       return forwardSuccess;
     }
 
@@ -596,6 +609,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
               XcalUtil.getIcalFormatDateTime(startStr),
               true,
               false, null));
+    }
+
+    if (params.getFromDate() != null) {
+      gotoDateView(request,
+                   params.getFromDate().getDtval(),
+                   mstate.getCurViewPeriod());
     }
 
     final int offset = request.getIntReqPar("offset", -1);

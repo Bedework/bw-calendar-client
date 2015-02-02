@@ -135,12 +135,6 @@ public class SearchParamsAction extends EventActionBase {
 
     params.setForExport(request.getBooleanReqPar("forExport", false));
 
-    if (params.getFromDate() != null) {
-      gotoDateView(request,
-                   params.getFromDate().getDtval(),
-                   mstate.getCurViewPeriod());
-    }
-
     request.setRequestAttr(BwRequest.bwSearchParamsName, params);
 
 //    if (!gridMode) {

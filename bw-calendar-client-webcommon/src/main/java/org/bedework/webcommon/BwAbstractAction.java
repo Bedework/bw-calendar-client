@@ -519,9 +519,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String startStr = request.getReqPar("start");
     String endStr = request.getReqPar("end");
 
-    if (Client.gridViewMode.equals(viewMode)) {
-      filterAndQuery(request, params);
+    filterAndQuery(request, params);
 
+    String sort = request.getReqPar("sort");
+    if (sort == null) {
+      // TODO - this shouldn't be a fixed string
+      sort = "dtstart.utc:asc";
+    }
+    params.setSort(cl.parseSort(sort));
+
+    if (Client.gridViewMode.equals(viewMode)) {
       TimeView tv = mstate.getCurTimeView();
       if (tv == null) {
         // Pretty much broken here
@@ -638,10 +645,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     params.setPageSize(count);
-
-    filterAndQuery(request, params);
-
-    params.setSort(cl.parseSort(request.getReqPar("sort")));
 
     params.setFormat(request.getReqPar("format"));
 

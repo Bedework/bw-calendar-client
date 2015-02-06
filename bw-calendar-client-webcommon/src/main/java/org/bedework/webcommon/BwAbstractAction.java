@@ -161,11 +161,19 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
+    if (debug) {
+      debugMsg("About to get state");
+    }
+
     final BwSession bsess = getState(request, form, messages, adminUserId);
 
     if (bsess == null) {
       /* An error should have been emitted.*/
       return forwards[forwardError];
+    }
+
+    if (debug) {
+      debugMsg("About to get state");
     }
 
     form.setSession(bsess);
@@ -251,6 +259,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       bsess.embedFilters(bwreq);
 
+      if (debug) {
+        debugMsg("Filters embedded");
+      }
+
       if (!cl.getPublicAdmin()) {
         final String viewType = request.getReqPar("viewType");
         if (viewType != null) {
@@ -267,6 +279,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         debugMsg(filter.toString());
       }
     }*/
+
+    if (debug) {
+      debugMsg("About to prepare render");
+    }
 
     bsess.prepareRender(bwreq);
 

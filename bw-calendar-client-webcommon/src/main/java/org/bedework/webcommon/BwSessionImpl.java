@@ -45,6 +45,8 @@ import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -65,6 +67,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Mike Douglass   douglm     rpi.edu
  */
 public class BwSessionImpl implements BwSession {
+  private transient Logger log;
+
+  protected boolean debug;
+
   //private static final String refreshTimeAttr = "bw_refresh_time";
   //private static final long refreshRate = 1 * 60 * 1000;
 
@@ -106,6 +112,8 @@ public class BwSessionImpl implements BwSession {
                        final String appName) throws Throwable {
     this.config = config;
     this.user = user;
+
+    debug = getLogger().isDebugEnabled();
 
     publicAdmin = config.getPublicAdmin();
 
@@ -231,11 +239,45 @@ public class BwSessionImpl implements BwSession {
 //              (lastRefresh == null) || (now - lastRefresh > refreshRate)) {
         // Implant various objects for the pages.
         embedFilters(req);
-        embedCollections(req);
+
+        if (debug) {
+          debug("About to embed collections");
+        }
+
+        final String appType = cl.getAppType();
+        if (!BedeworkDefs.appTypeWebpublic.equals(appType) &&
+                !BedeworkDefs.appTypeFeeder.equals(appType)) {
+          // TODO This is slow
+          embedCollections(req);
+        }
+
+        if (debug) {
+          debug("About to embed public collections");
+        }
+
         embedPublicCollections(req);
+
+        if (debug) {
+          debug("About to embed user collections");
+        }
+
         embedUserCollections(req);
+
+        if (debug) {
+          debug("About to embed prefs");
+        }
+
         embedPrefs(req);
+
+        if (debug) {
+          debug("About to embed views");
+        }
+
         embedViews(req);
+
+        if (debug) {
+          debug("After embed views");
+        }
 
         authpars = cl.getAuthProperties().cloneIt();
         form.setAuthPars(authpars);
@@ -306,8 +348,16 @@ public class BwSessionImpl implements BwSession {
       if (col == null) {
         request.getErr().emit("No home collection");
       } else {
+        if (debug) {
+          debug("About to clone: " + col.getPath());
+        }
+
         embedClonedCollection(request, col,
                               BwRequest.bwCollectionListName);
+
+        if (debug) {
+          debug("Cloned: " + col.getPath());
+        }
       }
     } catch (final Throwable t) {
       request.getErr().emit(t);
@@ -903,5 +953,19 @@ public class BwSessionImpl implements BwSession {
 
       return ts;
     }
+  }
+
+  /** Get a logger for messages
+   */
+  protected Logger getLogger() {
+    if (log == null) {
+      log = Logger.getLogger(getClass());
+    }
+
+    return log;
+  }
+
+  protected void debug(final String msg) {
+    getLogger().debug(msg);
   }
 }

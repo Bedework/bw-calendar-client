@@ -132,7 +132,13 @@ public class ClientImpl extends ROClientImpl {
   public BwCalendar addCollection(final BwCalendar val,
                                   final String parentPath)
           throws CalFacadeException {
-    return update(svci.getCalendarsHandler().add(val, parentPath));
+    try {
+      return update(svci.getCalendarsHandler().add(val, parentPath));
+    } finally {
+      if (val.getPublick()) {
+        flushCached();
+      }
+    }
   }
 
   @Override
@@ -140,14 +146,24 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     svci.getCalendarsHandler().update(col);
     updated();
+
+    if (col.getPublick()) {
+      flushCached();
+    }
   }
 
   @Override
   public boolean deleteCollection(final BwCalendar val,
                                   final boolean emptyIt)
           throws CalFacadeException {
-    return update(svci.getCalendarsHandler().delete(val, emptyIt,
-                                                    true));
+    try {
+      return update(svci.getCalendarsHandler().delete(val, emptyIt,
+                                                      true));
+    } finally {
+      if (val.getPublick()) {
+        flushCached();
+      }
+    }
   }
 
   @Override
@@ -156,6 +172,9 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     svci.getCalendarsHandler().move(val, newParent);
     updated();
+    if (val.getPublick()) {
+      flushCached();
+    }
   }
 
   /* ------------------------------------------------------------

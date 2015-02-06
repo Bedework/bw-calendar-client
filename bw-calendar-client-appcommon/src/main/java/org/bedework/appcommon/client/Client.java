@@ -702,7 +702,8 @@ public interface Client extends Serializable {
                           boolean freeBusy) throws CalFacadeException;
 
   /** Returns children of the given collection to which the current user has
-   * some access.
+   * some access. Both the col value and the returned children may be
+   * cloned non-persistent objects
    *
    * @param  col          parent collection
    * @return Collection   of BwCalendar
@@ -759,10 +760,9 @@ public interface Client extends Serializable {
   Collection<BwCalendar> getAddContentCollections(boolean includeAliases)
           throws CalFacadeException;
 
-  /** Returns the tree of public calendars. The returned objects are those to
-   * which the current user has access.
+  /** Returns the cloned root of the tree of public calendars.
    *
-   * @return BwCalendar   root with all children attached
+   * @return BwCalendar   root
    * @throws CalFacadeException
    */
   BwCalendar getPublicCalendars() throws CalFacadeException;
@@ -780,6 +780,11 @@ public interface Client extends Serializable {
    */
   BwCalendar getHome(BwPrincipal principal,
                      boolean freeBusy) throws CalFacadeException;
+
+  /**
+   * Flush any cached (public) copies of collections.
+   */
+  void flushCached();
 
   /* ------------------------------------------------------------
    *                     Categories

@@ -874,7 +874,60 @@ public class ROClientImpl implements Client {
   public Collection<BwCalendar> getChildren(final BwCalendar col)
           throws CalFacadeException {
     checkUpdate();
-    return svci.getCalendarsHandler().getChildren(col);
+
+    if (!col.getPublick()) {
+      return svci.getCalendarsHandler().getChildren(col);
+    }
+
+    // This and its children need to be cached
+    BwCalendar ourCopy;
+
+    synchronized (publicCloned) {
+      if (!col.unsaved()) {
+        ourCopy = publicCloned.get(col.getPath());
+
+        if (ourCopy == null) {
+          ourCopy = col.shallowClone();
+          publicCloned.put(col.getPath(), ourCopy);
+        }
+      } else {
+        ourCopy = col;
+      }
+
+      Collection<BwCalendar> children = ourCopy.getChildren();
+      if (children != null) {
+        // Assume ok
+        return children;
+      }
+
+      children = col.getChildren();
+      if (children == null) {
+        // Have to retrieve
+        children = svci.getCalendarsHandler().getChildren(col);
+      }
+
+      // Assume we have to clone
+
+      Collection<BwCalendar> ourChildren = new ArrayList<>();
+
+      for (final BwCalendar ch: children) {
+        BwCalendar ourCh = ch;
+        if (!ch.unsaved()) {
+          ourCh = publicCloned.get(ch.getPath());
+
+          if (ourCh == null) {
+            ourCh = ch.shallowClone();
+            publicCloned.put(ch.getPath(), ourCh);
+          }
+        }
+
+        ourChildren.add(ourCh);
+      }
+
+      ourCopy.setChildren(ourChildren);
+
+      return ourChildren;
+    }
   }
 
   @Override
@@ -906,7 +959,27 @@ public class ROClientImpl implements Client {
   @Override
   public BwCalendar getPublicCalendars() throws CalFacadeException {
     checkUpdate();
-    return svci.getCalendarsHandler().getPublicCalendars();
+
+    final String path = svci.getCalendarsHandler().getPublicCalendarsRootPath();
+
+    BwCalendar res = publicCloned.get(path);
+
+    if (res != null) {
+      return res;
+    }
+
+    res = svci.getCalendarsHandler().getPublicCalendars().shallowClone();
+
+    synchronized (publicCloned) {
+      if (publicCloned.get(path) != null) {
+        // Somebody moved in.
+        return publicCloned.get(path);
+      }
+
+      publicCloned.put(path, res);
+    }
+
+    return res;
   }
 
   @Override
@@ -915,6 +988,15 @@ public class ROClientImpl implements Client {
           throws CalFacadeException {
     return svci.getCalendarsHandler().getHome(principal, freeBusy);
   }
+
+  public void flushCached() {
+    synchronized (publicCloned) {
+      publicCloned.clear();
+    }
+  }
+
+  private final static Map<String, BwCalendar> publicCloned =
+      new HashMap<>();
 
   /* ------------------------------------------------------------
    *                     Categories

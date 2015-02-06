@@ -1292,12 +1292,17 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         String imageColName = "Images";
 
-        for (BwCalendar col: cl.getChildren(home)) {
-          if (col.getName().equals(imageColName)) {
-            imageCol = col;
-            break;
-          }
-        }
+        imagecolPath = Util.buildPath(false, home.getPath(), "/",
+                                      imageColName);
+
+//        for (BwCalendar col: cl.getChildren(home)) {
+//          if (col.getName().equals(imageColName)) {
+//            imageCol = col;
+//            break;
+//          }
+//        }
+
+        imageCol = cl.getCollection(imagecolPath);
 
         if (imageCol == null) {
           imageCol = new BwCalendar();

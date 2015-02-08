@@ -29,6 +29,7 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
+import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwLongString;
 import org.bedework.calfacade.BwOrganizer;
@@ -57,6 +58,7 @@ import org.bedework.webcommon.EventKey;
 
 import net.fortuna.ical4j.model.parameter.Role;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -177,6 +179,27 @@ public abstract class EventActionBase extends BwAbstractAction {
     form.setFormattedExdates(frdates);
 
     return forwardContinue;
+  }
+
+  protected void embedPreferredAdminGroups(final BwRequest request) throws Throwable {
+    final Client cl = request.getClient();
+
+    final Set<String> prefGroupHrefs = cl.getPreferences().getPreferredGroups();
+
+    final List<BwGroup> prefGroups = new ArrayList<>(prefGroupHrefs.size());
+
+    for (final String href: prefGroupHrefs) {
+      final BwGroup group = cl.getAdminGroup(href);
+
+      if (group == null) {
+        continue;
+      }
+
+      prefGroups.add(group);
+    }
+
+    request.setSessionAttr(BwRequest.bwPreferredAdminGroupsInfoName,
+                           prefGroups);
   }
 
   /* Create a copy of the event.

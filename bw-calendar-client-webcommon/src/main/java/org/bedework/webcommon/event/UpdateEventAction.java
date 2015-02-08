@@ -30,6 +30,7 @@ import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
+import org.bedework.calfacade.BwEvent.SuggestedTo;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwXproperty;
@@ -162,7 +163,7 @@ public class UpdateEventAction extends EventActionBase {
       return forwardCopy;
     }
 
-    ChangeTableEntry cte = null;
+    ChangeTableEntry cte;
 
     /* -------------------------- Recurrences ------------------------------ */
     if (request.getBooleanReqPar("recurring", false)) {
@@ -181,7 +182,7 @@ public class UpdateEventAction extends EventActionBase {
       if (rrule != null) {
         final Collection<String> rrules = ev.getRrules();
 
-        boolean rruleChanged = false;
+        boolean rruleChanged;
 
         if (rrules == null) {
           final Set<String> newRrules = new TreeSet<>();
@@ -229,7 +230,7 @@ public class UpdateEventAction extends EventActionBase {
       if (!Util.isEmpty(rrules)) {
         cte = changes.getEntry(PropertyInfoIndex.RRULE);
         cte.setChanged(rrules, null);
-        cte.setRemovedValues(new ArrayList<String>(rrules));
+        cte.setRemovedValues(new ArrayList<>(rrules));
 
         rrules.clear();
       }
@@ -344,9 +345,28 @@ public class UpdateEventAction extends EventActionBase {
 
     setEventText(request, ev, adding, changes);
 
-    /* ---------------------- Uploaded image ----------------------------- */
+    /* ---------------- Suggested to a group? ---------------------------- */
 
     final List<BwXproperty> extras = new ArrayList<>();
+
+    if (cl.getSystemProperties().getSuggestionEnabled()) {
+      final List<String> groupHrefs = request.getReqPars("groupHref");
+
+      if (groupHrefs != null) {
+        // Add each suggested group to the event and update preferred groups.
+
+        for (final String groupHref: groupHrefs) {
+          BwXproperty grpXp = ev.addSuggested(
+                  new SuggestedTo(SuggestedTo.pending, groupHref));
+          extras.add(grpXp);
+
+          // Add to preferred list
+          cl.getPreferences().addPreferredGroup(groupHref);
+        }
+      }
+    }
+
+    /* ---------------------- Uploaded image ----------------------------- */
 
     final FormFile ff = form.getEventImageUpload();
 
@@ -383,10 +403,11 @@ public class UpdateEventAction extends EventActionBase {
     if ((publishEvent || updateSubmitEvent)) {
       // We might need the submitters info */
 
-      final List<BwXproperty> xps = ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
+      final List<BwXproperty> xps =
+              ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
 
       if (!Util.isEmpty(xps)) {
-        submitterEmail = xps.iterator().next().getValue();
+        submitterEmail = xps.get(0).getValue();
       }
     }
 
@@ -562,7 +583,7 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     try {
-      UpdateResult ur = null;
+      UpdateResult ur;
       ei.setNewEvent(adding);
 
       if (adding) {

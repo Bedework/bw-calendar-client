@@ -19,17 +19,12 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /** This action fetches events for editing
  *
@@ -99,26 +94,5 @@ public class FetchEventAction extends EventActionBase {
     }
 
     return fwd;
-  }
-
-  private void embedPreferredAdminGroups(final BwRequest request) throws Throwable {
-    final Client cl = request.getClient();
-
-    final Set<String> prefGroupHrefs = cl.getPreferences().getPreferredGroups();
-
-    final List<BwGroup> prefGroups = new ArrayList<>(prefGroupHrefs.size());
-
-    for (final String href: prefGroupHrefs) {
-      final BwGroup group = cl.getAdminGroup(href);
-
-      if (group == null) {
-        continue;
-      }
-
-      prefGroups.add(group);
-    }
-
-    request.setSessionAttr(BwRequest.bwPreferredAdminGroupsInfoName,
-                           prefGroups);
   }
 }

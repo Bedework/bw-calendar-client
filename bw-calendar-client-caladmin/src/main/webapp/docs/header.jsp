@@ -289,6 +289,7 @@ try {
     <currentCalSuite>
       <bw:emitText name="calForm" property="currentCalSuite.name" tagName="name" />
       <bw:emitText name="calForm" property="currentCalSuite.group.account" tagName="group" />
+      <bw:emitText name="calForm" property="currentCalSuite.group.principalRef" tagName="groupHref" />
       <bw:emitText name="calForm" property="currentCalSuite.resourcesHome" tagName="resourcesHome" />
       <bw:emitCurrentPrivs name="calForm" property="currentCalSuite.currentAccess" tagName="currentAccess"/>
     </currentCalSuite>

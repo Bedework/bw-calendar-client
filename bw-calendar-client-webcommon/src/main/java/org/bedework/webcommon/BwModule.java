@@ -156,18 +156,20 @@ public class BwModule implements Serializable {
    * @return true if we succeeded - false if interrupted or too busy
    */
   public synchronized boolean claim() {
+    int attempts = 0;
     while (getInuse()) {
       if (debug) {
         debugMsg("Module " + getModuleName() +
                          " in use by " + getWaiters());
       }
       // double-clicking on our links eh?
-      if (getWaiters() > 10) {
+      if ((getWaiters() > 10) || (attempts > 3)) {
         return false;
       }
       incWaiters();
       try {
-        wait();
+        wait(5000);
+        attempts++;
       } catch (InterruptedException e) {
         return false;
       } finally {

@@ -1120,7 +1120,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * should return the master event only,
    *
    * @param request   BwRequest for parameters
-   * @param mode
+   * @param mode recurrence mode
    * @return EventInfo or null if not found
    * @throws Throwable
    */

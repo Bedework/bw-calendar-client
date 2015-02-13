@@ -1050,6 +1050,18 @@
     </action>
 
     <!-- ===============================================================
+                         Suggested Actions
+         =============================================================== -->
+
+    <action    path="/suggest/setStatus"
+               type="org.bedework.webcommon.event.SuggestAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=start;mdl=suggest"
+               validate="false">
+    </action>
+
+    <!-- ===============================================================
                          View Actions
          =============================================================== -->
 

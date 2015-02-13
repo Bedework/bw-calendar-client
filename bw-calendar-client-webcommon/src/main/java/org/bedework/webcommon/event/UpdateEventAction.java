@@ -707,7 +707,7 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     /* The set of categories references by the aliases and their parents */
-    Set<BwCategory> cats = new TreeSet<BwCategory>();
+    Set<BwCategory> cats = new TreeSet<>();
 
     Collection<BwXproperty> aliases = ev.getXproperties(BwXproperty.bedeworkAlias);
 
@@ -736,7 +736,7 @@ public class UpdateEventAction extends EventActionBase {
 
       BwCalendar curCol = null;
 
-      for (BwCalendar col: cols) {
+      for (final BwCalendar col: cols) {
         if (!Util.isEmpty(col.getCategories())) {
           cats.addAll(col.getCategories());
         }
@@ -751,7 +751,7 @@ public class UpdateEventAction extends EventActionBase {
           if (curCol != null) {
             cats.addAll(curCol.getCategories());
           }
-        } catch (CalFacadeAccessException cfae) {
+        } catch (final CalFacadeAccessException cfae) {
           // We'll assume that's OK. We'll get that for /user at least.
           break;
         }

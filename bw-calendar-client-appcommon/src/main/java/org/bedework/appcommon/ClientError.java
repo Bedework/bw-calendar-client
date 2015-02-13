@@ -215,6 +215,8 @@ public interface ClientError extends Serializable {
   /** Error: already subscribed on path x. */
   public static final String alreadySubscribed = prefix + "already.subscribed";
 
+  /** Error: not suggested to this group. */
+  public static final String notSuggested = prefix + "not.suggested";
 
 
 /* These may be unused

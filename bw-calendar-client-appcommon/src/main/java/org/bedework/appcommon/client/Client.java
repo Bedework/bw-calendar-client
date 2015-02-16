@@ -439,6 +439,12 @@ public interface Client extends Serializable {
   Collection<BwGroup> getAdminGroups() throws CalFacadeException;
 
   /**
+   * @return groups that are calsuite owners
+   * @throws CalFacadeException  for errors
+   */
+  Collection<BwGroup> getCalsuiteAdminGroups() throws CalFacadeException;
+
+  /**
    * Force a refetch of the groups when getAdminGroups is called
    */
   void refreshAdminGroups();

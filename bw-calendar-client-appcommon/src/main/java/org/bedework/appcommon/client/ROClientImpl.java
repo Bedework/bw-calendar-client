@@ -93,6 +93,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:03
@@ -139,6 +140,17 @@ public class ROClientImpl implements Client {
    */
   protected long requestEnd;
   private String viewMode;
+
+  /* The list of cloned admin groups for the use of the user client
+   */
+  private static Collection<BwGroup> adminGroupsInfo;
+
+  private static Collection<BwGroup> calsuiteAdminGroupsInfo;
+
+  private static long lastAdminGroupsInfoRefresh;
+  static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
+
+  private static final Object adminGroupLocker = new Object();
 
   protected class AccessChecker implements BwIndexer.AccessChecker {
     @Override
@@ -539,54 +551,20 @@ public class ROClientImpl implements Client {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
 
-  /* The list of cloned admin groups for the use of the user client
-   */
-  private static Collection<BwGroup> adminGroupsInfo;
-
-  private static long lastAdminGroupsInfoRefresh;
-  static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
-
-  private static final Object adminGroupLocker = new Object();
-
   @Override
   public Collection<BwGroup> getAdminGroups()
           throws CalFacadeException {
-    if ((adminGroupsInfo != null) &&
-            (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
-                                              adminGroupsInfoRefreshInterval))) {
-      return adminGroupsInfo;
-    }
-
-    synchronized (adminGroupLocker) {
-      if ((adminGroupsInfo != null) &&
-              (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
-                                                     adminGroupsInfoRefreshInterval))) {
-        return adminGroupsInfo;
-      }
-
-      adminGroupsInfo = new ArrayList<>();
-
-      final Collection<BwGroup> ags =
-              svci.getAdminDirectories().getAll(true);
-
-      for (final BwGroup g: ags) {
-        final BwGroup cg = (BwGroup)g.clone();
-
-        final Collection<BwGroup> mgs = getAllAdminGroups(g);
-
-        for (final BwGroup mg: mgs) {
-          final BwGroup cmg = (BwGroup)mg.clone();
-
-          cg.addGroup(cmg);
-        }
-
-        adminGroupsInfo.add(cg);
-      }
-
-      lastAdminGroupsInfoRefresh = System.currentTimeMillis();
-    }
+    refreshAdminGroupInfo();
 
     return adminGroupsInfo;
+  }
+
+  @Override
+  public Collection<BwGroup> getCalsuiteAdminGroups()
+          throws CalFacadeException {
+    refreshAdminGroupInfo();
+
+    return calsuiteAdminGroupsInfo;
   }
 
   @Override
@@ -1710,27 +1688,14 @@ public class ROClientImpl implements Client {
     return svci.getCalSuitesHandler().get(group);
   }
 
+  private static final Map<String, SubContext> suiteToContextMap = new HashMap<>();
+  private static Collection<BwCalSuite> suites;
+
   @Override
   public Collection<BwCalSuite> getContextCalSuites()
           throws CalFacadeException {
-    final Map<String, SubContext> suiteToContextMap = new HashMap<>();
+    refreshAdminGroupInfo();
 
-    for (final SubContext subContext : getSyspars().getContexts()) {
-      suiteToContextMap.put(subContext.getCalSuite(), subContext);
-    }
-
-    final Collection<BwCalSuite> suites = svci.getCalSuitesHandler().getAll();
-    for (final BwCalSuite cs : suites) {
-      final SubContext subContext = suiteToContextMap.get(cs.getName());
-
-      if (subContext != null) {
-        cs.setContext(subContext.getContextName());
-        cs.setDefaultContext(subContext.getDefaultContext());
-      } else {
-        cs.setContext(null);
-        cs.setDefaultContext(false);
-      }
-    }
     return suites;
   }
 
@@ -1868,6 +1833,71 @@ public class ROClientImpl implements Client {
   /* ------------------------------------------------------------
    *                   protected methods
    * ------------------------------------------------------------ */
+
+  protected void refreshAdminGroupInfo()
+          throws CalFacadeException {
+    if ((adminGroupsInfo != null) &&
+            (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
+                                                   adminGroupsInfoRefreshInterval))) {
+      return;
+    }
+
+    synchronized (adminGroupLocker) {
+      suiteToContextMap.clear();
+
+      for (final SubContext subContext : getSyspars().getContexts()) {
+        suiteToContextMap.put(subContext.getCalSuite(), subContext);
+      }
+
+      final Set<String> groupHrefs = new TreeSet<>();
+
+      suites = new ArrayList<>();
+
+      for (final BwCalSuite suite: svci.getCalSuitesHandler().getAll()) {
+        BwCalSuite cs = (BwCalSuite)suite.clone();
+
+        groupHrefs.add(cs.getGroup().getPrincipalRef());
+
+        final SubContext subContext = suiteToContextMap.get(cs.getName());
+
+        if (subContext != null) {
+          cs.setContext(subContext.getContextName());
+          cs.setDefaultContext(subContext.getDefaultContext());
+        } else {
+          cs.setContext(null);
+          cs.setDefaultContext(false);
+        }
+
+        suites.add(cs);
+      }
+
+      adminGroupsInfo = new ArrayList<>();
+      calsuiteAdminGroupsInfo = new ArrayList<>();
+
+      final Collection<BwGroup> ags =
+              svci.getAdminDirectories().getAll(true);
+
+      for (final BwGroup g: ags) {
+        final BwGroup cg = (BwGroup)g.clone();
+
+        if (groupHrefs.contains(cg.getPrincipalRef())) {
+          calsuiteAdminGroupsInfo.add(cg);
+        }
+
+        final Collection<BwGroup> mgs = getAllAdminGroups(g);
+
+        for (final BwGroup mg: mgs) {
+          final BwGroup cmg = (BwGroup)mg.clone();
+
+          cg.addGroup(cmg);
+        }
+
+        adminGroupsInfo.add(cg);
+      }
+
+      lastAdminGroupsInfoRefresh = System.currentTimeMillis();
+    }
+  }
 
   /**
    * @param msg the message

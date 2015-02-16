@@ -162,7 +162,7 @@ public class InitAddEventAction extends EventActionBase {
 
       if (form.getSuggestionEnabled()) {
         embedPreferredAdminGroups(request);
-        request.embedAdminGroups();
+        request.embedCalsuiteAdminGroups();
       }
     }
 

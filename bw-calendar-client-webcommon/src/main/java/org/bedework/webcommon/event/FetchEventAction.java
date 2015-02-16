@@ -49,7 +49,7 @@ public class FetchEventAction extends EventActionBase {
 
       if (form.getSuggestionEnabled()) {
         embedPreferredAdminGroups(request);
-        request.embedAdminGroups();
+        request.embedCalsuiteAdminGroups();
       }
     }
 

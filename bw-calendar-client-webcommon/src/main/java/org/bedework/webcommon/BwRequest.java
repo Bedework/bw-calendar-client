@@ -74,6 +74,9 @@ public class BwRequest extends Request {
   /** admin group info list stored in session */
   public final static String bwAdminGroupsInfoName = "bw_admin_groups";
 
+  /** calsuite admin group info list stored in session */
+  public final static String bwCsAdminGroupsInfoName = "bw_suite_admin_groups";
+
   /** preferred admin group info list stored in session */
   public final static String bwPreferredAdminGroupsInfoName = "bw_preferred_admin_groups";
 
@@ -664,6 +667,11 @@ public class BwRequest extends Request {
     }
 
     return ekey;
+  }
+
+  public void embedCalsuiteAdminGroups() throws Throwable {
+    setSessionAttr(bwCsAdminGroupsInfoName,
+                   getClient().getCalsuiteAdminGroups());
   }
 
   public void embedAdminGroups() throws Throwable {

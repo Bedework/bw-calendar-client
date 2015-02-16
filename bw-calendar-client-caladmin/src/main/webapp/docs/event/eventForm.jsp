@@ -197,10 +197,10 @@
             </logic:iterate>
           </preferred>
         </logic:present>
-        <logic:present name="bw_admin_groups" scope="session">
+        <logic:present name="bw_suite_admin_groups" scope="session">
           <all>
             <logic:iterate id="group"
-                           name="bw_admin_groups" scope="session">
+                           name="bw_suite_admin_groups" scope="session">
               <group>
                 <name><bean:write name="group" property="account" /></name>
                 <href><bean:write name="group" property="principalRef" /></href>

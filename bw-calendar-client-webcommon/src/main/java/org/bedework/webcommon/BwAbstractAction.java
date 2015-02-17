@@ -1161,7 +1161,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
       if (evs.size() == 1) {
         ev = evs.iterator().next();
-      } else {
+      } else if (evs.size() > 1) {
         // XXX this needs dealing with
         warn("Multiple result from getEvent");
       }

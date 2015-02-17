@@ -20,6 +20,7 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
@@ -30,6 +31,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -122,6 +124,20 @@ public class SuggestAction extends EventActionBase {
     }
 
     theProp.setValue(newStatus);
+
+    final Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
+
+    for (final String uid: catuids) {
+      final BwCategory cat = cl.getCategory(uid);
+
+      if (cat != null) {
+        if (accept) {
+          ev.addCategory(cat);
+        } else {
+          ev.removeCategory(cat);
+        }
+      }
+    }
 
     try {
       cl.updateEvent(ei, true, null);

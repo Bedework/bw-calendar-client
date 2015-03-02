@@ -127,7 +127,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
         return forwardNoAccess; // Only super user for that flag
       }
 
-      if (cal.getUnremoveable() != bool.booleanValue()) {
+      if (cal.getUnremoveable() != bool) {
         cal.setUnremoveable(bool);
       }
     }
@@ -273,9 +273,8 @@ public class UpdateCalendarAction extends BwAbstractAction {
     }
 
     if (extSub) {
-      if (request.present("adminAllowCreateEprops")) {
-        cal.setSynchAdminCreateEprops(true);
-      }
+      cal.setSynchAdminCreateEprops(request.present("adminAllowCreateEprops"));
+      cal.setSynchXlocXcontacts(request.present("xlocxcontact"));
     }
 
     int refreshRate = 15 * 60; // 15 mins refresh

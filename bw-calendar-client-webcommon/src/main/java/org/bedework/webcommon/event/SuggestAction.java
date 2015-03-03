@@ -63,7 +63,7 @@ public class SuggestAction extends EventActionBase {
       return forwardNull;
     }
 
-    final EventInfo ei = findEvent(request, Rmode.entityOnly);
+    final EventInfo ei = findEvent(request, Rmode.overrides);
 
     if (ei == null) {
       // Do nothing
@@ -128,7 +128,7 @@ public class SuggestAction extends EventActionBase {
     final Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
 
     for (final String uid: catuids) {
-      final BwCategory cat = cl.getCategory(uid);
+      final BwCategory cat = cl.getPersistentCategory(uid);
 
       if (cat != null) {
         if (accept) {

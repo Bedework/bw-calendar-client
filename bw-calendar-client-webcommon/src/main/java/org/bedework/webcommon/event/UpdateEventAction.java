@@ -355,10 +355,20 @@ public class UpdateEventAction extends EventActionBase {
       if (groupHrefs != null) {
         // Add each suggested group to the event and update preferred groups.
 
+        Set<String> hrefsPresent = new TreeSet<>();
+
+        List<BwXproperty> alreadySuggested = ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
+
+        for (final BwXproperty as: alreadySuggested) {
+          hrefsPresent.add(new SuggestedTo(as.getValue()).getGroupHref());
+        }
+
         for (final String groupHref: groupHrefs) {
-          BwXproperty grpXp = ev.addSuggested(
-                  new SuggestedTo(SuggestedTo.pending, groupHref));
-          extras.add(grpXp);
+          if (!hrefsPresent.contains(groupHref)) {
+            BwXproperty grpXp = ev.addSuggested(
+                    new SuggestedTo(SuggestedTo.pending, groupHref));
+            extras.add(grpXp);
+          }
 
           // Add to preferred list
           cl.getPreferences().addPreferredGroup(groupHref);

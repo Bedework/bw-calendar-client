@@ -188,21 +188,18 @@ public class EmitCollectionTag extends EmitTextTag {
       if (col.getShared()) {
         emitElement(out, indent, "shared", "true");
       }
+
+
+      emitElement(out, indent, "calendarCollection",
+                  String.valueOf(col.getCalendarCollection()));
+
+      emitElement(out, indent, "affectsFreeBusy",
+                  String.valueOf(col.getAffectsFreeBusy()));
+    } else {
+      emitElement(out, indent, "calendarCollection", "false");
+
+      emitElement(out, indent, "affectsFreeBusy", "false");
     }
-
-    emitElement(out, indent, "calendarCollection", val);
-
-    if (col != null) {
-      val = String.valueOf(col.getCalendarCollection());
-    }
-
-    emitElement(out, indent, "calendarCollection", val);
-
-    if (col != null) {
-      val = String.valueOf(col.getAffectsFreeBusy());
-    }
-
-    emitElement(out, indent, "affectsFreeBusy", val);
 
     if (col != null) {
       val = String.valueOf(col.getColor());
@@ -254,9 +251,13 @@ public class EmitCollectionTag extends EmitTextTag {
 
     if ((prefPath != null) && prefPath.equals(col.getPath())) {
       emitElement(out, indent, "default-scheduling-collection", null);
-    } else if (col.getCollectionInfo().shareable) {
+      emitElement(out, indent, "can-be-shared", null);
+    } else if (col.getCalType() == BwCalendar.calTypeCalendarCollection) {
       emitElement(out, indent, "can-be-shared", null);
       emitElement(out, indent, "can-be-published", null);
+    } else if (col.getCalType() == BwCalendar.calTypeAlias ||
+               col.getCalType() == BwCalendar.calTypeExtSub) {
+      emitElement(out, indent, "can-be-shared", null);
     }
 
     String inviteStr = col.getProperty(NamespaceAbbrevs.prefixed(AppleServerTags.invite));

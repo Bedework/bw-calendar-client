@@ -127,15 +127,25 @@ public class SuggestAction extends EventActionBase {
 
     final Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
 
+    if (debug) {
+      debugMsg("About to add " + catuids.size() + " categories");
+    }
+
     for (final String uid: catuids) {
       final BwCategory cat = cl.getPersistentCategory(uid);
 
       if (cat != null) {
+        if (debug) {
+          debugMsg("Found " + cat.getWordVal());
+        }
+
         if (accept) {
           ev.addCategory(cat);
         } else {
           ev.removeCategory(cat);
         }
+      } else {
+        warn("Default category uid " + uid + " is missing");
       }
     }
 

@@ -201,6 +201,7 @@ public interface Client extends Serializable {
   long getUserMaxEntitySize() throws CalFacadeException;
 
   boolean isDefaultIndexPublic();
+
   /**
    * @param href to be unindexed
    * @throws CalFacadeException

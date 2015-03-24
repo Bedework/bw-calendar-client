@@ -118,6 +118,7 @@ try {
     <showSystemTab><bw:rewrite renderURL="true" page="/main/showSystemTab.rdo?b=de"/></showSystemTab>
     <logout><bw:rewrite actionURL="true" page="/setup.do?logout=true"/></logout>
     <search>
+      <unindex><bw:rewrite actionURL="true" page="/index/unindex.do?b=de"/></unindex>
       <search><bw:rewrite renderURL="true" page="/search/search.rdo?b=de"/></search>
       <next><bw:rewrite actionURL="true" page="/search/next.do?b=de"/></next>
     </search>
@@ -137,6 +138,7 @@ try {
       <fetchUpdateList><bw:rewrite actionURL="true" page="/event/fetchUpdateList.do?b=de"/></fetchUpdateList>
       <fetchForUpdatePending><bw:rewrite actionURL="true" page="/event/fetchForUpdatePending.do?b=de"/></fetchForUpdatePending>
       <fetchForUpdateApprovalQueue><bw:rewrite actionURL="true" page="/event/fetchForUpdateApprovalQueue.do?b=de"/></fetchForUpdateApprovalQueue>
+      <fetchForUpdateSuggestionQueue><bw:rewrite actionURL="true" page="/event/fetchForUpdateSuggestionQueue.do?b=de"/></fetchForUpdateSuggestionQueue>
       <update><bw:rewrite actionURL="true" page="/event/update.do?b=de"/></update>
       <updatePending><bw:rewrite actionURL="true" page="/event/updatePending.do?b=de"/></updatePending>
       <updateApprovalQueue><bw:rewrite actionURL="true" page="/event/updateApprovalQueue.do?b=de"/></updateApprovalQueue>
@@ -144,6 +146,9 @@ try {
       <initUpload><bw:rewrite renderURL="true" page="/event/initUpload.rdo?b=de"/></initUpload>
       <upload><bw:rewrite actionURL="true" page="/event/upload.do?b=de"/></upload>
     </event>
+    <suggest>
+      <setStatus><bw:rewrite actionURL="true" page="/suggest/setStatus.gdo?b=de"/></setStatus>
+    </suggest>
     <contact>
       <showContact><bw:rewrite actionURL="true" page="/contact/showContact.do?b=de"/></showContact>
       <showReferenced><bw:rewrite actionURL="true" page="/contact/showReferenced.do?b=de"/></showReferenced>

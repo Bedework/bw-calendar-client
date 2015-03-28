@@ -189,7 +189,6 @@ public class EmitCollectionTag extends EmitTextTag {
         emitElement(out, indent, "shared", "true");
       }
 
-
       emitElement(out, indent, "calendarCollection",
                   String.valueOf(col.getCalendarCollection()));
 

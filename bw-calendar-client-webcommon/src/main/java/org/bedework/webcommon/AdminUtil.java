@@ -61,7 +61,7 @@ public class AdminUtil implements ForwardDefs {
 
       au = BwAuthUser.makeAuthUser(cl.getCurrentPrincipalHref(),
                                    UserAuth.publicEventUser);
-      cl.updateAuthUser(au);
+      cl.addAuthUser(au);
     }
 
     // Refresh current auth user prefs.

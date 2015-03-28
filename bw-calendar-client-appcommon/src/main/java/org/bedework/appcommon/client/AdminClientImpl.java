@@ -158,6 +158,14 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
+  public void addAuthUser(final BwAuthUser val)
+          throws CalFacadeException {
+    svci.getUserAuth().addUser(val);
+    updated();
+    authUsers = null; // force refresh
+  }
+
+  @Override
   public BwAuthUser getAuthUser(final String userid)
           throws CalFacadeException {
     final UserAuth ua = svci.getUserAuth();

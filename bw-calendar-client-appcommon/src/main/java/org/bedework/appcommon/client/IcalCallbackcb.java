@@ -99,17 +99,16 @@ public class IcalCallbackcb implements IcalCallback {
     return cl.getLocation(uid);
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.icalendar.IcalCallback#findLocation(org.bedework.calfacade.BwString)
-   */
+  @Override
+  public BwLocation getLocation(final BwString address) throws CalFacadeException {
+    return cl.findLocation(address);
+  }
+
   @Override
   public BwLocation findLocation(final BwString address) throws CalFacadeException {
     return cl.findLocation(address);
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.icalendar.IcalCallback#addLocation(org.bedework.calfacade.BwLocation)
-   */
   @Override
   public void addLocation(final BwLocation val) throws CalFacadeException {
     cl.addLocation(val);

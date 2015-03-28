@@ -518,6 +518,12 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public void addAuthUser(final BwAuthUser val)
+          throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
   public BwAuthUser getAuthUser(final String userid)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");

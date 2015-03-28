@@ -61,13 +61,10 @@ import org.bedework.access.Acl;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class UpdateCalendarAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
@@ -78,20 +75,20 @@ public class UpdateCalendarAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    String reqpar = request.getReqPar("delete");
+    final String reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
       return forwardDelete;
     }
 
-    boolean add = form.getAddingCalendar();
+    final boolean add = form.getAddingCalendar();
 
-    BwCalendar cal = form.getCalendar();
+    final BwCalendar cal = form.getCalendar();
 
     if (!add) {
       // See if we're moving
 
-      BwCalendar newCal = request.getNewCal(false);
+      final BwCalendar newCal = request.getNewCal(false);
       if (newCal != null) {
         if (newCal.getPath().equals(cal.getColPath())) {
           // Null move
@@ -121,7 +118,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
     /** We are just adding or updating from the current form values.
      */
 
-    Boolean bool = request.getBooleanReqPar("unremoveable");
+    final Boolean bool = request.getBooleanReqPar("unremoveable");
     if (bool != null) {
       if (!form.getCurUserSuperUser()) {
         return forwardNoAccess; // Only super user for that flag
@@ -132,12 +129,12 @@ public class UpdateCalendarAction extends BwAbstractAction {
       }
     }
 
-    BwFilterDef fd = request.getFilterDef();
+    final BwFilterDef fd = request.getFilterDef();
 
     if (request.getErrorsEmitted()) {
       return forwardRetry;
     } else if (fd != null) {
-      String fdef = fd.getDefinition();
+      final String fdef = fd.getDefinition();
 
       if (!Util.equalsString(fdef, cal.getFilterExpr())) {
         cal.setFilterExpr(fdef);
@@ -147,8 +144,9 @@ public class UpdateCalendarAction extends BwAbstractAction {
     }
 
     /* -------------------------- Categories ------------------------------ */
-    SetEntityCategoriesResult secr = setEntityCategories(request, null,
-                                                         cal, null);
+    final SetEntityCategoriesResult secr =
+            setEntityCategories(request, null,
+                                cal, null);
     if (secr.rcode != forwardSuccess) {
       return secr.rcode;
     }
@@ -158,7 +156,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
     cal.setSummary(Util.checkNull(cal.getSummary()));
     cal.setDescription(Util.checkNull(cal.getDescription()));
 
-    if (!validateCalendar(request, add)) {
+    if (!validateCalendar(request)) {
       if (add) {
         return forwardNotAdded;
       } else {
@@ -167,7 +165,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
     }
 
     if (add) {
-      String parentPath = form.getParentCalendarPath();
+      final String parentPath = form.getParentCalendarPath();
 
       if (parentPath == null) {
         return forwardRetry;
@@ -175,7 +173,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
 
       try {
         form.setCalendar(cl.addCollection(cal, parentPath));
-      } catch (CalFacadeException cfe) {
+      } catch (final CalFacadeException cfe) {
         if (cfe.getMessage().equals(CalFacadeException.duplicateCalendar)) {
           form.getErr().emit(CalFacadeException.duplicateCalendar,
                              cal.getName());
@@ -190,11 +188,11 @@ public class UpdateCalendarAction extends BwAbstractAction {
 
     /* -------------------------- Access ------------------------------ */
 
-    String aclStr = request.getReqPar("acl");
+    final String aclStr = request.getReqPar("acl");
     if (aclStr != null) {
-      AccessXmlUtil axu = new AccessXmlUtil(null, cl);
+      final AccessXmlUtil axu = new AccessXmlUtil(null, cl);
 
-      Acl acl = axu.getAcl(aclStr, true);
+      final Acl acl = axu.getAcl(aclStr, true);
 
       if (axu.getErrorTag() != null) {
         if (axu.getErrorTag().equals(WebdavTags.recognizedPrincipal)) {
@@ -235,20 +233,20 @@ public class UpdateCalendarAction extends BwAbstractAction {
    */
   private void typeAndAlias(final BwRequest request,
                             final boolean add) throws Throwable {
-    BwActionFormBase form = request.getBwForm();
+    final BwActionFormBase form = request.getBwForm();
 
-    BwCalendar cal = form.getCalendar();
+    final BwCalendar cal = form.getCalendar();
     boolean extSub = false;
 
-    String aliasUri = request.getReqPar("aliasUri");
+    final String aliasUri = request.getReqPar("aliasUri");
 
     if (add) {
-      int calType;
+      final int calType;
       // See what type we are creating
-      boolean cc = request.getBooleanReqPar("calendarCollection", false);
+      final boolean cc = request.getBooleanReqPar("calendarCollection", false);
 
       if (aliasUri != null) {
-        boolean internal = aliasUri.startsWith(CalFacadeDefs.bwUriPrefix);
+        final boolean internal = aliasUri.startsWith(CalFacadeDefs.bwUriPrefix);
         if (internal) {
           calType = BwCalendar.calTypeAlias;
         } else {
@@ -275,15 +273,17 @@ public class UpdateCalendarAction extends BwAbstractAction {
     if (extSub) {
       cal.setSynchAdminCreateEprops(request.present("adminAllowCreateEprops"));
       cal.setSynchXlocXcontacts(request.present("xlocxcontact"));
+      cal.setSynchXcategories(request.present("xcategories"));
     }
 
-    int refreshRate = 15 * 60; // 15 mins refresh
+    // default to 15 mins refresh then turn to seconds
+    final int refreshRate = request.getIntReqPar("refinterval", 15) * 60;
 
     if (cal.getRefreshRate() != refreshRate) {
       cal.setRefreshRate(refreshRate);
     }
 
-    String remoteId = request.getReqPar("remoteId");
+    final String remoteId = request.getReqPar("remoteId");
     if (!Util.equalsString(remoteId, cal.getRemoteId())) {
       cal.setRemoteId(remoteId);
     }
@@ -296,6 +296,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
       */
       cal.setRemotePw(remotePw);
       cal.setPwNeedsEncrypt(true);
+      //noinspection UnusedAssignment
       remotePw = null;
     }
 
@@ -308,12 +309,11 @@ public class UpdateCalendarAction extends BwAbstractAction {
    *
    * @return boolean  false means something wrong, message emitted
    */
-  private boolean validateCalendar(final BwRequest request,
-                                   final boolean add) throws Throwable {
-    BwActionFormBase form = request.getBwForm();
+  private boolean validateCalendar(final BwRequest request) throws Throwable {
+    final BwActionFormBase form = request.getBwForm();
     boolean ok = true;
 
-    BwCalendar cal = form.getCalendar();
+    final BwCalendar cal = form.getCalendar();
 
     if (cal.getName() == null) {
       form.getErr().emit(ValidationError.missingName);

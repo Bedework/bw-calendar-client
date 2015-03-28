@@ -201,6 +201,7 @@ public interface Client extends Serializable {
   long getUserMaxEntitySize() throws CalFacadeException;
 
   boolean isDefaultIndexPublic();
+
   /**
    * @param href to be unindexed
    * @throws CalFacadeException
@@ -390,6 +391,13 @@ public interface Client extends Serializable {
    *                     Admin users
    * ------------------------------------------------------------ */
 
+  /** Add the user entry
+   *
+   * @param  val      AuthUser users entry
+   * @throws CalFacadeException
+   */
+  void addAuthUser(BwAuthUser val) throws CalFacadeException;
+
   /** Return the given authorised user. Will always return an entry (except for
    * exceptional conditions.) An unauthorised user will have a usertype of
    * noPrivileges.
@@ -402,7 +410,7 @@ public interface Client extends Serializable {
 
   /** Update the user entry
    *
-   * @param  val      AuthUserVO users entry
+   * @param  val      AuthUser users entry
    * @throws CalFacadeException
    */
   void updateAuthUser(BwAuthUser val) throws CalFacadeException;

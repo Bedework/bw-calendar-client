@@ -123,7 +123,7 @@ public class UpdateAGAction extends BwAbstractAction {
           if (au == null) {
             au = BwAuthUser.makeAuthUser(p.getPrincipalRef(),
                                          UserAuth.publicEventUser);
-            cl.updateAuthUser(au);
+            cl.addAuthUser(au);
           }
 
           newMbr = p;

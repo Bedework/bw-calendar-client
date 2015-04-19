@@ -23,7 +23,7 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
-import org.bedework.calfacade.BwAuthUser;
+import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -34,7 +34,7 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwOrganizer;
-import org.bedework.calfacade.BwPreferences;
+import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwString;
@@ -579,6 +579,13 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   BwPreferences getPreferences() throws CalFacadeException;
+
+  /** Returns the current calsuite preferences.
+   *
+   * @return BwPreferences   prefs for the current calsuite
+   * @throws CalFacadeException
+   */
+  BwPreferences getCalsuitePreferences() throws CalFacadeException;
 
   /** Returns the given user's preferences. Only valid for superuser
    *

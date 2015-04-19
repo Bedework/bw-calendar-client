@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwAuthUser;
+import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.exc.CalFacadeAccessException;

@@ -30,7 +30,7 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
-import org.bedework.calfacade.BwAuthUser;
+import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -41,7 +41,7 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwOrganizer;
-import org.bedework.calfacade.BwPreferences;
+import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.BwResource;
@@ -674,6 +674,17 @@ public class ROClientImpl implements Client {
   @Override
   public BwPreferences getPreferences() throws CalFacadeException {
     return svci.getPrefsHandler().get();
+  }
+
+  public BwPreferences getCalsuitePreferences() throws CalFacadeException {
+    final String csHref = getCalSuite().getGroup().getPrincipalRef();
+
+    final BwPrincipal p = getUser(csHref);
+    if (p == null) {
+      return null;
+    }
+
+    return svci.getPrefsHandler().get(p);
   }
 
   @Override

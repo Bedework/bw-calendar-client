@@ -20,7 +20,7 @@
 package org.bedework.webcommon.taglib;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwPreferences;
+import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.webcommon.BwRequest;
 
 import org.apache.struts.taglib.TagUtils;

@@ -20,7 +20,7 @@ package org.bedework.webcommon.authuser;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwAuthUser;
+import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;

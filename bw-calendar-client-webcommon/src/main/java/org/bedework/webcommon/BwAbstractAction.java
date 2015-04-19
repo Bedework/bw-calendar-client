@@ -45,7 +45,7 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
-import org.bedework.calfacade.BwPreferences;
+import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
@@ -1809,6 +1809,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       if (cs != null) {
         calSuiteName = cs.getName();
+        client.setCalSuite(calSuiteName);
       }
 
       if (debug) {

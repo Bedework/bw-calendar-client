@@ -22,7 +22,6 @@ import org.bedework.access.Ace;
 import org.bedework.access.Acl;
 import org.bedework.access.PrivilegeDefs;
 import org.bedework.appcommon.BedeworkDefs;
-import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.caldav.util.filter.FilterBase;
@@ -673,11 +672,23 @@ public class ROClientImpl implements Client {
 
   @Override
   public BwPreferences getPreferences() throws CalFacadeException {
+    if (publicAdmin | publicView) {
+      final BwPreferences prefs = getCalsuitePreferences();
+      if (prefs != null) {
+        return prefs;
+      }
+    }
+
     return svci.getPrefsHandler().get();
   }
 
   public BwPreferences getCalsuitePreferences() throws CalFacadeException {
-    final String csHref = getCalSuite().getGroup().getPrincipalRef();
+    final BwCalSuite cs = getCalSuite();
+    if (cs == null) {
+      return null;
+    }
+
+    final String csHref = cs.getGroup().getOwnerHref();
 
     final BwPrincipal p = getUser(csHref);
     if (p == null) {
@@ -1925,8 +1936,13 @@ public class ROClientImpl implements Client {
 
   protected String getCSResourcesPath(final BwCalSuite suite,
                                       final String rc) throws CalFacadeException {
+    final ResourceClass csRc = ResourceClass.valueOf(rc);
+
+    return svci.getCalSuitesHandler().getResourcesPath(suite, csRc);
+
+    /**
     if (rc.equals(CalSuiteResource.resourceClassGlobal)) {
-      return getBasicSyspars().getGlobalResourcesPath();
+      return Util.buildPath(false, getBasicSyspars().getGlobalResourcesPath());
     }
 
     final BwPrincipal eventsOwner = getPrincipal(suite.getGroup().getOwnerHref());
@@ -1962,6 +1978,7 @@ public class ROClientImpl implements Client {
     }
 
     throw new RuntimeException("System error");
+     */
   }
 
   protected BasicSystemProperties getBasicSyspars() throws CalFacadeException {

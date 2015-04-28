@@ -852,6 +852,14 @@
            Display categories page
        ............................................................... -->
 
+    <action    path="/categories/json"
+               type="org.bedework.webcommon.category.FetchCategoriesAction"
+               name="calForm"
+               scope="session"
+               parameter="catlist=true;actionType=action;conversation=only"
+               validate="false">
+    </action>
+
     <action    path="/category/initUpdate"
                type="org.bedework.webcommon.category.FetchCategoriesAction"
                name="calForm"

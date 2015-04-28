@@ -147,6 +147,17 @@ public interface BwSession extends Serializable {
                                          boolean refresh,
                                          int kind) throws Throwable;
 
+  /**
+   * @param request - current request
+   * @param kind of entity
+   * @param forEventUpdate true if we are about to update an event
+   * @return collection - never null.
+   * @throws Throwable
+   */
+  public Collection<BwCategory> getCategoryCollection(final BwRequest request,
+                                                      final int kind,
+                                                      final boolean forEventUpdate) throws Throwable;
+
   /* Kind of entity we are referring to */
 
   public static final int ownersEntity = 1;

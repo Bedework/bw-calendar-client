@@ -18,10 +18,23 @@
 */
 package org.bedework.webcommon.category;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonParser.Feature;
+
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletResponse;
 
 /** This action fetches all categories and embeds them in the session.
  *
@@ -32,12 +45,68 @@ import org.bedework.webcommon.BwSession;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class FetchCategoriesAction extends BwAbstractAction {
+  private final static JsonFactory jsonFactory;
+
+  static {
+    jsonFactory = new JsonFactory();
+    jsonFactory.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    jsonFactory.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, true);
+    jsonFactory.configure(Feature.ALLOW_COMMENTS, true);
+  }
+
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    request.getSess().embedCategories(request, true,
-                                      BwSession.editableEntity);
+    if (!"true".equals(request.getStringActionPar("catlist="))) {
+      request.getSess().embedCategories(request, true,
+                                        BwSession.editableEntity);
 
-    return forwardSuccess;
+      // jsp transform follows for regular web page
+      return forwardSuccess;
+    }
+
+    // Return as json list for widgets
+    Collection<BwCategory> vals = request.getSess().getCategoryCollection(
+            request, BwSession.ownersEntity, true);
+
+    HttpServletResponse resp = request.getResponse();
+
+    resp.setHeader("Content-Disposition",
+                   "Attachment; Filename=\"categoryList.json\"");
+    resp.setContentType("application/json; charset=UTF-8");
+
+    JsonGenerator jgen = jsonFactory.createGenerator(resp.getWriter());
+
+    if (debug) {
+      jgen.useDefaultPrettyPrinter();
+    }
+
+    jgen.writeStartObject();
+    jgen.writeFieldName("categories");
+    jgen.writeStartArray(); // for each category
+
+    if (vals != null) {
+      /* All this fixing of names is only required because we don't
+         have any real paths built into the category objects.
+
+         In 4.0 the schema should include all this info and we won't
+         need this.
+       */
+      final Client cl = request.getClient();
+      final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
+      final BwPrincipal principal = cl.getCurrentPrincipal();
+
+      for (BwCategory cat: vals) {
+        cat.fixNames(basicSysprops, principal);
+        cat.toJson(jgen);
+      }
+    }
+
+    jgen.writeEndArray(); // categories
+    jgen.writeEndObject(); // outer
+
+    resp.getWriter().close();
+
+    return forwardNull;
   }
 }

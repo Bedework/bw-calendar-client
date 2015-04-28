@@ -464,6 +464,48 @@ public class BwSessionImpl implements BwSession {
     return vals;
   }
 
+  @Override
+  public Collection<BwCategory> getCategoryCollection(final BwRequest request,
+                                                      final int kind,
+                                                      final boolean forEventUpdate) throws Throwable {
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
+    Collection<BwCategory> vals = null;
+
+    if (kind == ownersEntity) {
+      final String appType = cl.getAppType();
+      if (cl.getWebSubmit() ||
+              BedeworkDefs.appTypeWebpublic.equals(appType) ||
+              BedeworkDefs.appTypeFeeder.equals(appType)) {
+        // Use public
+        vals = cl.getPublicCategories();
+      } else {
+        // Current owner
+        vals = cl.getCategories();
+
+        final BwEvent ev = form.getEvent();
+
+        if (!publicAdmin && forEventUpdate &&
+                (ev != null) &&
+                (ev.getCategories() != null)) {
+          for (final BwCategory cat: ev.getCategories()) {
+            if (!cat.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
+              vals.add(cat);
+            }
+          }
+        }
+      }
+    } else if (kind == editableEntity) {
+      vals = cl.getEditableCategories();
+    }
+
+    if (vals == null) {
+      return null;
+    }
+
+    return getCategoryCollator().getCollatedCollection(vals);
+  }
+
   /* ====================================================================
    *                   Contacts
    * ==================================================================== */
@@ -747,47 +789,6 @@ public class BwSessionImpl implements BwSession {
       c.totalSessions++;
     } catch (final Throwable ignored) {
     }
-  }
-
-  private Collection<BwCategory> getCategoryCollection(final BwRequest request,
-                                                       final int kind,
-                                                       final boolean forEventUpdate) throws Throwable {
-    final BwActionFormBase form = request.getBwForm();
-    final Client cl = request.getClient();
-    Collection<BwCategory> vals = null;
-
-    if (kind == ownersEntity) {
-      final String appType = cl.getAppType();
-      if (cl.getWebSubmit() ||
-              BedeworkDefs.appTypeWebpublic.equals(appType) ||
-              BedeworkDefs.appTypeFeeder.equals(appType)) {
-        // Use public
-        vals = cl.getPublicCategories();
-      } else {
-        // Current owner
-        vals = cl.getCategories();
-
-        final BwEvent ev = form.getEvent();
-
-        if (!publicAdmin && forEventUpdate &&
-                (ev != null) &&
-                (ev.getCategories() != null)) {
-          for (final BwCategory cat: ev.getCategories()) {
-            if (!cat.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
-              vals.add(cat);
-            }
-          }
-        }
-      }
-    } else if (kind == editableEntity) {
-      vals = cl.getEditableCategories();
-    }
-
-    if (vals == null) {
-      return null;
-    }
-
-    return getCategoryCollator().getCollatedCollection(vals);
   }
 
   private CollectionCollator<BwCategory> getCategoryCollator() {

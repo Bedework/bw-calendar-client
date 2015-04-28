@@ -125,7 +125,7 @@ public class SuggestAction extends EventActionBase {
 
     theProp.setValue(newStatus);
 
-    final Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
+    final Set<String> catuids = cl.getCalsuitePreferences().getDefaultCategoryUids();
 
     if (debug) {
       debugMsg("About to add " + catuids.size() + " categories");

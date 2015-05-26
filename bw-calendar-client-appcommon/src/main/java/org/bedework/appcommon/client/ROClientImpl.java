@@ -129,8 +129,8 @@ public class ROClientImpl implements Client {
   private SearchResult lastSearch;
   private List<SearchResultEntry> lastSearchEntries;
 
-  private boolean defaultFilterContextSet;
-  private FilterBase defaultFilterContext;
+  protected boolean defaultFilterContextSet;
+  protected FilterBase defaultFilterContext;
 
   /* Set this whenever an update occurs. We may want to delay or flush
    */
@@ -2072,11 +2072,7 @@ public class ROClientImpl implements Client {
     }
   }
 
-  /* ------------------------------------------------------------
-   *                   private methods
-   * ------------------------------------------------------------ */
-
-  private FilterBase getDefaultFilterContext() throws CalFacadeException {
+  protected FilterBase getDefaultFilterContext() throws CalFacadeException {
     if (defaultFilterContextSet) {
       return defaultFilterContext;
     }
@@ -2100,6 +2096,10 @@ public class ROClientImpl implements Client {
 
     return defaultFilterContext;
   }
+
+  /* ------------------------------------------------------------
+   *                   private methods
+   * ------------------------------------------------------------ */
 
   private List<SearchResultEntry> formatSearchResult(
           final List<SearchResultEntry> entries) throws CalFacadeException {

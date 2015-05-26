@@ -20,8 +20,10 @@ package org.bedework.appcommon.client;
 
 import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.CalSuiteResource;
+import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
@@ -436,5 +438,43 @@ public class AdminClientImpl extends ClientImpl {
   @Override
   public String getAdminGroupName() {
     return adminGroupName;
+  }
+
+  /** For the admin client the default context is the
+   * editable collections.
+   *
+   * @return
+   * @throws CalFacadeException
+   */
+  @Override
+  protected FilterBase getDefaultFilterContext()
+          throws CalFacadeException {
+    if (defaultFilterContextSet) {
+      return defaultFilterContext;
+    }
+
+    final Collection<BwCalendar> cols =
+            getAddContentCollections(false);
+
+    final StringBuilder fexpr = new StringBuilder();
+    String conj = "";
+
+    for (final BwCalendar col: cols) {
+      fexpr.append(conj);
+      conj = " or ";
+      fexpr.append("colPath=\"");
+      fexpr.append(col.getColPath());
+      fexpr.append("\"");
+    }
+
+    final BwFilterDef fd = new BwFilterDef();
+    fd.setDefinition(fexpr.toString());
+
+    parseFilter(fd);
+
+    defaultFilterContextSet = true;
+    defaultFilterContext = fd.getFilters();
+
+    return defaultFilterContext;
   }
 }

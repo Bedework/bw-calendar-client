@@ -230,6 +230,10 @@ public class BwSessionImpl implements BwSession {
       final boolean needRefresh = (lastChangeToken == null) ||
               !lastChangeToken.equals(changeToken);
 
+      if (needRefresh) {
+        cl.flushCached();
+      }
+
       req.setSessionAttr(changeTokenAttr, changeToken);
 
       //Long lastRefresh = (Long)req.getSessionAttr(refreshTimeAttr);
@@ -606,6 +610,8 @@ public class BwSessionImpl implements BwSession {
             }
           }
         }
+      } else if (kind == preferredEntity) {
+        vals = curAuthUserPrefs.getLocationPrefs().getPreferred();
       } else if (kind == editableEntity) {
         vals = cl.getEditableLocations();
       }

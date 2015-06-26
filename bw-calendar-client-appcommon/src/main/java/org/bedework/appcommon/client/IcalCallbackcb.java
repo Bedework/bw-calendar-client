@@ -26,7 +26,6 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.icalendar.IcalCallback;
-import org.bedework.icalendar.URIgen;
 
 import java.util.Collection;
 
@@ -120,11 +119,6 @@ public class IcalCallbackcb implements IcalCallback {
           throws CalFacadeException {
     return cl.getEvent(cal.getPath(), guid,
                        null, null);
-  }
-
-  @Override
-  public URIgen getURIgen() throws CalFacadeException {
-    return null;
   }
 
   @Override

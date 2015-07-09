@@ -302,8 +302,9 @@ public class UpdateEventAction extends EventActionBase {
 
     final String submissionsRoot = form.getConfig().getSubmissionRoot();
     final String workflowRoot = cl.getSystemProperties().getWorkflowRoot();
-    final String unindexLocation;
+    String unindexLocation = null;
 
+    /*
     if (publishEvent | approveEvent) {
       // Will need to unindex from old location
 //      cl.unindex(ei.getEvent().getHref());
@@ -311,6 +312,21 @@ public class UpdateEventAction extends EventActionBase {
     } else {
       unindexLocation = null;
     }
+    */
+    if (!adding) {
+      unindexLocation = ev.getHref();
+    }
+
+    /* We have a problem with roll back in the case of errors.
+     * Hibernate will actually update the event as we change fields and
+     * really we should do a roll back on any failure.
+     *
+     * However, this causes a problem with the UI. All this should be
+     * resolved with the newer client approach which doesn't update
+     * this way. For the moment preserve some important value(s).
+     */
+
+    final String preserveColPath = ev.getColPath();
 
     if (!request.setEventCalendar(ei, changes)) {
       return forwardRetry;
@@ -388,6 +404,8 @@ public class UpdateEventAction extends EventActionBase {
           cl.rollback();
           return forwardValidationError;
         }
+
+        restore(ev, preserveColPath);
         return forwardRetry;
       }
 
@@ -430,6 +448,7 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     if (!BwWebUtil.validateEventDates(request, ei)) {
+      restore(ev, preserveColPath);
       return forwardRetry;
     }
 
@@ -437,6 +456,7 @@ public class UpdateEventAction extends EventActionBase {
 
     if (publicAdmin) {
       if (!adminEventLocation(request, ei)) {
+        restore(ev, preserveColPath);
         return forwardRetry;
       }
     } else {
@@ -449,6 +469,7 @@ public class UpdateEventAction extends EventActionBase {
     /* -------------------------- Contact ------------------------------ */
 
     if (!setEventContact(request, submitApp)) {
+      restore(ev, preserveColPath);
       return forwardRetry;
     }
 
@@ -457,6 +478,7 @@ public class UpdateEventAction extends EventActionBase {
     final Set<BwCategory> cats = setEventAliases(request, ev);
     if (publicAdmin && !updateSubmitEvent && Util.isEmpty(cats)) {
       form.getErr().emit(ValidationError.missingTopic);
+      restore(ev, preserveColPath);
       return forwardRetry;
     }
 
@@ -474,6 +496,7 @@ public class UpdateEventAction extends EventActionBase {
     final String link = Util.checkNull(form.getEventLink());
     if ((link != null) && (Util.validURI(link) == null)) {
       form.getErr().emit(ValidationError.invalidUri);
+      restore(ev, preserveColPath);
       return forwardRetry;
     }
 
@@ -535,6 +558,7 @@ public class UpdateEventAction extends EventActionBase {
       for (final ValidationError ve: ves) {
         form.getErr().emit(ve.getErrorCode(), ve.getExtra());
       }
+      restore(ev, preserveColPath);
       return forwardRetry;
     }
 
@@ -563,6 +587,7 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     if (request.getErrFlag()) {
+      restore(ev, preserveColPath);
       return forwardRetry;
     }
 
@@ -593,7 +618,7 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     try {
-      UpdateResult ur;
+      final UpdateResult ur;
       ei.setNewEvent(adding);
 
       if (adding) {
@@ -619,7 +644,7 @@ public class UpdateEventAction extends EventActionBase {
         cl.changeAccess(ev, acl.getAces(), true);
       }
 
-      if (unindexLocation != null) {
+      if (!adding && !unindexLocation.equals(ev.getHref())) {
         cl.unindex(unindexLocation);
       }
     } catch (final CalFacadeException cfe) {
@@ -685,6 +710,17 @@ public class UpdateEventAction extends EventActionBase {
     cl.clearSearchEntries();
 
     return forwardSuccess;
+  }
+
+  private void restore(final BwEvent ev,
+                       final String preserveColPath) throws Throwable {
+    if (preserveColPath == null) {
+      return;
+    }
+
+    if (!preserveColPath.equals(ev.getColPath())) {
+      ev.setColPath(preserveColPath);
+    }
   }
 
   /* This is a bedework function in which we specify which set of aliases

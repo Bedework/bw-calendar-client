@@ -83,8 +83,13 @@ import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.log4j.Logger;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -94,6 +99,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.servlet.http.HttpServletResponse;
+
 import static org.bedework.calsvci.CalSuitesI.ResourceClass;
 
 /**
@@ -102,11 +109,15 @@ import static org.bedework.calsvci.CalSuitesI.ResourceClass;
 public class ROClientImpl implements Client {
   protected boolean debug;
 
+  protected transient Logger log;
+
   protected String id;
 
   protected CalSvcIPars pars;
 
   protected CalSvcI svci;
+
+  protected ObjectMapper mapper = new ObjectMapper(); // create once, reuse
 
   protected boolean publicView;
 
@@ -190,6 +201,17 @@ public class ROClientImpl implements Client {
   protected ROClientImpl(final String id) {
     this.id = id;
     cstate = new ClientState(this);
+
+    debug = getLogger().isDebugEnabled();
+    if (debug) {
+      mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+    }
+
+    final DateFormat df = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'");
+
+    mapper.setDateFormat(df);
+
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }
 
   public void reinit(final String authUser,
@@ -275,8 +297,9 @@ public class ROClientImpl implements Client {
                          final long reqTimeMillis)
           throws CalFacadeException {
     requestEnd = System.currentTimeMillis();
-    svci.postNotification(new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
-                                           reqTimeMillis));
+    svci.postNotification(
+            new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
+                             reqTimeMillis));
     svci.setState("Request out");
 
     if (!isOpen()) {
@@ -336,6 +359,16 @@ public class ROClientImpl implements Client {
   @Override
   public String getAppType() {
     return appType;
+  }
+
+  @Override
+  public void writeJson(final HttpServletResponse resp,
+                           final Object val) throws CalFacadeException {
+    try {
+      mapper.writeValue(resp.getOutputStream(), val);
+    } catch (final Throwable t) {
+      throw new CalFacadeException(t);
+    }
   }
 
   @Override
@@ -1935,13 +1968,6 @@ public class ROClientImpl implements Client {
     }
   }
 
-  /**
-   * @param msg the message
-   */
-  protected void debugMsg(final String msg) {
-    Logger.getLogger(this.getClass()).debug(msg);
-  }
-
   protected String getCSResourcesPath(final BwCalSuite suite,
                                       final String rc) throws CalFacadeException {
     final ResourceClass csRc = ResourceClass.valueOf(rc);
@@ -2033,13 +2059,14 @@ public class ROClientImpl implements Client {
   }
 
   protected void checkUpdate() throws CalFacadeException {
+    /*
     if (debug) {
       debugMsg("checkUpdate: \n" +
                        " req=" + requestEnd + "\n" +
                        "last=" + lastUpdate + "\n" +
                        "wait=" + (indexerDelay -
                                           (System.currentTimeMillis() - lastUpdate)));
-    }
+    }*/
 
     if (lastUpdate == 0) {
       return;
@@ -2095,6 +2122,34 @@ public class ROClientImpl implements Client {
     defaultFilterContext = fd.getFilters();
 
     return defaultFilterContext;
+  }
+
+  protected Logger getLogger() {
+    if (log == null) {
+      log = Logger.getLogger(this.getClass());
+    }
+
+    return log;
+  }
+
+  protected void trace(final String msg) {
+    getLogger().debug(msg);
+  }
+
+  protected void debugMsg(final String msg) {
+    getLogger().debug(msg);
+  }
+
+  protected void warn(final String msg) {
+    getLogger().warn(msg);
+  }
+
+  protected void error(final Throwable t) {
+    getLogger().error(this, t);
+  }
+
+  protected void logIt(final String msg) {
+    getLogger().info(msg);
   }
 
   /* ------------------------------------------------------------

@@ -69,6 +69,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * This interface defines the interactions with the back end system
  * for a client.
@@ -161,6 +163,15 @@ public interface Client extends Serializable {
    * @return boolean
    */
   String getAppType();
+
+  /** Write the value as json to the response stream.
+   *
+   * @param resp to write to
+   * @param val to output
+   * @throws CalFacadeException
+   */
+  void writeJson(final HttpServletResponse resp,
+                 final Object val) throws CalFacadeException;
 
   /** Get the (possibly cached) system pars using name supplied at init
    *

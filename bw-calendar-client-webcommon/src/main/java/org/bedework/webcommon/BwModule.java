@@ -59,8 +59,8 @@ public class BwModule implements Serializable {
 
   private Request currentReq;
 
-  public BwModule(String moduleName,
-                  Client cl) {
+  public BwModule(final String moduleName,
+                  final Client cl) {
     debug = getLogger().isDebugEnabled();
     this.moduleName = moduleName;
     this.cl = cl;

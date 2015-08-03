@@ -45,6 +45,8 @@ import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
+import org.bedework.sysevents.events.SysEventBase;
+import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
@@ -371,17 +373,19 @@ public class UpdateEventAction extends EventActionBase {
       if (groupHrefs != null) {
         // Add each suggested group to the event and update preferred groups.
 
-        Set<String> hrefsPresent = new TreeSet<>();
+        final Set<String> hrefsPresent = new TreeSet<>();
 
-        List<BwXproperty> alreadySuggested = ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
+        final List<BwXproperty> alreadySuggested =
+                ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
 
         for (final BwXproperty as: alreadySuggested) {
-          hrefsPresent.add(new SuggestedTo(as.getValue()).getGroupHref());
+          hrefsPresent.add(
+                  new SuggestedTo(as.getValue()).getGroupHref());
         }
 
         for (final String groupHref: groupHrefs) {
           if (!hrefsPresent.contains(groupHref)) {
-            BwXproperty grpXp = ev.addSuggested(
+            final BwXproperty grpXp = ev.addSuggested(
                     new SuggestedTo(SuggestedTo.pending, groupHref));
             extras.add(grpXp);
           }
@@ -422,7 +426,8 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ----------------------- X-properties ------------------------------ */
 
-    int res = processXprops(request, ev, extras, publishEvent, changes);
+    int res = processXprops(request, ev, extras, publishEvent,
+                            changes);
     if (res == forwardValidationError) {
       cl.rollback();
       return res;
@@ -667,6 +672,28 @@ public class UpdateEventAction extends EventActionBase {
     if ((publishEvent || updateSubmitEvent) &&
         request.getBooleanReqPar("submitNotification", false)) {
       notifySubmitter(request, ei, submitterEmail);
+    }
+
+    if (!Util.isEmpty(extras)) {
+      for (final BwXproperty xp: extras) {
+        if (!xp.getName().equals(BwXproperty.bedeworkSuggestedTo)) {
+          continue;
+        }
+
+        /* Skip the status prefix */
+        final BwAdminGroup grp =
+                (BwAdminGroup)cl.getAdminGroup(xp.getValue().substring(2));
+
+        final EntitySuggestedEvent ese =
+                new EntitySuggestedEvent(
+                        SysEventBase.SysCode.SUGGESTED,
+                        cl.getCurrentPrincipalHref(),
+                        ev.getCreatorHref(),
+                        ev.getHref(),
+                        null,
+                        grp.getOwnerHref());
+        cl.postNotification(ese);
+      }
     }
 
     if (publicAdmin) {
@@ -1037,8 +1064,8 @@ public class UpdateEventAction extends EventActionBase {
       }
     }
 
-    added = new ArrayList<BwXproperty>();
-    removed = new ArrayList<BwXproperty>();
+    added = new ArrayList<>();
+    removed = new ArrayList<>();
 
     if (CalFacadeUtil.updateCollection(true, // clone them
                                        xprops, // make it look like this

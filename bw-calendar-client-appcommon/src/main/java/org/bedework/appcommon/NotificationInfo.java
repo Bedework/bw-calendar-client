@@ -23,6 +23,8 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 
+import org.apache.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,31 +32,35 @@ import java.util.Map;
 
 /** Class to hold info about a user's notifications.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  *  @version 1.0
  */
 public class NotificationInfo implements Serializable {
+  protected boolean debug = false;
+
+  private transient Logger log;
+
   private long lastRefresh;
 
-  private long minRefresh = 15 * 1000; // 15 seconds
+  private final long minRefresh = 15 * 1000; // 15 seconds
 
   private boolean changed; // Set true whenever the status changes.
 
   private String tagVal;
 
-  private Map<String, NotifyResource> notes =
-      new HashMap<String, NotifyResource>();
+  private final Map<String, NotifyResource> notes = new HashMap<>();
 
   /** Constructor
    *
    * @throws CalFacadeException
    */
   public NotificationInfo() throws CalFacadeException {
+    debug = getLogger().isDebugEnabled();
   }
 
   /** Refresh the information
    *
-   * @param cl
+   * @param cl the client
    * @param force - get it whatever the tag says
    * @throws CalFacadeException
    */
@@ -69,11 +75,11 @@ public class NotificationInfo implements Serializable {
 
     lastRefresh = System.currentTimeMillis();
 
-    int calType = BwCalendar.calTypeNotifications;
+    final int calType = BwCalendar.calTypeNotifications;
 
-    BwCalendar cal = cl.getSpecial(calType, false);
+    final BwCalendar col = cl.getSpecial(calType, false);
 
-    if (cal == null) {
+    if (col == null) {
       // Cannot go away - never existed - no change.
       changed = false;
       return;
@@ -81,12 +87,13 @@ public class NotificationInfo implements Serializable {
 
     if (!force) {
       synchronized (this) {
-        if ((tagVal != null) && (tagVal.equals(cal.getLastmod().getTagValue()))) {
+        if ((tagVal != null) &&
+                (tagVal.equals(col.getLastmod().getTagValue()))) {
           changed = false;
           return;
         }
 
-        tagVal = cal.getLastmod().getTagValue();
+        tagVal = col.getLastmod().getTagValue();
       }
     }
 
@@ -94,17 +101,18 @@ public class NotificationInfo implements Serializable {
      * resources. We should retrieve a max number of the latest ones.
      */
 
-    Collection<BwResource> rs = cl.getAllResources(cal.getPath());
+    final Collection<BwResource> rs =
+            cl.getAllResources(col.getPath());
 
-    Map<String, NotifyResource> toDelete =
-        new HashMap<String, NotifyResource>(notes);
+    final Map<String, NotifyResource> toDelete =
+        new HashMap<>(notes);
 
-    for (BwResource r: rs) {
-      String rname = r.getName();
+    for (final BwResource r: rs) {
+      final String rname = r.getName();
 
       toDelete.remove(rname);
 
-      NotifyResource mapRi = notes.get(rname);
+      final NotifyResource mapRi = notes.get(rname);
 
       if ((mapRi != null) &&
           NotifyResource.makeTag(r).equals(mapRi.getTag())) {
@@ -113,14 +121,22 @@ public class NotificationInfo implements Serializable {
 
       cl.getResourceContent(r);
 
-      NotifyResource ri = new NotifyResource(r);
-      notes.put(rname, ri);
+      try {
+        final NotifyResource ri = new NotifyResource(r);
+        notes.put(rname, ri);
+      } catch (final Throwable t) {
+        if (debug) {
+          error(t);
+        }
+
+        error(t.getLocalizedMessage());
+      }
 
       changed = true;
     }
 
     /* Remove the resources we didn't see */
-    for (String n: toDelete.keySet()) {
+    for (final String n: toDelete.keySet()) {
       notes.remove(n);
     }
   }
@@ -146,5 +162,31 @@ public class NotificationInfo implements Serializable {
    */
   public Collection<NotifyResource> getNotifications() {
     return notes.values();
+  }
+
+  /** Get a logger for messages
+   *
+   * @return Logger
+   */
+  private Logger getLogger() {
+    if (log == null) {
+      log = Logger.getLogger(this.getClass());
+    }
+
+    return log;
+  }
+
+  /**
+   * @param msg the message
+   */
+  private void error(final String msg) {
+    getLogger().error(msg);
+  }
+
+  /**
+   * @param t - the exception
+   */
+  private void error(final Throwable t) {
+    getLogger().error(t);
   }
 }

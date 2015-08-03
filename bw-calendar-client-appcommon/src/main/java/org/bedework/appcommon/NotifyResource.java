@@ -40,17 +40,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 /** Class to hold info about a notification.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  *  @version 1.0
  */
 public class NotifyResource implements Serializable {
-  private String name;
+  private final String name;
 
-  private String tag;
+  private final String tag;
 
   private String type;
 
-  private String content;
+  private final String content;
 
   private Document doc;
 
@@ -70,7 +70,7 @@ public class NotifyResource implements Serializable {
       }
 
       if (doc != null) {
-        for (Element el: XmlUtil.getElements(doc.getDocumentElement())) {
+        for (final Element el: XmlUtil.getElements(doc.getDocumentElement())) {
           if (XmlUtil.nodeMatches(el, AppleServerTags.dtstamp)) {
             continue;
           }
@@ -79,7 +79,7 @@ public class NotifyResource implements Serializable {
           break;
         }
       }
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       throw new CalFacadeException(t);
     }
   }

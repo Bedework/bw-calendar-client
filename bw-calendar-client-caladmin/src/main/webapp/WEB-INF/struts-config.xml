@@ -937,6 +937,42 @@
     </action>
 
     <!-- ===============================================================
+                       Notifications
+         =============================================================== -->
+
+    <!-- The following two actions do the same thing, and differ only by their
+         conversation= parameter. The first action is used when no
+         transaction is running; the second is used in the middle of a transaction
+         (e.g. a form is being filled). -->
+    <action    path="/notify/remove"
+               type="org.bedework.webcommon.notifications.RemoveAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only"
+               validate="false">
+      <forward name="notFound" path="/widget/ajaxTerminator.rdo" redirect="true" />
+      <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
+    </action>
+
+    <action    path="/notify/removeTrans"
+               type="org.bedework.webcommon.notifications.RemoveAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+      <forward name="notFound" path="/widget/ajaxTerminator.rdo" redirect="true" />
+      <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
+    </action>
+
+    <action    path="/notify/removeAll"
+               type="org.bedework.webcommon.notifications.RemoveAllAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only"
+               validate="false">
+    </action>
+
+    <!-- ===============================================================
                          CalSuite Actions
          =============================================================== -->
 
@@ -1057,7 +1093,7 @@
                type="org.bedework.webcommon.event.SuggestAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=start;mdl=suggest"
+               parameter="actionType=action;conversation=only;mdl=suggest"
                validate="false">
     </action>
 
@@ -1416,6 +1452,24 @@
                          Location Actions
          =============================================================== -->
 
+
+    <!-- Must be a gdo action - returns json -->
+    <action    path="/location/addsub"
+               type="org.bedework.webcommon.location.AddSubLocationAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=resource;conversation=only"
+               validate="false">
+    </action>
+
+    <!-- Must be a gdo action - returns json -->
+    <action    path="/location/all"
+               type="org.bedework.webcommon.location.FetchLocationsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=resource;conversation=only"
+               validate="false">
+    </action>
 
     <action    path="/location/showLocation"
                type="org.bedework.webcommon.RenderAction"

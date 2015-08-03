@@ -255,7 +255,7 @@ public class ROClientImpl implements Client {
   @Override
   public void requestIn(final int conversationType)
           throws CalFacadeException {
-    svci.postNotification(new HttpEvent(SysEventBase.SysCode.WEB_IN));
+    postNotification(new HttpEvent(SysEventBase.SysCode.WEB_IN));
     svci.setState("Request in");
 
     if (conversationType == Request.conversationTypeUnknown) {
@@ -297,7 +297,7 @@ public class ROClientImpl implements Client {
                          final long reqTimeMillis)
           throws CalFacadeException {
     requestEnd = System.currentTimeMillis();
-    svci.postNotification(
+    postNotification(
             new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
                              reqTimeMillis));
     svci.setState("Request out");
@@ -334,6 +334,11 @@ public class ROClientImpl implements Client {
   @Override
   public void flushAll() throws CalFacadeException {
     svci.flushAll();
+  }
+
+  @Override
+  public void postNotification(final SysEventBase ev) throws CalFacadeException {
+    svci.postNotification(ev);
   }
 
   @Override
@@ -1357,7 +1362,19 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public List<NotificationType> allNotifications()
+          throws CalFacadeException {
+    return svci.getNotificationsHandler().getAll();
+  }
+
+  @Override
   public void removeNotification(final NotificationType val)
+          throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public void removeAllNotifications(final String principalHref)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }

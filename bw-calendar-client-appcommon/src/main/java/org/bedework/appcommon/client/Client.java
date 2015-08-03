@@ -63,6 +63,7 @@ import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
+import org.bedework.sysevents.events.SysEventBase;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -131,6 +132,13 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   void flushAll() throws CalFacadeException;
+
+  /** Send a notification event
+   *
+   * @param ev - system event
+   * @throws CalFacadeException
+   */
+  void postNotification(SysEventBase ev) throws CalFacadeException;
 
   /** End a (possibly long-running) transaction. In the web environment
    * this should in some way check version numbers to detect concurrent updates
@@ -1286,6 +1294,13 @@ public interface Client extends Serializable {
    */
   NotificationType findNotification(String name) throws CalFacadeException;
 
+  /** Return all notifications for this user
+   *
+   * @return all notifications for this user
+   * @throws CalFacadeException
+   */
+  List<NotificationType> allNotifications() throws CalFacadeException;
+
   /** Remove the given notification from the notification collection for the
    * current calendar user.
    *
@@ -1293,6 +1308,14 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   void removeNotification(NotificationType val) throws CalFacadeException;
+
+  /**
+   *
+   * @param principalHref of owner
+   * @throws CalFacadeException
+   */
+  void removeAllNotifications(final String principalHref)
+          throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                     Resources

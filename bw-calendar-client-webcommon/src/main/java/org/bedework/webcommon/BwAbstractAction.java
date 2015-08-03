@@ -349,7 +349,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       } else {
         ib.refresh(cl, false);
       }
+    }
 
+    if (!form.getGuest()) {
       NotificationInfo ni = form.getNotificationInfo();
       if (ni == null) {
         ni = new NotificationInfo();
@@ -362,6 +364,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String forward;
 
     try {
+      /*
       if (bwreq.present("viewType")) {
         mstate.setViewType(bwreq.getReqPar("viewType"));
 
@@ -369,6 +372,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                      mstate.getDate(),
                      mstate.getCurViewPeriod());
       }
+      */
 
       forward = forwards[doAction(bwreq, form)];
 
@@ -589,7 +593,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final AuthProperties authp = cl.getAuthProperties();
 
-    final int days = request.getIntReqPar("days", -32767);
+    int days = request.getIntReqPar("days", -32767);
 //    if (days < 0) {
   //    days = authp.getDefaultWebCalPeriod();
     //}
@@ -599,10 +603,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         if (!form.getListAllEvents()) {
           params.setFromDate(todaysDateTime());
 
-          if (days > 0) {
-            params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
-                                                                 0, 0)));
+          int max = authp.getMaxWebCalPeriod();
+          if (days < 0) {
+            days = max;
+          } else if ((days > max) && !cl.isSuperUser()) {
+            days = max;
           }
+
+          params.setToDate(params.getFromDate().addDur(new Dur(days, 0,
+                                                               0, 0)));
         }
       }
     } else if ((endStr != null) || (days > 0)) {
@@ -632,6 +641,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
               XcalUtil.getIcalFormatDateTime(startStr),
               true,
               false, null));
+      params.setToDate(params.getFromDate().addDur(
+              new Dur(authp.getMaxWebCalPeriod(),
+                      0, 0, 0)));
     }
 
     if (params.getFromDate() != null) {
@@ -1355,7 +1367,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       try {
         thumbContent = ImageProcessing.createThumbnail(
                new ByteArrayInputStream(fileData),
-               thumbType, 80);
+               thumbType, 160);
       } catch (Throwable t) {
         /* Probably an image type we can't process or maybe not an image at all
          */
@@ -1616,7 +1628,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       mstate.setCurViewPeriod(newViewTypeI);
       mstate.setViewMcDate(dt);
       mstate.setRefresh(true);
-      request.getClient().clearSearch();
+      request.getClient().clearSearchEntries();
     }
 
     final TimeView tv = request.getSess().getCurTimeView(request);
@@ -1808,7 +1820,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setCurrentCalSuite(cs);
 
       if (cs != null) {
-        client.setCalSuite(cs.getName());
         calSuiteName = cs.getName();
         client.setCalSuite(calSuiteName);
       }

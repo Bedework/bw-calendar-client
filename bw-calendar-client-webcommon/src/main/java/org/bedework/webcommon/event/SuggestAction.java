@@ -26,6 +26,8 @@ import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.sysevents.events.SysEventBase;
+import org.bedework.sysevents.events.publicAdmin.EntitySuggestedResponseEvent;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -155,6 +157,16 @@ public class SuggestAction extends EventActionBase {
       cl.rollback();
       throw cfe;
     }
+
+    final EntitySuggestedResponseEvent esre =
+            new EntitySuggestedResponseEvent(SysEventBase.SysCode.SUGGESTED_RESPONSE,
+                                             cl.getCurrentPrincipalHref(),
+                                             ev.getCreatorHref(),
+                                             ev.getHref(),
+                                             null,
+                                             ev.getCreatorHref(), // TODO suggester might not be the creator of the event
+                                             accept);
+    cl.postNotification(esre);
 
     response.setStatus(HttpServletResponse.SC_OK);
     return forwardNull;

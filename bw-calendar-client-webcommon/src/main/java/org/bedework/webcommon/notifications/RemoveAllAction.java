@@ -19,12 +19,13 @@
 package org.bedework.webcommon.notifications;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+
+import javax.servlet.http.HttpServletResponse;
 
 /** This action removes a notification identified by the name.
  *
@@ -44,39 +45,44 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class RemoveAction extends BwAbstractAction {
+public class RemoveAllAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
+    final HttpServletResponse response = request.getResponse();
 
     if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      return forwardNull;
     }
 
-    final NotificationType note = cl.findNotification(request.getReqPar("name"));
+    final String principalHref;
 
-    if (note == null) {
-      return forwardNotFound;
+    if (cl.getPublicAdmin()) {
+      principalHref = cl.getCalSuite().getGroup().getOwnerHref();
+    } else {
+      principalHref = cl.getCurrentPrincipalHref();
     }
 
-    int forward;
+    int status;
 
     try {
-      cl.removeNotification(note);
-      forward = forwardSuccess;
+      cl.removeAllNotifications(principalHref);
+      status = HttpServletResponse.SC_OK;
     } catch (final CalFacadeAccessException ca) {
       form.getErr().emit(ca.getMessage());
-      forward = forwardNoAccess;
+      status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     } catch (final CalFacadeForbidden cf) {
       form.getErr().emit(cf.getMessage());
-      forward = forwardNoAccess;
+      status = HttpServletResponse.SC_FORBIDDEN;
     }
 
     form.setNotificationInfo(null); // force a refresh
     cl.flushState();
 
-    return forward;
+    response.setStatus(status);
+    return forwardNull;
   }
 }
 

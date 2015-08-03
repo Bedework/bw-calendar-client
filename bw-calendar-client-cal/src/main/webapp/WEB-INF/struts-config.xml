@@ -1392,6 +1392,14 @@
       <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
     </action>
 
+    <action    path="/notify/removeAll"
+               type="org.bedework.webcommon.notifications.RemoveAllAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only"
+               validate="false">
+    </action>
+
     <!-- ===============================================================
                                 VPOLL
          =============================================================== -->

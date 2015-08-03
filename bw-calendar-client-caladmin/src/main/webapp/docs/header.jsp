@@ -203,6 +203,10 @@ try {
       <calOpenCloseMove><bw:rewrite actionURL="true" page="/calendar/openCloseMove.do?b=de"/></calOpenCloseMove>
       <move><bw:rewrite renderURL="true" page="/calendar/showMoveForm.rdo?b=de"/></move>
     </calendar>
+    <notifications>
+      <remove><bw:rewrite actionURL="true" page="/notify/remove.do?b=de"/></remove>
+      <removeTrans><bw:rewrite actionURL="true" page="/notify/removeTrans.do?b=de"/></removeTrans>
+    </notifications>
     <subscriptions>
       <subOpenCloseMod><bw:rewrite actionURL="true" page="/subs/openCloseMod.do?b=de"/></subOpenCloseMod>
       <fetch><bw:rewrite renderURL="true" page="/subs/showSubs.rdo?b=de"/></fetch>
@@ -299,6 +303,13 @@ try {
       <bw:emitCurrentPrivs name="calForm" property="currentCalSuite.currentAccess" tagName="currentAccess"/>
     </currentCalSuite>
   </logic:present>
+
+  <notifications>
+    <logic:present name="calForm" property="notificationInfo" >
+        <bean:define id="notificationInfo" name="calForm" property="notificationInfo" />
+        <%@include file="/docs/notifications/notificationInfo.jsp"%>
+    </logic:present>
+  </notifications>
 
   <userInfo>
     <%-- user type --%>

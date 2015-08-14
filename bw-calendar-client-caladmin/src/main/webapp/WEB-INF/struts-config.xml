@@ -968,7 +968,15 @@
                type="org.bedework.webcommon.notifications.RemoveAllAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=only"
+               parameter="actionType=action;mdl=notify;conversation=only"
+               validate="false">
+    </action>
+
+    <action    path="/notify/subscribe"
+               type="org.bedework.webcommon.notifications.SubscribeAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;mdl=notify;conversation=only"
                validate="false">
     </action>
 

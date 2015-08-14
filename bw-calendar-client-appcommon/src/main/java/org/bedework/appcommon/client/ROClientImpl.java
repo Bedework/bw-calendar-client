@@ -1379,6 +1379,20 @@ public class ROClientImpl implements Client {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
 
+  @Override
+  public void subscribe(final String principalHref,
+                        final List<String> emails)
+          throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public void unsubscribe(final String principalHref,
+                          final List<String> emails)
+          throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
   /* ------------------------------------------------------------
    *                     Resources
    * ------------------------------------------------------------ */

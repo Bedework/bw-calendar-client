@@ -47,6 +47,7 @@ import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SharingI;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:05 PM
@@ -453,6 +454,20 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     svci.getNotificationsHandler().removeAll(principalHref);
     updated();
+  }
+
+  @Override
+  public void subscribe(final String principalHref,
+                        final List<String> emails)
+          throws CalFacadeException {
+    svci.getNotificationsHandler().subscribe(principalHref, emails);
+  }
+
+  @Override
+  public void unsubscribe(final String principalHref,
+                          final List<String> emails)
+          throws CalFacadeException {
+    svci.getNotificationsHandler().unsubscribe(principalHref, emails);
   }
 
   /* ------------------------------------------------------------

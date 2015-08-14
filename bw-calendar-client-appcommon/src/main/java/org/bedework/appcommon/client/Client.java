@@ -1317,6 +1317,12 @@ public interface Client extends Serializable {
   void removeAllNotifications(final String principalHref)
           throws CalFacadeException;
 
+  void subscribe(final String principalHref,
+                 final List<String> emails) throws CalFacadeException;
+
+  void unsubscribe(final String principalHref,
+                   final List<String> emails) throws CalFacadeException;
+
   /* ------------------------------------------------------------
    *                     Resources
    * ------------------------------------------------------------ */

@@ -41,12 +41,13 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
-import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.util.http.BasicHttpClient;
+import org.bedework.util.http.RequestBuilder;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwAbstractAction;
@@ -58,11 +59,14 @@ import org.bedework.webcommon.EventKey;
 
 import net.fortuna.ical4j.model.parameter.Role;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletResponse;
 
 /** Common base class fro some or all event actions.
  *
@@ -962,12 +966,12 @@ public abstract class EventActionBase extends BwAbstractAction {
       return false;
     }
 
-    Message emsg = new Message();
+    final Message emsg = new Message();
 
-    String[] to = new String[]{submitterEmail};
+    final String[] to = new String[]{submitterEmail};
     emsg.setMailTo(to);
 
-    BwActionFormBase form = request.getBwForm();
+    final BwActionFormBase form = request.getBwForm();
 
     emsg.setFrom(form.getSnfrom());
     emsg.setSubject(form.getSnsubject());
@@ -978,25 +982,45 @@ public abstract class EventActionBase extends BwAbstractAction {
     return true;
   }
 
+  // TODO - this needs to be somewhere it gets shut down properly
+  private static BasicHttpClient http;
+
   protected boolean notifyEventReg(final BwRequest request,
                                    final EventInfo ei) throws Throwable {
-    Client cl = request.getClient();
-    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
+    final Client cl = request.getClient();
 
-    String evregToken = cl.getSystemProperties().getEventregAdminToken();
-    String evregUrl = cl.getSystemProperties().getEventregUrl();
+    final String evregToken = cl.getSystemProperties().getEventregAdminToken();
+    final String evregUrl = cl.getSystemProperties().getEventregUrl();
 
     if ((evregToken == null) || (evregUrl == null)) {
       // Cannot notify
       return false;
     }
 
-    /* Look for special changes - e.g. canceled */
+    /* Send a notification to the event registration system that a
+     * registerable event has changed. It's up to that system to
+     * do something with it.
+     */
 
-    ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.STATUS);
+    if (http == null) {
+      http = new BasicHttpClient(30000);
+    }
 
-    if (cte.getChanged()) {
+    http.setBaseURI(new URI(evregUrl));
 
+    final RequestBuilder rb = new RequestBuilder("eventChg.do?");
+    rb.par("atkn", evregToken);
+    rb.par("href", ei.getEvent().getHref());
+
+    final int respCode = http.sendRequest("GET",
+                                          rb.toString(),
+                                          null,
+                                          "application/xml",
+                                          0, // contentLen
+                                          null);    //content
+
+    if (respCode != HttpServletResponse.SC_OK) {
+      return false;
     }
 
     return true;

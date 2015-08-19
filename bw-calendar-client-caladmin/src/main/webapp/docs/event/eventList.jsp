@@ -2,6 +2,7 @@
 <%@ taglib uri='struts-logic' prefix='logic' %>
 <%@ taglib uri='struts-html' prefix='html' %>
 <%@ taglib uri='struts-genurl' prefix='genurl' %>
+<%@ taglib uri='bedework' prefix='bw' %>
 <html:xhtml/>
 
 <bedework>
@@ -11,6 +12,15 @@
 <tab>main</tab>
 
 <%@include file="/docs/event/eventListRoot.jsp"%>
+
+  <%-- Output the writable calendars --%>
+  <calendars>
+    <logic:iterate id="calendar" name="bw_addcontent_collection_list" scope="session">
+      <calendar>
+        <bw:emitCollection name="calendar" indent="  " full="false" noTag="true" />
+      </calendar>
+    </logic:iterate>
+  </calendars>
 
   <%-- Output the categories for UI filtering: --%>
   <categories>

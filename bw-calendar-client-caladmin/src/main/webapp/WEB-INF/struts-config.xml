@@ -958,10 +958,28 @@
                type="org.bedework.webcommon.notifications.RemoveAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=continue"
+               parameter="actionType=action;conversation=only"
                validate="false">
       <forward name="notFound" path="/widget/ajaxTerminator.rdo" redirect="true" />
       <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
+    </action>
+
+    <action    path="/notify/get"
+               type="org.bedework.webcommon.notifications.GetNotificationsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;mdl=notify;conversation=only"
+               validate="false">
+      <forward name="success" path="/notify/show.rdo" redirect="true" />
+    </action>
+
+    <action    path="/notify/show"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="success" path="/docs/notifications/notifications.jsp"/>
     </action>
 
     <action    path="/notify/removeAll"

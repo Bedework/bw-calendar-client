@@ -22,9 +22,9 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.misc.Util;
+import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.event.EventActionBase;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
  *      <li>  add | remove  - only one must be present </li>.
  * </ul>
  */
-public class SubscribeAction extends EventActionBase {
+public class SubscribeAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -60,7 +60,7 @@ public class SubscribeAction extends EventActionBase {
       return forwardNull;
     }
 
-    final String csHref = form.getCurrentCalSuite().getGroup().getPrincipalRef();
+    // TODO This should only be the default - we need to allow it to be supplied
     final String href = cl.getCurrentPrincipalHref();
 
     final List<String> emails = request.getReqPars("email");

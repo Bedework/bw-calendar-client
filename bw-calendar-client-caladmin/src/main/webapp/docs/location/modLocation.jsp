@@ -16,7 +16,10 @@
      take advantage of Struts' form processing features -->
 <formElements>
   <genurl:form action="location/update" >
-    <address><html:text property="locationAddress.value" size="30" /></address>
+      <!--
+    <address><html:text property="locationAddress.value" size="30" /></address> -->
+    <addressField><html:text property="location.addressField" size="30" /></addressField>
+    <roomField><html:text property="location.roomField" size="30" /></roomField>
     <subaddress><html:text property="locationSubaddress.value" size="30" /></subaddress>
     <link><html:text property="location.link" size="30" /></link>
 

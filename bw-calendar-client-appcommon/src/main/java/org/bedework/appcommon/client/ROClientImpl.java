@@ -1743,6 +1743,10 @@ public class ROClientImpl implements Client {
     lastSearchEntries = formatSearchResult(lastSearch.getIndexer().
             getSearchResult(lastSearch, pos, PrivilegeDefs.privAny));
 
+    if ((lastSearch != null) && (cstate.getSearchParams() != null)) {
+      cstate.getSearchParams().setCurOffset(lastSearch.getLastPageStart());
+    }
+
     return lastSearchEntries;
   }
 

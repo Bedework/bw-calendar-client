@@ -1008,7 +1008,7 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     http.setBaseURI(new URI(evregUrl));
 
-    final RequestBuilder rb = new RequestBuilder("eventChg.do?");
+    final RequestBuilder rb = new RequestBuilder("info/eventChg.do");
     rb.par("atkn", evregToken);
     rb.par("href", ei.getEvent().getHref());
 

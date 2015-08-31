@@ -69,6 +69,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -936,6 +937,15 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   DeleteReffedEntityResult deleteCategory(BwCategory val) throws CalFacadeException;
+
+  /** Return all default category uids for public suites.
+   *
+   * <p>Returns an empty collection for none.
+   *
+   * @return Collection     of uids
+   * @throws CalFacadeException
+   */
+  Set<String> getDefaultPublicCategoryUids() throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                     Contacts

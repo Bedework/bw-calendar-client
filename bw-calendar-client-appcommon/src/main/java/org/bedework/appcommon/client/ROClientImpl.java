@@ -729,19 +729,7 @@ public class ROClientImpl implements Client {
   }
 
   public BwPreferences getCalsuitePreferences() throws CalFacadeException {
-    final BwCalSuite cs = getCalSuite();
-    if (cs == null) {
-      return null;
-    }
-
-    final String csHref = cs.getGroup().getOwnerHref();
-
-    final BwPrincipal p = getUser(csHref);
-    if (p == null) {
-      return null;
-    }
-
-    return svci.getPrefsHandler().get(p);
+    return getCalsuitePreferences(getCalSuite());
   }
 
   @Override
@@ -1117,6 +1105,24 @@ public class ROClientImpl implements Client {
   public DeleteReffedEntityResult deleteCategory(final BwCategory val)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public Set<String> getDefaultPublicCategoryUids()
+          throws CalFacadeException {
+    final Set<String> catUids = new TreeSet<>();
+
+    for (final BwCalSuite suite: svci.getCalSuitesHandler().getAll()) {
+      final BwPreferences prefs = getCalsuitePreferences(suite);
+
+      if ((prefs != null) && (prefs.getDefaultCategoryUids() != null)) {
+        for (final String uid: prefs.getDefaultCategoryUids()) {
+          catUids.add(uid);
+        }
+      }
+    }
+
+    return catUids;
   }
 
   /* ------------------------------------------------------------
@@ -1938,6 +1944,21 @@ public class ROClientImpl implements Client {
    *                   protected methods
    * ------------------------------------------------------------ */
 
+  protected BwPreferences getCalsuitePreferences(final BwCalSuite cs) throws CalFacadeException {
+    if (cs == null) {
+      return null;
+    }
+
+    final String csHref = cs.getGroup().getOwnerHref();
+
+    final BwPrincipal p = getUser(csHref);
+    if (p == null) {
+      return null;
+    }
+
+    return svci.getPrefsHandler().get(p);
+  }
+
   protected void refreshAdminGroupInfo()
           throws CalFacadeException {
     if ((adminGroupsInfo != null) &&
@@ -1958,7 +1979,7 @@ public class ROClientImpl implements Client {
       suites = new ArrayList<>();
 
       for (final BwCalSuite suite: svci.getCalSuitesHandler().getAll()) {
-        BwCalSuite cs = (BwCalSuite)suite.clone();
+        final BwCalSuite cs = (BwCalSuite)suite.clone();
 
         groupHrefs.add(cs.getGroup().getPrincipalRef());
 

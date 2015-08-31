@@ -114,7 +114,8 @@ public class UpdateEventAction extends EventActionBase {
 
     final boolean sendInvitations = request.present("submitAndSend");
     final boolean publishEvent = request.present("publishEvent");
-    final boolean updateSubmitEvent = request.present("updateSubmitEvent");
+    final boolean updateSubmitEvent = request.present(
+            "updateSubmitEvent");
     final boolean approveEvent = request.present("approveEvent");
 
     if ((publicAdmin && !form.getAuthorisedUser()) ||
@@ -147,7 +148,8 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     /* This should be done by a wrapper */
-    final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
+    final ChangeTable changes = ei.getChangeset(
+            cl.getCurrentPrincipalHref());
 
     /*
     BwEventAnnotation ann = null;
@@ -489,8 +491,9 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Categories ------------------------------ */
 
-    final SetEntityCategoriesResult secr = setEntityCategories(request, cats,
-                                                         ev, changes);
+    final SetEntityCategoriesResult secr = setEntityCategories(
+            request, cats,
+            ev, changes);
     if (secr.rcode != forwardSuccess) {
       cl.rollback();
       return secr.rcode;
@@ -772,7 +775,7 @@ public class UpdateEventAction extends EventActionBase {
    */
   private Set<BwCategory> setEventAliases(final BwRequest request,
                                           final BwEvent ev) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     if (!cl.getPublicAdmin() &&
         !request.getBwForm().getSubmitApp()) {
@@ -780,20 +783,20 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     /* The set of categories references by the aliases and their parents */
-    Set<BwCategory> cats = new TreeSet<>();
+    final Set<BwCategory> cats = new TreeSet<>();
 
-    Collection<BwXproperty> aliases = ev.getXproperties(BwXproperty.bedeworkAlias);
+    final Collection<BwXproperty> aliases = ev.getXproperties(BwXproperty.bedeworkAlias);
 
     if (Util.isEmpty(aliases)) {
       return cats;
     }
 
-    for (BwXproperty alias: aliases) {
+    for (final BwXproperty alias: aliases) {
       Collection<BwCalendar> cols = null;
 
       try {
         cols = cl.decomposeVirtualPath(alias.getValue());
-      } catch (CalFacadeException cfe) {
+      } catch (final CalFacadeException cfe) {
         request.getErr().emit(ClientError.unknownCalendar, alias);
       }
 

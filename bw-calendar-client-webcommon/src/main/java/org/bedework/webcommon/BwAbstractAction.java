@@ -828,31 +828,36 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                                           final Set<BwCategory> extraCats,
                                                           final CategorisedEntity ent,
                                                           final ChangeTable changes) throws Throwable {
-    BwActionFormBase form = request.getBwForm();
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
 
     // XXX We should use the change table code for this.
-    SetEntityCategoriesResult secr = new SetEntityCategoriesResult();
+    final SetEntityCategoriesResult secr = new SetEntityCategoriesResult();
 
     /* categories already set in event */
-    Set<BwCategory> evcats = ent.getCategories();
+    final Set<BwCategory> evcats = ent.getCategories();
 
-    Collection<BwCategory> defCats = request.getSess().embedCategories(request, true,
-                                                                       BwSession.defaultEntity);
+    final Collection<BwCategory> defCats =
+            request.getSess().embedCategories(request, true,
+                                              BwSession.defaultEntity);
 
+    /* Get the uids of all public default categories */
+    final Set<String> allDefCatUids = cl.getDefaultPublicCategoryUids();
 
     /* Get the uids */
-    Collection<String> strCatUids = request.getReqPars("catUid");
+    final Collection<String> strCatUids = request.getReqPars("catUid");
 
     /* Remove all categories if we don't supply any
      */
 
     if (Util.isEmpty(strCatUids) &&
         Util.isEmpty(extraCats) &&
-        Util.isEmpty(defCats)) {
+        Util.isEmpty(defCats) &&
+        Util.isEmpty(allDefCatUids)) {
       if (!Util.isEmpty(evcats)) {
         if (changes != null) {
-          ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.CATEGORIES);
-          cte.setRemovedValues(new ArrayList<BwCategory>(evcats));
+          final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.CATEGORIES);
+          cte.setRemovedValues(new ArrayList<>(evcats));
         }
 
         secr.numRemoved = evcats.size();
@@ -862,27 +867,42 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return secr;
     }
 
-    Client cl = request.getClient();
-    Set<BwCategory> cats = new TreeSet<>();
+    final Set<BwCategory> cats = new TreeSet<>();
 
     if (extraCats != null) {
       cats.addAll(extraCats);
     }
 
     if (!Util.isEmpty(defCats)) {
-      for (BwCategory defcat: defCats) {
+      for (final BwCategory defcat: defCats) {
         cats.add(cl.getPersistentCategory(defcat.getUid()));
+      }
+    }
+
+    if (!Util.isEmpty(allDefCatUids) &&
+        (evcats != null)) {
+      buildList:
+      for (final String catUid: allDefCatUids) {
+        /* If it's in the event add it to the list we're building then move on
+         * to the next requested category.
+         */
+        for (final BwCategory evcat: evcats) {
+          if (evcat.getUid().equals(catUid)) {
+            cats.add(evcat);
+            continue buildList;
+          }
+        }
       }
     }
 
     if (!Util.isEmpty(strCatUids)) {
       buildList:
-      for (String catUid: strCatUids) {
+      for (final String catUid: strCatUids) {
         /* If it's in the event add it to the list we're building then move on
          * to the next requested category.
          */
         if (evcats != null) {
-          for (BwCategory evcat: evcats) {
+          for (final BwCategory evcat: evcats) {
             if (evcat.getUid().equals(catUid)) {
               cats.add(evcat);
               continue buildList;
@@ -890,7 +910,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           }
         }
 
-        BwCategory cat = cl.getPersistentCategory(catUid);
+        final BwCategory cat = cl.getPersistentCategory(catUid);
 
         if (cat != null) {
           cats.add(cat);
@@ -900,14 +920,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /* See if the user is adding new categories */
 
-    Collection<String> reqCatKeys = request.getReqPars("categoryKey");
+    final Collection<String> reqCatKeys = request.getReqPars("categoryKey");
 
     if (!Util.isEmpty(reqCatKeys)) {
-      Collection<String> catKeys = new ArrayList<>();
+      final Collection<String> catKeys = new ArrayList<>();
 
       /* request parameter can be comma delimited list */
-      for (String catkey: reqCatKeys) {
-        String[] parts = catkey.split(",");
+      for (final String catkey: reqCatKeys) {
+        final String[] parts = catkey.split(",");
 
         for (String part: parts) {
           if (part == null) {
@@ -924,9 +944,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
       }
 
-      for (String catkey: catKeys) {
+      for (final String catkey: catKeys) {
         // LANG - use current language code?
-        BwString key = new BwString(null, catkey);
+        final BwString key = new BwString(null, catkey);
 
         BwCategory cat = cl.getCategoryByName(key);
         if (cat == null) {

@@ -1158,17 +1158,37 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   protected EventInfo findEvent(final BwRequest request,
                                 final Rmode mode) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
     EventInfo ev = null;
 
-    BwCalendar cal = request.getCalendar(true);
+    final String href = request.getReqPar("href");
+
+    if (href != null) {
+      final EventKey ekey = new EventKey(href, false);
+
+      ev = cl.getEvent(ekey.getColPath(),
+                       ekey.getName(),
+                       ekey.getRecurrenceId());
+
+      if (ev == null) {
+        request.getForm().getErr().emit(ClientError.unknownEvent,
+                                        /*eid*/ekey.getName());
+        return null;
+      } else if (debug) {
+        debugMsg("Get event found " + ev.getEvent());
+      }
+
+      return ev;
+    }
+
+    final BwCalendar cal = request.getCalendar(true);
 
     if (cal == null) {
       return null;
     }
 
-    String guid = request.getReqPar("guid");
-    String eventName = request.getReqPar("eventName");
+    final String guid = request.getReqPar("guid");
+    final String eventName = request.getReqPar("eventName");
 
     if (guid != null) {
       if (debug) {
@@ -1176,7 +1196,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
       String rid = request.getReqPar("recurrenceId");
       // DORECUR is this right?
-      RecurringRetrievalMode rrm;
+      final RecurringRetrievalMode rrm;
       if (mode == Rmode.overrides) {
         rrm = RecurringRetrievalMode.overrides;
         rid = null;
@@ -1186,8 +1206,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         rrm = new RecurringRetrievalMode(mode);
       }
 
-      Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
-                                              guid, rid, rrm);
+      final Collection<EventInfo> evs =
+              cl.getEventByUid(cal.getPath(),
+                               guid, rid, rrm);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }
@@ -1203,7 +1224,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       ev = cl.getEvent(cal.getPath(), eventName,
-                       RecurringRetrievalMode.overrides);
+                       null);
     }
 
     if (ev == null) {

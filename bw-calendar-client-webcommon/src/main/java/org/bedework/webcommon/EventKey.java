@@ -24,7 +24,7 @@ import java.io.Serializable;
 
 /** Key to an event or events.
  *
- * @author Mike Douglass douglm - bedework.edu
+ * @author Mike Douglass douglm - rpi.edu
  */
 public class EventKey implements Serializable {
   private String colPath;
@@ -76,15 +76,47 @@ public class EventKey implements Serializable {
    * @param byName
    */
   public EventKey(final BwEvent ev, final boolean byName) {
-    this.colPath = ev.getColPath();
+    colPath = ev.getColPath();
 
     if (byName) {
-      this.name = ev.getName();
+      name = ev.getName();
     } else {
-      this.guid = ev.getUid();
+      guid = ev.getUid();
     }
 
-    this.recurrenceId = ev.getRecurrenceId();
+    recurrenceId = ev.getRecurrenceId();
+  }
+
+  /** Make an eventkey from an href
+   *
+   * @param href with possible fragment id for recurrence
+   * @param forExport true if we are exporting the events.
+   */
+  public EventKey(final String href,
+                  final boolean forExport) {
+    this.href = href;
+    this.forExport = forExport;
+
+    if (href == null) {
+      return;
+    }
+
+    final int pos = href.lastIndexOf("/");
+    if (pos < 0) {
+      throw new RuntimeException("Bad href: " + href);
+    }
+
+    final int fragPos = href.lastIndexOf("#");
+
+    if (fragPos < pos) {
+      name = href.substring(pos + 1);
+      recurrenceId = null;
+    } else {
+      name = href.substring(pos + 1, fragPos);
+      recurrenceId = href.substring(fragPos + 1);
+    }
+
+    colPath = href.substring(0, pos);
   }
 
   /** Set the event's collection path

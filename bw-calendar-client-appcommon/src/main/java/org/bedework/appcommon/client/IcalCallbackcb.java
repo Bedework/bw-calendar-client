@@ -117,8 +117,8 @@ public class IcalCallbackcb implements IcalCallback {
   public Collection getEvent(final BwCalendar cal,
                              final String guid)
           throws CalFacadeException {
-    return cl.getEvent(cal.getPath(), guid,
-                       null, null);
+    return cl.getEventByUid(cal.getPath(), guid,
+                            null, null);
   }
 
   @Override

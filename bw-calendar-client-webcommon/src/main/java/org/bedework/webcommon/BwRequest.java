@@ -628,6 +628,12 @@ public class BwRequest extends Request {
    * @throws Throwable
    */
   public EventKey makeEventKey(boolean forExport) throws Throwable {
+    final String href = getReqPar("href");
+
+    if (href != null) {
+      return new EventKey(href, forExport);
+    }
+
     final String calPath = getReqPar("calPath");
 
     if (calPath == null) {

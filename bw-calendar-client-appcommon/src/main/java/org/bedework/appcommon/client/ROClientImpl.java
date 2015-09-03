@@ -1273,13 +1273,13 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public Collection<EventInfo> getEvent(final String path,
-                                        final String guid,
-                                        final String rid,
-                                        final RecurringRetrievalMode recurRetrieval)
+  public Collection<EventInfo> getEventByUid(final String path,
+                                             final String guid,
+                                             final String rid,
+                                             final RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException {
-    return svci.getEventsHandler().get(path, guid, rid,
-                                       recurRetrieval);
+    return svci.getEventsHandler().getByUid(path, guid, rid,
+                                            recurRetrieval);
   }
 
   @Override
@@ -1290,9 +1290,9 @@ public class ROClientImpl implements Client {
   @Override
   public EventInfo getEvent(final String colPath,
                             final String name,
-                            final RecurringRetrievalMode recurRetrieval)
+                            final String recurrenceId)
           throws CalFacadeException {
-    return svci.getEventsHandler().get(colPath, name, recurRetrieval);
+    return svci.getEventsHandler().get(colPath, name, recurrenceId);
   }
 
   @Override

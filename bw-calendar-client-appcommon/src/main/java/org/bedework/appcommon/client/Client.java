@@ -1174,16 +1174,16 @@ public interface Client extends Serializable {
    * event with overrides.
    *
    * @param path       collection to search
-   * @param guid
-   * @param rid
+   * @param guid uid we want
+   * @param rid recurrence id
    * @param recurRetrieval How recurring event is returned.
    * @return Collection of EventInfo
    * @throws CalFacadeException
    */
-  Collection<EventInfo> getEvent(String path,
-                                 String guid,
-                                 String rid,
-                                 RecurringRetrievalMode recurRetrieval)
+  Collection<EventInfo> getEventByUid(String path,
+                                      String guid,
+                                      String rid,
+                                      RecurringRetrievalMode recurRetrieval)
           throws CalFacadeException;
 
   /** Get events given the calendar and String name. Return null for not
@@ -1192,13 +1192,13 @@ public interface Client extends Serializable {
    *
    * @param  colPath   String collection path
    * @param name       String possible name
-   * @param recurRetrieval
+   * @param recurrenceId null for entire event + overrides.
    * @return EventInfo or null
    * @throws CalFacadeException
    */
   EventInfo getEvent(String colPath,
                      String name,
-                     RecurringRetrievalMode recurRetrieval)
+                     String recurrenceId)
           throws CalFacadeException;
 
   /** Return the events for the current user within the given date and time

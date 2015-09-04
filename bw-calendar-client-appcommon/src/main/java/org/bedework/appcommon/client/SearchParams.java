@@ -18,6 +18,7 @@
 */
 package org.bedework.appcommon.client;
 
+import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.filter.SortTerm;
@@ -55,6 +56,10 @@ public class SearchParams implements Serializable {
   private int curOffset;
 
   private int pageSize;
+
+  private DateTimeFormatter formattedStart;
+
+  private DateTimeFormatter formattedEnd;
 
   /** True for public
    *
@@ -216,9 +221,23 @@ public class SearchParams implements Serializable {
     return pageSize;
   }
 
+  public DateTimeFormatter getFormattedStart() {
+    if (formattedStart == null) {
+      formattedStart = new DateTimeFormatter(fromDate);
+    }
+    return formattedStart;
+  }
+
+  public DateTimeFormatter getFormattedEnd() {
+    if (formattedEnd == null) {
+      formattedEnd  = new DateTimeFormatter(toDate);
+    }
+    return formattedEnd;
+  }
+
   @Override
   public String toString() {
-    ToString ts = new ToString(this);
+    final ToString ts = new ToString(this);
 
     ts.append("publicIndexRequested", getPublicIndexRequested())
             .append("fromDate", getFromDate())

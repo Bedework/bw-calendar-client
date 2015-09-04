@@ -183,6 +183,15 @@
       <forward name="success" path="/docs/tabPendingEvents.jsp"/>
     </action>
 
+    <action    path="/main/nextPendingTab"
+                        type="org.bedework.webcommon.search.SearchNextAction"
+                        name="calForm"
+                        scope="session"
+                        parameter="actionType=action"
+                        validate="false">
+      <forward name="success" path="/main/showPendingTab.rdo" redirect="true" />
+    </action>
+
     <action    path="/main/initApprovalQueueTab"
                type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
@@ -202,6 +211,15 @@
       <forward name="success" path="/docs/tabApprovalQueueEvents.jsp"/>
     </action>
 
+    <action    path="/main/nextApprovalQueueTab"
+               type="org.bedework.webcommon.search.SearchNextAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/main/showApprovalQueueTab.rdo" redirect="true" />
+    </action>
+
     <action    path="/main/initSuggestionQueueTab"
                type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
@@ -219,6 +237,15 @@
                parameter="actionType=render;conversation=end"
                validate="false">
       <forward name="success" path="/docs/tabSuggestionQueueEvents.jsp"/>
+    </action>
+
+    <action    path="/main/nextSuggestionQueueTab"
+               type="org.bedework.webcommon.search.SearchNextAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="success" path="/main/showSuggestionQueueTab.rdo" redirect="true" />
     </action>
 
     <action    path="/main/showCalsuiteTab"

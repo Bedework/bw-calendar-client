@@ -111,8 +111,11 @@ try {
   <urlPrefixes>
     <setup><bw:rewrite actionURL="true" page="/setup.do?b=de"/></setup>
     <initPendingTab><bw:rewrite actionURL="true" page="/main/initPendingTab.do?b=de"/></initPendingTab>
+    <nextPendingTab><bw:rewrite actionURL="true" page="/main/nextPendingTab.do?b=de"/></nextPendingTab>
     <initApprovalQueueTab><bw:rewrite actionURL="true" page="/main/initApprovalQueueTab.do?b=de"/></initApprovalQueueTab>
+    <nextApprovalQueueTab><bw:rewrite actionURL="true" page="/main/nextApprovalQueueTab.do?b=de"/></nextApprovalQueueTab>
     <initSuggestionQueueTab><bw:rewrite actionURL="true" page="/main/initSuggestionQueueTab.do?b=de"/></initSuggestionQueueTab>
+    <nextSuggestionQueueTab><bw:rewrite actionURL="true" page="/main/nextSuggestionQueueTab.do?b=de"/></nextSuggestionQueueTab>
     <showCalsuiteTab><bw:rewrite renderURL="true" page="/main/showCalsuiteTab.rdo?b=de"/></showCalsuiteTab>
     <showUsersTab><bw:rewrite renderURL="true" page="/main/showUsersTab.rdo?b=de"/></showUsersTab>
     <showSystemTab><bw:rewrite renderURL="true" page="/main/showSystemTab.rdo?b=de"/></showSystemTab>
@@ -126,7 +129,7 @@ try {
       <showEvent><bw:rewrite renderURL="true" page="/event/showEvent.rdo?b=de"/></showEvent>
       <showModForm><bw:rewrite renderURL="true" page="/event/showModForm.rdo?b=de"/></showModForm>
       <showUpdateList><bw:rewrite renderURL="true" page="/event/showUpdateList.rdo?b=de"/></showUpdateList>
-      <nextUpdateList><bw:rewrite renderURL="true" page="/event/nextUpdateList.rdo?b=de"/></nextUpdateList>
+      <nextUpdateList><bw:rewrite actionURL="true" page="/event/nextUpdateList.do?b=de"/></nextUpdateList>
       <showDeleteConfirm><bw:rewrite renderURL="true" page="/event/showDeleteConfirm.rdo?b=de"/></showDeleteConfirm>
       <initAddEvent><bw:rewrite actionURL="true" page="/event/initAddEvent.do?b=de"/></initAddEvent>
       <initUpdateEvent><bw:rewrite actionURL="true" page="/event/initUpdateEvent.do?b=de"/></initUpdateEvent>

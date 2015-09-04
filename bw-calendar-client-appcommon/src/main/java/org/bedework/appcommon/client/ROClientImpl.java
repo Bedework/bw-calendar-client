@@ -24,6 +24,7 @@ import org.bedework.access.PrivilegeDefs;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.EventFormatter;
+import org.bedework.appcommon.EventKey;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
@@ -1304,6 +1305,15 @@ public class ROClientImpl implements Client {
                             final String recurrenceId)
           throws CalFacadeException {
     return svci.getEventsHandler().get(colPath, name, recurrenceId);
+  }
+
+  @Override
+  public EventInfo getEvent(final String href)
+          throws CalFacadeException {
+    final EventKey key = new EventKey(href, false);
+    return svci.getEventsHandler().get(key.getColPath(),
+                                       key.getName(),
+                                       key.getRecurrenceId());
   }
 
   @Override

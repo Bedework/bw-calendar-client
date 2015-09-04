@@ -34,7 +34,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.BwWebUtil;
-import org.bedework.webcommon.EventKey;
+import org.bedework.appcommon.EventKey;
 import org.bedework.webcommon.event.EventActionBase;
 
 import java.util.Collection;

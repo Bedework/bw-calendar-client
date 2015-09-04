@@ -122,7 +122,7 @@ public class NotificationInfo implements Serializable {
       cl.getResourceContent(r);
 
       try {
-        final NotifyResource ri = new NotifyResource(r);
+        final NotifyResource ri = new NotifyResource(cl, r);
         notes.put(rname, ri);
       } catch (final Throwable t) {
         if (debug) {

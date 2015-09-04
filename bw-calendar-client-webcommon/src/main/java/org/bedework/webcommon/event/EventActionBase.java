@@ -55,7 +55,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.BwWebUtil.ValidateResult;
-import org.bedework.webcommon.EventKey;
+import org.bedework.appcommon.EventKey;
 
 import net.fortuna.ical4j.model.parameter.Role;
 
@@ -312,9 +312,10 @@ public abstract class EventActionBase extends BwAbstractAction {
       } else {
         rrm = RecurringRetrievalMode.expanded;
       }
-      Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
-                                              ekey.getGuid(),
-                                              rid, rrm);
+      Collection<EventInfo> evs =
+              cl.getEventByUid(cal.getPath(),
+                               ekey.getGuid(),
+                               rid, rrm);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }
@@ -331,7 +332,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       key = ekey.getName();
 
       ev = cl.getEvent(cal.getPath(), ekey.getName(),
-                       RecurringRetrievalMode.overrides);
+                       ekey.getRecurrenceId());
     }
 
     if (ev == null) {
@@ -371,7 +372,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       /* Use name */
       key = event.getName();
       ei = cl.getEvent(cal.getPath(), key,
-                       RecurringRetrievalMode.overrides);
+                       null);
     } else {
       /* Use uid */
       String uid = event.getUid();
@@ -385,9 +386,10 @@ public abstract class EventActionBase extends BwAbstractAction {
 
       String rid = event.getRecurrenceId();
 
-      Collection<EventInfo> evs = cl.getEvent(cal.getPath(),
-                                              uid, rid,
-                                              RecurringRetrievalMode.overrides);
+      final Collection<EventInfo> evs =
+              cl.getEventByUid(cal.getPath(),
+                               uid, rid,
+                               RecurringRetrievalMode.overrides);
       if (debug) {
         debugMsg("Get event by guid found " + evs.size());
       }

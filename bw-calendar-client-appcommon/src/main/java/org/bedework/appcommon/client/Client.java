@@ -1201,6 +1201,16 @@ public interface Client extends Serializable {
                      String recurrenceId)
           throws CalFacadeException;
 
+  /** Get events given the href. Return null for not
+   * found. There should be only one event or none. For recurring, the
+   * overrides and possibly the instances will be attached.
+   *
+   * @param href   String collection path / name [ # recurrenceid ]
+   * @return EventInfo or null
+   * @throws CalFacadeException
+   */
+  EventInfo getEvent(String href) throws CalFacadeException;
+
   /** Return the events for the current user within the given date and time
    * range. If retrieveList is supplied only those fields (and a few required
    * fields) will be returned.

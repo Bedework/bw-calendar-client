@@ -30,7 +30,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.EventKey;
+import org.bedework.appcommon.EventKey;
 
 /** Action to add an event alias to a personal calendar.
  * <p>Request parameters<ul>

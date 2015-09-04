@@ -21,7 +21,7 @@ package org.bedework.webcommon.event;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.EventKey;
+import org.bedework.appcommon.EventKey;
 
 /**
  * Action to set up an event for a subsequent fetch.
@@ -38,13 +38,10 @@ import org.bedework.webcommon.EventKey;
  * </ul>
  */
 public class EventKeyAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    EventKey ekey = request.makeEventKey(false);
+    final EventKey ekey = request.makeEventKey(false);
     form.setEventKey(ekey);
 
     if (ekey == null) {

@@ -31,7 +31,7 @@ import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.EventKey;
+import org.bedework.appcommon.EventKey;
 
 import java.util.Collection;
 import java.util.Date;

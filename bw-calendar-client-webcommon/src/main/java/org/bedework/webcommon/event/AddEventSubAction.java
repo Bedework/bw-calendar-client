@@ -26,7 +26,7 @@ import org.bedework.calfacade.BwCalendar.EventListEntry;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.EventKey;
+import org.bedework.appcommon.EventKey;
 
 import java.util.SortedSet;
 

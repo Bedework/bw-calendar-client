@@ -876,6 +876,17 @@ public class ROClientImpl implements Client {
                                final boolean create)
           throws CalFacadeException {
     checkUpdate();
+
+    if (publicAdmin) {
+      final BwCalSuite cs = getCalSuite();
+
+      if (cs != null) {
+        return svci.getCalendarsHandler().
+                getSpecial(cs.getGroup().getOwnerHref(), calType,
+                           create);
+      }
+    }
+
     return svci.getCalendarsHandler().getSpecial(calType, create);
   }
 

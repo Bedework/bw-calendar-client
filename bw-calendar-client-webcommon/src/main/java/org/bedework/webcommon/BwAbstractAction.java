@@ -352,7 +352,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    if (!form.getGuest()) {
+    if (!form.getGuest() &&
+            (!cl.getPublicAdmin() || cl.getGroupSet())) {
       NotificationInfo ni = form.getNotificationInfo();
       if (ni == null) {
         ni = new NotificationInfo();

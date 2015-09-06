@@ -51,6 +51,8 @@ public class SwitchAGAction extends BwAbstractAction {
 
     cl.refreshAdminGroups();
 
+    form.setNotificationInfo(null);
+
     // Back to main menu. Abstract action will do the rest.
 
     final int temp = AdminUtil.checkGroup(request, false);

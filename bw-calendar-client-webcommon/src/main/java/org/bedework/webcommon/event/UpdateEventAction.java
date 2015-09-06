@@ -40,6 +40,7 @@ import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwAdminGroup;
+import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
@@ -685,6 +686,16 @@ public class UpdateEventAction extends EventActionBase {
          The change notification processor will add the
          notification(s).
         */
+
+      final BwCalSuite cs = cl.getCalSuite();
+      final String csHref;
+
+      if (cs != null) {
+        csHref = cs.getGroup().getOwnerHref();
+      } else {
+        csHref = null;
+      }
+
       final EntityApprovalResponseEvent eae =
               new EntityApprovalResponseEvent(
                       SysEventBase.SysCode.APPROVAL_STATUS,
@@ -693,7 +704,8 @@ public class UpdateEventAction extends EventActionBase {
                       ev.getHref(),
                       null,
                       true,
-                      null);
+                      null,
+                      csHref);
       cl.postNotification(eae);
     }
 

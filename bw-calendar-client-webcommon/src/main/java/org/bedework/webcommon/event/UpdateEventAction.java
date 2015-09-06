@@ -48,6 +48,7 @@ import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.sysevents.events.SysEventBase;
+import org.bedework.sysevents.events.publicAdmin.EntityApprovalResponseEvent;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
@@ -417,12 +418,14 @@ public class UpdateEventAction extends EventActionBase {
 
       BwXproperty imageXp = new BwXproperty();
       imageXp.setName(BwXproperty.bedeworkImage);
-      imageXp.setValue(pi.image.getColPath() + "/" + pi.image.getName());
+      imageXp.setValue(
+              pi.image.getColPath() + "/" + pi.image.getName());
       extras.add(imageXp);
 
       imageXp = new BwXproperty();
       imageXp.setName(BwXproperty.bedeworkThumbImage);
-      imageXp.setValue(pi.thumbnail.getColPath() + "/" + pi.thumbnail.getName());
+      imageXp.setValue(pi.thumbnail.getColPath() + "/" + pi.thumbnail
+              .getName());
       extras.add(imageXp);
     }
 
@@ -543,8 +546,8 @@ public class UpdateEventAction extends EventActionBase {
     if (!Util.equalsString(fStatus, ev.getStatus())) {
       /* Changing the status */
 //      if (BwEvent.statusCancelled.equals(fStatus)) {
-  //      canceling = true;
-    //  }
+      //      canceling = true;
+      //  }
 
       changes.changed(PropertyInfoIndex.STATUS, ev.getStatus(),
                       fStatus);
@@ -675,6 +678,23 @@ public class UpdateEventAction extends EventActionBase {
     if ((publishEvent || updateSubmitEvent) &&
         request.getBooleanReqPar("submitNotification", false)) {
       notifySubmitter(request, ei, submitterEmail);
+    }
+
+    if (approveEvent) {
+      /* Post an event flagging the approval.
+         The change notification processor will add the
+         notification(s).
+        */
+      final EntityApprovalResponseEvent eae =
+              new EntityApprovalResponseEvent(
+                      SysEventBase.SysCode.APPROVAL_STATUS,
+                      cl.getCurrentPrincipalHref(),
+                      ev.getCreatorHref(),
+                      ev.getHref(),
+                      null,
+                      true,
+                      null);
+      cl.postNotification(eae);
     }
 
     if (!Util.isEmpty(extras)) {

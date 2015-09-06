@@ -18,9 +18,21 @@
  */
 package org.bedework.appcommon;
 
+import org.bedework.appcommon.client.Client;
+import org.bedework.caldav.util.notifications.BaseNotificationType;
+import org.bedework.caldav.util.notifications.NotificationType;
+import org.bedework.caldav.util.notifications.ResourceChangeType;
+import org.bedework.caldav.util.notifications.UpdatedType;
+import org.bedework.caldav.util.notifications.admin.AdminNotificationType;
+import org.bedework.caldav.util.notifications.eventreg.EventregBaseNotificationType;
+import org.bedework.caldav.util.notifications.parse.Parser;
+import org.bedework.caldav.util.notifications.suggest.SuggestBaseNotificationType;
+import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.util.misc.Util;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
@@ -194,6 +206,15 @@ public class NotifyResource implements Serializable {
         final SuggestBaseNotificationType sbnt = (SuggestBaseNotificationType)bnt;
 
         resourcesInfo.add(new ResourceInfo(sbnt.getHref()));
+        break getHref;
+      }
+
+      if (bnt instanceof AdminNotificationType) {
+        final AdminNotificationType adnt = (AdminNotificationType)bnt;
+
+        if (adnt.getHref() != null) {
+          resourcesInfo.add(new ResourceInfo(adnt.getHref()));
+        }
         break getHref;
       }
 

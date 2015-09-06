@@ -49,6 +49,7 @@ import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.sysevents.events.SysEventBase;
+import org.bedework.sysevents.events.publicAdmin.EntityApprovalNeededEvent;
 import org.bedework.sysevents.events.publicAdmin.EntityApprovalResponseEvent;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.IcalDefs;
@@ -119,6 +120,9 @@ public class UpdateEventAction extends EventActionBase {
     final boolean updateSubmitEvent = request.present(
             "updateSubmitEvent");
     final boolean approveEvent = request.present("approveEvent");
+
+    // TODO - set this based on an x-prop or a request param
+    boolean awaitingApprovalEvent = false;
 
     if ((publicAdmin && !form.getAuthorisedUser()) ||
         form.getGuest()) {
@@ -361,6 +365,8 @@ public class UpdateEventAction extends EventActionBase {
         cl.rollback();
         return forwardValidationError;
       }
+    } else if (colPath.startsWith(workflowRoot)) {
+      awaitingApprovalEvent = adding;
     }
 
     /* ------------------------ Text fields ------------------------------ */
@@ -681,7 +687,7 @@ public class UpdateEventAction extends EventActionBase {
       notifySubmitter(request, ei, submitterEmail);
     }
 
-    if (approveEvent) {
+    if (approveEvent || awaitingApprovalEvent) {
       /* Post an event flagging the approval.
          The change notification processor will add the
          notification(s).
@@ -696,17 +702,29 @@ public class UpdateEventAction extends EventActionBase {
         csHref = null;
       }
 
-      final EntityApprovalResponseEvent eae =
-              new EntityApprovalResponseEvent(
-                      SysEventBase.SysCode.APPROVAL_STATUS,
-                      cl.getCurrentPrincipalHref(),
-                      ev.getCreatorHref(),
-                      ev.getHref(),
-                      null,
-                      true,
-                      null,
-                      csHref);
-      cl.postNotification(eae);
+      final SysEventBase sev;
+
+      if (approveEvent) {
+        sev = new EntityApprovalResponseEvent(
+                SysEventBase.SysCode.APPROVAL_STATUS,
+                cl.getCurrentPrincipalHref(),
+                ev.getCreatorHref(),
+                ev.getHref(),
+                null,
+                true,
+                null,
+                csHref);
+      } else {
+        sev = new EntityApprovalNeededEvent(
+                SysEventBase.SysCode.APPROVAL_NEEDED,
+                cl.getCurrentPrincipalHref(),
+                ev.getCreatorHref(),
+                ev.getHref(),
+                null,
+                null,
+                csHref);
+      }
+      cl.postNotification(sev);
     }
 
     if (!Util.isEmpty(extras)) {

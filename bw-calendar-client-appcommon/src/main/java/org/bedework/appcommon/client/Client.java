@@ -1331,11 +1331,9 @@ public interface Client extends Serializable {
 
   /**
    *
-   * @param principalHref of owner
    * @throws CalFacadeException
    */
-  void removeAllNotifications(final String principalHref)
-          throws CalFacadeException;
+  void removeAllNotifications() throws CalFacadeException;
 
   void subscribe(final String principalHref,
                  final List<String> emails) throws CalFacadeException;

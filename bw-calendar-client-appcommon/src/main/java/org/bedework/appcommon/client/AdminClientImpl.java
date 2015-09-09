@@ -21,6 +21,7 @@ package org.bedework.appcommon.client;
 import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.caldav.util.filter.FilterBase;
+import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwFilterDef;
@@ -47,6 +48,7 @@ import org.bedework.access.Privilege;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: douglm Date: 7/3/13 Time: 10:37 AM
@@ -259,6 +261,61 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   /* ------------------------------------------------------------
+   *                     Collections
+   * ------------------------------------------------------------ */
+
+  @Override
+  public BwCalendar getSpecial(final int calType,
+                               final boolean create)
+          throws CalFacadeException {
+    checkUpdate();
+
+    final BwCalSuite cs = getCalSuite();
+
+    if (cs != null) {
+      return svci.getCalendarsHandler().
+              getSpecial(cs.getGroup().getOwnerHref(), calType,
+                         create);
+    }
+
+    return super.getSpecial(calType, create);
+  }
+
+  /* ------------------------------------------------------------
+   *                     Notifications
+   * ------------------------------------------------------------ */
+
+  @Override
+  public NotificationType findNotification(final String name)
+          throws CalFacadeException {
+    return svci.getNotificationsHandler().
+            find(getCalSuite().getGroup().getOwnerHref(),
+                 name);
+  }
+
+  @Override
+  public List<NotificationType> allNotifications()
+          throws CalFacadeException {
+    return svci.getNotificationsHandler().getAll();
+  }
+
+  @Override
+  public void removeNotification(final NotificationType val)
+          throws CalFacadeException {
+    svci.getNotificationsHandler().
+            remove(getCalSuite().getGroup().getOwnerHref(),
+                   val);
+    updated();
+  }
+
+  @Override
+  public void removeAllNotifications() throws CalFacadeException {
+    svci.getNotificationsHandler().removeAll(
+            getCalSuite().getGroup().getOwnerHref());
+    updated();
+  }
+
+  /* ------------------------------------------------------------
    *                   Calendar Suites
    * ------------------------------------------------------------ */
 
@@ -331,11 +388,13 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   private String getCSResourcesDir(final BwCalSuite suite,
-                                  final String rc) throws CalFacadeException {
+                                   final String rc)
+          throws CalFacadeException {
     String path = getCSResourcesPath(suite, rc);
 
     if (path == null) {
-      throw new CalFacadeException(CalFacadeException.noCalsuiteResCol);
+      throw new CalFacadeException(
+              CalFacadeException.noCalsuiteResCol);
     }
 
     if (path.endsWith("/")) {
@@ -401,7 +460,8 @@ public class AdminClientImpl extends ClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public void setGroupSet(final boolean val) throws CalFacadeException {
+  public void setGroupSet(final boolean val)
+          throws CalFacadeException {
     groupSet = val;
   }
 
@@ -411,7 +471,8 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void setChoosingGroup(final boolean val) throws CalFacadeException {
+  public void setChoosingGroup(final boolean val)
+          throws CalFacadeException {
     choosingGroup = val;
   }
 
@@ -421,7 +482,8 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void setOneGroup(final boolean val) throws CalFacadeException {
+  public void setOneGroup(final boolean val)
+          throws CalFacadeException {
     oneGroup = val;
   }
 
@@ -431,7 +493,8 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void setAdminGroupName(final String val) throws CalFacadeException {
+  public void setAdminGroupName(final String val)
+          throws CalFacadeException {
     adminGroupName = val;
   }
 

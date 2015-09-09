@@ -57,18 +57,10 @@ public class RemoveAllAction extends BwAbstractAction {
       return forwardNull;
     }
 
-    final String principalHref;
-
-    if (cl.getPublicAdmin()) {
-      principalHref = cl.getCalSuite().getGroup().getOwnerHref();
-    } else {
-      principalHref = cl.getCurrentPrincipalHref();
-    }
-
     int status;
 
     try {
-      cl.removeAllNotifications(principalHref);
+      cl.removeAllNotifications();
       status = HttpServletResponse.SC_OK;
     } catch (final CalFacadeAccessException ca) {
       form.getErr().emit(ca.getMessage());

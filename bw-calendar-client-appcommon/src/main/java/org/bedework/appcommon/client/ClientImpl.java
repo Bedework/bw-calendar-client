@@ -450,9 +450,8 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public void removeAllNotifications(final String principalHref)
-          throws CalFacadeException {
-    svci.getNotificationsHandler().removeAll(principalHref);
+  public void removeAllNotifications() throws CalFacadeException {
+    svci.getNotificationsHandler().removeAll(getCurrentPrincipalHref());
     updated();
   }
 

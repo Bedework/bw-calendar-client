@@ -878,16 +878,6 @@ public class ROClientImpl implements Client {
           throws CalFacadeException {
     checkUpdate();
 
-    if (publicAdmin) {
-      final BwCalSuite cs = getCalSuite();
-
-      if (cs != null) {
-        return svci.getCalendarsHandler().
-                getSpecial(cs.getGroup().getOwnerHref(), calType,
-                           create);
-      }
-    }
-
     return svci.getCalendarsHandler().getSpecial(calType, create);
   }
 
@@ -960,7 +950,7 @@ public class ROClientImpl implements Client {
 
       // Assume we have to clone
 
-      Collection<BwCalendar> ourChildren = new ArrayList<>();
+      final Collection<BwCalendar> ourChildren = new ArrayList<>();
 
       for (final BwCalendar ch: children) {
         BwCalendar ourCh = ch;
@@ -1401,8 +1391,7 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public void removeAllNotifications(final String principalHref)
-          throws CalFacadeException {
+  public void removeAllNotifications() throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
 

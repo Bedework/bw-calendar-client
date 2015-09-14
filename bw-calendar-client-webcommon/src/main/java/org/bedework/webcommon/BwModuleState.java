@@ -66,6 +66,8 @@ public class BwModuleState implements Serializable {
 
   private String date;
 
+  private String viewType; /* month etc */
+
   /** Index of the current view type
    */
   private int curViewPeriod = -1;
@@ -236,22 +238,27 @@ public class BwModuleState implements Serializable {
    * @param  val   String viewType
    */
   public void setViewType(final String val) {
-    String viewType = Util.checkNull(val);
+    viewType = Util.checkNull(val);
 
     if (viewType == null) {
       return;
     }
 
-    Integer i = BwAbstractAction.viewTypeMap.get(viewType);
+    Integer i = BwRequest.viewTypeMap.get(viewType);
 
     if (i == null) {
       i = BedeworkDefs.defaultView;
+      viewType = BedeworkDefs.viewPeriodNames[i];
     }
 
     if (i != curViewPeriod) {
       curViewPeriod = i;
       refresh = true;
     }
+  }
+
+  public String getViewType() {
+    return viewType;
   }
 
   /** Index of the view type set when the page was last generated

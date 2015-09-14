@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
@@ -40,6 +41,7 @@ import org.apache.struts.action.Action;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * @author douglm
@@ -53,6 +55,15 @@ public class BwRequest extends Request {
   private BwModule module;
 
   private Client cl;
+
+  static HashMap<String, Integer> viewTypeMap =
+          new HashMap<>();
+
+  static {
+    for (int i = 0; i < BedeworkDefs.viewPeriodNames.length; i++) {
+      viewTypeMap.put(BedeworkDefs.viewPeriodNames[i], i);
+    }
+  }
 
   /** client stored in request */
   public final static String embeddedClientName = "bw_embedded_client";
@@ -396,11 +407,21 @@ public class BwRequest extends Request {
   }
 
   /**
-   * @return index
+   * @return view type - "monthView" etc
    * @throws Throwable
    */
-  public int getViewTypeI() throws Throwable {
-    return getIntReqPar("viewTypeI", -1);
+  public String getViewType() throws Throwable {
+    final String vt = getReqPar("viewType");
+
+    if (vt == null) {
+      return null;
+    }
+
+    if (viewTypeMap.get(vt) == null) {
+      return null;
+    }
+
+    return vt;
   }
 
   /** Get date/time object

@@ -92,7 +92,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -111,15 +110,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "bwappname";
-
-  static HashMap<String, Integer> viewTypeMap =
-          new HashMap<>();
-
-  static {
-    for (int i = 0; i < BedeworkDefs.viewPeriodNames.length; i++) {
-      viewTypeMap.put(BedeworkDefs.viewPeriodNames[i], i);
-    }
-  }
 
   @Override
   public String getId() {
@@ -286,6 +276,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     bsess.prepareRender(bwreq);
+
+    if (form.getNewSession()) {
+      gotoDateView(bwreq,
+                   mstate.getDate(),
+                   mstate.getViewType());
+    }
 
     if (debug) {
       debugMsg("current change token: " +
@@ -482,7 +478,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       throw new Exception("No bwapptype context param");
     }
 
-    ConfigCommon conf = ClientConfigurations.getConfigs().getClientConfig(appname);
+    ConfigCommon conf = ClientConfigurations.getConfigs().getClientConfig(
+            appname);
     if (conf == null) {
       throw new CalFacadeException("No config available for app " + appname);
     }
@@ -573,7 +570,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
               false, null);
       gotoDateView(request,
                    bdt.getDtval(),
-                   mstate.getCurViewPeriod());
+                   mstate.getViewType());
       tv = mstate.getCurTimeView();
 
       params.setFromDate(tv.getViewStart());
@@ -651,7 +648,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (params.getFromDate() != null) {
       gotoDateView(request,
                    params.getFromDate().getDtval(),
-                   mstate.getCurViewPeriod());
+                   mstate.getViewType());
     }
 
     final int offset = request.getIntReqPar("offset", -1);
@@ -1230,7 +1227,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (ev == null) {
-      request.getForm().getErr().emit(ClientError.unknownEvent, /*eid*/guid);
+      request.getForm().getErr().emit(ClientError.unknownEvent, /*eid*/
+                                      guid);
       return null;
     } else if (debug) {
       debugMsg("Get event found " + ev.getEvent());
@@ -1573,12 +1571,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request       action form
    * @param date         String yyyymmdd date or null
-   * @param newViewTypeI new view index or -1
+   * @param newViewType  requested new view or null
    * @throws Throwable
    */
   protected void gotoDateView(final BwRequest request,
                               final String date,
-                              int newViewTypeI) throws Throwable {
+                              String newViewType) throws Throwable {
     final BwModuleState mstate = request.getModule().getState();
 
     //BwActionFormBase form = request.getBwForm();
@@ -1587,18 +1585,18 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     boolean newView = false;
 
     if (debug) {
-      debugMsg("ViewTypeI=" + newViewTypeI);
+      debugMsg("ViewType=" + newViewType);
     }
 
     MyCalendarVO dt;
 
-    if (newViewTypeI == BedeworkDefs.todayView) {
+    if (BedeworkDefs.vtToday.equals(newViewType)) {
       final Date jdt = new Date(System.currentTimeMillis());
       dt = new MyCalendarVO(jdt);
       newView = true;
-      newViewTypeI = BedeworkDefs.dayView;
+      newViewType = BedeworkDefs.vtDay;
     } else if (date == null) {
-      if (newViewTypeI == BedeworkDefs.dayView) {
+      if (BedeworkDefs.vtDay.equals(newViewType)) {
         // selected specific day to display from personal event entry screen.
 
         final Date jdt = BwDateTimeUtil.getDate(mstate.getViewStartDate().getDateTime());
@@ -1631,16 +1629,18 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       newView = true;
     }
 
-    if ((newViewTypeI >= 0) &&
-        (newViewTypeI != mstate.getCurTimeView().getViewPeriod())) {
+    if (mstate.getCurTimeView() == null) {
+      newView = true;
+    } else if ((newViewType != null) &&
+            !newViewType.equals(mstate.getCurTimeView().getViewType())) {
       // Change of view
       newView = true;
     }
 
-    if (newView && (newViewTypeI < 0)) {
-      newViewTypeI = mstate.getCurViewPeriod();
-      if (newViewTypeI < 0) {
-        newViewTypeI = BedeworkDefs.defaultView;
+    if (newView && (newViewType == null)) {
+      newViewType = mstate.getViewType();
+      if (newViewType == null) {
+        newViewType = BedeworkDefs.viewPeriodNames[BedeworkDefs.defaultView];
       }
     }
 
@@ -1660,7 +1660,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         if (!(vsdate.equals(request.getSess().getCurTimeView(request).getFirstDayFmt().getDateDigits()))) {
           newView = true;
-          newViewTypeI = mstate.getCurViewPeriod();
+          newViewType = mstate.getViewType();
           final Date jdt = DateTimeUtil.fromISODate(vsdate);
           dt = new MyCalendarVO(jdt);
         }
@@ -1668,7 +1668,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (newView) {
-      mstate.setCurViewPeriod(newViewTypeI);
+      mstate.setViewType(newViewType);
       mstate.setViewMcDate(dt);
       mstate.setRefresh(true);
       request.getClient().clearSearchEntries();
@@ -2111,7 +2111,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     val = Util.checkNull(val);
     if (val != null) {
-      Integer i = viewTypeMap.get(val);
+      final Integer i = BwRequest.viewTypeMap.get(val);
 
       if (i != null) {
         vt = i;

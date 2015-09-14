@@ -48,7 +48,7 @@ public class MainAction extends BwAbstractAction {
     if (gridMode) {
       gotoDateView(request,
                    request.getDate(),
-                   request.getViewTypeI());
+                   request.getViewType());
       return forwardSuccess;
     }
 

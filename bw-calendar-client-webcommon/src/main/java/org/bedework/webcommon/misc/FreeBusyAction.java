@@ -64,7 +64,7 @@ public class FreeBusyAction extends BwAbstractAction {
     Client cl = request.getClient();
     BwModuleState mstate = request.getModule().getState();
 
-    gotoDateView(request, mstate.getDate(), mstate.getCurViewPeriod());
+    gotoDateView(request, mstate.getDate(), mstate.getViewType());
 
     String userId = request.getReqPar("userid");
 

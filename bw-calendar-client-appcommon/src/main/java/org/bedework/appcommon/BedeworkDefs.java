@@ -23,13 +23,19 @@ import java.io.Serializable;
 
 /** This interface defines some values for the Bedework web interface.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public interface BedeworkDefs extends Serializable {
   /** These names are internal
    */
+  public static final String vtToday = "todayView";
+  public static final String vtDay = "dayView";
+  public static final String vtWeek = "weekView";
+  public static final String vtMonth = "monthView";
+  public static final String vtYear = "yearView";
+
   public static final String[] viewPeriodNames =
-    {"todayView", "dayView", "weekView", "monthView", "yearView"};
+    {vtToday, vtDay, vtWeek, vtMonth, vtYear};
 
   /** today */
   public static final int todayView = 0;

@@ -294,6 +294,22 @@ public class TimeView implements Serializable {
     return viewPeriod;
   }
 
+  /** This method returns the view period as defined in BedeworkDefs
+   *
+   * @return  String  view type "monthView" etc
+   */
+  public String getViewType() {
+    if (viewPeriod < 0) {
+      return null;
+    }
+
+    try {
+      return BedeworkDefs.viewPeriodNames[viewPeriod];
+    } catch (final Throwable ignored) {
+      return null;
+    }
+  }
+
   /**
    * @return Calendar first day
    */

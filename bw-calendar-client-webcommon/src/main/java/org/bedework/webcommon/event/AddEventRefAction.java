@@ -60,7 +60,8 @@ public class AddEventRefAction extends EventActionBase {
     }
 
     String start = form.getEvent().getDtstart().getDate().substring(0, 8);
-    gotoDateView(request, start, BedeworkDefs.dayView);
+    gotoDateView(request, start,
+                 BedeworkDefs.vtDay);
 
     request.refresh();
 

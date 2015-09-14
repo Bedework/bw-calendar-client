@@ -678,14 +678,16 @@ public class BwSessionImpl implements BwSession {
 
         if (mstate.getCurViewPeriod() < 0) {
           for (int i = 1; i < BedeworkDefs.viewPeriodNames.length; i++) {
-            if (BedeworkDefs.viewPeriodNames[i].startsWith(vn)) {
-              mstate.setCurViewPeriod(i);
+            final String bwvt = BedeworkDefs.viewPeriodNames[i];
+            if (bwvt.startsWith(vn)) {
+              mstate.setViewType(bwvt);
               break;
             }
           }
 
-          if (mstate.getCurViewPeriod() < 0) {
-            mstate.setCurViewPeriod(BedeworkDefs.weekView);
+          if (mstate.getViewType() == null) {
+            mstate.setViewType(
+                    BedeworkDefs.viewPeriodNames[BedeworkDefs.defaultView]);
           }
 
           mstate.setViewMcDate(new MyCalendarVO(new Date(System.currentTimeMillis())));
@@ -699,31 +701,32 @@ public class BwSessionImpl implements BwSession {
                 System.currentTimeMillis())));
       }
 
-      if (mstate.getCurViewPeriod() == BedeworkDefs.todayView) {
-        mstate.setCurViewPeriod(BedeworkDefs.dayView);
+      /* If they said today switch to day */
+      if (BedeworkDefs.vtToday.equals(mstate.getViewType())) {
+        mstate.setViewType(BedeworkDefs.vtDay);
       }
 
       final FilterBase filter = getFilter(req, null);
       TimeView tv = null;
 
-      switch (mstate.getCurViewPeriod()) {
-        case BedeworkDefs.todayView:
-        case BedeworkDefs.dayView:
+      switch (mstate.getViewType()) {
+        case BedeworkDefs.vtToday:
+        case BedeworkDefs.vtDay:
           tv = new DayView(form.getErr(),
                            mstate.getViewMcDate(),
                            filter);
           break;
-        case BedeworkDefs.weekView:
+        case BedeworkDefs.vtWeek:
           tv = new WeekView(form.getErr(),
                             mstate.getViewMcDate(),
                             filter);
           break;
-        case BedeworkDefs.monthView:
+        case BedeworkDefs.vtMonth:
           tv = new MonthView(form.getErr(),
                              mstate.getViewMcDate(),
                              filter);
           break;
-        case BedeworkDefs.yearView:
+        case BedeworkDefs.vtYear:
           tv = new YearView(form.getErr(),
                             mstate.getViewMcDate(),
                             form.getShowYearData(), filter);

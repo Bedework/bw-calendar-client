@@ -41,7 +41,7 @@ public class GoToAction extends BwAbstractAction {
 
     gotoDateView(request,
                  request.getDate(),
-                 request.getViewTypeI());
+                 request.getViewType());
 
     return forwardSuccess;
   }

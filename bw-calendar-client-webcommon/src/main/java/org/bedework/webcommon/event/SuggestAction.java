@@ -168,7 +168,9 @@ public class SuggestAction extends EventActionBase {
                                              accept);
     cl.postNotification(esre);
 
-    response.setStatus(HttpServletResponse.SC_OK);
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+    response.setContentLength(0);
+
     return forwardNull;
   }
 }

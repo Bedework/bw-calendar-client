@@ -365,7 +365,7 @@ public class UpdateEventAction extends EventActionBase {
         cl.rollback();
         return forwardValidationError;
       }
-    } else if (colPath.startsWith(workflowRoot)) {
+    } else if ((workflowRoot != null) && colPath.startsWith(workflowRoot)) {
       awaitingApprovalEvent = adding;
     }
 

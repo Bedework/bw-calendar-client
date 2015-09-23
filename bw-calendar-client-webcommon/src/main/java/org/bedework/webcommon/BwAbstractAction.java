@@ -88,6 +88,7 @@ import org.apache.struts.upload.FormFile;
 import org.apache.struts.util.MessageResources;
 
 import java.io.ByteArrayInputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1372,14 +1373,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
       }
 
-      String fn = file.getFileName();
+      final String fn = file.getFileName() +
+              new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
 
       /* See if the resource exists already */
 
       boolean replace = false;
       boolean replaceThumb = false;
-      BwResourceContent rc;
-      String thumbType = "png";
+      final BwResourceContent rc;
+      final String thumbType = "png";
 
       pi.image = cl.getResource(
               Util.buildPath(false, imageCol.getPath(), "/", fn));

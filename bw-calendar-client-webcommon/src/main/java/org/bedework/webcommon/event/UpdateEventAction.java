@@ -373,61 +373,9 @@ public class UpdateEventAction extends EventActionBase {
 
     setEventText(request, ev, adding, changes);
 
-    /* ---------------- Suggested to a group? ---------------------------- */
-
-    final List<BwXproperty> extras = new ArrayList<>();
-    Collection<BwXproperty> removedXprops = null;
-
-    if (cl.getSystemProperties().getSuggestionEnabled()) {
-      final List<String> groupHrefs = request.getReqPars("groupHref");
-
-      final List<BwXproperty> alreadySuggested =
-              ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
-
-      if (groupHrefs == null) {
-        removedXprops = alreadySuggested;
-      } else {
-        // Add each suggested group to the event and update preferred groups.
-
-        final Set<String> hrefsPresent = new TreeSet<>();
-        final Map<String, BwXproperty> toRemove =
-                new HashMap<>(alreadySuggested.size());
-
-        for (final BwXproperty as: alreadySuggested) {
-          final String href = new SuggestedTo(as.getValue()).getGroupHref();
-          hrefsPresent.add(href);
-          toRemove.put(href, as);
-        }
-
-        for (final String groupHref: new TreeSet<>(groupHrefs)) {
-          if (!hrefsPresent.contains(groupHref)) {
-            final SuggestedTo sto =
-                    new SuggestedTo(SuggestedTo.pending, groupHref);
-            final BwXproperty grpXp =
-                    new BwXproperty(BwXproperty.bedeworkSuggestedTo,
-                                                      null,
-                                                      sto.toString());
-            extras.add(grpXp);
-          } else {
-            toRemove.remove(groupHref);
-          }
-
-          // Add to preferred list
-          cl.getPreferences().addPreferredGroup(groupHref);
-        }
-
-        /* Anything left in toRemove wasn't in the list. Remove
-         * those entries
-         */
-
-        if (!Util.isEmpty(toRemove.values())) {
-          removedXprops = toRemove.values();
-        }
-      }
-    }
-
     /* ---------------------- Uploaded image ----------------------------- */
 
+    final List<BwXproperty> extras = new ArrayList<>();
     final FormFile ff = form.getEventImageUpload();
 
     if ((ff != null) && (ff.getFileSize() > 0)) {
@@ -458,7 +406,7 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ----------------------- X-properties ------------------------------ */
 
-    int res = processXprops(request, ev, extras, removedXprops,
+    int res = processXprops(request, ev, extras,
                             publishEvent,
                             changes);
     if (res == forwardValidationError) {
@@ -474,6 +422,69 @@ public class UpdateEventAction extends EventActionBase {
 
       if (!Util.isEmpty(xps)) {
         submitterEmail = xps.get(0).getValue();
+      }
+    }
+
+    /* ---------------- Suggested to a group? --------------------- */
+    /* If so we adjust x-properties to match */
+
+    if (cl.getSystemProperties().getSuggestionEnabled()) {
+      final ChangeTableEntry xcte =
+              changes.getEntry(PropertyInfoIndex.XPROP);
+
+      final List<String> groupHrefs = request.getReqPars("groupHref");
+
+      final List<BwXproperty> alreadySuggested =
+              ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
+
+      if (groupHrefs == null) {
+        if (!Util.isEmpty(alreadySuggested)) {
+          for (final BwXproperty xp: alreadySuggested) {
+            ev.removeXproperty(xp);
+            xcte.addRemovedValue(xp);
+          }
+        }
+      } else {
+        // Add each suggested group to the event and update preferred groups.
+
+        final Set<String> hrefsPresent = new TreeSet<>();
+        final Map<String, BwXproperty> toRemove =
+                new HashMap<>(alreadySuggested.size());
+
+        for (final BwXproperty as: alreadySuggested) {
+          final String href = new SuggestedTo(as.getValue()).getGroupHref();
+          hrefsPresent.add(href);
+          toRemove.put(href, as);
+        }
+
+        for (final String groupHref: new TreeSet<>(groupHrefs)) {
+          if (!hrefsPresent.contains(groupHref)) {
+            final SuggestedTo sto =
+                    new SuggestedTo(SuggestedTo.pending, groupHref);
+            final BwXproperty grpXp =
+                    new BwXproperty(BwXproperty.bedeworkSuggestedTo,
+                                    null,
+                                    sto.toString());
+            ev.addXproperty(grpXp);
+            xcte.addAddedValue(grpXp);
+          } else {
+            toRemove.remove(groupHref);
+          }
+
+          // Add to preferred list
+          cl.getPreferences().addPreferredGroup(groupHref);
+        }
+
+        /* Anything left in toRemove wasn't in the list. Remove
+         * those entries
+         */
+
+        if (!Util.isEmpty(toRemove.values())) {
+          for (final BwXproperty xp: toRemove.values()) {
+            ev.removeXproperty(xp);
+            xcte.addRemovedValue(xp);
+          }
+        }
       }
     }
 
@@ -1043,7 +1054,6 @@ public class UpdateEventAction extends EventActionBase {
   private int processXprops(final BwRequest request,
                             final BwEvent event,
                             final List<BwXproperty> extras,
-                            final Collection<BwXproperty> removals,
                             final boolean publishEvent,
                             final ChangeTable changes) throws Throwable {
     final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.XPROP);
@@ -1051,14 +1061,6 @@ public class UpdateEventAction extends EventActionBase {
 
     List<BwXproperty> added = null;
     List<BwXproperty> removed = null;
-
-    if (removals != null) {
-      removed = new ArrayList<>();
-      for (final BwXproperty xp: removals) {
-        removed.add(xp);
-        event.removeXproperty(xp);
-      }
-    }
 
     List<BwXproperty> xprops = null;
 
@@ -1222,6 +1224,11 @@ public class UpdateEventAction extends EventActionBase {
       for (BwXproperty xp: xprops) {
         if (xp.getSkipJsp()) {
           // Should not be here
+          continue;
+        }
+
+        if (xp.getName().equals(BwXproperty.bedeworkSuggestedTo)) {
+          // We output it but don't want it back
           continue;
         }
         strippedXprops.add(xp);

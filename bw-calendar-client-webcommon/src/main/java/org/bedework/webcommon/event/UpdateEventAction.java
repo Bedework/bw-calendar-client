@@ -376,32 +376,52 @@ public class UpdateEventAction extends EventActionBase {
     /* ---------------- Suggested to a group? ---------------------------- */
 
     final List<BwXproperty> extras = new ArrayList<>();
+    Collection<BwXproperty> removedXprops = null;
 
     if (cl.getSystemProperties().getSuggestionEnabled()) {
       final List<String> groupHrefs = request.getReqPars("groupHref");
 
-      if (groupHrefs != null) {
+      final List<BwXproperty> alreadySuggested =
+              ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
+
+      if (groupHrefs == null) {
+        removedXprops = alreadySuggested;
+      } else {
         // Add each suggested group to the event and update preferred groups.
 
         final Set<String> hrefsPresent = new TreeSet<>();
-
-        final List<BwXproperty> alreadySuggested =
-                ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
+        final Map<String, BwXproperty> toRemove =
+                new HashMap<>(alreadySuggested.size());
 
         for (final BwXproperty as: alreadySuggested) {
-          hrefsPresent.add(
-                  new SuggestedTo(as.getValue()).getGroupHref());
+          final String href = new SuggestedTo(as.getValue()).getGroupHref();
+          hrefsPresent.add(href);
+          toRemove.put(href, as);
         }
 
-        for (final String groupHref: groupHrefs) {
+        for (final String groupHref: new TreeSet<>(groupHrefs)) {
           if (!hrefsPresent.contains(groupHref)) {
-            final BwXproperty grpXp = ev.addSuggested(
-                    new SuggestedTo(SuggestedTo.pending, groupHref));
+            final SuggestedTo sto =
+                    new SuggestedTo(SuggestedTo.pending, groupHref);
+            final BwXproperty grpXp =
+                    new BwXproperty(BwXproperty.bedeworkSuggestedTo,
+                                                      null,
+                                                      sto.toString());
             extras.add(grpXp);
+          } else {
+            toRemove.remove(groupHref);
           }
 
           // Add to preferred list
           cl.getPreferences().addPreferredGroup(groupHref);
+        }
+
+        /* Anything left in toRemove wasn't in the list. Remove
+         * those entries
+         */
+
+        if (!Util.isEmpty(toRemove.values())) {
+          removedXprops = toRemove.values();
         }
       }
     }
@@ -438,7 +458,8 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ----------------------- X-properties ------------------------------ */
 
-    int res = processXprops(request, ev, extras, publishEvent,
+    int res = processXprops(request, ev, extras, removedXprops,
+                            publishEvent,
                             changes);
     if (res == forwardValidationError) {
       cl.rollback();
@@ -1022,17 +1043,26 @@ public class UpdateEventAction extends EventActionBase {
   private int processXprops(final BwRequest request,
                             final BwEvent event,
                             final List<BwXproperty> extras,
+                            final Collection<BwXproperty> removals,
                             final boolean publishEvent,
                             final ChangeTable changes) throws Throwable {
-    ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.XPROP);
-    List<String> unparsedxps = request.getReqPars("xproperty");
+    final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.XPROP);
+    final List<String> unparsedxps = request.getReqPars("xproperty");
 
     List<BwXproperty> added = null;
     List<BwXproperty> removed = null;
 
+    if (removals != null) {
+      removed = new ArrayList<>();
+      for (final BwXproperty xp: removals) {
+        removed.add(xp);
+        event.removeXproperty(xp);
+      }
+    }
+
     List<BwXproperty> xprops = null;
 
-    List<BwXproperty> evxprops = new ArrayList<BwXproperty>();
+    final List<BwXproperty> evxprops = new ArrayList<>();
 
     if (!Util.isEmpty(event.getXproperties())) {
       evxprops.addAll(event.getXproperties());
@@ -1044,22 +1074,26 @@ public class UpdateEventAction extends EventActionBase {
 
     if (unparsedxps != null) {
       xprops = parseXprops(request, /*publishEvent*/false);
+    }
 
-      if (!Util.isEmpty(extras)) {
-        if (xprops == null) {
-          xprops = extras;
-        } else {
-          xprops.addAll(extras);
-        }
+    if (!Util.isEmpty(extras)) {
+      if (xprops == null) {
+        xprops = extras;
+      } else {
+        xprops.addAll(extras);
       }
     }
 
     if (Util.isEmpty(xprops)) {
+      /* No xprops in the request. Remove everything except certain
+         special values.
+         We also need to add in anything in extras
+       */
       if (Util.isEmpty(evxprops)) {
         return forwardNoAction;
       }
 
-      for (BwXproperty xp:  evxprops) {
+      for (final BwXproperty xp:  evxprops) {
         if (xp.getSkipJsp()) {
           if (!xp.getName().equals(BwXproperty.bedeworkIcal) ||
               (xp.getValue() == null)) {
@@ -1074,7 +1108,7 @@ public class UpdateEventAction extends EventActionBase {
 
         // Remove this one
         if (removed == null) {
-          removed = new ArrayList<BwXproperty>();
+          removed = new ArrayList<>();
         }
 
         removed.add(xp);
@@ -1098,12 +1132,16 @@ public class UpdateEventAction extends EventActionBase {
       cte.setChanged(evxprops, event.getXproperties());
       cte.setAddedValues(xprops);
 
+      if (removed != null) {
+        cte.setRemovedValues(removed);
+      }
+
       return forwardSuccess;
     }
 
     // Add the skipped set to the 'new' set
 
-    for (BwXproperty xp:  evxprops) {
+    for (final BwXproperty xp:  evxprops) {
       if (xp.getSkipJsp()) {
         if (xp.getName().equals(BwXproperty.bedeworkIcal)) {
           if ((xp.getValue() != null) &&
@@ -1118,7 +1156,9 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     added = new ArrayList<>();
-    removed = new ArrayList<>();
+    if (removed == null) {
+      removed = new ArrayList<>();
+    }
 
     if (CalFacadeUtil.updateCollection(true, // clone them
                                        xprops, // make it look like this

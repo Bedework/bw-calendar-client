@@ -600,7 +600,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if ((startStr == null) && (endStr == null)) {
       if (!cl.getWebSubmit() && !cl.getPublicAdmin()) {
-        if (!form.getListAllEvents()) {
+        if (!request.getBooleanReqPar("listAllEvents", false)) {
           params.setFromDate(todaysDateTime());
 
           int max = authp.getMaxWebCalPeriod();
@@ -695,7 +695,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (cl.getWebSubmit() || cl.getPublicAdmin()) {
-      boolean ignoreCreator = cl.getPublicAdmin() && form.getListAllEvents();
+      boolean ignoreCreator = cl.getWebSubmit();
 
 //      if ((cal != null) &&
 //              (cal.getPath().startsWith(form.getConfig().getSubmissionRoot()))) {

@@ -705,6 +705,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         ignoreCreator = "yes".equals(request.getReqPar("ignoreCreator"));
       }
 
+      if (request.getBooleanReqPar("sg", false)) {
+        ignoreCreator = true;
+      }
+
       if (!ignoreCreator) {
         final BwCreatorFilter crefilter = new BwCreatorFilter(null);
         crefilter.setEntity(cl.getCurrentPrincipalHref());

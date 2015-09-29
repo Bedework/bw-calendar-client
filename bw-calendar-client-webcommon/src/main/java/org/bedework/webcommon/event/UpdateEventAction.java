@@ -428,6 +428,8 @@ public class UpdateEventAction extends EventActionBase {
     /* ---------------- Suggested to a group? --------------------- */
     /* If so we adjust x-properties to match */
 
+    List<BwXproperty> suggestedTo = null;
+
     if (cl.getSystemProperties().getSuggestionEnabled()) {
       final ChangeTableEntry xcte =
               changes.getEntry(PropertyInfoIndex.XPROP);
@@ -467,6 +469,11 @@ public class UpdateEventAction extends EventActionBase {
                                     sto.toString());
             ev.addXproperty(grpXp);
             xcte.addAddedValue(grpXp);
+            if (suggestedTo == null) {
+              suggestedTo = new ArrayList<>();
+            }
+
+            suggestedTo.add(grpXp);
           } else {
             toRemove.remove(groupHref);
           }
@@ -759,12 +766,8 @@ public class UpdateEventAction extends EventActionBase {
       cl.postNotification(sev);
     }
 
-    if (!Util.isEmpty(extras)) {
-      for (final BwXproperty xp: extras) {
-        if (!xp.getName().equals(BwXproperty.bedeworkSuggestedTo)) {
-          continue;
-        }
-
+    if (!Util.isEmpty(suggestedTo)) {
+      for (final BwXproperty xp: suggestedTo) {
         /* Skip the status prefix */
         final BwAdminGroup grp =
                 (BwAdminGroup)cl.getAdminGroup(xp.getValue().substring(2));

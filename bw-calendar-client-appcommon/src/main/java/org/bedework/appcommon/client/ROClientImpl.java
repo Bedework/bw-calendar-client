@@ -1385,6 +1385,12 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public void removeNotification(final String name)
+          throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
   public void removeNotification(final NotificationType val)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");

@@ -1324,6 +1324,14 @@ public interface Client extends Serializable {
   /** Remove the given notification from the notification collection for the
    * current calendar user.
    *
+   * @param name of notification to remove
+   * @throws CalFacadeException
+   */
+  void removeNotification(String name) throws CalFacadeException;
+
+  /** Remove the given notification from the notification collection for the
+   * current calendar user.
+   *
    * @param val notification to remove
    * @throws CalFacadeException
    */

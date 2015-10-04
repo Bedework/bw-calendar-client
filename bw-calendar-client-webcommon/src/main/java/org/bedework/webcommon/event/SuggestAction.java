@@ -96,9 +96,11 @@ public class SuggestAction extends EventActionBase {
     }
 
     BwXproperty theProp = null;
+    BwEvent.SuggestedTo st = null;
 
     for (final BwXproperty prop: props) {
-      if (prop.getValue().substring(2).equals(csHref)) {
+      st = new BwEvent.SuggestedTo(prop.getValue());
+      if (st.getGroupHref().equals(csHref)) {
         theProp = prop;
         break;
       }
@@ -110,22 +112,23 @@ public class SuggestAction extends EventActionBase {
       return forwardNull;
     }
 
-    String newStatus;
+    final char newStatus;
 
     if (accept) {
-      newStatus = "A";
+      newStatus = 'A';
     } else {
-      newStatus = "R";
+      newStatus = 'R';
     }
 
-    newStatus+= ":" + csHref;
-
-    if (newStatus.equals(theProp.getValue())) {
+    final String newSt = new BwEvent.SuggestedTo(newStatus,
+                                                 st.getGroupHref(),
+                                                 st.getSuggestedByHref()).toString();
+    if (newSt.equals(st.toString())) {
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return forwardNull;
     }
 
-    theProp.setValue(newStatus);
+    theProp.setValue(newSt);
 
     final Set<String> catuids = cl.getCalsuitePreferences().getDefaultCategoryUids();
 
@@ -158,15 +161,23 @@ public class SuggestAction extends EventActionBase {
       throw cfe;
     }
 
-    final EntitySuggestedResponseEvent esre =
-            new EntitySuggestedResponseEvent(SysEventBase.SysCode.SUGGESTED_RESPONSE,
-                                             cl.getCurrentPrincipalHref(),
-                                             ev.getCreatorHref(),
-                                             ev.getHref(),
-                                             null,
-                                             ev.getCreatorHref(), // TODO suggester might not be the creator of the event
-                                             accept);
-    cl.postNotification(esre);
+    final BwAdminGroup grp =
+            (BwAdminGroup)cl.getAdminGroup(st.getSuggestedByHref());
+
+    if (grp == null) {
+      warn("Unable to locate group " + st.getSuggestedByHref());
+    } else {
+      final EntitySuggestedResponseEvent esre =
+              new EntitySuggestedResponseEvent(
+                      SysEventBase.SysCode.SUGGESTED_RESPONSE,
+                      cl.getCurrentPrincipalHref(),
+                      ev.getCreatorHref(),
+                      ev.getHref(),
+                      null,
+                      grp.getOwnerHref(),
+                      accept);
+      cl.postNotification(esre);
+    }
 
     response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     response.setContentLength(0);

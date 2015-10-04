@@ -430,7 +430,8 @@ public class UpdateEventAction extends EventActionBase {
 
     List<BwXproperty> suggestedTo = null;
 
-    if (cl.getSystemProperties().getSuggestionEnabled()) {
+    if (cl.getPublicAdmin() &&
+            cl.getSystemProperties().getSuggestionEnabled()) {
       final ChangeTableEntry xcte =
               changes.getEntry(PropertyInfoIndex.XPROP);
 
@@ -439,6 +440,9 @@ public class UpdateEventAction extends EventActionBase {
       final List<BwXproperty> alreadySuggested =
               ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
 
+      final BwCalSuite cs = cl.getCalSuite();
+
+      final String csHref = cs.getGroup().getPrincipalRef();
       if (groupHrefs == null) {
         if (!Util.isEmpty(alreadySuggested)) {
           for (final BwXproperty xp: alreadySuggested) {
@@ -453,6 +457,9 @@ public class UpdateEventAction extends EventActionBase {
         final Map<String, BwXproperty> toRemove =
                 new HashMap<>(alreadySuggested.size());
 
+        /* List those present and populate the toRemove map -
+           we'll remove entries from toRemove as we process them later
+         */
         for (final BwXproperty as: alreadySuggested) {
           final String href = new SuggestedTo(as.getValue()).getGroupHref();
           hrefsPresent.add(href);
@@ -462,7 +469,8 @@ public class UpdateEventAction extends EventActionBase {
         for (final String groupHref: new TreeSet<>(groupHrefs)) {
           if (!hrefsPresent.contains(groupHref)) {
             final SuggestedTo sto =
-                    new SuggestedTo(SuggestedTo.pending, groupHref);
+                    new SuggestedTo(SuggestedTo.pending, groupHref,
+                                    csHref);
             final BwXproperty grpXp =
                     new BwXproperty(BwXproperty.bedeworkSuggestedTo,
                                     null,
@@ -768,19 +776,24 @@ public class UpdateEventAction extends EventActionBase {
 
     if (!Util.isEmpty(suggestedTo)) {
       for (final BwXproperty xp: suggestedTo) {
-        /* Skip the status prefix */
-        final BwAdminGroup grp =
-                (BwAdminGroup)cl.getAdminGroup(xp.getValue().substring(2));
+        final SuggestedTo st = new SuggestedTo(xp.getValue());
 
-        final EntitySuggestedEvent ese =
-                new EntitySuggestedEvent(
-                        SysEventBase.SysCode.SUGGESTED,
-                        cl.getCurrentPrincipalHref(),
-                        ev.getCreatorHref(),
-                        ev.getHref(),
-                        null,
-                        grp.getOwnerHref());
-        cl.postNotification(ese);
+        final BwAdminGroup grp =
+                (BwAdminGroup)cl.getAdminGroup(st.getGroupHref());
+
+        if (grp == null) {
+          warn("Unable to locate group " + st.getGroupHref());
+        } else {
+          final EntitySuggestedEvent ese =
+                  new EntitySuggestedEvent(
+                          SysEventBase.SysCode.SUGGESTED,
+                          cl.getCurrentPrincipalHref(),
+                          ev.getCreatorHref(),
+                          ev.getHref(),
+                          null,
+                          grp.getOwnerHref());
+          cl.postNotification(ese);
+        }
       }
     }
 

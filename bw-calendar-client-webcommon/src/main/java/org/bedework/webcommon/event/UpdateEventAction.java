@@ -466,7 +466,9 @@ public class UpdateEventAction extends EventActionBase {
           toRemove.put(href, as);
         }
 
-        for (final String groupHref: new TreeSet<>(groupHrefs)) {
+        final Set<String> deDuped = new TreeSet<>(groupHrefs);
+
+        for (final String groupHref: deDuped) {
           if (!hrefsPresent.contains(groupHref)) {
             final SuggestedTo sto =
                     new SuggestedTo(SuggestedTo.pending, groupHref,
@@ -1142,12 +1144,12 @@ public class UpdateEventAction extends EventActionBase {
 
     if (Util.isEmpty(evxprops)) {
       if (event.getXproperties() == null) {
-        event.setXproperties(xprops);
+        event.setXproperties(new ArrayList<>(xprops));
       } else {
         event.getXproperties().addAll(xprops);
       }
 
-      cte.setChanged(evxprops, event.getXproperties());
+      cte.setChanged(evxprops, new ArrayList<>(event.getXproperties()));
       cte.setAddedValues(xprops);
 
       if (removed != null) {
@@ -1182,7 +1184,7 @@ public class UpdateEventAction extends EventActionBase {
                                        xprops, // make it look like this
                                        event.getXproperties(), // change this (to)
                                        added, removed)) {
-      cte.setChanged(evxprops, event.getXproperties());
+      cte.setChanged(evxprops, new ArrayList<>(event.getXproperties()));
       cte.setAddedValues(added);
       cte.setRemovedValues(removed);
 

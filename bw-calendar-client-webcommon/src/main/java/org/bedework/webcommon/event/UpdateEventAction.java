@@ -426,84 +426,8 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     /* ---------------- Suggested to a group? --------------------- */
-    /* If so we adjust x-properties to match */
 
-    List<BwXproperty> suggestedTo = null;
-
-    if (cl.getPublicAdmin() &&
-            cl.getSystemProperties().getSuggestionEnabled()) {
-      final ChangeTableEntry xcte =
-              changes.getEntry(PropertyInfoIndex.XPROP);
-
-      final List<String> groupHrefs = request.getReqPars("groupHref");
-
-      final List<BwXproperty> alreadySuggested =
-              ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
-
-      final BwCalSuite cs = cl.getCalSuite();
-
-      final String csHref = cs.getGroup().getPrincipalRef();
-      if (groupHrefs == null) {
-        if (!Util.isEmpty(alreadySuggested)) {
-          for (final BwXproperty xp: alreadySuggested) {
-            ev.removeXproperty(xp);
-            xcte.addRemovedValue(xp);
-          }
-        }
-      } else {
-        // Add each suggested group to the event and update preferred groups.
-
-        final Set<String> hrefsPresent = new TreeSet<>();
-        final Map<String, BwXproperty> toRemove =
-                new HashMap<>(alreadySuggested.size());
-
-        /* List those present and populate the toRemove map -
-           we'll remove entries from toRemove as we process them later
-         */
-        for (final BwXproperty as: alreadySuggested) {
-          final String href = new SuggestedTo(as.getValue()).getGroupHref();
-          hrefsPresent.add(href);
-          toRemove.put(href, as);
-        }
-
-        final Set<String> deDuped = new TreeSet<>(groupHrefs);
-
-        for (final String groupHref: deDuped) {
-          if (!hrefsPresent.contains(groupHref)) {
-            final SuggestedTo sto =
-                    new SuggestedTo(SuggestedTo.pending, groupHref,
-                                    csHref);
-            final BwXproperty grpXp =
-                    new BwXproperty(BwXproperty.bedeworkSuggestedTo,
-                                    null,
-                                    sto.toString());
-            ev.addXproperty(grpXp);
-            xcte.addAddedValue(grpXp);
-            if (suggestedTo == null) {
-              suggestedTo = new ArrayList<>();
-            }
-
-            suggestedTo.add(grpXp);
-          } else {
-            toRemove.remove(groupHref);
-          }
-
-          // Add to preferred list
-          cl.getPreferences().addPreferredGroup(groupHref);
-        }
-
-        /* Anything left in toRemove wasn't in the list. Remove
-         * those entries
-         */
-
-        if (!Util.isEmpty(toRemove.values())) {
-          for (final BwXproperty xp: toRemove.values()) {
-            ev.removeXproperty(xp);
-            xcte.addRemovedValue(xp);
-          }
-        }
-      }
-    }
+    final List<SuggestedTo> suggestedTo = doSuggested(request, ev, changes);
 
     /* -------------------------- Dates ------------------------------ */
 
@@ -777,25 +701,24 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     if (!Util.isEmpty(suggestedTo)) {
-      for (final BwXproperty xp: suggestedTo) {
-        final SuggestedTo st = new SuggestedTo(xp.getValue());
-
+      for (final SuggestedTo st: suggestedTo) {
         final BwAdminGroup grp =
                 (BwAdminGroup)cl.getAdminGroup(st.getGroupHref());
 
         if (grp == null) {
           warn("Unable to locate group " + st.getGroupHref());
-        } else {
-          final EntitySuggestedEvent ese =
-                  new EntitySuggestedEvent(
-                          SysEventBase.SysCode.SUGGESTED,
-                          cl.getCurrentPrincipalHref(),
-                          ev.getCreatorHref(),
-                          ev.getHref(),
-                          null,
-                          grp.getOwnerHref());
-          cl.postNotification(ese);
+          continue;
         }
+
+        final EntitySuggestedEvent ese =
+                new EntitySuggestedEvent(
+                        SysEventBase.SysCode.SUGGESTED,
+                        cl.getCurrentPrincipalHref(),
+                        ev.getCreatorHref(),
+                        ev.getHref(),
+                        null,
+                        grp.getOwnerHref());
+        cl.postNotification(ese);
       }
     }
 
@@ -851,6 +774,98 @@ public class UpdateEventAction extends EventActionBase {
     if (!preserveColPath.equals(ev.getColPath())) {
       ev.setColPath(preserveColPath);
     }
+  }
+
+  private List<SuggestedTo> doSuggested(final BwRequest request,
+                                        final BwEvent ev,
+                                        final ChangeTable changes) throws Throwable {
+    final Client cl = request.getClient();
+
+    if (!cl.getPublicAdmin() ||
+            !cl.getSystemProperties().getSuggestionEnabled()) {
+      return null;
+    }
+
+
+    /* If so we adjust x-properties to match */
+
+    List<SuggestedTo> suggestedTo = null;
+
+    final ChangeTableEntry xcte =
+            changes.getEntry(PropertyInfoIndex.XPROP);
+
+    final List<String> groupHrefs = request.getReqPars("groupHref");
+
+    final List<BwXproperty> alreadySuggested =
+            ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
+
+    final BwCalSuite cs = cl.getCalSuite();
+
+    final String csHref = cs.getGroup().getPrincipalRef();
+    if (groupHrefs == null) {
+      if (!Util.isEmpty(alreadySuggested)) {
+        for (final BwXproperty xp : alreadySuggested) {
+          ev.removeXproperty(xp);
+          xcte.addRemovedValue(xp);
+        }
+      }
+
+      return suggestedTo;
+    }
+
+    // Add each suggested group to the event and update preferred groups.
+
+    final Set<String> hrefsPresent = new TreeSet<>();
+    final Map<String, BwXproperty> toRemove =
+            new HashMap<>(alreadySuggested.size());
+
+    /* List those present and populate the toRemove map -
+           we'll remove entries from toRemove as we process them later
+         */
+    for (final BwXproperty as: alreadySuggested) {
+      final String href = new SuggestedTo(as.getValue()).getGroupHref();
+      hrefsPresent.add(href);
+      toRemove.put(href, as);
+    }
+
+    final Set<String> deDuped = new TreeSet<>(groupHrefs);
+
+    for (final String groupHref: deDuped) {
+      if (!hrefsPresent.contains(groupHref)) {
+        final SuggestedTo sto =
+                new SuggestedTo(SuggestedTo.pending, groupHref,
+                                csHref);
+        final BwXproperty grpXp =
+                new BwXproperty(BwXproperty.bedeworkSuggestedTo,
+                                null,
+                                sto.toString());
+        ev.addXproperty(grpXp);
+        xcte.addAddedValue(grpXp);
+        if (suggestedTo == null) {
+          suggestedTo = new ArrayList<>();
+        }
+
+        suggestedTo.add(sto);
+      } else {
+        toRemove.remove(groupHref);
+      }
+
+      // Add to preferred list
+      cl.getPreferences().addPreferredGroup(groupHref);
+    }
+
+    /* Anything left in toRemove wasn't in the list. Remove
+         * those entries
+         */
+
+    if (!Util.isEmpty(toRemove.values())) {
+      for (final BwXproperty xp: toRemove.values()) {
+        ev.removeXproperty(xp);
+        xcte.addRemovedValue(xp);
+      }
+    }
+
+    return suggestedTo;
   }
 
   /* This is a bedework function in which we specify which set of aliases

@@ -336,6 +336,16 @@
   </genurl:form>
 </formElements>
 
+<suggestions>
+  <logic:iterate id="suggestion" name="event" property="suggested">
+    <suggestion>
+      <bw:emitText name="suggestion" property="status" />
+      <bw:emitText name="suggestion" property="groupHref" />
+      <bw:emitText name="suggestion" property="suggestedByHref" />
+    </suggestion>
+  </logic:iterate>
+</suggestions>
+
 <timezones>
   <logic:iterate id="tz" name="calForm" property="timeZoneNames">
     <timezone>

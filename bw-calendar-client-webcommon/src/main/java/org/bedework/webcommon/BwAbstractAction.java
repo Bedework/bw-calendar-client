@@ -1319,17 +1319,17 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /** Create resource entities based on the uploaded file.
    *
-   * @param request
+   * @param request BwRequest object
    * @param file - uploaded
    * @return never null.
    */
   protected ProcessedImage processImage(final BwRequest request,
                                         final FormFile file) {
-    ProcessedImage pi = new ProcessedImage();
-    Client cl = request.getClient();
+    final ProcessedImage pi = new ProcessedImage();
+    final Client cl = request.getClient();
 
     try {
-      long maxSize = cl.getUserMaxEntitySize();
+      final long maxSize = cl.getUserMaxEntitySize();
 
       if (file.getFileSize() > maxSize) {
         request.getErr().emit(ValidationError.tooLarge, file.getFileSize(), maxSize);
@@ -1346,9 +1346,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       String imagecolPath = cl.getPreferences().getDefaultImageDirectory();
       if (imagecolPath == null) {
-        BwCalendar home = cl.getHome();
+        final BwCalendar home = cl.getHome();
 
-        String imageColName = "Images";
+        final String imageColName = "Images";
 
         imagecolPath = Util.buildPath(false, home.getPath(), "/",
                                       imageColName);
@@ -1377,18 +1377,18 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
       }
 
-      final String fn = file.getFileName() +
-              new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+      final String thumbType = "png";
+      final Filenames fns = makeFilenames(file.getFileName(),
+                                          thumbType);
 
       /* See if the resource exists already */
 
       boolean replace = false;
       boolean replaceThumb = false;
       final BwResourceContent rc;
-      final String thumbType = "png";
 
       pi.image = cl.getResource(
-              Util.buildPath(false, imageCol.getPath(), "/", fn));
+              Util.buildPath(false, imageCol.getPath(), "/", fns.fn));
 
       if (pi.image != null) {
         if (!request.getBooleanReqPar("replaceImage", false)) {
@@ -1402,20 +1402,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         rc = pi.image.getContent();
       } else {
         pi.image = new BwResource();
-        pi.image.setName(fn);
+        pi.image.setName(fns.fn);
 
         rc = new BwResourceContent();
         pi.image.setContent(rc);
       }
 
-      byte[] fileData = file.getFileData();
-      byte[] thumbContent;
+      final byte[] fileData = file.getFileData();
+      final byte[] thumbContent;
 
       try {
         thumbContent = ImageProcessing.createThumbnail(
                new ByteArrayInputStream(fileData),
                thumbType, 160);
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         /* Probably an image type we can't process or maybe not an image at all
          */
         if (debug) {
@@ -1432,14 +1432,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       pi.image.setContentLength(fileData.length);
       pi.image.setContentType(file.getContentType());
 
-      /* Make a thumbnail - first name */
+      /* Make a thumbnail */
 
-      String thumbFn = makeThumbName(fn, thumbType);
-
-      BwResourceContent thumbRc;
+      final BwResourceContent thumbRc;
 
       pi.thumbnail = cl.getResource(
-              Util.buildPath(false, imageCol.getPath(), "/", thumbFn));
+              Util.buildPath(false, imageCol.getPath(), "/",
+                             fns.thumbFn));
 
       if (pi.thumbnail != null) {
         replaceThumb = true;
@@ -1447,7 +1446,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         thumbRc = pi.thumbnail.getContent();
       } else {
         pi.thumbnail = new BwResource();
-        pi.thumbnail.setName(thumbFn);
+        pi.thumbnail.setName(fns.thumbFn);
 
         thumbRc = new BwResourceContent();
         pi.thumbnail.setContent(thumbRc);
@@ -1470,7 +1469,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       pi.OK = true;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       if (debug) {
         error(t);
         request.getErr().emit(t);
@@ -1480,18 +1479,34 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return pi;
   }
 
-  private String makeThumbName(final String imageName,
-                               final String thumbType) {
-    int dotPos = imageName.lastIndexOf('.');
+  private static class Filenames {
+    String fn;
     String thumbFn;
+  }
+
+  /**
+   *
+   * @param imageName from upload
+   * @param thumbType "png" etc
+   * @return datestamped names
+   */
+  private Filenames makeFilenames(final String imageName,
+                                  final String thumbType) {
+    final int dotPos = imageName.lastIndexOf('.');
+    final Filenames fns = new Filenames();
+
+    final String dt = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
 
     if (dotPos < 0) {
-      thumbFn = imageName + "-thumb";
+      fns.fn = imageName + "-" + dt;
+      fns.thumbFn = fns.fn + "-thumb" + "." + thumbType;
     } else {
-      thumbFn = imageName.substring(0, dotPos) + "-thumb";
+      final String namePart = imageName.substring(0, dotPos) + "-" + dt;
+      fns.fn = namePart + imageName.substring(dotPos);
+      fns.thumbFn =  namePart + "-thumb" + "." + thumbType;
     }
 
-    return thumbFn + "." + thumbType;
+    return fns;
   }
 
   @Override

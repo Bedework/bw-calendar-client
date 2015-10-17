@@ -21,6 +21,7 @@ package org.bedework.appcommon.client;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.filter.SortTerm;
 import org.bedework.util.misc.ToString;
 
@@ -60,6 +61,8 @@ public class SearchParams implements Serializable {
   private DateTimeFormatter formattedStart;
 
   private DateTimeFormatter formattedEnd;
+
+  private RecurringRetrievalMode recurMode;
 
   /** True for public
    *
@@ -233,6 +236,18 @@ public class SearchParams implements Serializable {
       formattedEnd  = new DateTimeFormatter(toDate);
     }
     return formattedEnd;
+  }
+
+  public void setRecurMode(final RecurringRetrievalMode val) {
+    recurMode = val;
+  }
+
+  public RecurringRetrievalMode getRecurMode() {
+    if (recurMode == null) {
+      return RecurringRetrievalMode.expanded;
+    }
+
+    return recurMode;
   }
 
   @Override

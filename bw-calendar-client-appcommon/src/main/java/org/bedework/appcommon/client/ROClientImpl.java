@@ -1746,7 +1746,7 @@ public class ROClientImpl implements Client {
             end,
             params.getPageSize(),
             accessChecker,
-            RecurringRetrievalMode.expanded);
+            params.getRecurMode());
 
     return lastSearch;
   }

@@ -603,7 +603,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         if (!request.getBooleanReqPar("listAllEvents", false)) {
           params.setFromDate(todaysDateTime());
 
-          int max = authp.getMaxWebCalPeriod();
+          final int max = authp.getMaxWebCalPeriod();
           if (days < 0) {
             days = max;
           } else if ((days > max) && !cl.isSuperUser()) {
@@ -675,6 +675,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     params.setPageSize(count);
 
     params.setFormat(request.getReqPar("format"));
+
+    if (request.getBooleanReqPar("master", false)) {
+      params.setRecurMode(RecurringRetrievalMode.entityOnly);
+    }
 
     return forwardSuccess;
   }

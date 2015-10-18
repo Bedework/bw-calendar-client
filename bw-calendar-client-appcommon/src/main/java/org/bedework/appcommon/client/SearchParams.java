@@ -64,9 +64,9 @@ public class SearchParams implements Serializable {
 
   private RecurringRetrievalMode recurMode;
 
-  /** True for public
+  /**
    *
-   * @param val
+   * @param val True for public
    */
   public void setPublicIndexRequested(final boolean val) {
     publicIndexRequested = val;
@@ -79,36 +79,36 @@ public class SearchParams implements Serializable {
     return publicIndexRequested;
   }
 
-  /** if null no date time limiting
-   * @param val
+  /**
+   * @param val if null no date time limiting
    */
   public void setFromDate(final BwDateTime val) {
     fromDate = val;
   }
 
-  /** if null no date time limiting
-   * @return from date
+  /**
+   * @return from date if null no date time limiting
    */
   public BwDateTime getFromDate() {
     return fromDate;
   }
 
-  /** if null no date time limiting
-   * @param val
+  /**
+   * @param val if null no date time limiting
    */
   public void setToDate(final BwDateTime val) {
     toDate = val;
   }
 
-  /** if null no date time limiting
-   * @return from date
+  /**
+   * @return from date if null no date time limiting
    */
   public BwDateTime getToDate() {
     return toDate;
   }
 
-  /** if null no query
-   * @param val
+  /**
+   * @param val if null no query
    */
   public void setQuery(final String val) {
     query = val;
@@ -116,7 +116,7 @@ public class SearchParams implements Serializable {
 
 
   /** if null no query
-   * @return query string or null
+   * @return query string or null for no query
    */
   public String getQuery() {
     return query;
@@ -136,8 +136,8 @@ public class SearchParams implements Serializable {
     return relevance;
   }
 
-  /** if null no filtering
-   * @param val
+  /**
+   * @param val if null no filtering
    */
   public void setFilter(final FilterBase val) {
     filter = val;
@@ -153,9 +153,8 @@ public class SearchParams implements Serializable {
   /** Set the sort expression
    *
    * @param  val  String sort expression
-   * @throws
    */
-  public void setSort(List<SortTerm> val) {
+  public void setSort(final List<SortTerm> val) {
     sort = val;
   }
 
@@ -166,24 +165,24 @@ public class SearchParams implements Serializable {
     return sort;
   }
 
-  /** True if we should retrieve the event to export
+  /**
    *
-   * @param val
+   * @param val True if we should retrieve the event to export
    */
   public void setForExport(final boolean val) {
     forExport = val;
   }
 
   /**
-   * @return boolean
+   * @return boolean True if we should retrieve the event to export
    */
   public boolean getForExport() {
     return forExport;
   }
 
-  /** Set the format
+  /**
    *
-   * @param val
+   * @param val  the format
    */
   public void setFormat(final String val) {
     format = val;
@@ -196,8 +195,8 @@ public class SearchParams implements Serializable {
     return format;
   }
 
-  /** Set current page in search result
-   * @param val
+  /**
+   * @param val current page in search result
    */
   public void setCurOffset(final int val) {
     curOffset = val;
@@ -210,8 +209,8 @@ public class SearchParams implements Serializable {
     return curOffset;
   }
 
-  /** Set current page size
-   * @param val
+  /**
+   * @param val current page size
    */
   public void setPageSize(final int val) {
     pageSize = val;
@@ -224,6 +223,7 @@ public class SearchParams implements Serializable {
     return pageSize;
   }
 
+  @SuppressWarnings("unused")
   public DateTimeFormatter getFormattedStart() {
     if (formattedStart == null) {
       formattedStart = new DateTimeFormatter(fromDate);
@@ -231,6 +231,7 @@ public class SearchParams implements Serializable {
     return formattedStart;
   }
 
+  @SuppressWarnings("unused")
   public DateTimeFormatter getFormattedEnd() {
     if (formattedEnd == null) {
       formattedEnd  = new DateTimeFormatter(toDate);

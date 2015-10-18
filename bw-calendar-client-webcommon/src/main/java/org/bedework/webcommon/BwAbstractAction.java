@@ -699,13 +699,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (cl.getWebSubmit() || cl.getPublicAdmin()) {
-      boolean ignoreCreator = cl.getWebSubmit();
+      boolean ignoreCreator = false; //cl.getWebSubmit();
 
 //      if ((cal != null) &&
 //              (cal.getPath().startsWith(form.getConfig().getSubmissionRoot()))) {
 //        ignoreCreator = true;
 //      } else
-      if (!ignoreCreator && form.getCurUserSuperUser()) {
+      if (/*!ignoreCreator && */form.getCurUserSuperUser()) {
         ignoreCreator = "yes".equals(request.getReqPar("ignoreCreator"));
       }
 
@@ -733,7 +733,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   protected FilterBase addor(FilterBase filter, final BwCategory cat) {
-    ObjectFilter<BwCategory> f = new BwCategoryFilter(null);
+    final ObjectFilter<BwCategory> f = new BwCategoryFilter(null);
     f.setEntity(cat);
     f.setExact(false);
 
@@ -742,7 +742,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (!(filter instanceof OrFilter)) {
-      FilterBase orFilter = new OrFilter();
+      final FilterBase orFilter = new OrFilter();
       orFilter.addChild(filter);
       filter = orFilter;
     }
@@ -771,7 +771,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.getMsg().emit(ClientMessage.scheduleUpdated);
     }
 
-    for (ScheduleRecipientResult srr: sr.recipientResults.values()) {
+    for (final ScheduleRecipientResult srr: sr.recipientResults.values()) {
       if (srr.getStatus() == ScheduleStates.scheduleDeferred) {
         form.getMsg().emit(ClientMessage.scheduleDeferred, srr.recipient);
       } else if (srr.getStatus() == ScheduleStates.scheduleNoAccess) {

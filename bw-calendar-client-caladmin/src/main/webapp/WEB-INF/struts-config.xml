@@ -52,6 +52,8 @@
                       process changes and end it.
                       start a new conversation which we will end on exit.
      auth           yes/no does this action require authentication
+     mdl            e.g mdl=locations - specify a 'client' module for
+                    this interaction
 
      In the absence of a conversation parameter we assume that a conversation
      starts with actionType=action and ends with actionType=render.
@@ -1520,7 +1522,7 @@
                type="org.bedework.webcommon.location.FetchLocationsAction"
                name="calForm"
                scope="session"
-               parameter="actionType=resource;conversation=only"
+               parameter="actionType=resource;conversation=only;mdl=locations"
                validate="false">
     </action>
 

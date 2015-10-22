@@ -164,7 +164,12 @@ public class UpdateEventAction extends EventActionBase {
       svci.reAttach(ann);
     } else {
       svci.reAttach(ev);
-    }*/
+    }
+    if (ev instanceof BwEventProxy) {
+      final BwEventAnnotation ann = ((BwEventProxy)ev).getRef();
+      cl.reAttach(ann.getTarget());
+    }
+    */
 
     if (request.hasCopy()) {
       /* XXX I don't think we ever get here */

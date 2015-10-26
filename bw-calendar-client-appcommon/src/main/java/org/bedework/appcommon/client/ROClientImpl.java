@@ -156,9 +156,13 @@ public class ROClientImpl implements Client {
 
   /* The list of cloned admin groups for the use of the user client
    */
-  private static Collection<BwGroup> adminGroupsInfo;
+  protected static Collection<BwGroup> adminGroupsInfo;
 
-  private static Collection<BwGroup> calsuiteAdminGroupsInfo;
+  protected static Collection<BwGroup> calsuiteAdminGroupsInfo;
+
+  /** Hrefs of owners for this calsuite
+   */
+  protected static List<String> ownerHrefs;
 
   private static long lastAdminGroupsInfoRefresh;
   static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
@@ -1798,9 +1802,29 @@ public class ROClientImpl implements Client {
 
 
   @Override
-  public void setCalSuite(final String name)
+  public void setCalSuite(final BwCalSuite cs)
           throws CalFacadeException {
-    svci.setCalSuite(name);
+    ownerHrefs = new ArrayList<>();
+
+    final BwAdminGroup ag = cs.getGroup();
+    addOwnerHrefs(ag);
+
+    svci.setCalSuite(cs.getName());
+  }
+
+  private void addOwnerHrefs(final BwAdminGroup ag) throws CalFacadeException {
+    ownerHrefs.add(ag.getOwnerHref());
+
+    getAdminGroupMembers(ag);
+    if (ag.getGroupMembers() == null) {
+      return;
+    }
+
+    for (final BwPrincipal pr: ag.getGroupMembers()) {
+      if (pr instanceof BwAdminGroup) {
+        addOwnerHrefs((BwAdminGroup)pr);
+      }
+    }
   }
 
   @Override

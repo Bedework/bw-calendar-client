@@ -1802,7 +1802,7 @@ public interface Client extends Serializable {
    * @param name unique name for the suite
    * @throws CalFacadeException
    */
-  void setCalSuite(String name) throws CalFacadeException;
+  void setCalSuite(BwCalSuite cs) throws CalFacadeException;
 
   /** Get the current calendar suite.
    *
@@ -1868,6 +1868,14 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   void deleteCalSuite(BwCalSuiteWrapper val) throws CalFacadeException;
+
+  /** Is the current calendar suite the 'owner'.
+   *
+   * @param ent the entity to test
+   * @return true if so
+   * @throws CalFacadeException
+   */
+  boolean isCalSuiteEntity(BwShareableDbentity ent) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                   Calendar Suite Resources

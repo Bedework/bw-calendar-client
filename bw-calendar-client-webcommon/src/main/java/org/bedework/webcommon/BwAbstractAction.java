@@ -1889,7 +1889,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       if (cs != null) {
         calSuiteName = cs.getName();
-        client.setCalSuite(calSuiteName);
+        client.setCalSuite(cs);
       }
 
       if (debug) {

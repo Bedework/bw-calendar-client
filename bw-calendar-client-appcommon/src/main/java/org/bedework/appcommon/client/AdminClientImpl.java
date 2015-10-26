@@ -30,6 +30,7 @@ import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwSystem;
+import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -358,6 +359,16 @@ public class AdminClientImpl extends ClientImpl {
           throws CalFacadeException {
     svci.getCalSuitesHandler().delete(val);
     updated();
+  }
+
+  @Override
+  public boolean isCalSuiteEntity(final BwShareableDbentity ent) throws CalFacadeException {
+    refreshAdminGroupInfo();
+    if (ownerHrefs == null) {
+      return false;
+    }
+
+    return ownerHrefs.contains(ent.getCreatorHref());
   }
 
   @Override

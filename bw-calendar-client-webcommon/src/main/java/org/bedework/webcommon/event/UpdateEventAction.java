@@ -147,6 +147,14 @@ public class UpdateEventAction extends EventActionBase {
       return forwardNoAction;
     }
 
+    boolean eventOWner = false;
+
+    if (!publicAdmin) {
+      eventOWner = true;
+    } else {
+      eventOWner = cl.isCalSuiteEntity(ev);
+    }
+
     if ((publishEvent || approveEvent) && (ev.getRecurrenceId() != null)) {
       // Cannot publish/approve an instance - only the master
       cl.rollback();
@@ -432,7 +440,11 @@ public class UpdateEventAction extends EventActionBase {
 
     /* ---------------- Suggested to a group? --------------------- */
 
-    final List<SuggestedTo> suggestedTo = doSuggested(request, ev, changes);
+    List<SuggestedTo> suggestedTo = null;
+
+    if (eventOWner) {
+      suggestedTo = doSuggested(request, ev, changes);
+    }
 
     /* -------------------------- Dates ------------------------------ */
 

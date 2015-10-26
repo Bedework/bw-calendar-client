@@ -202,16 +202,7 @@ public class BwSessionImpl implements BwSession {
 
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
 
-      if (mstate.getEventDates() == null) {
-        mstate.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),
-                                               mstate.getCalInfo(),
-                                               form.getHour24(),
-                                               form.getEndDateType(),
-                                               config.getMinIncrement(),
-                                               form.getErr()));
-      }
-
-      /* This only till we make module state the request scope form * /
+      /* This only till we make module state the request scope form */
       if (form.getEventDates() == null) {
         form.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),
                                                mstate.getCalInfo(),
@@ -220,8 +211,11 @@ public class BwSessionImpl implements BwSession {
                                                config.getMinIncrement(),
                                                form.getErr()));
       }
-      */
-      form.assignEventDates(mstate.getEventDates());
+
+      if (mstate.getEventDates() == null) {
+        mstate.assignEventDates(form.getEventDates());
+      }
+
       mstate.getEventDates().setHour24(form.getHour24());
 
       final String lastChangeToken = (String)req.getSessionAttr(changeTokenAttr);

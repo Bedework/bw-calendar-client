@@ -152,7 +152,7 @@ public class UpdateEventAction extends EventActionBase {
     if (!publicAdmin) {
       eventOWner = true;
     } else {
-      eventOWner = cl.isCalSuiteEntity(ev);
+      eventOWner = form.getAddingEvent() || cl.isCalSuiteEntity(ev);
     }
 
     if ((publishEvent || approveEvent) && (ev.getRecurrenceId() != null)) {

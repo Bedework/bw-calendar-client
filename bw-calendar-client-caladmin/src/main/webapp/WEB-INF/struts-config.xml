@@ -1152,6 +1152,14 @@
                validate="false">
     </action>
 
+    <action    path="/suggest/setStatusForUpdate"
+               type="org.bedework.webcommon.event.SuggestAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=continue"
+               validate="false">
+    </action>
+
     <!-- ===============================================================
                          View Actions
          =============================================================== -->

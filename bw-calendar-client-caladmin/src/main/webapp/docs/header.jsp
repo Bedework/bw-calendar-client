@@ -151,6 +151,7 @@ try {
     </event>
     <suggest>
       <setStatus><bw:rewrite actionURL="true" page="/suggest/setStatus.gdo?b=de"/></setStatus>
+      <setStatusForUpdate><bw:rewrite actionURL="true" page="/suggest/setStatusForUpdate.gdo?b=de"/></setStatusForUpdate>
     </suggest>
     <contact>
       <showContact><bw:rewrite actionURL="true" page="/contact/showContact.do?b=de"/></showContact>

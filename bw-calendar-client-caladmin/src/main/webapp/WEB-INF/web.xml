@@ -102,6 +102,7 @@
 
     <load-on-startup>1</load-on-startup>
 
+    <!--
     <security-role-ref>
       <description>A user with full administrative privileges</description>
       <role-name>admin</role-name>
@@ -131,6 +132,7 @@
       <role-name>user</role-name>
       <role-link>bedework.user</role-link>
     </security-role-ref>
+    -->
   </servlet>
 
   <!-- Do not alter or move  the following comment -->
@@ -271,7 +273,7 @@
     </form-login-config>
   </login-config>
 
-  <!-- These aren't used -->
+  <!-- These aren't used
   <security-role>
     <description>A user with full administrative privileges</description>
     <role-name>bedework.admin</role-name>
@@ -295,6 +297,10 @@
   <security-role>
     <description>A user</description>
     <role-name>bedework.user</role-name>
+  </security-role>
+  -->
+  <security-role>
+    <role-name>*</role-name>
   </security-role>
 
   <!-- Insert ejb-ref here -->

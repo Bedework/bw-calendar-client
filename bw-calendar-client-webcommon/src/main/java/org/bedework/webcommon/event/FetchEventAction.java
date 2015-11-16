@@ -68,15 +68,6 @@ public class FetchEventAction extends EventActionBase {
     form.setAttendees(new Attendees());
     form.setFbResponses(null);
     form.setFormattedFreeBusy(null);
-    if (fwd == forwardContinue) {
-      if (request.hasCopy()) {
-        copyEvent(request, einf.getEvent());
-
-        return forwardCopy;
-      }
-
-      resetEvent(request);
-    }
 
     final BwSession sess = request.getSess();
 
@@ -91,6 +82,16 @@ public class FetchEventAction extends EventActionBase {
     if (cl.getPublicAdmin()) {
       sess.embedContactCollection(request, BwSession.preferredEntity);
       sess.embedLocations(request, BwSession.preferredEntity);
+    }
+
+    if (fwd == forwardContinue) {
+      if (request.hasCopy()) {
+        copyEvent(request, einf.getEvent());
+
+        return forwardCopy;
+      }
+
+      resetEvent(request);
     }
 
     return fwd;

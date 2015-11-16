@@ -215,10 +215,10 @@ public abstract class EventActionBase extends BwAbstractAction {
     /* Refetch the event and switch it for a cloned copy.
      * guid and name must be set to null to avoid dup guid.
      */
-    BwActionFormBase form = request.getBwForm();
-    Client cl = request.getClient();
+    final BwActionFormBase form = request.getBwForm();
+    final Client cl = request.getClient();
     EventInfo ei = fetchEvent(request, ev);
-    BwEvent evcopy = (BwEvent)ei.getEvent().clone();
+    final BwEvent evcopy = (BwEvent)ei.getEvent().clone();
 
     /* Ensure new attendee set is in form */
     form.setAttendees(new Attendees());
@@ -227,6 +227,35 @@ public abstract class EventActionBase extends BwAbstractAction {
     evcopy.setId(CalFacadeDefs.unsavedItemKey);
     evcopy.setUid(null);
     evcopy.setName(null);
+
+    if (cl.getPublicAdmin()) {
+      /* For a public event remove all the suggested information and
+       * any topical areas not owned by this suite
+       */
+
+      evcopy.removeXproperties(BwXproperty.bedeworkSuggestedTo);
+      final BwPrincipal p = cl.getPrincipal(
+              form.getCurrentCalSuite().getGroup().getOwnerHref());
+      final BwCalSuite cs = cl.getCalSuite();
+
+      final BwCalendar col = cl.getHome(p, false);
+
+      if (col == null) {
+        request.getErr().emit("No calendar home");
+      } else {
+        final Collection<BwXproperty> aliases = evcopy.getXproperties(BwXproperty.bedeworkAlias);
+
+        final String homePath = Util.buildPath(true, col.getPath());
+
+        for (final BwXproperty xp: aliases) {
+          if (xp.getValue().startsWith(homePath)) {
+            continue;
+          }
+
+          evcopy.removeXproperty(xp);
+        }
+      }
+    }
 
     ei = new EventInfo(evcopy);
 

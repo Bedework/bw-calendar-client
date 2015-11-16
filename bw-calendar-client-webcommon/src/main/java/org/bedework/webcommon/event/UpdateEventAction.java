@@ -180,10 +180,9 @@ public class UpdateEventAction extends EventActionBase {
     */
 
     if (request.hasCopy()) {
-      /* XXX I don't think we ever get here */
-      copyEvent(request, ev);
+      request.getErr().emit("copy no longer supported - use fetch action");
 
-      return forwardCopy;
+      return forwardError;
     }
 
     ChangeTableEntry cte;
@@ -205,7 +204,7 @@ public class UpdateEventAction extends EventActionBase {
       if (rrule != null) {
         final Collection<String> rrules = ev.getRrules();
 
-        boolean rruleChanged;
+        final boolean rruleChanged;
 
         if (rrules == null) {
           final Set<String> newRrules = new TreeSet<>();
@@ -802,7 +801,6 @@ public class UpdateEventAction extends EventActionBase {
             !cl.getSystemProperties().getSuggestionEnabled()) {
       return null;
     }
-
 
     /* If so we adjust x-properties to match */
 

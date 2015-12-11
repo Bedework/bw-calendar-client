@@ -21,6 +21,7 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
+import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.SelectId;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
@@ -33,12 +34,15 @@ import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwLongString;
 import org.bedework.calfacade.BwOrganizer;
+import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwString;
+import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.mail.Message;
+import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.icalendar.IcalTranslator;
@@ -55,7 +59,6 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.BwWebUtil.ValidateResult;
-import org.bedework.appcommon.EventKey;
 
 import net.fortuna.ical4j.model.parameter.Role;
 
@@ -255,6 +258,8 @@ public abstract class EventActionBase extends BwAbstractAction {
           evcopy.removeXproperty(xp);
         }
       }
+
+      ev.getCategories().clear();
     }
 
     ei = new EventInfo(evcopy);

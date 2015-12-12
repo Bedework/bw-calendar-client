@@ -259,7 +259,7 @@ public abstract class EventActionBase extends BwAbstractAction {
         }
       }
 
-      ev.getCategories().clear();
+      evcopy.getCategories().clear();
     }
 
     ei = new EventInfo(evcopy);

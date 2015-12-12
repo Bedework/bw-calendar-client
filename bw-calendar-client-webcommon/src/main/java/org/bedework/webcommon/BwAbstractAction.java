@@ -701,15 +701,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (cl.getWebSubmit() || cl.getPublicAdmin()) {
       boolean ignoreCreator = false; //cl.getWebSubmit();
 
-//      if ((cal != null) &&
-//              (cal.getPath().startsWith(form.getConfig().getSubmissionRoot()))) {
-//        ignoreCreator = true;
-//      } else
-      if (/*!ignoreCreator && */form.getCurUserSuperUser()) {
-        ignoreCreator = "yes".equals(request.getReqPar("ignoreCreator"));
-      }
-
-      if (request.getBooleanReqPar("sg", false)) {
+      if (request.getBooleanReqPar("sg", false) ||
+          request.getBooleanReqPar("ignoreCreator", false)) {
         ignoreCreator = true;
       }
 

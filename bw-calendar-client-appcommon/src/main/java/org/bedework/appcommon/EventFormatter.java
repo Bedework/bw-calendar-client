@@ -19,6 +19,7 @@
 
 package org.bedework.appcommon;
 
+import org.bedework.access.Acl;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
@@ -57,7 +58,7 @@ public class EventFormatter extends EventTimeZonesRegistry
    *
    * @param cl for callbacks
    * @param trans - will be synchronized so may be shared
-   * @param eventInfo
+   * @param eventInfo the event
    */
   public EventFormatter(final Client cl,
                         final IcalTranslator trans,
@@ -67,8 +68,14 @@ public class EventFormatter extends EventTimeZonesRegistry
     this.eventInfo = eventInfo;
 
     try {
-      xmlAccess = AccessXmlUtil.getXmlAclString(eventInfo.getCurrentAccess().getAcl(),
-                                                cl);
+      Acl.CurrentAccess ca = eventInfo.getCurrentAccess();
+
+      if (ca == null) {
+        warn("No current access for " + eventInfo.getEvent().getUid());
+      } else {
+        xmlAccess = AccessXmlUtil.getXmlAclString(ca.getAcl(),
+                                                  cl);
+      }
     } catch (Throwable t) {
       error(t);
     }
@@ -147,6 +154,7 @@ public class EventFormatter extends EventTimeZonesRegistry
    *
    * @return DateTimeFormatter  object corresponding to the event's dtstamp
    */
+  @SuppressWarnings("unused")
   public DateTimeFormatter getDtstamp() {
     try {
       if (dtstamp == null) {
@@ -164,6 +172,7 @@ public class EventFormatter extends EventTimeZonesRegistry
    *
    * @return String
    */
+  @SuppressWarnings("unused")
   public String getXmlAccess() {
     return xmlAccess;
   }
@@ -174,6 +183,10 @@ public class EventFormatter extends EventTimeZonesRegistry
 
   private void error(final Throwable t) {
     Logger.getLogger(this.getClass()).error(this, t);
+  }
+
+  private void warn(final String s) {
+    Logger.getLogger(this.getClass()).warn(s);
   }
 
 }

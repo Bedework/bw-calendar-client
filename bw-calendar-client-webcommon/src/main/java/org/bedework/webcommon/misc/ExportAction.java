@@ -89,12 +89,14 @@ public class ExportAction extends BwAbstractAction {
         method = Icalendar.methodTypePublish;
       }
     } else {
-      BwCalendar col = null;
-      if (calPath != null) {
-        col = cl.getCollection(calPath);
-        if (col == null) {
-          return forwardNotFound;
-        }
+      if (calPath == null) {
+        warn("No collection path supplied");
+        return forwardNotFound;
+      }
+
+      final BwCalendar col = cl.getCollection(calPath);
+      if (col == null) {
+        return forwardNotFound;
       }
 
       BwTimeRange tr = new BwTimeRange();
@@ -123,7 +125,7 @@ public class ExportAction extends BwAbstractAction {
     }
 
     if (ev != null) {
-      evs = new TreeSet<EventInfo>();
+      evs = new TreeSet<>();
 
       evs.add(ev);
     }

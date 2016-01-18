@@ -83,6 +83,8 @@ import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.config.ClientConfigurations;
 
+import edu.rpi.sss.util.jsp.Request;
+
 import net.fortuna.ical4j.model.Dur;
 import org.apache.struts.upload.FormFile;
 import org.apache.struts.util.MessageResources;
@@ -1057,7 +1059,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     // Don't allow more than a month
-    Calendar check = Calendar.getInstance(mstate.getCalInfo().getLocale());
+    Calendar check = Calendar.getInstance(
+            mstate.getCalInfo().getLocale());
     check.setTime(start.getTime());
     check.add(Calendar.DATE, 32);
 
@@ -1763,64 +1766,67 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @return BwSession null on failure
    * @throws Throwable
    */
-  private synchronized BwSession getState(final Request request,
-                                          final BwActionFormBase form,
-                                          final MessageResources messages,
-                                          final String adminUserId) throws Throwable {
-    BwSession s = BwWebUtil.getState(request.getRequest());
-    HttpSession sess = request.getRequest().getSession(false);
-    String appName = getAppName(sess);
+  private BwSession getState(final Request request,
+                             final BwActionFormBase form,
+                             final MessageResources messages,
+                             final String adminUserId) throws Throwable {
+    //noinspection SynchronizationOnLocalVariableOrMethodParameter
+    synchronized (form) {
+      BwSession s = BwWebUtil.getState(request.getRequest());
+      final HttpSession sess = request.getRequest().getSession(false);
+      final String appName = getAppName(sess);
 
-    if (s != null) {
-      if (debug) {
-        debugMsg("getState-- obtainedfrom session");
-        debugMsg("getState-- timeout interval = " +
-                 sess.getMaxInactiveInterval());
-      }
+      if (s != null) {
+        if (debug) {
+          debugMsg("getState-- obtainedfrom session");
+          debugMsg("getState-- timeout interval = " +
+                           sess.getMaxInactiveInterval());
+        }
 
-      form.assignNewSession(false);
-    } else {
-      if (debug) {
-        debugMsg("getState-- get new object");
-      }
+        form.assignNewSession(false);
+      } else {
+        if (debug) {
+          debugMsg("getState-- get new object");
+        }
 
-      form.assignNewSession(true);
+        form.assignNewSession(true);
 
-      s = new BwSessionImpl(form.getConfig(),
-                            form.getCurrentUser(),
-                            appName);
+        s = new BwSessionImpl(form.getConfig(),
+                              form.getCurrentUser(),
+                              appName);
 
-      BwWebUtil.setState(request.getRequest(), s);
+        BwWebUtil.setState(request.getRequest(), s);
 
-      String raddr = request.getRemoteAddr();
-      String rhost = request.getRemoteHost();
-      info("===============" + appName + ": New session (" +
-                   s.getSessionNum() + ") from " +
-                   rhost + "(" + raddr + ")");
+        final String raddr = request.getRemoteAddr();
+        final String rhost = request.getRemoteHost();
+        info("===============" + appName + ": New session (" +
+                     s.getSessionNum() + ") from " +
+                     rhost + "(" + raddr + ")");
 
-      if (!form.getConfig().getPublicAdmin()) {
-        /** Ensure the session timeout interval is longer than our refresh period
-         */
-        //  Should come from db -- int refInt = s.getRefreshInterval();
-        int refInt = 60; // 1 min refresh?
+        if (!form.getConfig().getPublicAdmin()) {
+          /** Ensure the session timeout interval is longer than our refresh period
+           */
+          //  Should come from db -- int refInt = s.getRefreshInterval();
+          final int refInt = 60; // 1 min refresh?
 
-        if (refInt > 0) {
-          int timeout = sess.getMaxInactiveInterval();
+          if (refInt > 0) {
+            final int timeout = sess.getMaxInactiveInterval();
 
-          if (timeout <= refInt) {
-            // An extra minute should do it.
-            debugMsg("@+@+@+@+@+ set timeout to " + (refInt + 60));
-            sess.setMaxInactiveInterval(refInt + 60);
+            if (timeout <= refInt) {
+              // An extra minute should do it.
+              debugMsg("@+@+@+@+@+ set timeout to " + (refInt + 60));
+              sess.setMaxInactiveInterval(refInt + 60);
+            }
           }
         }
       }
+
+      /** Ensure we have a CalSvcI object
+       */
+      checkSvci(request, s, adminUserId, false);
+
+      return s;
     }
-
-    /** Ensure we have a CalSvcI object
-     */
-    checkSvci(request, s, adminUserId, false);
-
-    return s;
   }
 
   private String getAppName(final HttpSession sess) {

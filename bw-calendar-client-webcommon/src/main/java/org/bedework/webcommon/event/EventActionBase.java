@@ -1048,15 +1048,19 @@ public abstract class EventActionBase extends BwAbstractAction {
     rb.par("atkn", evregToken);
     rb.par("href", ei.getEvent().getHref());
 
-    final int respCode = http.sendRequest("GET",
-                                          rb.toString(),
-                                          null,
-                                          "application/xml",
-                                          0, // contentLen
-                                          null);    //content
+    try {
+      final int respCode = http.sendRequest("GET",
+                                            rb.toString(),
+                                            null,
+                                            "application/xml",
+                                            0, // contentLen
+                                            null);    //content
 
-    if (respCode != HttpServletResponse.SC_OK) {
-      return false;
+      if (respCode != HttpServletResponse.SC_OK) {
+        return false;
+      }
+    } finally {
+      http.release();
     }
 
     return true;

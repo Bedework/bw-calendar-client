@@ -22,11 +22,10 @@ package org.bedework.webcommon.location;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwString;
+import org.bedework.util.misc.Uid;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import edu.rpi.sss.util.Uid;
 
 import javax.servlet.http.HttpServletResponse;
 

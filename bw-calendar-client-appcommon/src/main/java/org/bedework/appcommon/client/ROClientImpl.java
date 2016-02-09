@@ -1879,6 +1879,11 @@ public class ROClientImpl implements Client {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
 
+  @Override
+  public boolean isCalSuiteEntity(final BwShareableDbentity ent) throws CalFacadeException {
+    return false;
+  }
+
   /* ------------------------------------------------------------
    *                   Calendar Suite Resources
    * ------------------------------------------------------------ */

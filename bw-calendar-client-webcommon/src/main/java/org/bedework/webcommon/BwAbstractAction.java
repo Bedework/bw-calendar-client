@@ -83,8 +83,6 @@ import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.config.ClientConfigurations;
 
-import edu.rpi.sss.util.jsp.Request;
-
 import net.fortuna.ical4j.model.Dur;
 import org.apache.struts.upload.FormFile;
 import org.apache.struts.util.MessageResources;

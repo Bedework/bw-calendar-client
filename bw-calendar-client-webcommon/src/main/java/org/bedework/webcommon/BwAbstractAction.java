@@ -1648,14 +1648,18 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       newView = true;
     }
 
-    if (mstate.getCurTimeView() == null) {
-      newView = true;
-    } else if ((newViewType != null) &&
-            !newViewType.equals(mstate.getCurTimeView().getViewType())) {
-      // Change of view
-      newView = true;
+    if (!newView) {
+      if (mstate.getCurTimeView() == null) {
+        newView = true;
+      } else if ((newViewType != null) &&
+              !newViewType.equals(mstate.getCurTimeView()
+                                        .getViewType())) {
+        // Change of view
+        newView = true;
+      }
     }
 
+    // Need to set default view?
     if (newView && (newViewType == null)) {
       newViewType = mstate.getViewType();
       if (newViewType == null) {
@@ -1691,6 +1695,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       mstate.setViewMcDate(dt);
       mstate.setRefresh(true);
       request.getClient().clearSearchEntries();
+      request.getClient().clearSearch();
     }
 
     final TimeView tv = request.getSess().getCurTimeView(request);

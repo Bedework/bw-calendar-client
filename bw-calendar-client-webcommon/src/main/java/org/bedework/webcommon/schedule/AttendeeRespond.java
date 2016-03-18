@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.schedule;
 
+import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwEvent;
@@ -34,7 +35,6 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.BwWebUtil;
-import org.bedework.appcommon.EventKey;
 import org.bedework.webcommon.event.EventActionBase;
 
 import java.util.Collection;

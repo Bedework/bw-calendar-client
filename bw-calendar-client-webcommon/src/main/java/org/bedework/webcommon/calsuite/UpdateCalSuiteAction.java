@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.calsuite;
 
+import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwSystem;
@@ -25,8 +26,6 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import org.bedework.access.Acl;
 
 /** Update a calendar suite for a user.
  *

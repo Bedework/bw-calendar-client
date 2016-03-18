@@ -20,7 +20,6 @@ package org.bedework.webcommon.taglib;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.wrappers.CalendarWrapper;
-
 import org.bedework.util.xml.tagdefs.AppleServerTags;
 import org.bedework.util.xml.tagdefs.NamespaceAbbrevs;
 

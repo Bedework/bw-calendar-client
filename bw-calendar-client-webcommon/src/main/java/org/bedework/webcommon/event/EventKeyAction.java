@@ -18,10 +18,10 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.appcommon.EventKey;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.appcommon.EventKey;
 
 /**
  * Action to set up an event for a subsequent fetch.

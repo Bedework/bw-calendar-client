@@ -19,6 +19,7 @@
 
 package org.bedework.webcommon.resources;
 
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
@@ -26,7 +27,6 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.appcommon.CalSuiteResource;
 
 /** Add a new resource for a calendar suite.
  *

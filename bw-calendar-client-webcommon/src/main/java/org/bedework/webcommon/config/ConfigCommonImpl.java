@@ -19,7 +19,6 @@
 package org.bedework.webcommon.config;
 
 import org.bedework.appcommon.ConfigCommon;
-
 import org.bedework.util.config.ConfInfo;
 import org.bedework.util.config.ConfigBase;
 

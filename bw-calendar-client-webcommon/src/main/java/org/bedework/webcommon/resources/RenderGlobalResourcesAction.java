@@ -18,11 +18,11 @@
 */
 package org.bedework.webcommon.resources;
 
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwCalSuite;
-import org.bedework.appcommon.CalSuiteResource;
 
 import java.util.ArrayList;
 import java.util.List;

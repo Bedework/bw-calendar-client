@@ -19,7 +19,6 @@
 package org.bedework.webcommon.config;
 
 import org.bedework.appcommon.ConfigCommon;
-
 import org.bedework.util.jmx.ConfBaseMBean;
 
 /** Configure a connector for the Bedework synch engine service

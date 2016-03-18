@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.access.AccessPrincipal;
 import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
@@ -35,8 +36,6 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalUtil;
 import org.bedework.util.misc.Util;
-
-import org.bedework.access.AccessPrincipal;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.property.DtEnd;

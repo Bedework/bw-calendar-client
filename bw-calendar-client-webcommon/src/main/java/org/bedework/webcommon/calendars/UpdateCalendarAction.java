@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.calendars;
 
+import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -32,8 +33,6 @@ import org.bedework.util.xml.tagdefs.WebdavTags;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import org.bedework.access.Acl;
 
 /** This action updates a calendar.
  *

@@ -20,7 +20,6 @@ package org.bedework.webcommon.config;
 
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.calfacade.exc.CalFacadeException;
-
 import org.bedework.util.jmx.ConfBase;
 
 import java.util.HashMap;

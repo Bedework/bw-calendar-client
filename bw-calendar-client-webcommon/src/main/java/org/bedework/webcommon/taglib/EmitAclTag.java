@@ -19,10 +19,9 @@
 
 package org.bedework.webcommon.taglib;
 
+import org.bedework.access.Acl.CurrentAccess;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.client.Client;
-
-import org.bedework.access.Acl.CurrentAccess;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;

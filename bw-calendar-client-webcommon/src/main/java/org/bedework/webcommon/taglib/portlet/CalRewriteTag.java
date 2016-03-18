@@ -34,10 +34,11 @@
 package org.bedework.webcommon.taglib.portlet;
 
 import org.apache.log4j.Logger;
-//import org.apache.portals.bridges.struts.config.PortletURLTypes;
 import org.apache.struts.taglib.html.RewriteTag;
 
 import javax.servlet.jsp.JspException;
+
+//import org.apache.portals.bridges.struts.config.PortletURLTypes;
 
 //import org.apache.portals.bridges.struts.PortletServlet;
 //import org.apache.portals.bridges.struts.config.PortletURLTypes;

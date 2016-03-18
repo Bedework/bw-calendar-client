@@ -19,6 +19,7 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.EventFormatter;
+import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
@@ -31,7 +32,6 @@ import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.appcommon.EventKey;
 
 import java.util.Collection;
 import java.util.Date;

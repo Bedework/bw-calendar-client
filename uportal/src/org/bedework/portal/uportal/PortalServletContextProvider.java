@@ -18,6 +18,8 @@
 */
 package org.bedework.portal.uportal;
 
+import org.apache.pluto.core.impl.PortletContextImpl;
+import org.apache.portals.bridges.common.ServletContextProvider;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletRequest;
@@ -26,9 +28,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.pluto.core.impl.PortletContextImpl;
-import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
  * ServletContextProviderImpl supplies access to the Servlet context of uPortal Portlet.

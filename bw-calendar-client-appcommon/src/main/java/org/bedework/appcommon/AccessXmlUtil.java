@@ -18,13 +18,12 @@
 */
 package org.bedework.appcommon;
 
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.exc.CalFacadeException;
-
 import org.bedework.access.AccessException;
 import org.bedework.access.AccessPrincipal;
 import org.bedework.access.Acl;
 import org.bedework.access.PrivilegeSet;
+import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.xml.XmlEmit;
 
 import org.apache.struts.taglib.TagUtils;

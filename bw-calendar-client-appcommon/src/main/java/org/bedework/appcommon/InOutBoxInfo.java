@@ -18,13 +18,12 @@
 */
 package org.bedework.appcommon;
 
+import org.bedework.access.Acl.CurrentAccess;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
-
-import org.bedework.access.Acl.CurrentAccess;
 
 import java.io.Serializable;
 import java.util.Collection;

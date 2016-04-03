@@ -22,15 +22,15 @@
 package org.bedework.portal.liferay;
 //package com.liferay.portal.apache.bridges;
 
+import org.apache.portals.bridges.struts.StrutsPortlet;
+import org.apache.struts.Globals;
+
 import java.io.IOException;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.portals.bridges.struts.StrutsPortlet;
-import org.apache.struts.Globals;
 
 /**
  * Added this to bedework for th etime being. It doesn't appear in any jar files

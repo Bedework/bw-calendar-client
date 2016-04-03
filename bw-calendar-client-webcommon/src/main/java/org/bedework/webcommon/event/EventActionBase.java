@@ -32,10 +32,8 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
-import org.bedework.calfacade.BwLongString;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.RecurringRetrievalMode;
@@ -538,15 +536,13 @@ public abstract class EventActionBase extends BwAbstractAction {
       return;
     }
 
-    Set<BwString> oldSums = new TreeSet<BwString>();
-    if (ev.getSummaries() != null) {
-      oldSums.addAll(ev.getSummaries());
-    }
-
     ev.updateSummaries(lang, text);
 
-    changes.changed(PropertyInfoIndex.SUMMARY,
-                    oldSums, ev.getSummaries());
+    if (lang == null) {
+      changes.changed(PropertyInfoIndex.SUMMARY, evText, ev.findSummary(lang));
+    } else {
+      warn("No multi-language support in change table.");
+    }
   }
 
   private void setEventDescription(final String lang,
@@ -560,15 +556,13 @@ public abstract class EventActionBase extends BwAbstractAction {
       return;
     }
 
-    Set<BwLongString> oldDescs = new TreeSet<BwLongString>();
-    if (ev.getDescriptions() != null) {
-      oldDescs.addAll(ev.getDescriptions());
-    }
     ev.updateDescriptions(lang, text);
 
-    changes.changed(PropertyInfoIndex.DESCRIPTION,
-                    oldDescs,
-                    ev.getDescriptions());
+    if (lang == null) {
+      changes.changed(PropertyInfoIndex.DESCRIPTION, evText, ev.findDescription(lang));
+    } else {
+      warn("No multi-language support in change table.");
+    }
   }
 
   private boolean eventTextChanged(final String lang, final String text,

@@ -347,6 +347,18 @@ try {
       <bw:emitText name="calForm" property="adminGroupName" tagName="group"/>
       <bw:emitText name="calForm" property="oneGroup"/>
     </logic:present>
+    <groups>
+      <logic:present name="bw_user_admin_search_groups" scope="session" >
+        <logic:iterate id="adminGroup" name="bw_user_admin_search_groups" scope="session" >
+          <group>
+            <name><bean:write name="adminGroup" property="account" /></name>
+            <href><bean:write name="adminGroup" property="principalRef" /></href>
+            <ownerHref><bean:write name="adminGroup" property="ownerHref" /></ownerHref>
+            <desc><bean:write name="adminGroup" property="description" /></desc>
+          </group>
+        </logic:iterate>
+      </logic:present>
+    </groups>
   </userInfo>
 
   <%-- System parameters and directory info--%>

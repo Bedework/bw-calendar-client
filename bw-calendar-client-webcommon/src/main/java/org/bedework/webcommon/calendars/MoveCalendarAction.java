@@ -44,7 +44,7 @@ import java.util.List;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm bedework.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
 public class MoveCalendarAction extends BwAbstractAction {
   /* (non-Javadoc)

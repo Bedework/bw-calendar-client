@@ -86,7 +86,7 @@ public class BwSessionImpl implements BwSession {
   private static final ConcurrentHashMap<String, Counts> countsMap =
     new ConcurrentHashMap<>();
   private long sessionNum = 0;
-
+  
   private static String publicCollectionsChangeToken;
   private static BwCalendar clonedPublicCollections;  
 
@@ -199,7 +199,7 @@ public class BwSessionImpl implements BwSession {
       if (featureFlags != null) {
         req.setSessionAttr(BwRequest.bwFeatureFlagsName, featureFlags);
       }
-
+      
       if (cl.getPublicAdmin()) {
         final Collection<BwGroup> adgs;
 
@@ -400,7 +400,7 @@ public class BwSessionImpl implements BwSession {
     clonedPublicCollections = embedClonedCollection(request,
                                                     root,
                                                     fromCopy,
-                          BwRequest.bwPublicCollectionListName);
+                                                    BwRequest.bwPublicCollectionListName);
   }
 
   @Override
@@ -675,13 +675,13 @@ public class BwSessionImpl implements BwSession {
    * ==================================================================== */
 
   private BwCalendar embedClonedCollection(final BwRequest request,
-                                     final BwCalendar col,
+                                           final BwCalendar col,
                                            final boolean fromCopy,
-                                     final String attrName) throws Throwable {
+                                           final String attrName) throws Throwable {
     final ColCloner cc = new ColCloner(request.getClient(),
                                        request.getBwForm().getCalendarsOpenState());
     final BwCalendar cloned;
-
+    
     if (fromCopy) {
       cloned = cc.deepCloneCopy(col);
     } else {

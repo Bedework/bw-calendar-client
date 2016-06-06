@@ -821,8 +821,10 @@ public interface Client extends Serializable {
    * <p>For authenticated, personal access this always returns the user
    * entry in the /user calendar tree, e.g. for user smithj it would return
    * an entry smithj with path /user/smithj
+   * 
+   * Note: the returned object is NOT a live hibernate object.
    *
-   * @param  principal
+   * @param  principal whose home we want
    * @param freeBusy      true if this is for freebusy access
    * @return BwCalendar   user home.
    * @throws CalFacadeException

@@ -207,6 +207,13 @@ public class SearchParamsAction extends EventActionBase {
     request.setRequestAttr(BwRequest.bwSearchResultName,
                            mstate.getSearchResult());
 
+    final BwSession sess = request.getSess();
+
+    /* Embed the writable collections in session for admin client */
+    if (cl.getPublicAdmin()) {
+      sess.embedAddContentCalendarCollections(request);
+    }
+
     if (!forFeederOneShot) {
       if (!gridMode) {
         return forwardListEvents;
@@ -220,7 +227,7 @@ public class SearchParamsAction extends EventActionBase {
                            cl.getSearchResult(Position.current));
 
     /* Ensure we have categories embedded in session */
-    request.getSess().embedCategories(request, false,
+    sess.embedCategories(request, false,
                                       BwSession.ownersEntity);
 
     /* Add an etag */

@@ -34,7 +34,6 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 
-
 /** This action updates an admin group
  *
  * <p>Parameters are:<ul>

@@ -40,13 +40,10 @@ import org.bedework.webcommon.BwWebUtil.ValidateResult;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class UpdateLocationAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -61,9 +58,9 @@ public class UpdateLocationAction extends BwAbstractAction {
 
     /** Updating location previously fetched
      */
-    BwLocation location = form.getLocation();
+    final BwLocation location = form.getLocation();
 
-    boolean add = form.getAddingLocation();
+    final boolean add = form.getAddingLocation();
 
     if (location == null) {
       form.setLocation(null);
@@ -78,7 +75,7 @@ public class UpdateLocationAction extends BwAbstractAction {
 
     /** We are just updating from the current form values.
      */
-    ValidateResult ver = BwWebUtil.validateLocation(form);
+    final ValidateResult ver = BwWebUtil.validateLocation(form);
     if (!ver.ok) {
       return forwardRetry;
     }

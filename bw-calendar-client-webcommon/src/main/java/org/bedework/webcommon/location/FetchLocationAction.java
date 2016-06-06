@@ -34,15 +34,13 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class FetchLocationAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
     /** Check access
      */
@@ -53,7 +51,7 @@ public class FetchLocationAction extends BwAbstractAction {
     /** User requested a location from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
-    String uid = request.getReqPar("uid");
+    final String uid = request.getReqPar("uid");
 
     BwLocation location = null;
     if (uid != null) {

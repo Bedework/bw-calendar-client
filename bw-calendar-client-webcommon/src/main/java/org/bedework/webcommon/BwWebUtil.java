@@ -337,15 +337,15 @@ public class BwWebUtil {
   }
 
   /**
-   * @param form
+   * @param form struts form
    * @return ValidateResult
    * @throws Throwable
    */
   public static ValidateResult validateLocation(final BwActionFormBase form)
         throws Throwable {
-    ValidateResult vr = new ValidateResult();
+    final ValidateResult vr = new ValidateResult();
 
-    BwLocation loc = form.getLocation();
+    final BwLocation loc = form.getLocation();
 
     BwString str = loc.getAddress();
     BwString frmstr = form.getLocationAddress();

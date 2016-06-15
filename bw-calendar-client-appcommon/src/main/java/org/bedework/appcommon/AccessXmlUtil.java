@@ -76,30 +76,22 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
       }
     }
 
-    /* (non-Javadoc)
-     * @see AccessXmlUtil.AccessXmlCb#setErrorTag(edu.bedework.sss.util.xml.QName)
-     */
+    @Override
     public void setErrorTag(final QName tag) throws AccessException {
       errorTag = tag;
     }
 
-    /* (non-Javadoc)
-     * @see AccessXmlUtil.AccessXmlCb#getErrorTag()
-     */
+    @Override
     public QName getErrorTag() throws AccessException {
       return errorTag;
     }
 
-    /* (non-Javadoc)
-     * @see AccessXmlUtil.AccessXmlCb#setErrorMsg(java.lang.String)
-     */
+    @Override
     public void setErrorMsg(final String val) throws AccessException {
       errorMsg = val;
     }
 
-    /* (non-Javadoc)
-     * @see AccessXmlUtil.AccessXmlCb#getErrorMsg()
-     */
+    @Override
     public String getErrorMsg() throws AccessException {
       return errorMsg;
     }

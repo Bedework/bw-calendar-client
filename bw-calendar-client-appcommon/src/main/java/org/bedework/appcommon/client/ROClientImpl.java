@@ -1014,7 +1014,7 @@ public class ROClientImpl implements Client {
       return res;
     }
 
-    res = svci.getCalendarsHandler().getPublicCalendars().shallowClone();
+    res = svci.getCalendarsHandler().getPublicCalendars();
 
     synchronized (publicCloned) {
       if (publicCloned.get(path) != null) {

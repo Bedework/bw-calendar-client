@@ -160,14 +160,12 @@ public class EmitCollectionTag extends EmitTextTag {
     emitElement(out, indent, "actualCalType", val);
 
     if ((col != null) && (col.getCalType() == BwCalendar.calTypeAlias)) {
-      if (col != null) {
-        CalendarWrapper cw = (CalendarWrapper)col;
-        BwCalendar target = cw.getAliasedEntity();
-        if (target == null) {
-          val = String.valueOf(BwCalendar.calTypeUnknown);
-        } else {
-          val = String.valueOf(target.getCalType());
-        }
+      CalendarWrapper cw = (CalendarWrapper)col;
+      BwCalendar target = cw.getAliasedEntity();
+      if (target == null) {
+        val = String.valueOf(BwCalendar.calTypeUnknown);
+      } else {
+        val = String.valueOf(target.getCalType());
       }
     }
 

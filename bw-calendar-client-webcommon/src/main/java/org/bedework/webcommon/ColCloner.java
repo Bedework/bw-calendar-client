@@ -28,8 +28,6 @@ public class ColCloner {
 
   private final Set<String> openStates;
 
-  private boolean cloningCopy;
-  
   private static class CloneResult {
     /* true if we found it in the map */
     boolean alreadyCloned;
@@ -52,12 +50,13 @@ public class ColCloner {
   /** Given the root, fetch all the collections and clone them. 
    * 
    * @param val root of tree
+   * @param fromCopy true if copying previously cloned tree
    * @return cloned tree
    * @throws Throwable
    */
-  BwCalendar deepClone(final BwCalendar val) throws Throwable {
-    cloningCopy = false;
-    final CloneResult cr = cloneOne(val);
+  BwCalendar deepClone(final BwCalendar val,
+                       final boolean fromCopy) throws Throwable {
+    final CloneResult cr = cloneOne(val, fromCopy);
 
     if (cr.alreadyCloned) {
       return cr.col;
@@ -65,35 +64,14 @@ public class ColCloner {
 
     if ((val.getCalType() != BwCalendar.calTypeAlias) &&
             (val.getCalType() != BwCalendar.calTypeExtSub)) {
-      cr.col.setChildren(getChildren(val));
+      cr.col.setChildren(getChildren(val, fromCopy));
     }
 
     return cr.col;
   }
 
-  /** Copies a previously cloned tree
-   * 
-   * @param val the root
-   * @return cloned copy
-   * @throws Throwable
-   */
-  BwCalendar deepCloneCopy(final BwCalendar val) throws Throwable {
-    cloningCopy = true;
-    final CloneResult cr = cloneOne(val);
-
-    if (cr.alreadyCloned) {
-      return cr.col;
-    }
-
-    if ((val.getCalType() != BwCalendar.calTypeAlias) &&
-            (val.getCalType() != BwCalendar.calTypeExtSub)) {
-      cr.col.setChildren(getChildren(val));
-    }
-
-    return cr.col;
-  }
-
-  private CloneResult cloneOne(final BwCalendar val) throws Throwable {
+  private CloneResult cloneOne(final BwCalendar val,
+                               final boolean fromCopy) throws Throwable {
     BwCalendar clCol = clonedCols.get(val.getPath());
 
     if (clCol != null) {
@@ -120,21 +98,26 @@ public class ColCloner {
       final BwCalendar aliased = cl.resolveAlias(val, false, false);
 
       if (aliased != null) {
-        clCol.setAliasCalType(aliased.getCalType());
-        final BwCalendar clAliased = deepClone(aliased);
-        clonedCols.put(clAliased.getPath(), clAliased);
-
-        clCol.setAliasTarget(clAliased);
+        BwCalendar clonedAlias = clonedCols.get(aliased.getPath());
+        
+        if (clonedAlias == null) {
+          // Need to clone this one
+          clonedAlias = deepClone(aliased, fromCopy);
+          clonedCols.put(clonedAlias.getPath(), clonedAlias);
+        }
+        clCol.setAliasCalType(clonedAlias.getCalType());
+        clCol.setAliasTarget(clonedAlias);
       }
     }
 
     return new CloneResult(clCol, false);
   }
 
-  private Collection<BwCalendar> getChildren(final BwCalendar col) throws Throwable {
+  private Collection<BwCalendar> getChildren(final BwCalendar col,
+                                             final boolean fromCopy) throws Throwable {
     final Collection<BwCalendar> children;
     
-    if (cloningCopy) {
+    if (fromCopy) {
       children = col.getChildren();
     } else {
       children = cl.getChildren(col);
@@ -144,12 +127,24 @@ public class ColCloner {
 
     if (!Util.isEmpty(children)) {
       for (final BwCalendar c:children) {
-        final CloneResult cr = cloneOne(c);
+        final CloneResult cr = cloneOne(c, fromCopy);
         cloned.add(cr.col);
 
-        if (!cr.alreadyCloned) {
-          // Clone the subtree
-          cr.col.setChildren(getChildren(c));
+        if (cr.alreadyCloned) {
+          continue;
+        }
+
+        // Clone the subtree
+        if (c.getCalType() == BwCalendar.calTypeAlias) {
+          // Subtree is referenced by the target
+          if (cr.col.getAliasTarget() != null) {
+            cr.col.setChildren(cr.col.getAliasTarget().getChildren());
+          }
+          continue;
+        }
+        
+        if (c.getCalType() != BwCalendar.calTypeExtSub) {
+          cr.col.setChildren(getChildren(c, fromCopy));
         }
       }
     }

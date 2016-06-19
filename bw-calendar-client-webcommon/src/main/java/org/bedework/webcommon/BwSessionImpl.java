@@ -682,11 +682,7 @@ public class BwSessionImpl implements BwSession {
                                        request.getBwForm().getCalendarsOpenState());
     final BwCalendar cloned;
     
-    if (fromCopy) {
-      cloned = cc.deepCloneCopy(col);
-    } else {
-      cloned = cc.deepClone(col);
-    }
+    cloned = cc.deepClone(col, fromCopy);
 
     request.setSessionAttr(attrName, cloned);
     

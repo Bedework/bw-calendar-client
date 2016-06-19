@@ -18,7 +18,6 @@
 */
 package org.bedework.appcommon.client;
 
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwLocation;
@@ -114,10 +113,10 @@ public class IcalCallbackcb implements IcalCallback {
   }
 
   @Override
-  public Collection getEvent(final BwCalendar cal,
+  public Collection getEvent(final String colPath,
                              final String guid)
           throws CalFacadeException {
-    return cl.getEventByUid(cal.getPath(), guid,
+    return cl.getEventByUid(colPath, guid,
                             null, null);
   }
 

@@ -52,12 +52,12 @@ public class BwCallbackImpl extends BwCallback {
   }
 
   @Override
-  public int in(Request req) throws Throwable {
+  public int in(final Request req) throws Throwable {
       /* On the way in we set up the client from the default client
          embedded in the form.
        */
     synchronized (form) {
-      BwModule module = form.fetchModule(req.getModuleName());
+      final BwModule module = form.fetchModule(req.getModuleName());
       if (debug) {
         getLogger().debug("About to claim module " + module.getModuleName());
       }

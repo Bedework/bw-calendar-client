@@ -66,16 +66,16 @@ public class FetchCategoriesAction extends BwAbstractAction {
     }
 
     // Return as json list for widgets
-    Collection<BwCategory> vals = request.getSess().getCategoryCollection(
+    final Collection<BwCategory> vals = request.getSess().getCategoryCollection(
             request, BwSession.ownersEntity, true);
 
-    HttpServletResponse resp = request.getResponse();
+    final HttpServletResponse resp = request.getResponse();
 
     resp.setHeader("Content-Disposition",
                    "Attachment; Filename=\"categoryList.json\"");
     resp.setContentType("application/json; charset=UTF-8");
 
-    JsonGenerator jgen = jsonFactory.createGenerator(resp.getWriter());
+    final JsonGenerator jgen = jsonFactory.createGenerator(resp.getWriter());
 
     if (debug) {
       jgen.useDefaultPrettyPrinter();
@@ -96,7 +96,7 @@ public class FetchCategoriesAction extends BwAbstractAction {
       final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
       final BwPrincipal principal = cl.getCurrentPrincipal();
 
-      for (BwCategory cat: vals) {
+      for (final BwCategory cat: vals) {
         cat.fixNames(basicSysprops, principal);
         cat.toJson(jgen);
       }

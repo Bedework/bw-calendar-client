@@ -43,7 +43,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      created ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class AddCalSuiteAction extends BwAbstractAction {
   /* (non-Javadoc)

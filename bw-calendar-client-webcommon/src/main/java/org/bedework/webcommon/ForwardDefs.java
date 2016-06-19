@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 /** Define all possible forwards. Internal routines should
  * return one of the following indices.
  *
- * @author  Mike Douglass  douglm@bedework.edu
+ * @author  Mike Douglass  douglm@rpi.edu
  */
 public interface ForwardDefs {
   // ENUM

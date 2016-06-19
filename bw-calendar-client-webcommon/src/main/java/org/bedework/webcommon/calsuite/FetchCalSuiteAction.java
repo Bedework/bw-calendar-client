@@ -35,7 +35,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      subscribed ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class FetchCalSuiteAction extends BwAbstractAction {
   /* (non-Javadoc)

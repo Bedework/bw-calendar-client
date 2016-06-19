@@ -19,7 +19,6 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.access.Ace;
-import org.bedework.access.Acl;
 import org.bedework.access.PrivilegeDefs;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CollectionCollator;
@@ -168,18 +167,6 @@ public class ROClientImpl implements Client {
   static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
 
   private static final Object adminGroupLocker = new Object();
-
-  protected class AccessChecker implements BwIndexer.AccessChecker {
-    @Override
-    public Acl.CurrentAccess checkAccess(final BwShareableDbentity ent,
-                                         final int desiredAccess,
-                                         final boolean returnResult)
-            throws CalFacadeException {
-      return svci.checkAccess(ent, desiredAccess, returnResult);
-    }
-  }
-
-  protected AccessChecker accessChecker = new AccessChecker();
 
   /**
    *
@@ -911,9 +898,9 @@ public class ROClientImpl implements Client {
                                  final boolean freeBusy)
           throws CalFacadeException {
     checkUpdate();
-    return svci.getCalendarsHandler().resolveAlias(val,
-                                                   resolveSubAlias,
-                                                   freeBusy);
+    return svci.getCalendarsHandler().resolveAliasIdx(val,
+                                                      resolveSubAlias,
+                                                      freeBusy);
   }
 
   @Override
@@ -922,7 +909,7 @@ public class ROClientImpl implements Client {
     checkUpdate();
 
     if (!col.getPublick()) {
-      return svci.getCalendarsHandler().getChildren(col);
+      return svci.getCalendarsHandler().getChildrenIdx(col);
     }
 
     // This and its children need to be cached
@@ -949,7 +936,7 @@ public class ROClientImpl implements Client {
       children = col.getChildren();
       if (children == null) {
         // Have to retrieve
-        children = svci.getCalendarsHandler().getChildren(col);
+        children = svci.getCalendarsHandler().getChildrenIdx(col);
       }
 
       // Assume we have to clone
@@ -1749,7 +1736,6 @@ public class ROClientImpl implements Client {
             start,
             end,
             params.getPageSize(),
-            accessChecker,
             params.getRecurMode());
 
     return lastSearch;

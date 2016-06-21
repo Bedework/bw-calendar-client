@@ -408,42 +408,6 @@
                validate="false">
     </action>
 
-    <action    path="/calendar/showPublicCals"
-               type="org.bedework.webcommon.RenderAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render"
-               validate="false">
-      <forward name="success" path="/docs/calendar/calendarList.jsp" />
-    </action>
-
-    <action    path="/calendar/fetchPublicCalendars"
-               type="org.bedework.webcommon.NoopAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="success" path="/calendar/showPublicCals.rdo" redirect="true" />
-    </action>
-
-    <action    path="/calendar/showCals"
-               type="org.bedework.webcommon.RenderAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render"
-               validate="false">
-      <forward name="success" path="/docs/calendar/emitCalendars.jsp" />
-    </action>
-
-    <action    path="/calendar/fetchCalendars"
-               type="org.bedework.webcommon.NoopAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="success" path="/calendar/showCals.rdo" redirect="true" />
-    </action>
-
     <action    path="/calendar/showCalendarForExport"
                type="org.bedework.webcommon.calendars.RenderCalendarAction"
                name="calForm"

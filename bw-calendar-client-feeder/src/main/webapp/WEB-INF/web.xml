@@ -42,21 +42,7 @@
     <filter-name>SvcI Filter</filter-name>
     <filter-class>org.bedework.webcommon.BwSvciFilter</filter-class>
   </filter>
-
-  <!-- not yet - need to reconfig jboss - see cocoon install for hints
-  <filter>
-    <filter-name>FOP Filter</filter-name>
-    <filter-class>edu.rpi.sss.util.servlets.FOPFilter</filter-class>
-    <init-param>
-      <param-name>debug</param-name>
-      <param-value>0</param-value>
-    </init-param>
-    <init-param>
-      <param-name>dump</param-name>
-      <param-value>false</param-value>
-    </init-param>
-  </filter> -->
-
+  
   <!-- XSLT should getResource the response before the FOPFilter -->
 
   <filter-mapping>

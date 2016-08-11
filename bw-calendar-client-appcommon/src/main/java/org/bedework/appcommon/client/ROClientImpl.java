@@ -293,6 +293,8 @@ public class ROClientImpl implements Client {
             new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
                              reqTimeMillis));
     svci.setState("Request out");
+    publicIndexer = null;
+    userIndexer = null;
 
     if (!isOpen()) {
       return;

@@ -88,6 +88,7 @@ public class ClientImpl extends ROClientImpl {
                            false);    // sessionless
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
+    resetIndexers();
   }
 
   @Override

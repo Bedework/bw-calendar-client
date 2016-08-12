@@ -113,6 +113,7 @@ public class AdminClientImpl extends ClientImpl {
     superUser = svci.getSuperUser();
     publicAdmin = true;
     publicView = false;
+    resetIndexers();
   }
 
   @Override

@@ -229,6 +229,12 @@ public class ROClientImpl implements Client {
                            false);    // sessionless
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
+    resetIndexers();
+  }
+  
+  protected void resetIndexers() {
+    publicIndexer = null;
+    userIndexer = null;
   }
 
   @Override

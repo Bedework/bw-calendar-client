@@ -32,12 +32,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ModuleXsltFilter extends ConfiguredXSLTFilter {
   public static final String globalsName =
-          "edu.rpi.sss.util.servlets.AbstractFilter.FilterGlobals";
+          "org.bedework.util.servlet.filter.AbstractFilter.FilterGlobals";
 
   @Override
   public FilterGlobals getGlobals(final HttpServletRequest req) {
-    Object o = req.getAttribute(globalsName);
-    FilterGlobals fg;
+    final Object o = req.getAttribute(globalsName);
+    final FilterGlobals fg;
 
     if (o == null) {
       fg = newFilterGlobals();

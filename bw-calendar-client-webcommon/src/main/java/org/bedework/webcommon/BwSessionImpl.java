@@ -253,30 +253,37 @@ public class BwSessionImpl implements BwSession {
       if (!mstate.getRefresh() || needRefresh) {
 //              (lastRefresh == null) || (now - lastRefresh > refreshRate)) {
         // Implant various objects for the pages.
-        embedFilters(req);
-
-        if (debug) {
-          debug("About to embed collections");
-        }
 
         final String appType = cl.getAppType();
-        if (!BedeworkDefs.appTypeWebpublic.equals(appType) &&
-                !BedeworkDefs.appTypeFeeder.equals(appType)) {
-          // TODO This is slow
-          embedCollections(req);
+        if (!BedeworkDefs.appTypeFeeder.equals(appType)) {
+          embedFilters(req);
+
+          if (!BedeworkDefs.appTypeWebpublic.equals(appType)) {
+            if (debug) {
+              debug("About to embed collections");
+            }
+
+            embedCollections(req);
+          }
+
+          if (debug) {
+            debug("About to embed public collections");
+          }
+
+          embedPublicCollections(req);
+
+          if (debug) {
+            debug("About to embed user collections");
+          }
+
+          embedUserCollections(req);
+
+          if (debug) {
+            debug("About to embed views");
+          }
+
+          embedViews(req);
         }
-
-        if (debug) {
-          debug("About to embed public collections");
-        }
-
-        embedPublicCollections(req);
-
-        if (debug) {
-          debug("About to embed user collections");
-        }
-
-        embedUserCollections(req);
 
         if (debug) {
           debug("About to embed prefs");
@@ -285,13 +292,7 @@ public class BwSessionImpl implements BwSession {
         embedPrefs(req);
 
         if (debug) {
-          debug("About to embed views");
-        }
-
-        embedViews(req);
-
-        if (debug) {
-          debug("After embed views");
+          debug("After embed prefs");
         }
 
         authpars = cl.getAuthProperties().cloneIt();

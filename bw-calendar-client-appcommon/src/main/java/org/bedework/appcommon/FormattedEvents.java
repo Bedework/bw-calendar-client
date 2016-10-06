@@ -31,7 +31,7 @@ import java.util.Iterator;
 
 /** Class to provide a Collection of formatted BwEvent.
  *
- * @author Mike Douglass   douglm@bedework.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
 public class FormattedEvents extends AbstractCollection<EventFormatter> {
   private Collection<EventInfo> events;

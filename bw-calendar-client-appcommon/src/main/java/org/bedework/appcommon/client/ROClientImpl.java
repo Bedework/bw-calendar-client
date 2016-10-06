@@ -1010,6 +1010,13 @@ public class ROClientImpl implements Client {
     }
 
     res = svci.getCalendarsHandler().getPublicCalendars();
+    
+    if (res == null) {
+      warn("*****************************************************" +
+           "Unable to retrieve public calendar root " + path +
+           "*****************************************************");
+      return null;
+    }
 
     synchronized (publicCloned) {
       if (publicCloned.get(path) != null) {

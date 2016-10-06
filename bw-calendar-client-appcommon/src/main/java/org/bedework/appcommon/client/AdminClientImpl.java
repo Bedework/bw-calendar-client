@@ -432,7 +432,8 @@ public class AdminClientImpl extends ClientImpl {
     BwCalendar resCol = new BwCalendar();
 
     resCol.setName(Util.buildPath(false,
-                                  path.substring(path.lastIndexOf("/") + 1)));
+                                  path.substring(path.lastIndexOf(
+                                          "/") + 1)));
     resCol.setSummary(resCol.getName());
     resCol.setCreatorHref(suite.getOwnerHref());
 
@@ -440,7 +441,8 @@ public class AdminClientImpl extends ClientImpl {
       // Owned by the suite
       resCol.setOwnerHref(suite.getOwnerHref());
     } else {
-      resCol.setOwnerHref(svci.getUsersHandler().getPublicUser().getPrincipalRef());
+      resCol.setOwnerHref(svci.getUsersHandler().getPublicUser()
+                                  .getPrincipalRef());
     }
 
     int lastSlashPos = path.lastIndexOf("/");

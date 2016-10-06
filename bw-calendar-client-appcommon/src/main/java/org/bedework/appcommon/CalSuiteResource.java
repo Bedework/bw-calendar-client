@@ -103,8 +103,7 @@ public class CalSuiteResource implements Serializable {
    * @return path
    */
   public String getPath() {
-    return Util.buildPath(false, resource.getColPath(), "/",
-                          resource.getName());
+    return Util.buildPath(false, resource.getColPath(), "/", resource.getName());
   }
 
   /**

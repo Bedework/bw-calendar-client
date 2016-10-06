@@ -42,9 +42,8 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
+import org.bedework.util.misc.Logged;
 import org.bedework.util.struts.Request;
-
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,11 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Mike Douglass   douglm     rpi.edu
  */
-public class BwSessionImpl implements BwSession {
-  private transient Logger log;
-
-  protected boolean debug;
-
+public class BwSessionImpl extends Logged implements BwSession {
   //private static final String refreshTimeAttr = "bw_refresh_time";
   //private static final long refreshRate = 1 * 60 * 1000;
 
@@ -105,11 +100,13 @@ public class BwSessionImpl implements BwSession {
    * @param config     our config
    * @param user       String user id
    * @param appName    String identifying particular application
-   * @throws Throwable
+   * @throws Throwable on error
    */
   public BwSessionImpl(final ConfigCommon config,
                        final String user,
                        final String appName) throws Throwable {
+    super();
+    
     this.config = config;
     this.user = user;
 
@@ -381,6 +378,7 @@ public class BwSessionImpl implements BwSession {
     }
   }
 
+  @SuppressWarnings("WeakerAccess")
   protected void embedPublicCollections(final BwRequest request) throws Throwable {
     final Client cl = request.getClient();
     final String changeToken = cl.getCurrentChangeToken();
@@ -395,6 +393,11 @@ public class BwSessionImpl implements BwSession {
       root = cl.getPublicCalendars();
     } else {
       root = clonedPublicCollections;
+    }
+    
+    if (root == null) {
+      warn("Unable to access public collections");
+      return;
     }
     
     publicCollectionsChangeToken = changeToken;
@@ -698,7 +701,7 @@ public class BwSessionImpl implements BwSession {
     try {
       /* First ensure we have the view period set */
       if (mstate.getCurTimeView() == null) {
-        /** Figure out the default from the properties
+        /* Figure out the default from the properties
          */
         String vn;
 
@@ -785,7 +788,7 @@ public class BwSessionImpl implements BwSession {
    * @param req the request
    * @param filterName a filter name
    * @return BwFilter or null
-   * @throws Throwable
+   * @throws Throwable on error
    */
   private FilterBase getFilter(final BwRequest req,
                                final String filterName) throws Throwable {
@@ -860,22 +863,8 @@ public class BwSessionImpl implements BwSession {
     return locationCollator;
   }
 
-  protected void embedPrefs(final BwRequest request) throws Throwable {
+  private void embedPrefs(final BwRequest request) throws Throwable {
     request.setSessionAttr(BwRequest.bwPreferencesName,
                            request.getClient().getPreferences());
-  }
-
-  /** Get a logger for messages
-   */
-  protected Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(getClass());
-    }
-
-    return log;
-  }
-
-  protected void debug(final String msg) {
-    getLogger().debug(msg);
   }
 }

@@ -2300,8 +2300,12 @@ public class ROClientImpl implements Client {
     for (final Object o: uids) {
       final String uid = (String)o;
 //      catUids.add(uid);
-
-      ce.addCategory(getCategory(uid));
+      final BwCategory cat = getCategory(uid);
+      if (cat == null) {
+        warn("Unable to access category with UID " + uid);
+        continue;
+      }
+      ce.addCategory(cat);
     }
   }
 

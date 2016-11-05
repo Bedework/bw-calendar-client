@@ -133,7 +133,7 @@ public class AddEventRefAction extends EventActionBase {
     eref.getEvent().setColPath(calPath);
 
     try {
-      cl.addEvent(eref, true, false, false);
+      cl.addEvent(eref, true, false);
       form.getMsg().emit(ClientMessage.addedEventrefs, 1);
     } catch (CalFacadeException cfe) {
       if (CalFacadeException.duplicateGuid.equals(cfe.getMessage())) {

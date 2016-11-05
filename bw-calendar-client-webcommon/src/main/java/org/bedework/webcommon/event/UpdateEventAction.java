@@ -630,7 +630,7 @@ public class UpdateEventAction extends EventActionBase {
 
       if (adding) {
         ur = cl.addEvent(ei,
-                         !sendInvitations, false,
+                         !sendInvitations,
                          true);
       } else {
         ur = cl.updateEvent(ei, !sendInvitations, null);

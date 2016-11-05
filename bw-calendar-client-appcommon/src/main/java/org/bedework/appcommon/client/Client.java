@@ -1258,15 +1258,12 @@ public interface Client extends Serializable {
    *
    * @param ei           EventInfo object to be added
    * @param noInvites    True for don't send invitations.
-   * @param scheduling   True if this is to be added to an inbox - affects required
-   *                     access.
    * @param rollbackOnError
    * @return UpdateResult Counts of changes.
    * @throws CalFacadeException
    */
   EventInfo.UpdateResult addEvent(EventInfo ei,
                                   boolean noInvites,
-                                  boolean scheduling,
                                   boolean rollbackOnError) throws CalFacadeException;
 
   /** Update an event in response to an attendee. Exactly as normal update if

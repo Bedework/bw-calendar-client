@@ -406,11 +406,10 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public EventInfo.UpdateResult addEvent(final EventInfo ei,
                                          final boolean noInvites,
-                                         final boolean scheduling,
                                          final boolean rollbackOnError)
           throws CalFacadeException {
     return update(svci.getEventsHandler().add(ei, noInvites,
-                                              scheduling,
+                                              false,
                                               false, rollbackOnError));
   }
 

@@ -205,7 +205,7 @@ public class UploadAction extends BwAbstractAction {
         if (ei.getNewEvent()) {
           try {
             UpdateResult eur = cl.addEvent(ei, true,
-                                           false, false);
+                                           false);
 
             AddEventResult aer = new AddEventResult(ev,
                                                     eur.failedOverrides);
@@ -305,7 +305,7 @@ public class UploadAction extends BwAbstractAction {
         }
       }
 
-      cl.addEvent(ei, false, false, true);
+      cl.addEvent(ei, false, true);
 
       request.getMsg().emit(ClientMessage.addedEvents, 1);
     }

@@ -1347,7 +1347,6 @@ public class ROClientImpl implements Client {
   @Override
   public EventInfo.UpdateResult addEvent(final EventInfo ei,
                                          final boolean noInvites,
-                                         final boolean scheduling,
                                          final boolean rollbackOnError)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");

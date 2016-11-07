@@ -494,12 +494,11 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public ScheduleResult schedule(final EventInfo ei,
-                                 final int method,
                                  final String recipient,
                                  final String fromAttUri,
                                  final boolean iSchedule)
           throws CalFacadeException {
-    return update(svci.getScheduler().schedule(ei, method,
+    return update(svci.getScheduler().schedule(ei,
                                                recipient,
                                                fromAttUri,
                                                iSchedule));

@@ -1445,7 +1445,6 @@ public interface Client extends Serializable {
    *
    * @param ei         EventInfo object containing with method=REQUEST, CANCEL,
    *                              ADD, DECLINECOUNTER or PUBLISH
-   * @param method - the scheduling method
    * @param recipient - non null to send to this recipient only (for REFRESH)
    * @param fromAttUri
    * @param iSchedule  true if it's an iSchedule request.
@@ -1453,7 +1452,6 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   public ScheduleResult schedule(EventInfo ei,
-                                 int method,
                                  String recipient,
                                  String fromAttUri,
                                  boolean iSchedule) throws CalFacadeException;
@@ -1798,7 +1796,6 @@ public interface Client extends Serializable {
   /** Set the calendar suite we are running as. Must be running as an
    * unauthenticated user.
    *
-   * @param name unique name for the suite
    * @throws CalFacadeException
    */
   void setCalSuite(BwCalSuite cs) throws CalFacadeException;

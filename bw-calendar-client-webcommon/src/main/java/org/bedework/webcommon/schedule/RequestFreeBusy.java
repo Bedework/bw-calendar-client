@@ -126,7 +126,6 @@ public class RequestFreeBusy extends BwAbstractAction {
       }
 
       ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
-                                      fbreq.getScheduleMethod(),
                                       null, null, false);
 
       form.setContentName("freebusy.js");

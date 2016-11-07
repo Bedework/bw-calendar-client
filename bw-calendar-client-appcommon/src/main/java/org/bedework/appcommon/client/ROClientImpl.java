@@ -1485,7 +1485,6 @@ public class ROClientImpl implements Client {
 
   @Override
   public ScheduleResult schedule(final EventInfo ei,
-                                 final int method,
                                  final String recipient,
                                  final String fromAttUri,
                                  final boolean iSchedule)

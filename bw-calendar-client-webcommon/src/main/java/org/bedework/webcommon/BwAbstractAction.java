@@ -1082,7 +1082,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
-                                    fbreq.getScheduleMethod(),
                                     null, null, false);
     if (debug) {
       debugMsg(sr.toString());

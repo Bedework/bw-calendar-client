@@ -107,6 +107,7 @@ public class ColCloner {
         }
         clCol.setAliasCalType(clonedAlias.getCalType());
         clCol.setAliasTarget(clonedAlias);
+        clonedAlias.setAliasOrigin(clCol);
       }
     }
 

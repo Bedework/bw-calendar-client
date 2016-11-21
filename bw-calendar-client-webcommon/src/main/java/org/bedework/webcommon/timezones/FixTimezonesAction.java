@@ -18,11 +18,8 @@
 */
 package org.bedework.webcommon.timezones;
 
-import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.base.BwEventKey;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
-import org.bedework.calfacade.base.UpdateFromTimeZonesInfo.UnknownTimezoneInfo;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -39,12 +36,9 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class FixTimezonesAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    /** Check access
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    /* Check access
      */
     if (!form.getAuthorisedUser()) {
       return forwardNoAccess;
@@ -55,6 +49,8 @@ public class FixTimezonesAction extends BwAbstractAction {
 
     UpdateFromTimeZonesInfo info = null;
 
+    form.getErr().emit("unimplemented");
+    /* This needs fixing to take a collection href 
     for (;;) {
       info = cl.updateFromTimeZones(100, checkOnly, info);
       if (info.getTotalEventsChecked() >= info.getTotalEventsToCheck()) {
@@ -74,7 +70,7 @@ public class FixTimezonesAction extends BwAbstractAction {
     }
 
     form.getMsg().emit(ClientMessage.fixedTimezones);
-
+*/
     return forwardSuccess;
   }
 }

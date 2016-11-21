@@ -1714,7 +1714,8 @@ public interface Client extends Serializable {
    * @return UpdateFromTimeZonesInfo staus of the update
    * @throws CalFacadeException
    */
-  UpdateFromTimeZonesInfo updateFromTimeZones(int limit,
+  UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref, 
+                                              int limit,
                                               boolean checkOnly,
                                               UpdateFromTimeZonesInfo info)
           throws CalFacadeException;

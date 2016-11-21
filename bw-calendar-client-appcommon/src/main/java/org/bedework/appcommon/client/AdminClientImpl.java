@@ -372,11 +372,12 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public UpdateFromTimeZonesInfo updateFromTimeZones(final int limit,
+  public UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref,
+                                                     final int limit,
                                                      final boolean checkOnly,
                                                      final UpdateFromTimeZonesInfo info)
           throws CalFacadeException {
-    return svci.updateFromTimeZones(limit, checkOnly, info);
+    return svci.updateFromTimeZones(colHref, limit, checkOnly, info);
   }
 
   /* ------------------------------------------------------------

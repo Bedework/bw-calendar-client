@@ -1692,7 +1692,8 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public UpdateFromTimeZonesInfo updateFromTimeZones(final int limit,
+  public UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref,
+                                                     final int limit,
                                                      final boolean checkOnly,
                                                      final UpdateFromTimeZonesInfo info)
           throws CalFacadeException {

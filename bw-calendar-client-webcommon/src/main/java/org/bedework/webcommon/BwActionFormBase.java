@@ -2179,7 +2179,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return uid
    */
   public String getLocationUid() {
-    return locationUid;
+    return Util.checkNull(locationUid);
   }
 
   /** Not set - invisible to jsp

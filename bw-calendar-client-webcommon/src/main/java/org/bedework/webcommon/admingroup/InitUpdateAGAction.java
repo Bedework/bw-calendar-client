@@ -36,7 +36,7 @@ public class InitUpdateAGAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    /** Check access
+    /* Check access
      */
     if (!form.getCurUserSuperUser()) {
       return forwardNoAccess;
@@ -46,7 +46,7 @@ public class InitUpdateAGAction extends BwAbstractAction {
     cl.refreshAdminGroups();
     request.embedAdminGroups();
 
-    /** Set the objects to null so we get new ones.
+    /* Set the objects to null so we get new ones.
      */
     form.assignAddingAdmingroup(false);
     form.setUpdGroupMember(null);

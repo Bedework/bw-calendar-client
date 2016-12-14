@@ -367,9 +367,20 @@ public class UpdateEventAction extends EventActionBase {
       /* Event MUST NOT be in a workflow calendar */
       if (colPath.startsWith(workflowRoot)) {
         form.getErr().emit(ValidationError.inSubmissionsCalendar);
+        restore(ev, preserveColPath);
         cl.rollback();
         return forwardValidationError;
       }
+
+      // See if colpath changed and if so change the overrides
+      if (ev.getRecurring() &&
+              !preserveColPath.equals(colPath) &&
+              (ei.getOverrideProxies() != null)) {
+        for (final BwEvent oev: ei.getOverrideProxies()) {
+          oev.setColPath(ev.getColPath());
+        }
+      }
+
     } else if (updateSubmitEvent) {
       /* Event MUST be in a submission calendar */
       if (!colPath.startsWith(submissionsRoot)) {

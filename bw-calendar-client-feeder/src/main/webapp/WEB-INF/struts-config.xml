@@ -81,7 +81,6 @@
     <!-- render forwards -->
     <forward name="initialise" path="/main/initialise.rdo"/>
     <forward name="eventMore" path="/event/showEventMore.rdo"/>
-    <forward name="initUpload" path="/misc/initUpload.rdo"/>
 
     <!-- Forward for a new session from some bookmarked link; used by
          org.bedework.webcommon.RenderAction when a refresh is needed -->
@@ -424,38 +423,6 @@
                parameter="actionType=action"
                validate="false">
       <forward name="success" path="/calendar/showCalendarForExport.rdo" redirect="true" />
-    </action>
-
-    <!-- ===============================================================
-                     Event Alarms
-         =============================================================== -->
-
-    <action    path="/alarm/showAlarmOptions"
-               type="org.bedework.webcommon.event.RenderEventAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=render"
-               validate="false">
-      <forward name="success" path="/docs/alarmOptions.jsp" />
-    </action>
-
-    <action    path="/alarm/initEventAlarm"
-               type="org.bedework.webcommon.event.EventKeyAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="success" path="/alarm/showAlarmOptions.rdo" redirect="true" />
-    </action>
-
-    <action    path="/alarm/setAlarm"
-               type="org.bedework.webcommon.event.SetAlarmAction"
-               name="calForm"
-               scope="session"
-               parameter="actionType=action"
-               validate="false">
-      <forward name="retry" path="/alarm/showAlarmOptions.rdo" redirect="true" />
-      <forward name="success" path="/main/showMain.rdo" redirect="true" />
     </action>
 
     <!-- ===============================================================

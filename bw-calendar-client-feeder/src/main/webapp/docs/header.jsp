@@ -185,77 +185,23 @@ try {
         <initMeeting><bw:rewrite actionURL="true" page="/event/initMeeting.do?b=de"/></initMeeting>
         <editEvent><bw:rewrite actionURL="true" page="/event/editEvent.do?b=de"/></editEvent>
         <gotoEditEvent><bw:rewrite actionURL="true" page="/event/gotoEditEvent.do?b=de"/></gotoEditEvent>
-        <updateEvent><bw:rewrite actionURL="true" page="/event/updateEvent.do?b=de"/></updateEvent>
-        <delEvent><bw:rewrite actionURL="true" page="/event/delEvent.do?b=de"/></delEvent>
         <delInboxEvent><bw:rewrite actionURL="true" page="/event/delInboxEvent.do?b=de"/></delInboxEvent>
         <showAccess><bw:rewrite renderURL="true" page="/event/showAccess.rdo?b=de"/></showAccess>
         <addEventRefComplete><bw:rewrite actionURL="true" page="/event/addEventRefComplete.do?b=de"/></addEventRefComplete>
-        <selectCalForEvent><bw:rewrite resourceURL="true" page="/event/selectCalForEvent.gdo?b=de"/></selectCalForEvent>
       </event>
-
-      <schedule>
-        <showInbox><bw:rewrite renderURL="true" page="/schedule/showInbox.rdo?b=de"/></showInbox>
-        <showOutbox><bw:rewrite renderURL="true" page="/schedule/showOutbox.rdo?b=de"/></showOutbox>
-        <initAttendeeRespond><bw:rewrite actionURL="true" page="/schedule/initAttendeeRespond.do?b=de"/></initAttendeeRespond>
-        <attendeeRespond><bw:rewrite actionURL="true" page="/schedule/attendeeRespond.do?b=de"/></attendeeRespond>
-        <initAttendeeReply><bw:rewrite actionURL="true" page="/schedule/initAttendeeReply.do?b=de"/></initAttendeeReply>
-        <initAttendeeUpdate><bw:rewrite actionURL="true" page="/schedule/initAttendeeUpdate.do?b=de"/></initAttendeeUpdate>
-        <processAttendeeReply><bw:rewrite actionURL="true" page="/schedule/processAttendeeReply.do?b=de"/></processAttendeeReply>
-        <clearReply><bw:rewrite actionURL="true" page="/schedule/clearReply.do?b=de"/></clearReply>
-        <processRefresh><bw:rewrite actionURL="true" page="/schedule/processRefresh.do?b=de"/></processRefresh>
-        <refresh><bw:rewrite actionURL="true" page="/schedule/refresh.do?b=de"/></refresh>
-      </schedule>
 
       <freeBusy>
         <fetch><bw:rewrite actionURL="true" page="/freeBusy/getFreeBusy.do?b=de"/></fetch>
       </freeBusy>
 
       <calendar>
-        <fetch><bw:rewrite renderURL="true" page="/calendar/showUpdateList.rdo?b=de"/></fetch>
         <fetchDescriptions><bw:rewrite renderURL="true" page="/calendar/showDescriptionList.rdo?b=de"/></fetchDescriptions>
         <initAdd><bw:rewrite actionURL="true" page="/calendar/initAdd.do?b=de"/></initAdd>
-        <delete><bw:rewrite actionURL="true" page="/calendar/delete.do?b=de"/></delete>
         <fetchForDisplay><bw:rewrite actionURL="true" page="/calendar/fetchForDisplay.do?b=de"/></fetchForDisplay>
-        <fetchForUpdate><bw:rewrite actionURL="true" page="/calendar/fetchForUpdate.do?b=de"/></fetchForUpdate>
-        <update><bw:rewrite actionURL="true" page="/calendar/update.do?b=de"/></update>
         <listForExport><bw:rewrite renderURL="true" page="/calendar/listForExport.rdo?b=de"/></listForExport>
         <setPropsInGrid><bw:rewrite actionURL="true" page="/calendar/setPropsInGrid.do?b=de"/></setPropsInGrid>
         <setPropsInList><bw:rewrite actionURL="true" page="/calendar/setPropsInList.do?b=de"/></setPropsInList>
       </calendar>
-
-      <category>
-        <initAdd><bw:rewrite actionURL="true" page="/category/initAdd.do?b=de"/></initAdd>
-        <initUpdate><bw:rewrite actionURL="true" page="/category/initUpdate.do?b=de"/></initUpdate>
-        <fetchForUpdate><bw:rewrite actionURL="true" page="/category/fetchForUpdate.do?b=de"/></fetchForUpdate>
-        <update><bw:rewrite actionURL="true" page="/category/update.do?b=de"/></update>
-        <delete><bw:rewrite actionURL="true" page="/category/delete.do?b=de"/></delete>
-      </category>
-
-      <location>
-        <initAdd><bw:rewrite actionURL="true" page="/location/initAdd.do?b=de"/></initAdd>
-        <initUpdate><bw:rewrite actionURL="true" page="/location/initUpdate.do?b=de"/></initUpdate>
-        <fetchForUpdate><bw:rewrite actionURL="true" page="/location/fetchForUpdate.do?b=de"/></fetchForUpdate>
-        <update><bw:rewrite actionURL="true" page="/location/update.do?b=de"/></update>
-        <delete><bw:rewrite actionURL="true" page="/location/delete.do?b=de"/></delete>
-      </location>
-
-      <prefs>
-        <fetchForUpdate><bw:rewrite actionURL="true" page="/prefs/fetchForUpdate.do?b=de"/></fetchForUpdate>
-        <update><bw:rewrite actionURL="true" page="/prefs/update.do?b=de"/></update>
-        <fetchSchedulingForUpdate><bw:rewrite actionURL="true" page="/prefs/fetchSchedulingForUpdate.do?b=de"/></fetchSchedulingForUpdate>
-        <updateSchedulingPrefs><bw:rewrite actionURL="true" page="/prefs/updateSchedulingPrefs.do?b=de"/></updateSchedulingPrefs>
-      </prefs>
-
-      <misc>
-        <upload><bw:rewrite actionURL="true" page="/misc/upload.do?b=de"/></upload>
-        <initUpload><bw:rewrite renderURL="true" page="/misc/initUpload.rdo?b=de"/></initUpload>
-      </misc>
-
-      <alarm>
-        <initEventAlarm><bw:rewrite actionURL="true" page="/alarm/initEventAlarm.do?b=de"/></initEventAlarm>
-        <setAlarm><bw:rewrite actionURL="true" page="/alarm/setAlarm.do?b=de"/></setAlarm>
-      </alarm>
-
     </logic:equal>
   </urlPrefixes>
 
@@ -290,75 +236,6 @@ try {
     </appvar>
   </logic:iterate>
 
-  <%-- Inbox state
-  <inboxState>
-    <logic:present name="calForm" property="inBoxInfoRefreshed" >
-      <bean:define id="inBoxInfo" name="calForm" property="inBoxInfoRefreshed" />
-      <bw:emitText name="inBoxInfo" property="changed" />
-      <bw:emitText name="inBoxInfo" property="numActive" />
-      <bw:emitText name="inBoxInfo" property="numProcessed" />
-
-        <logic:present name="inBoxInfo" property="events" >
-          <messages>
-            <logic:iterate id="msg" name="inBoxInfo" property="events" >
-              <message>
-                <bean:define id="inEv" name="msg" property="event" />
-                <logic:equal name="inEv" property="scheduleState" value="1" >
-                  <logic:present name="inEv" property="xproperties" >
-                    <logic:iterate id="xprop" name="inEv" property="xproperties" >
-                      <logic:equal name="xprop" property="name"
-                                   value="X-BEDEWORK-SCHED-PATH">
-                        <bw:emitText name="xprop" property="value"
-                                     tagName="schedulingCollection" />
-                      </logic:equal>
-                      <logic:equal name="xprop" property="name"
-                                   value="X-BEDEWORK-SCHED-NEW">
-                        <new-meeting />
-                      </logic:equal>
-                      <logic:equal name="xprop" property="name"
-                                   value="X-BEDEWORK-SCHED-RESCHED">
-                        <rescheduled-meeting />
-                      </logic:equal>
-                    </logic:iterate>
-                  </logic:present>
-                  <logic:equal name="inEv" property="organizerSchedulingObject" value="true" >
-                    <organizerSchedulingObject />
-                  </logic:equal>
-                  <logic:equal name="inEv" property="attendeeSchedulingObject" value="true" >
-                    <attendeeSchedulingObject />
-                  </logic:equal>
-                </logic:equal>
-              </message>
-            </logic:iterate>
-          </messages>
-        </logic:present>
-    </logic:present>
-  </inboxState>--%>
-
-  <%-- Outbox state
-  <outboxState>
-    <logic:present name="calForm" property="outBoxInfo" >
-      <bean:define id="outBoxInfo" name="calForm" property="outBoxInfo" />
-      <bw:emitText name="outBoxInfo" property="changed" />
-      <bw:emitText name="outBoxInfo" property="numActive" />
-      <bw:emitText name="outBoxInfo" property="numProcessed" />
-    </logic:present>
-  </outboxState>--%>
-
-  <schedulingMessages>
-    <logic:present name="calForm" property="inBoxInfoRefreshed" >
-      <bean:define id="boxInfoForMessages" name="calForm" property="inBoxInfoRefreshed" />
-      <%@include file="/docs/schedule/schedMessages.jsp"%>
-    </logic:present>
-  </schedulingMessages>
-
-  <notifications>
-    <logic:present name="calForm" property="notificationInfo" >
-      <bean:define id="notificationInfo" name="calForm" property="notificationInfo" />
-      <%@include file="/docs/notifications/notificationInfo.jsp"%>
-    </logic:present>
-  </notifications>
-
   <selectionState><%--
     What type of information have we selected to display?  Used to
     branch between different templates in the xsl based on user selections. --%>
@@ -368,35 +245,6 @@ try {
         output we expect --%>
     <filter></filter> <%-- unimplemented --%>
   </selectionState>
-
-  <%-- List of views for menuing --%>
-  <views>
-    <logic:present name="bw_views_list" scope="session">
-        <logic:iterate id="view" name="bw_views_list" scope="session">
-        <view>
-          <name><bean:write name="view" property="name"/></name>
-          <paths>
-            <logic:present name="view" property="collectionPaths">
-              <logic:iterate name="view" property="collectionPaths" id="path">
-                <path><bean:write name="path"/></path>
-              </logic:iterate>
-            </logic:present>
-          </paths>
-        </view>
-      </logic:iterate>
-    </logic:present>
-  </views>
-
-  <%-- List of filters for menuing --%>
-  <filters>
-    <logic:present name="bw_filters_list" scope="session">
-        <logic:iterate id="view" name="bw_filters_list" scope="session">
-        <filter>
-          <name><bean:write name="filter" property="name"/></name>
-        </filter>
-      </logic:iterate>
-    </logic:present>
-  </filters>
 
   <%-- System parameters --%>
   <syspars>
@@ -418,11 +266,6 @@ try {
   <logic:present name="bw_feature_flags" scope="session" >
       <featureFlags><bean:write name="bw_feature_flags" scope="session" /></featureFlags>
   </logic:present>
-
-  <%-- Output the calendar tree --%>
-    <myCalendars>
-      <jsp:include page="/docs/calendar/emitCalendars.jsp"/>
-    </myCalendars>
 <%
 } catch (Throwable t) {
   t.printStackTrace();

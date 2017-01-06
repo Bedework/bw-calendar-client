@@ -114,7 +114,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
       }
     }
 
-    /** We are just adding or updating from the current form values.
+    /* We are just adding or updating from the current form values.
      */
 
     final Boolean bool = request.getBooleanReqPar("unremoveable");

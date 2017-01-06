@@ -85,14 +85,14 @@ public interface Client extends Serializable {
    * @return a copy of this client which can be used for an asynchronous
    * action. Client copies should be discarded on completion of the request
    * cycle.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   Client copy(final String id) throws CalFacadeException;
 
   /** Call on the way in once we have a client object.
    *
    * @param conversationType
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   void requestIn(int conversationType) throws CalFacadeException;
 
@@ -101,7 +101,7 @@ public interface Client extends Serializable {
    * @param conversationType
    * @param actionType
    * @param reqTimeMillis time for request.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   void requestOut(int conversationType,
                   int actionType,
@@ -114,7 +114,7 @@ public interface Client extends Serializable {
 
   /** Call on the way out after handling a request..
    *
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   void close() throws CalFacadeException;
 
@@ -1137,7 +1137,7 @@ public interface Client extends Serializable {
 
   /** Update the location
    * @param val
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   void updateLocation(BwLocation val) throws CalFacadeException;
 
@@ -1145,7 +1145,7 @@ public interface Client extends Serializable {
    *
    * @param val      location to be deleted
    * @return result indicating what happened - null for not there
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   DeleteReffedEntityResult deleteLocation(BwLocation val) throws CalFacadeException;
 
@@ -1155,7 +1155,7 @@ public interface Client extends Serializable {
    * @param val     location object.
    * @param ownerHref   String principal href, null for current user
    * @return location object.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   CheckEntityResult<BwLocation> ensureLocationExists(final BwLocation val,
                                                      final String ownerHref)
@@ -1168,9 +1168,17 @@ public interface Client extends Serializable {
   /** Claim ownership of this event
    *
    * @param ev  event
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   void claimEvent(final BwEvent ev) throws CalFacadeException;
+
+  /** Realias the event - set categories according to the set of aliases
+   *
+   * @param ev  event
+   * @return set of categories referenced by the aliases           
+   * @throws CalFacadeException on unknown alias
+   */
+  Set<BwCategory> reAlias(BwEvent ev) throws CalFacadeException;
 
   /** Return a Collection of EventInfo objects. More than one for a recurring
    * event with overrides.
@@ -1180,7 +1188,7 @@ public interface Client extends Serializable {
    * @param rid recurrence id
    * @param recurRetrieval How recurring event is returned.
    * @return Collection of EventInfo
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   Collection<EventInfo> getEventByUid(String path,
                                       String guid,
@@ -1373,7 +1381,7 @@ public interface Client extends Serializable {
    * object
    *
    * @param  val BwResource
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   void getResourceContent(BwResource val) throws CalFacadeException;
 
@@ -1381,7 +1389,7 @@ public interface Client extends Serializable {
    *
    * @param  path           String path to containing collection
    * @return List     of BwResource
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   List<BwResource> getAllResources(String path) throws CalFacadeException;
 

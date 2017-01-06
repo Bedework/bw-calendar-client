@@ -48,6 +48,7 @@ import org.bedework.calsvci.SharingI;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:05 PM
@@ -401,6 +402,11 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public void claimEvent(final BwEvent ev) throws CalFacadeException {
     svci.getEventsHandler().claim(ev);
+  }
+
+  @Override
+  public Set<BwCategory> reAlias(final BwEvent ev) throws CalFacadeException {
+    return svci.getEventsHandler().reAlias(ev);
   }
 
   @Override

@@ -26,7 +26,6 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAttendee;
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
@@ -36,7 +35,6 @@ import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.base.StartEndComponent;
-import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -477,11 +475,10 @@ public class UpdateEventAction extends EventActionBase {
         return forwardRetry;
       }
     } else {
-      if (setEventLocation(request, ei, form, submitApp)) {
+      setEventLocation(request, ei, form, submitApp);
         // RFC says maybe for this.
         //incSequence = true;
       }
-    }
 
     /* -------------------------- Contact ------------------------------ */
 
@@ -492,18 +489,28 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Aliases ------------------------------ */
 
-    final Set<BwCategory> cats = setEventAliases(request, ev);
-    if (publicAdmin && !updateSubmitEvent && Util.isEmpty(cats)) {
-      form.getErr().emit(ValidationError.missingTopic);
-      restore(ev, preserveColPath);
-      return forwardRetry;
+    Set<BwCategory> cats = null;
+    if (cl.getPublicAdmin() ||
+            request.getBwForm().getSubmitApp()) {
+      try {
+        cats = cl.reAlias(ev);
+      } catch (final CalFacadeException cfe) {
+        request.getErr().emit(ClientError.unknownCalendar, cfe.getExtra());
+      }
+
+      if (publicAdmin && !updateSubmitEvent && Util.isEmpty(cats)) {
+        form.getErr().emit(ValidationError.missingTopic);
+        restore(ev, preserveColPath);
+        return forwardRetry;
+      }
     }
 
     /* -------------------------- Categories ------------------------------ */
 
-    final SetEntityCategoriesResult secr = setEntityCategories(
-            request, cats,
-            ev, changes);
+    final SetEntityCategoriesResult secr = 
+            setEntityCategories(request, 
+                                cats,
+                                ev, changes);
     if (secr.rcode != forwardSuccess) {
       cl.rollback();
       return secr.rcode;
@@ -892,90 +899,6 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     return suggestedTo;
-  }
-
-  /* This is a bedework function in which we specify which set of aliases
-   * we used to add the event. Aliases are used to filter the data and provide a
-   * view for users, e.g category="Films"
-   *
-   * We need these aliases to provide a way of informing the user what they can
-   * subscribe to in order to see the events of interest.
-   *
-   * We also use them to set and unset categories, allowing event submitters to
-   * consider only topic areas and leave it up to system administrators to
-   * define which categories get set
-   *
-   * Each alias is a virtual path. For example "/user/adgrp_Eng/Lectures/Lectures"
-   * might be a real path with two components
-   * "/user/adgrp_Eng/Lectures" and
-   * "Lectures"
-   *
-   * "/user/adgrp_Eng/Lectures" is aliased to "/public/aliases/Lectures" which
-   * is a folder containing the alias "/public/aliases/Lectures/Lectures" which
-   * is aliased to the single calendar.
-   */
-  private Set<BwCategory> setEventAliases(final BwRequest request,
-                                          final BwEvent ev) throws Throwable {
-    final Client cl = request.getClient();
-
-    if (!cl.getPublicAdmin() &&
-        !request.getBwForm().getSubmitApp()) {
-      return null;
-    }
-
-    /* The set of categories references by the aliases and their parents */
-    final Set<BwCategory> cats = new TreeSet<>();
-
-    final Collection<BwXproperty> aliases = ev.getXproperties(BwXproperty.bedeworkAlias);
-
-    if (Util.isEmpty(aliases)) {
-      return cats;
-    }
-
-    for (final BwXproperty alias: aliases) {
-      Collection<BwCalendar> cols = null;
-
-      try {
-        cols = cl.decomposeVirtualPath(alias.getValue());
-      } catch (final CalFacadeException cfe) {
-        request.getErr().emit(ClientError.unknownCalendar, alias);
-      }
-
-      if (Util.isEmpty(cols)) {
-        continue;
-      }
-
-      /* For each alias in the returned list add any category to the set.
-       *
-       * For the last alias entry in the list work up to the root adding any
-       * categories in.
-       */
-
-      BwCalendar curCol = null;
-
-      for (final BwCalendar col: cols) {
-        if (!Util.isEmpty(col.getCategories())) {
-          cats.addAll(col.getCategories());
-        }
-        if (col.getAlias()) {
-          curCol = col;
-        }
-      }
-
-      while (curCol != null) {
-        try {
-          curCol = cl.getCollection(curCol.getColPath());
-          if (curCol != null) {
-            cats.addAll(curCol.getCategories());
-          }
-        } catch (final CalFacadeAccessException cfae) {
-          // We'll assume that's OK. We'll get that for /user at least.
-          break;
-        }
-      }
-    }
-
-    return cats;
   }
 
   private void changeOwner(final BwEvent ev,

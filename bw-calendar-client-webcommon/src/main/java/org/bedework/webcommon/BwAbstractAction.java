@@ -829,7 +829,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                                           final Set<BwCategory> extraCats,
                                                           final CategorisedEntity ent,
                                                           final ChangeTable changes) throws Throwable {
-    final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
     // XXX We should use the change table code for this.
@@ -838,9 +837,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /* categories already set in event */
     final Set<BwCategory> evcats = ent.getCategories();
 
-    final Collection<BwCategory> defCats =
-            request.getSess().embedCategories(request, true,
-                                              BwSession.defaultEntity);
+    final Set<String> defCatuids = cl.getPreferences().getDefaultCategoryUids();
 
     /* Get the uids of all public default categories */
     final Set<String> allDefCatUids = cl.getDefaultPublicCategoryUids();
@@ -853,7 +850,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (Util.isEmpty(strCatUids) &&
         Util.isEmpty(extraCats) &&
-        Util.isEmpty(defCats) &&
+        Util.isEmpty(defCatuids) &&
         Util.isEmpty(allDefCatUids)) {
       if (!Util.isEmpty(evcats)) {
         if (changes != null) {
@@ -874,12 +871,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       cats.addAll(extraCats);
     }
 
-    if (!Util.isEmpty(defCats)) {
-      for (final BwCategory defcat: defCats) {
-        cats.add(cl.getPersistentCategory(defcat.getUid()));
+    if (!Util.isEmpty(defCatuids)) {
+      for (final String uid: defCatuids) {
+        cats.add(cl.getPersistentCategory(uid));
       }
     }
 
+    /* Preserve any default public category that we have set by adding it
+       to the cats list.
+     */
     if (!Util.isEmpty(allDefCatUids) &&
         (evcats != null)) {
       buildList:
@@ -919,7 +919,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    /* See if the user is adding new categories */
+    /* See if the user is adding new categories 
 
     final Collection<String> reqCatKeys = request.getReqPars("categoryKey");
 
@@ -963,6 +963,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         cats.add(cat);
       }
     }
+    */
 
     /* cats now contains category objects corresponding to the request parameters
      *
@@ -986,7 +987,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    for (BwCategory cat: cats) {
+    for (final BwCategory cat: cats) {
       ent.addCategory(cat);
       secr.numAdded++;
     }
@@ -1007,7 +1008,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     secr.rcode = forwardSuccess;
 
     if (secr.numCreated > 0) {
-      form.getMsg().emit(ClientMessage.addedCategories, secr.numCreated);
+      request.getMsg().emit(ClientMessage.addedCategories, secr.numCreated);
     }
 
     return secr;

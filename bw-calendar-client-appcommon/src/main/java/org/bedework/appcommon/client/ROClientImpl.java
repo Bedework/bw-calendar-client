@@ -1281,6 +1281,11 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public Set<BwCategory> reAlias(final BwEvent ev) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
   public Collection<EventInfo> getEventByUid(final String path,
                                              final String guid,
                                              final String rid,

@@ -926,7 +926,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (!Util.isEmpty(reqCatKeys)) {
       final Collection<String> catKeys = new ArrayList<>();
 
-      /* request parameter can be comma delimited list */
+      / * request parameter can be comma delimited list */
       for (final String catkey: reqCatKeys) {
         final String[] parts = catkey.split(",");
 

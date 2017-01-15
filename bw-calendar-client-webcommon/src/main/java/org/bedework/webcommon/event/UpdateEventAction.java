@@ -183,93 +183,6 @@ public class UpdateEventAction extends EventActionBase {
       return forwardError;
     }
 
-    ChangeTableEntry cte;
-
-    /* -------------------------- Recurrences ------------------------------ */
-    if (request.getBooleanReqPar("recurring", false)) {
-      /* recurring turned on - if "freq" is null or "NONE" we get a null rrule
-       * which mean leave the recurrences alone.
-       */
-      final String rrule = getRrule(request, form);
-      Collection<String> oldRrules = null;
-
-      if (form.getErrorsEmitted()) {
-        // Unrecoverable? Error in form.
-        cl.rollback();
-        return forwardValidationError;
-      }
-
-      if (rrule != null) {
-        final Collection<String> rrules = ev.getRrules();
-
-        final boolean rruleChanged;
-
-        if (rrules == null) {
-          final Set<String> newRrules = new TreeSet<>();
-          newRrules.add(rrule);
-          ev.setRrules(newRrules);
-          rruleChanged = true;
-        } else {
-          if (rrules.size() == 0) {
-            rruleChanged = true;
-          } else if (rrules.size() > 1) {
-            oldRrules = new ArrayList<>(rrules);
-            rrules.clear();
-            rruleChanged = true;
-          } else {
-            final String oldRrule = rrules.iterator().next();
-            rruleChanged = !rrule.equals(oldRrule);
-
-            if (rruleChanged) {
-              oldRrules = new ArrayList<>(rrules);
-              rrules.clear();
-            }
-          }
-        }
-
-        if (rruleChanged) {
-          ev.addRrule(rrule);
-
-          cte = changes.getEntry(PropertyInfoIndex.RRULE);
-          cte.setChanged(oldRrules, ev.getRrules());
-          cte.setRemovedValues(oldRrules);
-          cte.setAddedValues(new TreeSet<>(ev.getRrules()));
-        }
-      }
-
-      ev.setRecurring(ev.isRecurringEntity());
-    } else if (ev.getRecurring() == null) {
-      // Adding non-recurring
-      ev.setRecurring(false);
-    } else if (ev.testRecurring()) {
-      // Turned recurring off
-      /* Clear out any recurrence info */
-
-      final Collection<String> rrules = ev.getRrules();
-
-      if (!Util.isEmpty(rrules)) {
-        cte = changes.getEntry(PropertyInfoIndex.RRULE);
-        cte.setChanged(rrules, null);
-        cte.setRemovedValues(new ArrayList<>(rrules));
-
-        rrules.clear();
-      }
-
-      // Rdates and exdates should get handled below
-      //ev.setRecurring(false);
-    }
-
-    /* ------------------------ Rdates and exdates -------------------------- */
-
-    boolean evDateOnly = false;
-    if (!form.getAddingEvent()) {
-      evDateOnly = ev.getDtstart().getDateType();
-    } else if (!request.present("initDates")) {
-      evDateOnly = form.getEventDates().getStartDate().getDateOnly();
-    }
-
-    updateRExdates(request, ev, evDateOnly, changes);
-
     /* ----------------------- Change attendee list ------------------------- */
 
     if (request.present("editEventAttendees")) {
@@ -482,8 +395,15 @@ public class UpdateEventAction extends EventActionBase {
 
     /* -------------------------- Contact ------------------------------ */
 
-    if (!setEventContact(request, submitApp)) {
-      restore(ev, preserveColPath);
+
+    try {
+      if (!setEventContact(request, submitApp)) {
+        restore(ev, preserveColPath);
+        return forwardRetry;
+      }
+    } catch (final CalFacadeException cfe) {
+      cl.rollback();
+      request.getErr().emit(ClientError.badRequest, cfe.getExtra());
       return forwardRetry;
     }
 
@@ -593,7 +513,7 @@ public class UpdateEventAction extends EventActionBase {
 
     final Attendees atts = form.getAttendees();
 
-    cte = changes.getEntry(PropertyInfoIndex.ATTENDEE);
+    ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.ATTENDEE);
 
     if (adding) {
       ev.setAttendees(atts.getAttendees());
@@ -635,6 +555,91 @@ public class UpdateEventAction extends EventActionBase {
         }
       }
     }
+
+    /* -------------------------- Recurrences ------------------------------ */
+    if (request.getBooleanReqPar("recurring", false)) {
+      /* recurring turned on - if "freq" is null or "NONE" we get a null rrule
+       * which mean leave the recurrences alone.
+       */
+      final String rrule = getRrule(request, form);
+      Collection<String> oldRrules = null;
+
+      if (form.getErrorsEmitted()) {
+        // Unrecoverable? Error in form.
+        cl.rollback();
+        return forwardValidationError;
+      }
+
+      if (rrule != null) {
+        final Collection<String> rrules = ev.getRrules();
+
+        final boolean rruleChanged;
+
+        if (rrules == null) {
+          final Set<String> newRrules = new TreeSet<>();
+          newRrules.add(rrule);
+          ev.setRrules(newRrules);
+          rruleChanged = true;
+        } else {
+          if (rrules.size() == 0) {
+            rruleChanged = true;
+          } else if (rrules.size() > 1) {
+            oldRrules = new ArrayList<>(rrules);
+            rrules.clear();
+            rruleChanged = true;
+          } else {
+            final String oldRrule = rrules.iterator().next();
+            rruleChanged = !rrule.equals(oldRrule);
+
+            if (rruleChanged) {
+              oldRrules = new ArrayList<>(rrules);
+              rrules.clear();
+            }
+          }
+        }
+
+        if (rruleChanged) {
+          ev.addRrule(rrule);
+
+          cte = changes.getEntry(PropertyInfoIndex.RRULE);
+          cte.setChanged(oldRrules, ev.getRrules());
+          cte.setRemovedValues(oldRrules);
+          cte.setAddedValues(new TreeSet<>(ev.getRrules()));
+        }
+      }
+
+      ev.setRecurring(ev.isRecurringEntity());
+    } else if (ev.getRecurring() == null) {
+      // Adding non-recurring
+      ev.setRecurring(false);
+    } else if (ev.testRecurring()) {
+      // Turned recurring off
+      /* Clear out any recurrence info */
+
+      final Collection<String> rrules = ev.getRrules();
+
+      if (!Util.isEmpty(rrules)) {
+        cte = changes.getEntry(PropertyInfoIndex.RRULE);
+        cte.setChanged(rrules, null);
+        cte.setRemovedValues(new ArrayList<>(rrules));
+
+        rrules.clear();
+      }
+
+      // Rdates and exdates should get handled below
+      //ev.setRecurring(false);
+    }
+
+    /* ------------------------ Rdates and exdates -------------------------- */
+
+    boolean evDateOnly = false;
+    if (!form.getAddingEvent()) {
+      evDateOnly = ev.getDtstart().getDateType();
+    } else if (!request.present("initDates")) {
+      evDateOnly = form.getEventDates().getStartDate().getDateOnly();
+    }
+
+    updateRExdates(request, ev, evDateOnly, changes);
 
     /* --------------------- Add or update the event ------------------------ */
 

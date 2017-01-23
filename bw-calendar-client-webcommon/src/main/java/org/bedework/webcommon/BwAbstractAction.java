@@ -48,7 +48,6 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
@@ -926,7 +925,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (!Util.isEmpty(reqCatKeys)) {
       final Collection<String> catKeys = new ArrayList<>();
 
-      / * request parameter can be comma delimited list */
+      / * request parameter can be comma delimited list * /
       for (final String catkey: reqCatKeys) {
         final String[] parts = catkey.split(",");
 
@@ -1383,7 +1382,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       boolean replace = false;
       boolean replaceThumb = false;
-      final BwResourceContent rc;
 
       pi.image = cl.getResource(
               Util.buildPath(false, imageCol.getPath(), "/", fns.fn));
@@ -1396,14 +1394,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
 
         replace = true;
-        cl.getResourceContent(pi.image);
-        rc = pi.image.getContent();
+        
+        if (!cl.getResourceContent(pi.image)) {
+          request.getErr().emit("Missing content for " +
+                                        imageCol.getPath() + "/" + fns.fn);
+          pi.retry = true;
+          return pi;
+        }
       } else {
         pi.image = new BwResource();
         pi.image.setName(fns.fn);
-
-        rc = new BwResourceContent();
-        pi.image.setContent(rc);
       }
 
       final byte[] fileData = file.getFileData();
@@ -1425,14 +1425,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         return pi;
       }
 
-      rc.setContent(fileData);
-
-      pi.image.setContentLength(fileData.length);
+      cl.setResourceValue(pi.image, fileData);
       pi.image.setContentType(file.getContentType());
 
       /* Make a thumbnail */
-
-      final BwResourceContent thumbRc;
 
       pi.thumbnail = cl.getResource(
               Util.buildPath(false, imageCol.getPath(), "/",
@@ -1440,19 +1436,22 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       if (pi.thumbnail != null) {
         replaceThumb = true;
-        cl.getResourceContent(pi.thumbnail);
-        thumbRc = pi.thumbnail.getContent();
+        if (!cl.getResourceContent(pi.image)) {
+          request.getErr().emit("Missing content for " +
+                                        imageCol.getPath() + "/" + 
+                                        fns.thumbFn);
+          pi.retry = true;
+          return pi;
+        }
       } else {
         pi.thumbnail = new BwResource();
         pi.thumbnail.setName(fns.thumbFn);
 
-        thumbRc = new BwResourceContent();
-        pi.thumbnail.setContent(thumbRc);
       }
 
       pi.thumbnail.setContentType("image/" + thumbType);
-      thumbRc.setContent(thumbContent);
-      pi.thumbnail.setContentLength(thumbContent.length);
+      
+      cl.setResourceValue(pi.thumbnail, thumbContent);
 
       if (!replace) {
         cl.saveResource(imageCol.getPath(), pi.image);

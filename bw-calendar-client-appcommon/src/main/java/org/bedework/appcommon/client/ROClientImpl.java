@@ -1442,10 +1442,20 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public void getResourceContent(final BwResource val)
+  public boolean getResourceContent(final BwResource val)
           throws CalFacadeException {
     checkUpdate();
-    svci.getResourcesHandler().getContent(val);
+    try {
+      svci.getResourcesHandler().getContent(val);
+    } catch (final CalFacadeException cfe) {
+      if (CalFacadeException.missingResourceContent.equals(cfe.getMessage())) {
+        return false;
+      }
+      
+      throw cfe;
+    }
+    
+    return true;
   }
 
   @Override
@@ -1473,6 +1483,18 @@ public class ROClientImpl implements Client {
           throws CalFacadeException {
     return svci.getScheduler().getFreeBusy(fbset, who, start, end,
                                            org, uid, exceptUid);
+  }
+
+  @Override
+  public void setResourceValue(final BwResource val,
+                               final String content) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public void setResourceValue(final BwResource val,
+                               final byte[] content) throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   /* ------------------------------------------------------------

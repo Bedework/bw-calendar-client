@@ -119,7 +119,10 @@ public class NotificationInfo implements Serializable {
         continue;
       }
 
-      cl.getResourceContent(r);
+      if (!cl.getResourceContent(r)) {
+        error("Missing content for " + r.getColPath() + "/" + r.getName());
+        continue;
+      }
 
       try {
         final NotifyResource ri = new NotifyResource(cl, r);

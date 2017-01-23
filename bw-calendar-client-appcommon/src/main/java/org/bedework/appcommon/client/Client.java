@@ -1372,7 +1372,7 @@ public interface Client extends Serializable {
    *
    * @param  path     String path to resource
    * @return BwResource null for unknown resource
-   * @throws CalFacadeException
+   * @throws CalFacadeException on error
    */
   BwResource getResource(String path) throws CalFacadeException;
 
@@ -1382,8 +1382,9 @@ public interface Client extends Serializable {
    *
    * @param  val BwResource
    * @throws CalFacadeException on error
+   * @return false if content missing
    */
-  void getResourceContent(BwResource val) throws CalFacadeException;
+  boolean getResourceContent(BwResource val) throws CalFacadeException;
 
   /** Get resources to which this user has access - content is not fetched.
    *
@@ -1402,6 +1403,24 @@ public interface Client extends Serializable {
   void updateResource(BwResource val,
                       boolean updateContent) throws CalFacadeException;
 
+  /**
+   * 
+   * @param val the resource object
+   * @param content to embed
+   * @throws CalFacadeException for errors
+   */
+  void setResourceValue(BwResource val,
+                        String content) throws CalFacadeException;
+
+  /**
+   *
+   * @param val the resource object
+   * @param content to embed
+   * @throws CalFacadeException for errors
+   */
+  void setResourceValue(BwResource val,
+                        byte[] content) throws CalFacadeException;
+  
   /* ------------------------------------------------------------
    *                     Scheduling
    * ------------------------------------------------------------ */

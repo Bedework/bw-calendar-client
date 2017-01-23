@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.bedework</groupId>
+	<groupId>org.bedework.bwwebcl</groupId>
 	<artifactId>bw-calendar-client</artifactId>
 	<version>4.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -13,6 +13,7 @@
 		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 		<!-- Bedework Versions -->
+    <bw-msg.version>4.0.0-SNAPSHOT</bw-msg.version>
 		<bw-ws.version>4.0.4-SNAPSHOT</bw-ws.version>
 		<bw-util.version>4.0.6-SNAPSHOT</bw-util.version>
 		<bw-access.version>4.0.2-SNAPSHOT</bw-access.version>
@@ -178,25 +179,41 @@
 				<artifactId>bw-ws-calws-soap</artifactId>
 				<version>${bw-ws.version}</version>
 			</dependency>
+
+      <dependency>
+        <groupId>org.bedework.bw-msg</groupId>
+        <artifactId>bw-msg-sysevmsgs</artifactId>
+        <version>${bw-msg.version}</version>
+      </dependency>
+      
 			<!-- Bedework Calendar Engine -->
 			<dependency>
-				<groupId>org.bedework</groupId>
-				<artifactId>bw-calendar-engine-facade</artifactId>
+				<groupId>org.bedework.caleng</groupId>
+				<artifactId>bw-caleng-facade</artifactId>
 				<version>${bw-calendar-engine.version}</version>
 			</dependency>
+      
 			<dependency>
-				<groupId>org.bedework</groupId>
-				<artifactId>bw-calendar-engine-api</artifactId>
+				<groupId>org.bedework.caleng</groupId>
+				<artifactId>bw-caleng-api</artifactId>
 				<version>${bw-calendar-engine.version}</version>
 			</dependency>
+      
 			<dependency>
-				<groupId>org.bedework</groupId>
-				<artifactId>bw-calendar-engine-ical</artifactId>
+				<groupId>org.bedework.caleng</groupId>
+				<artifactId>bw-caleng-ical</artifactId>
 				<version>${bw-calendar-engine.version}</version>
 			</dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-caleng-sysevents</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+      
 			<dependency>
-				<groupId>org.bedework</groupId>
-				<artifactId>bw-calendar-engine-sysevents</artifactId>
+				<groupId>org.bedework.caleng</groupId>
+				<artifactId>bwsysev-monitor</artifactId>
 				<version>${bw-calendar-engine.version}</version>
 			</dependency>
 

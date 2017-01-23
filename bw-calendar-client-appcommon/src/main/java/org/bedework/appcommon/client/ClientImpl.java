@@ -31,6 +31,7 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
+import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
@@ -46,6 +47,8 @@ import org.bedework.calsvci.EventProperties;
 import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SharingI;
 
+import java.io.UnsupportedEncodingException;
+import java.sql.Blob;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -492,6 +495,34 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     svci.getResourcesHandler().update(val, updateContent);
     updated();
+  }
+
+  @Override
+  public void setResourceValue(final BwResource val,
+                               final String content) throws CalFacadeException {
+    final byte[] bytes;
+    try {
+      bytes = content.getBytes("UTF-8");
+    } catch (final UnsupportedEncodingException e) {
+      throw new CalFacadeException(e);
+    }
+
+    setResourceValue(val, bytes);
+  }
+
+  @Override
+  public void setResourceValue(final BwResource val,
+                               final byte[] content) throws CalFacadeException {
+    BwResourceContent resContent = val.getContent();
+
+    if (resContent == null) {
+      resContent = new BwResourceContent();
+      val.setContent(resContent);
+    }
+
+    Blob blob = svci.getBlob(content);
+    resContent.setValue(blob);
+    val.setContentLength(content.length);
   }
 
   /* ------------------------------------------------------------

@@ -2,12 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.bedework</groupId>
+		<groupId>org.bedework.bwwebcl</groupId>
 		<artifactId>bw-calendar-client</artifactId>
 		<version>4.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>bw-calendar-client-appcommon</artifactId>
+  
+	<artifactId>bwwebcl-appcommon</artifactId>
+  
 	<packaging>jar</packaging>
 	<dependencies>
 		<!-- Bedework -->
@@ -40,27 +42,29 @@
 			<artifactId>bw-access</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.bedework</groupId>
-			<artifactId>bw-calendar-engine-facade</artifactId>
-			<exclusions>
+			<groupId>org.bedework.caleng</groupId>
+			<artifactId>bw-caleng-facade</artifactId>
+      <exclusions>
 				<exclusion>
 					<groupId>com.sun</groupId>
 					<artifactId>tools</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.bedework</groupId>
-			<artifactId>bw-calendar-engine-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.bedework</groupId>
-			<artifactId>bw-calendar-engine-ical</artifactId>
-		</dependency>
+
     <dependency>
-      <groupId>org.bedework</groupId>
-      <artifactId>bw-calendar-engine-sysevents</artifactId>
-      <version>${bw-calendar-engine.version}</version>
+      <groupId>org.bedework.caleng</groupId>
+      <artifactId>bw-caleng-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.caleng</groupId>
+      <artifactId>bw-caleng-ical</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.bedework.bw-msg</groupId>
+      <artifactId>bw-msg-sysevmsgs</artifactId>
     </dependency>
 		<!-- Third Party -->
 		<dependency>

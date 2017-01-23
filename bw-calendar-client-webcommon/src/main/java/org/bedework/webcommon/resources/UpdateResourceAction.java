@@ -22,7 +22,6 @@ package org.bedework.webcommon.resources;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -89,33 +88,15 @@ public class UpdateResourceAction extends BwAbstractAction {
       final FormFile formFile = form.getUploadFile();
 
       if (content != null) {
-        BwResourceContent resContent = r.getContent();
-
-        if (resContent == null) {
-          resContent = new BwResourceContent();
-          r.setContent(resContent);
-        }
-
-        final byte[] bytes = content.getBytes("UTF-8");
-        resContent.setContent(bytes);
-        r.setContentLength(bytes.length);
-        cl.updateResource(r, true);
+        cl.setResourceValue(r, content);
       } else if (formFile != null) {
-        BwResourceContent resContent = r.getContent();
-
-        if (resContent == null) {
-          resContent = new BwResourceContent();
-          r.setContent(resContent);
-        }
-
-        final byte[] bytes = formFile.getFileData();
-        resContent.setContent(bytes);
-        r.setContentLength(bytes.length);
-        cl.updateResource(r, true);
+        cl.setResourceValue(r, formFile.getFileData());
       } else {
         form.getErr().emit(ClientError.unknownResource, name);
         return forwardNotFound;
       }
+      
+      cl.updateResource(r, true);
     }
 
     // Remove the resource

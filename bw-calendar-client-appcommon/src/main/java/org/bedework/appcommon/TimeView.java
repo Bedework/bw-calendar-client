@@ -31,7 +31,6 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
-import org.bedework.util.indexing.IndexException;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
@@ -714,18 +713,14 @@ public class TimeView implements Serializable {
     events.put(makeKey(ef.getEvent()), ef);
   }
 
-  private String makeKey(BwEvent ev) throws CalFacadeException {
-    try {
-      return keys.makeKeyVal("event",
-                             ev.getHref(),
-                             ev.getRecurrenceId());
-    } catch (IndexException ie) {
-      throw new CalFacadeException(ie);
-    }
+  private String makeKey(final BwEvent ev) {
+    return keys.makeKeyVal("event",
+                           ev.getHref(),
+                           ev.getRecurrenceId());
   }
 
   private BwDateTime getBwDate(final Calendar date) throws CalFacadeException {
-    String dateStr = new MyCalendarVO(date.getTime()).getDateDigits();
+    final String dateStr = new MyCalendarVO(date.getTime()).getDateDigits();
 
     return getBwDate(dateStr);
   }

@@ -391,7 +391,7 @@ public class UpdateEventAction extends EventActionBase {
       setEventLocation(request, ei, form, submitApp);
         // RFC says maybe for this.
         //incSequence = true;
-      }
+    }
 
     /* -------------------------- Contact ------------------------------ */
 

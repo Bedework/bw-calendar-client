@@ -29,6 +29,7 @@ import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.NotificationInfo;
+import org.bedework.appcommon.Response;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.AdminClientImpl;
 import org.bedework.appcommon.client.Client;
@@ -2145,5 +2146,26 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return BedeworkDefs.viewPeriodNames[vt];
+  }
+
+  protected <T extends Response> T errorReturn(final T resp,
+                                               final Throwable t,
+                                               final Response.Status st) {
+    return errorReturn(resp, t.getLocalizedMessage(), st);
+  }
+
+  protected <T extends Response> T errorReturn(final T resp,
+                                               final String msg,
+                                               final Response.Status st) {
+    resp.setMessage(msg);
+    resp.setStatus(st);
+
+    return resp;
+  }
+
+  protected <T extends Response> T okReturn(final T resp) {
+    resp.setStatus(Response.Status.ok);
+
+    return resp;
   }
 }

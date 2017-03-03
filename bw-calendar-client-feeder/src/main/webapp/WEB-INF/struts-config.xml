@@ -500,7 +500,37 @@
       <forward name="success" path="/widget/showGroups.rdo" redirect="true" />
       <forward name="listEvents" path="/widget/showGroups.rdo" redirect="true" />
     </action>
-  </action-mappings>
+
+    <!-- ===============================================================
+                         Json Actions
+         =============================================================== -->
+
+    <!-- Must be a gdo action - returns json -->
+    <action    path="/locations/json"
+               type="org.bedework.webcommon.location.FetchLocationsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=resource;conversation=only;mdl=locations"
+               validate="false">
+    </action>
+
+    <action    path="/categories/json"
+               type="org.bedework.webcommon.category.FetchCategoriesAction"
+               name="calForm"
+               scope="session"
+               parameter="catlist=true;actionType=action;conversation=only"
+               validate="false">
+    </action>
+
+    <action    path="/collections/json"
+               type="org.bedework.webcommon.calendars.FetchCollectionsAction"
+               name="calForm"
+               scope="session"
+               parameter="catlist=true;actionType=action;conversation=only"
+               validate="false">
+    </action>
+  </action-mappings>0
+
 
   <!-- portlet controller def here -->
 

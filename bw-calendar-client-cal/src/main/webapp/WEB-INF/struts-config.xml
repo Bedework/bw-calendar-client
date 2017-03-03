@@ -1045,7 +1045,7 @@
                type="org.bedework.webcommon.location.FetchLocationsAction"
                name="calForm"
                scope="session"
-               parameter="actionType=resource;conversation=only"
+               parameter="actionType=resource;conversation=only;mdl=locations"
                validate="false">
     </action>
 
@@ -1392,11 +1392,37 @@
       <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
     </action>
 
+    <action    path="/notify/get"
+               type="org.bedework.webcommon.notifications.GetNotificationsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;mdl=notify;conversation=only"
+               validate="false">
+      <forward name="success" path="/notify/show.rdo" redirect="true" />
+    </action>
+
+    <action    path="/notify/show"
+               type="org.bedework.webcommon.RenderAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=render"
+               validate="false">
+      <forward name="success" path="/docs/notifications/notifications.jsp"/>
+    </action>
+
     <action    path="/notify/removeAll"
                type="org.bedework.webcommon.notifications.RemoveAllAction"
                name="calForm"
                scope="session"
                parameter="actionType=action;conversation=only"
+               validate="false">
+    </action>
+
+    <action    path="/notify/subscribe"
+               type="org.bedework.webcommon.notifications.SubscribeAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;mdl=notify;conversation=only"
                validate="false">
     </action>
 

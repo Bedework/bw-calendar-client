@@ -65,7 +65,14 @@
     <orderEntry type="library" name="Maven: org.apache.james:apache-mime4j-dom:0.7" level="project" />
     <orderEntry type="library" name="Maven: dnsjava:dnsjava:2.1.1" level="project" />
     <orderEntry type="module" module-name="bw-caldav-server" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-ical4j-vcard:1.0.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.ical4j:ical4j:2.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.10" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-all:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: biz.aQute.bnd:bndlib:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.osgi:org.osgi.core:4.3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework:bw-ical4j-vcard:1.0.4" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.3" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-core:5.2.5.Final" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.3.0.Final" level="project" />

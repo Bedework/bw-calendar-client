@@ -21,15 +21,14 @@ package org.bedework.appcommon;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.util.misc.ToString;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-/** Parameters for fetching a bunch of events.
+/** Container for fetching locations.
  *
  * @author Mike Douglass douglm - rpi.edu
  */
-public class Locations implements Serializable {
+public class Locations extends Response {
   private Collection<BwLocation> locations;
   private List<String> preferred;
 
@@ -63,12 +62,10 @@ public class Locations implements Serializable {
   }
 
   @Override
-  public String toString() {
-    final ToString ts = new ToString(this);
+  public void toStringSegment(final ToString ts) {
+    super.toStringSegment(ts);
 
     ts.append("locations", getLocations())
-            .append("preferred", getPreferred());
-
-    return ts.toString();
+      .append("preferred", getPreferred());
   }
 }

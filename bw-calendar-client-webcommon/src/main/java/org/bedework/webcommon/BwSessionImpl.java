@@ -22,10 +22,12 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.CollectionCollator;
+import org.bedework.appcommon.Collections;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.MonthView;
 import org.bedework.appcommon.MyCalendarVO;
+import org.bedework.appcommon.Response;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.WeekView;
 import org.bedework.appcommon.YearView;
@@ -315,6 +317,23 @@ public class BwSessionImpl extends Logged implements BwSession {
   }
 
   @Override
+  public Collections getCollections(final BwRequest req) {
+    final Client cl = req.getClient();
+    final Collections cols = new Collections();
+    
+    if (!BedeworkDefs.appTypeWebpublic.equals(cl.getAppType())) {
+      cols.setCollections(getAppCollections(req));
+    }
+
+    cols.setPublicCollections(getPublicCollections(req));
+
+    cols.setUserCollections(getUserCollections(req));
+    
+    cols.setStatus(Response.Status.ok);
+    return cols;
+  }
+
+  @Override
   public void embedFilters(final BwRequest req) throws Throwable {
     req.setSessionAttr(BwRequest.bwFiltersListName,
                        req.getClient().getAllFilters());
@@ -343,7 +362,34 @@ public class BwSessionImpl extends Logged implements BwSession {
   }
 
   @Override
-  public void embedCollections(final BwRequest request) throws Throwable {
+  public void embedCollections(final BwRequest request) {
+    final BwCalendar cloned = getAppCollections(request);
+
+    if (cloned != null) {
+      request.setSessionAttr(BwRequest.bwCollectionListName, cloned);
+    } // TODO - if null should it be deleted?
+  }
+
+  @SuppressWarnings("WeakerAccess")
+  protected void embedPublicCollections(final BwRequest request) {
+    final BwCalendar cloned = getPublicCollections(request);
+
+    if (cloned != null) {
+      request.setSessionAttr(BwRequest.bwPublicCollectionListName,
+                             cloned);
+    } // TODO - if null should it be deleted?
+  }
+
+  @Override
+  public void embedUserCollections(final BwRequest request) {
+    final BwCalendar cloned = getUserCollections(request);
+
+    if (cloned != null) {
+      request.setSessionAttr(BwRequest.bwUserCollectionListName, cloned);
+    } // TODO - if null should it be deleted?
+  }
+
+  public BwCalendar getAppCollections(final BwRequest request) {
     final BwCalendar col;
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
@@ -360,55 +406,64 @@ public class BwSessionImpl extends Logged implements BwSession {
 
       if (col == null) {
         request.getErr().emit("No home collection");
-      } else {
-        if (debug) {
-          debug("About to clone: " + col.getPath());
-        }
-
-        embedClonedCollection(request, col,
-                              false,
-                              BwRequest.bwCollectionListName);
-
-        if (debug) {
-          debug("Cloned: " + col.getPath());
-        }
+        return null;
+      } 
+      
+      if (debug) {
+        debug("About to clone: " + col.getPath());
       }
+
+      final BwCalendar cloned = 
+              getClonedCollection(request, col,
+                                    false);
+
+      if (debug) {
+        debug("Cloned: " + col.getPath());
+      }
+      
+      return cloned;
     } catch (final Throwable t) {
       request.getErr().emit(t);
+      return null;
+    }
+  }
+  
+  protected BwCalendar getPublicCollections(final BwRequest request) {
+    try {
+      final Client cl = request.getClient();
+      final String changeToken = cl.getCurrentChangeToken();
+      final boolean fromCopy;
+
+      fromCopy = (publicCollectionsChangeToken != null) &&
+              publicCollectionsChangeToken.equals(changeToken);
+
+      final BwCalendar root;
+      if (!fromCopy) {
+        debug("Discarding cached public and rebuilding");
+        root = cl.getPublicCalendars();
+      } else {
+        root = clonedPublicCollections;
+      }
+
+      if (root == null) {
+        request.getErr().emit("Unable to access public collections");
+        warn("Unable to access public collections");
+        return null;
+      }
+
+      publicCollectionsChangeToken = changeToken;
+      clonedPublicCollections = getClonedCollection(request,
+                                                      root,
+                                                      fromCopy);
+      
+      return clonedPublicCollections;
+    } catch (final Throwable t) {
+      request.getErr().emit(t);
+      return null;
     }
   }
 
-  @SuppressWarnings("WeakerAccess")
-  protected void embedPublicCollections(final BwRequest request) throws Throwable {
-    final Client cl = request.getClient();
-    final String changeToken = cl.getCurrentChangeToken();
-    final boolean fromCopy;
-    
-    fromCopy =  (publicCollectionsChangeToken != null) &&
-            publicCollectionsChangeToken.equals(changeToken);
-
-    final BwCalendar root;
-    if (!fromCopy) {
-      debug("Discarding cached public and rebuilding");
-      root = cl.getPublicCalendars();
-    } else {
-      root = clonedPublicCollections;
-    }
-    
-    if (root == null) {
-      warn("Unable to access public collections");
-      return;
-    }
-    
-    publicCollectionsChangeToken = changeToken;
-    clonedPublicCollections = embedClonedCollection(request,
-                                                    root,
-                                                    fromCopy,
-                                                    BwRequest.bwPublicCollectionListName);
-  }
-
-  @Override
-  public void embedUserCollections(final BwRequest request) throws Throwable {
+  public BwCalendar getUserCollections(final BwRequest request) {
     final BwCalendar col;
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
@@ -427,11 +482,11 @@ public class BwSessionImpl extends Logged implements BwSession {
 
       col = cl.getHome(p, false);
 
-      embedClonedCollection(request, col,
-                            false,
-                            BwRequest.bwUserCollectionListName);
+      return getClonedCollection(request, col,
+                                 false);
     } catch (final Throwable t) {
       request.getErr().emit(t);
+      return null;
     }
   }
 
@@ -678,18 +733,15 @@ public class BwSessionImpl extends Logged implements BwSession {
    *                   Private methods
    * ==================================================================== */
 
-  private BwCalendar embedClonedCollection(final BwRequest request,
-                                           final BwCalendar col,
-                                           final boolean fromCopy,
-                                           final String attrName) throws Throwable {
+  private BwCalendar getClonedCollection(final BwRequest request,
+                                         final BwCalendar col,
+                                         final boolean fromCopy) throws Throwable {
     final ColCloner cc = new ColCloner(request.getClient(),
                                        request.getBwForm().getCalendarsOpenState());
     final BwCalendar cloned;
-    
+
     cloned = cc.deepClone(col, fromCopy);
 
-    request.setSessionAttr(attrName, cloned);
-    
     return cloned;
   }
 

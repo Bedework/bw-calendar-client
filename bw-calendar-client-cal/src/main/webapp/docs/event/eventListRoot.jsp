@@ -10,6 +10,8 @@
   <logic:present name="bw_search_result" scope="request">
     <bean:define id="sres" name="bw_search_result" scope="request" />
     <bean:define id="params" name="bw_search_params" scope="request" />
+    <bw:emitText name="params" property="curOffset" />
+    <bw:emitText name="params" property="pageSize" />
 
     <paged>true</paged>
     <bw:emitText name="sres" property="found" tagName="resultSize" />

@@ -19,22 +19,20 @@
 
 package org.bedework.webcommon.location;
 
+import org.bedework.appcommon.Locations;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
+import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 /** This action fetches locations and writes them as a json object.
@@ -54,34 +52,23 @@ import javax.servlet.http.HttpServletResponse;
  * @author Mike Douglass   douglm   rpi.edu
  */
 public class FetchLocationsAction extends BwAbstractAction {
-  protected ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (debug) {
-      mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-    }
-
-    final DateFormat df = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'");
-
-    mapper.setDateFormat(df);
-
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
     final Client cl = request.getClient();
+    final HttpServletResponse resp = request.getResponse();
     form.setNocache(false);
     final String changeToken = cl.getCurrentChangeToken();
 
     final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
 
     if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
-      request.getResponse().setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+      resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return forwardNull;
     }
 
       /* Add an etag */
-    request.getResponse().addHeader("etag", changeToken);
+    resp.addHeader("etag", changeToken);
 
     final BwSession sess = request.getSess();
 
@@ -107,25 +94,43 @@ public class FetchLocationsAction extends BwAbstractAction {
 //      vals = curAuthUserPrefs.getLocationPrefs().getPreferred();
         break;
       default:
-        request.getResponse().setStatus(
-                HttpServletResponse.SC_BAD_REQUEST);
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return forwardNull;
     }
 
-    request.getResponse().setContentType("text/json; charset=UTF-8");
+    resp.setContentType("text/json; charset=UTF-8");
 
-    writeJson(request.getResponse(), vals);
-    request.getResponse().getOutputStream().close();
+    final Locations locs = new Locations();
+    locs.setLocations(vals);
+    final BasicSystemProperties props = cl.getBasicSystemProperties();
+    final BwPrincipal pr = cl.getCurrentPrincipal();
+
+    for (final BwLocation loc: vals) {
+      loc.fixNames(props, pr);
+    }
+
+    if (cl.getPublicAdmin()) {
+      // Add the preferred locations
+      final Collection<BwLocation> prefs =
+              sess.getLocations(request,
+                                BwSession.preferredEntity,
+                                false);
+
+      final List<String> preferred = new ArrayList<>();
+
+      for (final BwLocation prefLoc: prefs) {
+        prefLoc.fixNames(props, pr);
+        preferred.add(prefLoc.getHref());
+      }
+
+      locs.setPreferred(preferred);
+    }
+    
+    okReturn(locs);
+
+    cl.writeJson(resp, locs);
+    resp.getOutputStream().close();
 
     return forwardNull;
-  }
-
-  protected void writeJson(final HttpServletResponse resp,
-                           final Object val) throws ServletException {
-    try {
-      mapper.writeValue(resp.getOutputStream(), val);
-    } catch (final Throwable t) {
-      throw new ServletException(t);
-    }
   }
 }

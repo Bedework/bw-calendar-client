@@ -514,6 +514,14 @@
                validate="false">
     </action>
 
+    <action    path="/admingroups/json"
+               type="org.bedework.webcommon.admingroup.FetchAdminGroupsAction"
+               name="calForm"
+               scope="session"
+               parameter="catlist=true;actionType=action;conversation=only"
+               validate="false">
+    </action>
+
     <action    path="/categories/json"
                type="org.bedework.webcommon.category.FetchCategoriesAction"
                name="calForm"
@@ -529,7 +537,7 @@
                parameter="catlist=true;actionType=action;conversation=only"
                validate="false">
     </action>
-  </action-mappings>0
+  </action-mappings>
 
 
   <!-- portlet controller def here -->

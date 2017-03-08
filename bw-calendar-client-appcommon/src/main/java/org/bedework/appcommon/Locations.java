@@ -19,6 +19,7 @@
 package org.bedework.appcommon;
 
 import org.bedework.calfacade.BwLocation;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.util.misc.ToString;
 
 import java.util.Collection;

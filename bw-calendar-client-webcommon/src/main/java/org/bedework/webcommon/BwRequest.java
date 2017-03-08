@@ -310,7 +310,8 @@ public class BwRequest extends Request {
       try {
         cl.parseFilter(fd);
       } catch (CalFacadeException cfe) {
-        getErr().emit(cfe.getMessage(), cfe.getExtra());
+        getErr().emit(cfe.getMessage(), cfe.getExtra() + 
+                " expression: " + fd.getDefinition());
         return null;
       }
     }

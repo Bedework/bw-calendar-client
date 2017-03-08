@@ -1969,6 +1969,14 @@
       <forward name="continue"  path="/admingroup/showChooseGroup.rdo" redirect="true" />
     </action>
 
+    <action    path="/admingroups/json"
+               type="org.bedework.webcommon.admingroup.FetchAdminGroupsAction"
+               name="calForm"
+               scope="session"
+               parameter="catlist=true;actionType=action;conversation=only"
+               validate="false">
+    </action>
+
     <!-- ===============================================================
                      Searching
          =============================================================== -->

@@ -26,8 +26,8 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.util.calendar.IcalDefs;
@@ -282,12 +282,12 @@ public class BwRequest extends Request {
   /** If filterName or fexpr is specified will return a parsed filter definition
    *
    * @return BwFilterDef or null
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public BwFilterDef getFilterDef() throws Throwable {
-    Client cl = getClient();
-    String name = getReqPar("filterName");
-    String fexpr = getReqPar("fexpr");
+    final Client cl = getClient();
+    final String name = getReqPar("filterName");
+    final String fexpr = getReqPar("fexpr");
 
     BwFilterDef fd = null;
 
@@ -307,10 +307,9 @@ public class BwRequest extends Request {
     }
 
     if (fd.getFilters() == null) {
-      try {
-        cl.parseFilter(fd);
-      } catch (CalFacadeException cfe) {
-        getErr().emit(cfe.getMessage(), cfe.getExtra() + 
+      final ParseResult pr = cl.parseFilter(fd);
+      if (!pr.ok) {
+        getErr().emit(pr.message + 
                 " expression: " + fd.getDefinition());
         return null;
       }
@@ -322,7 +321,7 @@ public class BwRequest extends Request {
   /**
    * @param evDateOnly  true if event says date only values
    * @return Collection of BwDateTime or null
-   * @throws Throwable
+   * @throws Throwable on error
    */
   public Collection<BwDateTime> getRdates(final boolean evDateOnly) throws Throwable {
     return getRExdates(true, evDateOnly);
@@ -341,7 +340,7 @@ public class BwRequest extends Request {
                                              final boolean evDateOnly) throws Throwable {
     String reqPar;
     String token = "DATE\t";
-    Collection<BwDateTime> bwdts = new ArrayList<BwDateTime>();
+    Collection<BwDateTime> bwdts = new ArrayList<>();
 
     if (rdates) {
       reqPar = "rdates";

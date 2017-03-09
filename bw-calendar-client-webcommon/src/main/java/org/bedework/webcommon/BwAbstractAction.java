@@ -29,7 +29,6 @@ import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.NotificationInfo;
-import org.bedework.calfacade.responses.Response;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.AdminClientImpl;
 import org.bedework.appcommon.client.Client;
@@ -62,7 +61,9 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.BwCategoryFilter;
 import org.bedework.calfacade.filter.BwCreatorFilter;
+import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.locale.BwLocale;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
@@ -546,7 +547,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       // TODO - this shouldn't be a fixed string
       sort = "dtstart.utc:asc";
     }
-    params.setSort(cl.parseSort(sort));
+
+    final ParseResult pr = cl.parseSort(request.getReqPar("sort"));
+    if (!pr.ok) {
+      form.getErr().emit(pr.message);
+    } else {
+      params.setSort(pr.sortTerms);
+    }
 
     if (Client.gridViewMode.equals(viewMode)) {
       TimeView tv = mstate.getCurTimeView();
@@ -715,7 +722,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     params.setFilter(filter);
-    params.setSort(cl.parseSort(request.getReqPar("sort")));
+
+    final ParseResult pr = cl.parseSort(request.getReqPar("sort"));
+    if (!pr.ok) {
+      form.getErr().emit(pr.message);
+    } else {
+      params.setSort(pr.sortTerms);
+    }
   }
 
   protected BwDateTime todaysDateTime() throws Throwable {

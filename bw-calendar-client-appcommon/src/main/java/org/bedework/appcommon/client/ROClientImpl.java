@@ -55,7 +55,7 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calfacade.filter.SortTerm;
+import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
@@ -1977,14 +1977,12 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public void parseFilter(final BwFilterDef val)
-          throws CalFacadeException {
-    svci.getFiltersHandler().parse(val);
+  public ParseResult parseFilter(final BwFilterDef val) {
+    return svci.getFiltersHandler().parse(val);
   }
 
   @Override
-  public List<SortTerm> parseSort(final String val)
-          throws CalFacadeException {
+  public ParseResult parseSort(final String val) {
     return svci.getFiltersHandler().parseSort(val);
   }
 

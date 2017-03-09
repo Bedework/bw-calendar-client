@@ -47,7 +47,7 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calfacade.filter.SortTerm;
+import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
@@ -1968,16 +1968,14 @@ public interface Client extends Serializable {
   /** Parse the definition in the given filter object
    *
    * @param  val       BwFilterDef
-   * @throws CalFacadeException
    */
-  void parseFilter(BwFilterDef val) throws CalFacadeException;
+  ParseResult parseFilter(BwFilterDef val);
 
   /** Parse the sort expression
    *
    * @param  val  String sort expression
-   * @throws CalFacadeException
    */
-  List<SortTerm> parseSort(String val) throws CalFacadeException;
+  ParseResult parseSort(String val);
 
   /** Get filter definitions to which this user has access
    *

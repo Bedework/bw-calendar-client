@@ -27,7 +27,6 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.MonthView;
 import org.bedework.appcommon.MyCalendarVO;
-import org.bedework.appcommon.Response;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.WeekView;
 import org.bedework.appcommon.YearView;
@@ -42,7 +41,8 @@ import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.util.misc.Logged;
 import org.bedework.util.struts.Request;
@@ -866,10 +866,9 @@ public class BwSessionImpl extends Logged implements BwSession {
     }
 
     if (fdef.getFilters() == null) {
-      try {
-        cl.parseFilter(fdef);
-      } catch (final CalFacadeException cfe) {
-        req.getErr().emit(cfe);
+      final ParseResult pr = cl.parseFilter(fdef);
+      if (!pr.ok) {
+        req.getErr().emit(pr.message);
       }
     }
 

@@ -1376,7 +1376,7 @@
                type="org.bedework.webcommon.notifications.RemoveAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=only"
+               parameter="actionType=action;conversation=only;mdl=remove"
                validate="false">
       <forward name="notFound" path="/widget/ajaxTerminator.rdo" redirect="true" />
       <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
@@ -1756,7 +1756,7 @@
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render"
+               parameter="actionType=render;mdl=showcats"
                validate="false">
       <forward name="success" path="/docs/widget/categories.jsp" />
     </action>
@@ -1765,7 +1765,7 @@
                type="org.bedework.webcommon.NoopAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=only"
+               parameter="actionType=action;conversation=only;mdl=showcats"
                validate="false">
       <forward name="success" path="/widget/showCategories.rdo" redirect="true" />
       <forward name="listEvents" path="/widget/showCategories.rdo" redirect="true" />
@@ -1775,7 +1775,7 @@
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render"
+               parameter="actionType=render;mdl=showgroups"
                validate="false">
       <forward name="success" path="/docs/widget/groups.jsp" />
     </action>
@@ -1784,7 +1784,7 @@
                type="org.bedework.webcommon.admingroup.FetchAGsAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=only"
+               parameter="actionType=action;conversation=only;mdl=showgroups"
                validate="false">
       <forward name="success" path="/widget/showGroups.rdo" redirect="true" />
       <forward name="listEvents" path="/widget/showGroups.rdo" redirect="true" />
@@ -1795,7 +1795,7 @@
                type="org.bedework.webcommon.event.AttendeeAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=continue"
+               parameter="actionType=action;conversation=continue;mdl=showatts"
                validate="false">
       <forward name="success" path="/widget/showAttendees.rdo" redirect="true" />
       <forward name="listAttendees" path="/widget/showAttendees.rdo" redirect="true" />
@@ -1805,7 +1805,7 @@
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render"
+               parameter="actionType=render;mdl=showatts"
                validate="false">
       <forward name="success" path="/docs/widget/attendees.jsp" />
     </action>

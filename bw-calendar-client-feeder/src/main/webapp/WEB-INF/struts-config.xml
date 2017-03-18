@@ -510,7 +510,7 @@
                type="org.bedework.webcommon.location.FetchLocationsAction"
                name="calForm"
                scope="session"
-               parameter="actionType=resource;conversation=only;mdl=locations"
+               parameter="actionType=resource;conversation=only;mdl=jlocations"
                validate="false">
     </action>
 
@@ -518,7 +518,7 @@
                type="org.bedework.webcommon.admingroup.FetchAdminGroupsAction"
                name="calForm"
                scope="session"
-               parameter="catlist=true;actionType=action;conversation=only"
+               parameter="actionType=action;conversation=only;mdl=jadgrps"
                validate="false">
     </action>
 
@@ -526,7 +526,7 @@
                type="org.bedework.webcommon.category.FetchCategoriesAction"
                name="calForm"
                scope="session"
-               parameter="catlist=true;actionType=action;conversation=only"
+               parameter="catlist=true;actionType=action;conversation=only;mdl=jcategories"
                validate="false">
     </action>
 
@@ -534,7 +534,7 @@
                type="org.bedework.webcommon.calendars.FetchCollectionsAction"
                name="calForm"
                scope="session"
-               parameter="catlist=true;actionType=action;conversation=only"
+               parameter="actionType=action;conversation=only;mdl=jcollections"
                validate="false">
     </action>
   </action-mappings>

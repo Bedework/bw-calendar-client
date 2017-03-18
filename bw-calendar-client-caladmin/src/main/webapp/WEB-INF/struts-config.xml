@@ -977,7 +977,7 @@
                type="org.bedework.webcommon.notifications.RemoveAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=only"
+               parameter="actionType=action;conversation=only;mdl=remove"
                validate="false">
       <forward name="notFound" path="/widget/ajaxTerminator.rdo" redirect="true" />
       <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />
@@ -987,7 +987,7 @@
                type="org.bedework.webcommon.notifications.RemoveAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=only"
+               parameter="actionType=action;conversation=only;mdl=remove"
                validate="false">
       <forward name="notFound" path="/widget/ajaxTerminator.rdo" redirect="true" />
       <forward name="success" path="/widget/ajaxTerminator.rdo" redirect="true" />

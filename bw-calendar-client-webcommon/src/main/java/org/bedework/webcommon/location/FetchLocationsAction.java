@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon.location;
 
-import org.bedework.appcommon.Locations;
+import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
@@ -100,7 +100,7 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     resp.setContentType("text/json; charset=UTF-8");
 
-    final Locations locs = new Locations();
+    final LocationsResponse locs = new LocationsResponse();
     locs.setLocations(vals);
     final BasicSystemProperties props = cl.getBasicSystemProperties();
     final BwPrincipal pr = cl.getCurrentPrincipal();

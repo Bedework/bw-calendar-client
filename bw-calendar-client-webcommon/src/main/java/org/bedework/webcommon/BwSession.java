@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.Collections;
+import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwLocation;
@@ -84,7 +84,7 @@ public interface BwSession extends Serializable {
    * @param request current 
    * @return Collections object populated
    */
-  Collections getCollections(BwRequest request);
+  CollectionsResponse getCollections(BwRequest request);
   
   /** Embed the current users calendars. For admin or guest mode this is the
    * same as calling embedPublicCalendars.

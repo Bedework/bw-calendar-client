@@ -22,7 +22,7 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.CollectionCollator;
-import org.bedework.appcommon.Collections;
+import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.MonthView;
@@ -317,9 +317,9 @@ public class BwSessionImpl extends Logged implements BwSession {
   }
 
   @Override
-  public Collections getCollections(final BwRequest req) {
+  public CollectionsResponse getCollections(final BwRequest req) {
     final Client cl = req.getClient();
-    final Collections cols = new Collections();
+    final CollectionsResponse cols = new CollectionsResponse();
     
     if (!BedeworkDefs.appTypeWebpublic.equals(cl.getAppType())) {
       cols.setCollections(getAppCollections(req));
@@ -505,7 +505,8 @@ public class BwSessionImpl extends Logged implements BwSession {
       attrName = BwRequest.bwCategoriesListName;
 
       //noinspection unchecked
-      vals = (Collection<BwCategory>)request.getSessionAttr(BwRequest.bwCategoriesListName);
+      vals = (Collection<BwCategory>)request
+              .getSessionAttr(BwRequest.bwCategoriesListName);
       if (!refresh && vals  != null) {
         return vals;
       }
@@ -515,7 +516,8 @@ public class BwSessionImpl extends Logged implements BwSession {
       attrName = BwRequest.bwEditableCategoriesListName;
 
       //noinspection unchecked
-      vals = (Collection<BwCategory>)request.getSessionAttr(BwRequest.bwEditableCategoriesListName);
+      vals = (Collection<BwCategory>)request
+              .getSessionAttr(BwRequest.bwEditableCategoriesListName);
       if (!refresh && vals  != null) {
         return vals;
       }
@@ -531,7 +533,8 @@ public class BwSessionImpl extends Logged implements BwSession {
       attrName = BwRequest.bwDefaultCategoriesListName;
 
       //noinspection unchecked
-      vals = (Set<BwCategory>)request.getSessionAttr(BwRequest.bwDefaultCategoriesListName);
+      vals = (Set<BwCategory>)request
+              .getSessionAttr(BwRequest.bwDefaultCategoriesListName);
       if (!refresh && vals  != null) {
         return vals;
       }

@@ -16,19 +16,14 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.category;
+package org.bedework.webcommon.calendars;
 
-import org.bedework.calfacade.responses.CategoriesResponse;
+import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
-
-import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,48 +35,20 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class FetchCategoriesAction extends BwAbstractAction {
+public class FetchCollectionsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (!"true".equals(request.getStringActionPar("catlist="))) {
-      request.getSess().embedCategories(request, true,
-                                        BwSession.editableEntity);
-
-      // jsp transform follows for regular web page
-      return forwardSuccess;
-    }
-
-    // Return as json list for widgets
-    final Collection<BwCategory> vals = request.getSess().getCategoryCollection(
-            request, BwSession.ownersEntity, true);
-
+    final BwSession sess = request.getSess();
+    final CollectionsResponse cols = sess.getCollections(request);
+    final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
-    resp.setHeader("Content-Disposition",
-                   "Attachment; Filename=\"categoryList.json\"");
+    //resp.setHeader("Content-Disposition",
+    //               "Attachment; Filename=\"categoryList.json\"");
     resp.setContentType("application/json; charset=UTF-8");
 
-    final Client cl = request.getClient();
-    final CategoriesResponse cats = new CategoriesResponse();
-    cats.setCategories(vals);
-
-    if (vals != null) {
-      /* All this fixing of names is only required because we don't
-         have any real paths built into the category objects.
-
-         In 4.0 the schema should include all this info and we won't
-         need this.
-       */
-      final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
-      final BwPrincipal principal = cl.getCurrentPrincipal();
-
-      for (final BwCategory cat: vals) {
-        cat.fixNames(basicSysprops, principal);
-      }
-    }
-
-    cl.writeJson(resp, cats);
+    cl.writeJson(resp, cols);
     resp.getOutputStream().close();
 
     return forwardNull;

@@ -229,8 +229,9 @@ public class ColCloner extends Logged{
     
     final int size;
     
-    if (children != null) {
-      // A null collection signififes we haven't tried fetching
+    if ((children != null) ||
+        !col.getCollectionInfo().childrenAllowed) {
+      // A null collection signifies we haven't tried fetching
       size = 0;
     } else {
       try {

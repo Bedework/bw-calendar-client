@@ -320,14 +320,22 @@ public class BwSessionImpl extends Logged implements BwSession {
   public CollectionsResponse getCollections(final BwRequest req) {
     final Client cl = req.getClient();
     final CollectionsResponse cols = new CollectionsResponse();
-    
+
+    if ("true".equals(req.getStringActionPar("public="))) {
+      if (req.getReqPar("cs") != null) {
+        cols.setCollections(getUserCollections(req));
+      } else {
+        cols.setPublicCollections(getPublicCollections(req));
+      }
+    } else {
+      cols.setUserCollections(getUserCollections(req));
+    }
+
+    /* TOD what;'s this
     if (!BedeworkDefs.appTypeWebpublic.equals(cl.getAppType())) {
       cols.setCollections(getAppCollections(req));
     }
-
-    cols.setPublicCollections(getPublicCollections(req));
-
-    cols.setUserCollections(getUserCollections(req));
+    */
     
     cols.setStatus(Response.Status.ok);
     return cols;
@@ -738,14 +746,16 @@ public class BwSessionImpl extends Logged implements BwSession {
 
   private BwCalendar getClonedCollection(final BwRequest request,
                                          final BwCalendar col,
-                                         final boolean fromCopy) throws Throwable {
+                                         final boolean fromCopy)  {
     final ColCloner cc = new ColCloner(request.getClient(),
                                        request.getBwForm().getCalendarsOpenState());
-    final BwCalendar cloned;
+    final ColCloner.CloneResult clres = cc.deepClone(col, fromCopy);
+    
+    if (!clres.isOk()) {
+      return null;
+    }
 
-    cloned = cc.deepClone(col, fromCopy);
-
-    return cloned;
+    return clres.getCol();
   }
 
   private void refreshView(final BwRequest req) {

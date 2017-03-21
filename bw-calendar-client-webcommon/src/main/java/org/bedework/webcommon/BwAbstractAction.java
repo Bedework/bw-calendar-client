@@ -1874,8 +1874,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                     final String user,
                     boolean canSwitch) throws Throwable {
     BwActionFormBase form = (BwActionFormBase)request.getForm();
-    boolean publicAdmin = form.getConfig().getPublicAdmin();
-    boolean guestMode = form.getConfig().getGuestMode();
+    final ConfigCommon conf = form.getConfig();
+    boolean publicAdmin = conf.getPublicAdmin();
+    boolean guestMode = conf.getGuestMode();
     String calSuiteName = null;
 
 
@@ -1886,10 +1887,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 //    Client client = BwWebUtil.getClient(request.getRequest());
     Client client = module.getClient();
 
-    if (guestMode) {
+    if (BedeworkDefs.appTypeFeeder.equals(conf.getAppType())) {
+      calSuiteName = request.getReqPar("cs", conf.getCalSuite());
+    } else if (guestMode) {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
-      calSuiteName = form.getConfig().getCalSuite();
+      calSuiteName = conf.getCalSuite();
     } else if (publicAdmin & (client != null)) {
       /* Calendar suite we are administering is the one we find attached to a
        * group as we proceed up the tree

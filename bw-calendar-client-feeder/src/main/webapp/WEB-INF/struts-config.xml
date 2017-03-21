@@ -530,11 +530,19 @@
                validate="false">
     </action>
 
-    <action    path="/collections/json"
+    <action    path="/public-collections/json"
                type="org.bedework.webcommon.calendars.FetchCollectionsAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action;conversation=only;mdl=jcollections"
+               parameter="actionType=action;conversation=only;mdl=jcollections;public=true"
+               validate="false">
+    </action>
+
+    <action    path="/user-collections/json"
+               type="org.bedework.webcommon.calendars.FetchCollectionsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only;mdl=jcollections;public=false"
                validate="false">
     </action>
   </action-mappings>

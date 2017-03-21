@@ -19,12 +19,15 @@
 
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.client.Client;
 import org.bedework.util.struts.Request;
 
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
+
+import javax.servlet.http.HttpSession;
 
 /** A module represents a client and its associated state. A module
  * or its subclass MUST NOT be exposed to jsp. It MAY hold an object
@@ -231,6 +234,15 @@ public class BwModule implements Serializable {
         notify();
       }
     }
+
+    // Kill the session if it's the feeder
+    if ((getClient() == null) || BedeworkDefs.appTypeFeeder.equals(getClient().getAppType())) {
+      final HttpSession sess = currentReq.getRequest().getSession(false);
+      if (sess != null) {
+        sess.invalidate();
+      }
+    }
+
   }
 
   private void closeNow() throws Throwable {

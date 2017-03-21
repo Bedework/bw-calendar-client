@@ -7,19 +7,25 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwProperty;
+import org.bedework.calfacade.responses.Response;
+import org.bedework.util.misc.Logged;
 import org.bedework.util.misc.Util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.bedework.calfacade.responses.Response.Status.ok;
+
 /**
  * User: mike Date: 3/17/16 Time: 22:49
  */
-public class ColCloner {
+public class ColCloner extends Logged{
   private final Map<String, BwCalendar> clonedCols = new HashMap<>();
 
   private final Map<String, BwCategory> clonedCats = new HashMap<>();
@@ -27,17 +33,28 @@ public class ColCloner {
   private final Client cl;
 
   private final Set<String> openStates;
+  
+  private int numCloned;
+  private int numNodes;
 
-  private static class CloneResult {
+  public static class CloneResult extends Response {
     /* true if we found it in the map */
     boolean alreadyCloned;
 
-    BwCalendar col;
+    private BwCalendar col;
 
+    CloneResult() {
+    }
+    
     CloneResult(final BwCalendar col,
                 final boolean alreadyCloned) {
+      setStatus(ok);
       this.col = col;
       this.alreadyCloned = alreadyCloned;
+    }
+    
+    public BwCalendar getCol() {
+      return col;
     }
   }
 
@@ -47,37 +64,101 @@ public class ColCloner {
     this.openStates = openStates;
   }
 
+  private static class CloneStatus {
+    Deque<String> virtualPath = new ArrayDeque<>();
+    
+    void pushVp(final BwCalendar col) {
+      if (virtualPath.isEmpty()) {
+        virtualPath.push(Util.buildPath(true, "/", col.getName()));
+        return;
+      }
+
+      virtualPath.push(Util.buildPath(true, "/", virtualPath.peek(),
+                                      "/", col.getName()));
+    }
+    
+    void popVp() {
+      virtualPath.pop();
+    }
+
+    String getVp() {
+      return virtualPath.peek();
+    }
+  }
+  
   /** Given the root, fetch all the collections and clone them. 
    * 
    * @param val root of tree
    * @param fromCopy true if copying previously cloned tree
-   * @return cloned tree
-   * @throws Throwable
+   * @return response containing root of cloned tree
    */
-  BwCalendar deepClone(final BwCalendar val,
-                       final boolean fromCopy) throws Throwable {
-    final CloneResult cr = cloneOne(val, fromCopy);
+  CloneResult deepClone(final BwCalendar val,
+                        final boolean fromCopy) {
+    final CloneResult cr = deepClone(new CloneStatus(), val, fromCopy);
 
-    if (cr.alreadyCloned) {
-      return cr.col;
+    if (debug) {
+      debug("num cloned: " + numCloned);
+      debug("num nodes: " + numNodes);
     }
-
-    if ((val.getCalType() != BwCalendar.calTypeAlias) &&
-            (val.getCalType() != BwCalendar.calTypeExtSub)) {
-      cr.col.setChildren(getChildren(val, fromCopy));
-    }
-
-    return cr.col;
+    
+    return cr;
   }
 
-  private CloneResult cloneOne(final BwCalendar val,
-                               final boolean fromCopy) throws Throwable {
-    BwCalendar clCol = clonedCols.get(val.getPath());
+  private CloneResult deepClone(final CloneStatus status, 
+                                final BwCalendar val,
+                                final boolean fromCopy) {
+    try {
+      status.pushVp(val);
+      
+      final CloneResult cr = cloneOne(status, val, fromCopy);
+
+      if (cr.getStatus() != ok) {
+        return cr;
+      }
+      
+      cr.getCol().setVirtualPath(status.getVp());
+      
+      if (val.getCalType() != BwCalendar.calTypeExtSub) {
+        final CloneResult gccr = getChildren(status, cr.col, fromCopy);
+        if (!gccr.isOk()) {
+          return gccr;
+        }
+      }
+
+      return cr;
+    } finally {
+      status.popVp();      
+    }
+  }
+
+  /* Clone the single entity - which might already be cloned.
+   *
+   * If this is an alias then the alias target will also be cloned, 
+   * which might in itself require a deep clone.
+   * 
+   * If any entity is already cloned a rewrapped copy will be returned.
+   * 
+   */
+  private CloneResult cloneOne(final CloneStatus status,
+                               final BwCalendar val,
+                               final boolean fromCopy) {
+    BwCalendar clCol;
+    
+    if (fromCopy) {
+      clCol = val.cloneWrapper();
+      clonedCols.put(val.getPath(), clCol);
+
+      return new CloneResult(clCol, true);
+    }
+    
+    clCol = clonedCols.get(val.getPath());
 
     if (clCol != null) {
       if (openStates != null) {
         clCol.setOpen(openStates.contains(clCol.getPath()));
       }
+      
+      clCol = clCol.cloneWrapper();
 
       return new CloneResult(clCol, true);
     }
@@ -95,16 +176,33 @@ public class ColCloner {
 
     if ((val.getCalType() == BwCalendar.calTypeAlias) &&
             (val.getAliasUri() != null)) {
-      final BwCalendar aliased = cl.resolveAlias(val, false, false);
-
+      final BwCalendar aliased;
+      try {
+        aliased = cl.resolveAlias(val, false, false);
+      } catch (final Throwable t) {
+        if (debug) {
+          error(t);
+        }
+        return Response.error(new CloneResult(), t.getMessage());
+      }
+      
       if (aliased != null) {
         BwCalendar clonedAlias = clonedCols.get(aliased.getPath());
         
-        if (clonedAlias == null) {
+        if (clonedAlias != null) {
+          clonedAlias = clonedAlias.cloneWrapper();
+        } else {
           // Need to clone this one
-          clonedAlias = deepClone(aliased, fromCopy);
+
+          final CloneResult resp = deepClone(status, aliased, fromCopy);
+          if (!resp.isOk()) {
+            return resp;
+          }
+          
+          clonedAlias = resp.getCol();
           clonedCols.put(clonedAlias.getPath(), clonedAlias);
         }
+        
         clCol.setAliasCalType(clonedAlias.getCalType());
         clCol.setAliasTarget(clonedAlias);
         clonedAlias.setAliasOrigin(clCol);
@@ -114,45 +212,65 @@ public class ColCloner {
     return new CloneResult(clCol, false);
   }
 
-  private Collection<BwCalendar> getChildren(final BwCalendar col,
-                                             final boolean fromCopy) throws Throwable {
-    final Collection<BwCalendar> children;
-    
-    if (fromCopy) {
-      children = col.getChildren();
-    } else {
-      children = cl.getChildren(col);
-    }
-    
-    final Collection<BwCalendar> cloned = new ArrayList<>(children.size());
+  /* Get the children for the already cloned collection. 
+   *
+   */
+  private CloneResult getChildren(final CloneStatus status,
+                                  final BwCalendar col,
+                                  final boolean fromCopy) {
+    Collection<BwCalendar> children = col.getChildren();
 
-    if (!Util.isEmpty(children)) {
-      for (final BwCalendar c:children) {
-        final CloneResult cr = cloneOne(c, fromCopy);
-        cloned.add(cr.col);
-
-        if (cr.alreadyCloned) {
-          continue;
-        }
-
-        // Clone the subtree
-        if (c.getCalType() == BwCalendar.calTypeAlias) {
-          // Subtree is referenced by the target
-          if (cr.col.getAliasTarget() != null) {
-            cr.col.setChildren(cr.col.getAliasTarget().getChildren());
-          }
-          continue;
-        }
-        
-        if (c.getCalType() != BwCalendar.calTypeExtSub) {
-          cr.col.setChildren(getChildren(c, fromCopy));
-        }
+    if (Util.isEmpty(children) && (col.getCalType() == BwCalendar.calTypeAlias)) {
+      // The alias target will already have been resolved and cloned
+      if (col.getAliasTarget() != null) {
+        children = col.getAliasTarget().getChildren();
       }
     }
+    
+    final int size;
+    
+    if (children != null) {
+      // A null collection signififes we haven't tried fetching
+      size = 0;
+    } else {
+      try {
+        children = cl.getChildren(col);
+      } catch (final Throwable t) {
+        if (debug) {
+          error(t);
+        }
+        return Response.error(new CloneResult(), t.getMessage());
+      }
+      
+      size = children.size();
+    }
+    
+    final Collection<BwCalendar> cloned = new ArrayList<>(size);
+    col.setChildren(cloned);
 
-    return cloned;
+    if (Util.isEmpty(children)) {
+      return okReturn();
+    }
+    
+    for (final BwCalendar c:children) {
+      final CloneResult cr = deepClone(status, c, fromCopy);
+      if (!cr.isOk()) {
+        return cr;
+      }
+      
+      cloned.add(cr.col);
+    }
+
+    return okReturn();
   }
 
+  private CloneResult okReturn() {
+    final CloneResult cr = new CloneResult();
+    cr.setStatus(ok);
+    
+    return cr;
+  }
+  
   private Set<BwCategory> cloneCategories(final BwCalendar val) {
     if (val.getNumCategories() == 0) {
       return null;
@@ -161,12 +279,9 @@ public class ColCloner {
     final TreeSet<BwCategory> ts = new TreeSet<>();
 
     for (final BwCategory cat: val.getCategories()) {
-      BwCategory clCat = clonedCats.get(cat.getUid());
-
-      if (clCat == null) {
-        clCat = (BwCategory)cat.clone();
-        clonedCats.put(cat.getUid(), clCat);
-      }
+      final BwCategory clCat = 
+              clonedCats.computeIfAbsent(cat.getUid(),
+                                         k -> (BwCategory)cat.clone());
 
       ts.add(clCat);
     }

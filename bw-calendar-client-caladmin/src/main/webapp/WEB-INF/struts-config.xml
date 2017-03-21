@@ -1140,6 +1140,14 @@
       <forward name="success" path="/main/showCalsuiteTab.rdo" redirect="true" />
     </action>
 
+    <action    path="/calsuites/json"
+               type="org.bedework.webcommon.calsuite.FetchCalSuitesAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only;mdl=jcalsuites"
+               validate="false">
+    </action>
+
     <!-- ===============================================================
                          Suggested Actions
          =============================================================== -->

@@ -530,6 +530,14 @@
                validate="false">
     </action>
 
+    <action    path="/calsuites/json"
+               type="org.bedework.webcommon.calsuite.FetchCalSuitesAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action;conversation=only;mdl=jcalsuites"
+               validate="false">
+    </action>
+
     <action    path="/public-collections/json"
                type="org.bedework.webcommon.calendars.FetchCollectionsAction"
                name="calForm"

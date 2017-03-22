@@ -45,7 +45,7 @@ public class UpdateLocationAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest() ||
         (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
@@ -56,7 +56,7 @@ public class UpdateLocationAction extends BwAbstractAction {
       return forwardDelete;
     }
 
-    /** Updating location previously fetched
+    /* Updating location previously fetched
      */
     final BwLocation location = form.getLocation();
 
@@ -73,7 +73,7 @@ public class UpdateLocationAction extends BwAbstractAction {
 
     boolean added = false;
 
-    /** We are just updating from the current form values.
+    /* We are just updating from the current form values.
      */
     final ValidateResult ver = BwWebUtil.validateLocation(form);
     if (!ver.ok) {

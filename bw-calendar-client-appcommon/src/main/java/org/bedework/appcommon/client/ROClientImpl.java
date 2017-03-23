@@ -998,6 +998,11 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public String getPublicCalendarsRootPath() throws CalFacadeException {
+    return svci.getCalendarsHandler().getPublicCalendarsRootPath();
+  }
+
+  @Override
   public BwCalendar getPublicCalendars() throws CalFacadeException {
     checkUpdate();
 

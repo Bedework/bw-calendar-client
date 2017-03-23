@@ -809,6 +809,13 @@ public interface Client extends Serializable {
   Collection<BwCalendar> getAddContentCollections(boolean includeAliases)
           throws CalFacadeException;
 
+  /** Returns the href of the root of the public calendars tree.
+   *
+   * @return String   root path
+   * @throws CalFacadeException
+   */
+  String getPublicCalendarsRootPath() throws CalFacadeException;
+
   /** Returns the cloned root of the tree of public calendars.
    *
    * @return BwCalendar   root

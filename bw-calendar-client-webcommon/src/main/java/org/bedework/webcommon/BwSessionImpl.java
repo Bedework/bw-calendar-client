@@ -416,6 +416,14 @@ public class BwSessionImpl extends Logged implements BwSession {
         request.getErr().emit("No home collection");
         return null;
       } 
+
+      if (col.getPath().equals(cl.getPublicCalendarsRootPath())) {
+        if (debug) {
+          debug("Return public root");
+        }
+
+        return getPublicCollections(request);
+      }
       
       if (debug) {
         debug("About to clone: " + col.getPath());

@@ -22,6 +22,7 @@
     <roomField><html:text property="location.roomField" size="30" /></roomField>
     <subField1><html:text property="location.subField1" size="30" /></subField1>
     <subField2><html:text property="location.subField2" size="30" /></subField2>
+    <geouri><html:text property="location.geouri" size="30" /></geouri>
     <subaddress><html:text property="locationSubaddress.value" size="30" /></subaddress>
     <link><html:text property="location.link" size="30" /></link>
     <accessible><html:checkbox property="location.accessible" /></accessible>

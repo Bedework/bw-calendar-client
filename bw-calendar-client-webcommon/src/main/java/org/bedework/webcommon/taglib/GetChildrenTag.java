@@ -107,7 +107,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
       }
 
       if (cs == null) {
-        Logger.getLogger(getClass()).warn("Children == null for " + o);
+        //Logger.getLogger(getClass()).warn("Children == null for " + o);
         cs = new ArrayList<>();
       } else {
         if (getForm() == null) {

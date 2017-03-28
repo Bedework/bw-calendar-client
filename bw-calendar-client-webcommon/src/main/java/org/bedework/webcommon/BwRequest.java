@@ -291,7 +291,7 @@ public class BwRequest extends Request {
 
     BwFilterDef fd = null;
 
-    if ((name == null) && (fexpr == null)) {
+    if ((name == null) && ((fexpr == null) || fexpr.equals("no--filter"))) {
       return null;
     }
 

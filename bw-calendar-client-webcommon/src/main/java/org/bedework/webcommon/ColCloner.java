@@ -35,7 +35,11 @@ public class ColCloner extends Logged{
   private final Set<String> openStates;
   
   private int numCloned;
+  private int numCached;
+  private int numCopied;
   private int numNodes;
+  private int numSearches;
+  private int numAliasResolve;
 
   public static class CloneResult extends Response {
     /* true if we found it in the map */
@@ -94,11 +98,23 @@ public class ColCloner extends Logged{
    */
   CloneResult deepClone(final BwCalendar val,
                         final boolean fromCopy) {
+    final long start = System.currentTimeMillis();
+    if (debug) {
+      debug("start clone. fromCopy: " + fromCopy);
+    }
+    
     final CloneResult cr = deepClone(new CloneStatus(), val, fromCopy);
 
     if (debug) {
-      debug("num cloned: " + numCloned);
-      debug("num nodes: " + numNodes);
+      debug("================================");
+      debug("          cloned: " + numCloned);
+      debug("          cached: " + numCached);
+      debug("          copied: " + numCopied);
+      debug("           nodes: " + numNodes);
+      debug("        searches: " + numSearches);
+      debug("aliases resolved: " + numAliasResolve);
+      debug("            time: " + (System.currentTimeMillis() - start));
+      debug("================================");
     }
     
     return cr;
@@ -142,9 +158,11 @@ public class ColCloner extends Logged{
   private CloneResult cloneOne(final CloneStatus status,
                                final BwCalendar val,
                                final boolean fromCopy) {
+    numNodes++;
     BwCalendar clCol;
     
     if (fromCopy) {
+      numCopied++;
       clCol = val.cloneWrapper();
       clonedCols.put(val.getPath(), clCol);
 
@@ -154,6 +172,7 @@ public class ColCloner extends Logged{
     clCol = clonedCols.get(val.getPath());
 
     if (clCol != null) {
+      numCached++;
       if (openStates != null) {
         clCol.setOpen(openStates.contains(clCol.getPath()));
       }
@@ -163,6 +182,7 @@ public class ColCloner extends Logged{
       return new CloneResult(clCol, true);
     }
 
+    numCloned++;
     clCol = val.shallowClone();
 
     clCol.setCategories(cloneCategories(val));
@@ -178,6 +198,7 @@ public class ColCloner extends Logged{
             (val.getAliasUri() != null)) {
       final BwCalendar aliased;
       try {
+        numAliasResolve++;
         aliased = cl.resolveAlias(val, false, false);
       } catch (final Throwable t) {
         if (debug) {
@@ -187,21 +208,15 @@ public class ColCloner extends Logged{
       }
       
       if (aliased != null) {
-        BwCalendar clonedAlias = clonedCols.get(aliased.getPath());
-        
-        if (clonedAlias != null) {
-          clonedAlias = clonedAlias.cloneWrapper();
-        } else {
-          // Need to clone this one
-
-          final CloneResult resp = deepClone(status, aliased, fromCopy);
-          if (!resp.isOk()) {
-            return resp;
-          }
-          
-          clonedAlias = resp.getCol();
-          clonedCols.put(clonedAlias.getPath(), clonedAlias);
+        // Do a deep clone to rewrap entities if we already fetched them
+        final CloneResult resp = deepClone(status, 
+                                           aliased, 
+                                           false); // fromCopy
+        if (!resp.isOk()) {
+          return resp;
         }
+          
+        final BwCalendar clonedAlias = resp.getCol();
         
         clCol.setAliasCalType(clonedAlias.getCalType());
         clCol.setAliasTarget(clonedAlias);
@@ -235,6 +250,7 @@ public class ColCloner extends Logged{
       size = 0;
     } else {
       try {
+        numSearches++;
         children = cl.getChildren(col);
       } catch (final Throwable t) {
         if (debug) {

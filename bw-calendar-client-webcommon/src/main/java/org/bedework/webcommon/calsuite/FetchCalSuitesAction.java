@@ -1,0 +1,67 @@
+/* ********************************************************************
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License. You may obtain a
+    copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on
+    an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+*/
+package org.bedework.webcommon.calsuite;
+
+import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.responses.CalSuitesResponse;
+import org.bedework.calfacade.svc.BwCalSuite;
+import org.bedework.webcommon.BwAbstractAction;
+import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.webcommon.BwRequest;
+
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletResponse;
+
+import static org.bedework.calfacade.responses.Response.Status.ok;
+
+/** This action fetches all calendar suites.
+ *
+ * <p>Forwards to:<ul>
+ *      <li>"success"      ok.</li>
+ * </ul>
+ *
+ * @author Mike Douglass   douglm@rpi.edu
+ */
+public class FetchCalSuitesAction extends BwAbstractAction {
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
+
+    // Return as json list for widgets
+    final Collection<BwCalSuite> vals = cl.getContextCalSuites();
+
+    final HttpServletResponse resp = request.getResponse();
+
+    // Do this if ws get a filename?
+    //resp.setHeader("Content-Disposition",
+    //               "Attachment; Filename=\"calSuites.json\"");
+    resp.setContentType("application/json; charset=UTF-8");
+
+    final CalSuitesResponse csr = new CalSuitesResponse();
+    csr.setCalSuites(vals);
+    csr.setStatus(ok);
+
+    cl.writeJson(resp, csr);
+    resp.getOutputStream().close();
+
+    return forwardNull;
+  }
+}

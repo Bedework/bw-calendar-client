@@ -287,7 +287,7 @@ public class BwRequest extends Request {
   public BwFilterDef getFilterDef() throws Throwable {
     final Client cl = getClient();
     final String name = getReqPar("filterName");
-    final String fexpr = getReqPar("fexpr");
+    String fexpr = getReqPar("fexpr");
 
     BwFilterDef fd = null;
 
@@ -302,6 +302,7 @@ public class BwRequest extends Request {
         return null;
       }
     } else {
+      fexpr = fexpr.replace("-_", "|"); //  For the old webcache
       fd = new BwFilterDef();
       fd.setDefinition(fexpr);
     }

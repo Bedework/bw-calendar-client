@@ -112,6 +112,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "bwappname";
+  
+  private static boolean configTraced;
 
   @Override
   public String getId() {
@@ -234,8 +236,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (form.getNewSession()) {
-      if (debug) {
+      if (debug && !configTraced) {
         traceConfig(request);
+        configTraced = true;
       }
 
       form.setHour24(form.getConfig().getHour24());

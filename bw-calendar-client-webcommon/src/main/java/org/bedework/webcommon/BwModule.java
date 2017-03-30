@@ -21,9 +21,9 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.client.Client;
+import org.bedework.util.misc.Logged;
+import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
-
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 
@@ -39,17 +39,14 @@ import javax.servlet.http.HttpSession;
  *
  * @author Mike Douglass   douglm  rpi.edu
  */
-public class BwModule implements Serializable {
-  protected boolean debug = false;
-
-  private transient Logger log;
-
+public class BwModule extends Logged implements Serializable {
   /** */
   public static final String defaultModuleName = "default";
 
-  private String moduleName;
+  private final String moduleName;
   private Client cl;
-  private BwModuleState state;
+  private final BwModuleState state;
+  private String whenClaimed;
 
   /* ..................... fields associated with locking ............... */
 
@@ -64,7 +61,6 @@ public class BwModule implements Serializable {
 
   public BwModule(final String moduleName,
                   final Client cl) {
-    debug = getLogger().isDebugEnabled();
     this.moduleName = moduleName;
     this.cl = cl;
     state = new BwModuleState(moduleName);
@@ -79,9 +75,9 @@ public class BwModule implements Serializable {
 
   /** The current client object for this module.
    *
-   * @param val
+   * @param val the client
    */
-  public void setClient(Client val) {
+  public void setClient(final Client val) {
     cl = val;
   }
 
@@ -103,9 +99,9 @@ public class BwModule implements Serializable {
 
   /** The current request for this module.
    *
-   * @param val
+   * @param val the request
    */
-  public void setRequest(Request val) {
+  public void setRequest(final Request val) {
     currentReq = val;
   }
 
@@ -141,9 +137,9 @@ public class BwModule implements Serializable {
 
   /** Set inuse flag
    *
-   * @param val
+   * @param val inuse flag
    */
-  public void setInuse(boolean val) {
+  public void setInuse(final boolean val) {
     inuse = val;
   }
 
@@ -162,8 +158,9 @@ public class BwModule implements Serializable {
     int attempts = 0;
     while (getInuse()) {
       if (debug) {
-        debugMsg("Module " + getModuleName() +
-                         " in use by " + getWaiters());
+        debug("Module " + getModuleName() +
+                      " in use by " + getWaiters() +
+                      " Timestamp: " + whenClaimed);
       }
       // double-clicking on our links eh?
       if ((getWaiters() > 10) || (attempts > 3)) {
@@ -173,7 +170,7 @@ public class BwModule implements Serializable {
       try {
         wait(5000);
         attempts++;
-      } catch (InterruptedException e) {
+      } catch (final InterruptedException e) {
         return false;
       } finally {
         decWaiters();
@@ -181,6 +178,7 @@ public class BwModule implements Serializable {
     }
 
     setInuse(true);
+    whenClaimed = Util.icalUTCTimestamp();
 
     return true;
   }
@@ -210,10 +208,10 @@ public class BwModule implements Serializable {
   /** Close the session.
    *
    * @param cleanUp  true if we are cleaning up for id switch etc
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public void close(final boolean cleanUp) throws Throwable {
-    int convType = currentReq.getConversationType();
+    final int convType = currentReq.getConversationType();
 
     try {
       if (cleanUp) {
@@ -249,36 +247,17 @@ public class BwModule implements Serializable {
     Throwable t = null;
 
     try {
-      Client cl = getClient();
+      final Client cl = getClient();
       if (cl != null) {
         cl.close();
       }
-    } catch (Throwable t1) {
+    } catch (final Throwable t1) {
       t = t1;
     }
 
     if (t != null) {
       throw t;
     }
-  }
-
-  /** Get a logger for messages
-   *
-   * @return Logger
-   */
-  private Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
-  }
-
-  /**
-   * @param msg
-   */
-  private void debugMsg(final String msg) {
-    getLogger().debug(msg);
   }
 }
 

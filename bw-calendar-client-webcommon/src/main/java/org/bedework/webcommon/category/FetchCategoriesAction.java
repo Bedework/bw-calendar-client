@@ -58,8 +58,10 @@ public class FetchCategoriesAction extends BwAbstractAction {
 
     final HttpServletResponse resp = request.getResponse();
 
-    resp.setHeader("Content-Disposition",
-                   "Attachment; Filename=\"categoryList.json\"");
+    if (!"true".equals(request.getStringActionPar("catnofile="))) {
+      resp.setHeader("Content-Disposition",
+                     "Attachment; Filename=\"categoryList.json\"");
+    }
     resp.setContentType("application/json; charset=UTF-8");
 
     final Client cl = request.getClient();
@@ -80,6 +82,8 @@ public class FetchCategoriesAction extends BwAbstractAction {
         cat.fixNames(basicSysprops, principal);
       }
     }
+
+    okReturn(cats);
 
     cl.writeJson(resp, cats);
     resp.getOutputStream().close();

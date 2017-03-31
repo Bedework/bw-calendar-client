@@ -527,7 +527,7 @@
                type="org.bedework.webcommon.category.FetchCategoriesAction"
                name="calForm"
                scope="session"
-               parameter="catlist=true;actionType=action;conversation=only;mdl=jcategories"
+               parameter="catlist=true;catnofile=true;actionType=action;conversation=only;mdl=jcategories"
                validate="false">
     </action>
 

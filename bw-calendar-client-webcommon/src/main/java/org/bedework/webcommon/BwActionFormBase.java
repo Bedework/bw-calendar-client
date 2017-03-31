@@ -373,7 +373,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private BwCategory category;
 
   private BwString categoryWord;
-  private BwString categoryDesc;
+  private String categoryDesc;
+  private String categoryStatus;
 
   /* ....................................................................
    *                   Contacts
@@ -1919,14 +1920,11 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     categoryWord = null;
     categoryDesc = null;
     if (val != null) {
-      BwString s = val.getWord();
+      final BwString s = val.getWord();
       if (s != null) {
         categoryWord = (BwString)s.clone();
       }
-      s = val.getDescription();
-      if (s != null) {
-        categoryDesc = (BwString)s.clone();
-      }
+      categoryDesc = val.getDescriptionVal();
     }
   }
 
@@ -1964,7 +1962,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /**
    * @param val
    */
-  public void setCategoryDesc(final BwString val) {
+  public void setCategoryDescription(final String val) {
     categoryDesc = val;
   }
 
@@ -1972,12 +1970,22 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    *
    * @return BwString  Category Desc value object
    */
-  public BwString getCategoryDesc() {
-    if (categoryDesc == null) {
-      categoryDesc = new BwString();
-    }
-
+  public String getCategoryDescription() {
     return categoryDesc;
+  }
+
+  /**
+   * @param val status of category
+   */
+  public void setCategoryStatus(final String val) {
+    categoryStatus = val;
+  }
+
+  /** 
+   * @return String  Category Status
+   */
+  public String getCategoryStatus() {
+    return categoryStatus;
   }
 
   /** This is the current category,

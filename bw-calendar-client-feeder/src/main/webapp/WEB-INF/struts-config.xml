@@ -304,9 +304,10 @@
                type="org.bedework.webcommon.search.RenderSearchResultAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render;conversation=only;refaction=/main/showEventList.rdo"
+               parameter="actionType=render;conversation=end;refaction=/main/showEventList.rdo"
                validate="false">
       <forward name="success" path="/docs/event/eventList.jsp"/>
+      <forward name="error" path="/docs/event/eventList.jsp"/>
     </action>
 
     <!-- ...............................................................

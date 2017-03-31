@@ -18,10 +18,14 @@
   <logic:present name="category" property="name" >
       <bw:emitText name="category" property="name" />
   </logic:present>
-  <%-- description of the category  --%>
-  <logic:present name="category" property="description" >
-    <bw:emitText name="category" property="description.value" tagName="description" />
-  </logic:present>
+    <%-- description of the category  --%>
+    <logic:present name="category" property="descriptionVal" >
+      <bw:emitText name="category" property="descriptionVal" tagName="description" />
+    </logic:present>
+    <%-- status of the category  --%>
+    <logic:present name="category" property="status" >
+      <bw:emitText name="category" property="status" tagName="status" />
+    </logic:present>
   <%-- creator of the category  --%>
   <bw:emitText name="category" property="creatorHref" tagName="creator" />
 </category>

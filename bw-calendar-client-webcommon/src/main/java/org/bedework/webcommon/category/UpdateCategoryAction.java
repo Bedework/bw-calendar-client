@@ -24,6 +24,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -40,34 +41,31 @@ import org.bedework.webcommon.BwSession;
  * @author Mike Douglass   douglm rpi.edu
  */
 public class UpdateCategoryAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest() ||
             (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
 
-    String reqpar = request.getReqPar("delete");
+    final String reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
       return forwardDelete;
     }
 
-    boolean add = form.getAddingCategory();
+    final boolean add = form.getAddingCategory();
 
     boolean added = false;
 
-    /** We are just updating from the current form values.
+    /* We are just updating from the current form values.
      */
-    ValidateCategoryResult vcr = validateCategory(form);
+    final ValidateCategoryResult vcr = validateCategory(form);
     if (!vcr.ok) {
       return forwardRetry;
     }
@@ -77,7 +75,7 @@ public class UpdateCategoryAction extends BwAbstractAction {
        category to the database and then retrieve its categoryid.
      */
 
-    BwCategory cat = form.getCategory();
+    final BwCategory cat = form.getCategory();
 
     if (add) {
       cat.setPublick(cl.getPublicAdmin());
@@ -124,53 +122,70 @@ public class UpdateCategoryAction extends BwAbstractAction {
 
   private ValidateCategoryResult validateCategory(final BwActionFormBase form)
           throws Throwable {
-    ValidateCategoryResult vcr = new ValidateCategoryResult();
+    final ValidateCategoryResult vcr = new ValidateCategoryResult();
 
-    BwCategory cat = form.getCategory();
+    final BwCategory cat = form.getCategory();
 
-    BwString str = cat.getWord();
-    BwString frmstr = form.getCategoryWord();
-    if (frmstr != null) {
-      if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
-        frmstr = null;
+    final BwString str = cat.getWord();
+    BwString formstr = form.getCategoryWord();
+    if (formstr != null) {
+      if (formstr.checkNulls() && (formstr.getValue() == null)) {
+        formstr = null;
       }
     }
 
     if (str == null) {
-      if (frmstr != null) {
+      if (formstr != null) {
         vcr.changed = true;
-        cat.setWord(frmstr);
+        cat.setWord(formstr);
       }
-    } else if (frmstr == null) {
+    } else if (formstr == null) {
       vcr.changed = true;
       cat.deleteWord();
-    } else if (str.update(frmstr)) {
+    } else if (str.update(formstr)) {
       vcr.changed = true;
     }
 
-    str = cat.getDescription();
-    frmstr = form.getCategoryDesc();
-    if (frmstr != null) {
-      if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
-        frmstr = null;
-      }
-    }
+    BwString desc = cat.getDescription();
+    final String formDesc = Util.checkNull(form.getCategoryDescription());
 
-    if (str == null) {
-      if (frmstr != null) {
+    if (desc == null) {
+      if (formDesc != null) {
         vcr.changed = true;
-        cat.setDescription(frmstr);
+        cat.setDescriptionVal(formDesc);
+        desc = cat.getDescription();
       }
-    } else if (frmstr == null) {
+    } else if (formDesc == null) {
+      vcr.changed = desc.getValue() != null;
+      desc.setValue(null);
+    } else if (!formDesc.equals(desc.getValue())) {
+      desc.setValue(formDesc);
       vcr.changed = true;
-      cat.deleteDescription();
-    } else if (str.update(frmstr)) {
+    }
+    
+    final String formSt = Util.checkNull(form.getCategoryStatus());
+
+    if (desc == null) {
+      if (formSt != null) {
+        vcr.changed = true;
+        desc = new BwString(formSt, null);
+        cat.setDescription(desc);
+      }
+    } else if (formSt == null) {
+      vcr.changed = desc.getLang() != null;
+      desc.setLang(null);
+    } else if (!formSt.equals(desc.getLang())) {
+      desc.setLang(formSt);
       vcr.changed = true;
     }
 
     if (cat.getWord() == null) {
       form.getErr().emit(ValidationError.missingCategoryKeyword);
       vcr.ok = false;
+    } else if (desc != null) {
+      if ((desc.getLang() == null) && (desc.getValue() == null)) {
+        cat.deleteDescription();
+      }
     }
 
     return vcr;

@@ -25,47 +25,8 @@ try {
     <bw:emitText name="calForm" property="defaultTzid" />
   </now>
   <bean:define id="ctView" name="moduleState" property="curTimeView"/>
-  <currentdate><%-- The current user-selected date --%>
-    <date><bean:write name="ctView" property="curDayFmt.dateDigits"/></date><%--
-      Value: yyyymmdd - date value --%>
-    <longdate><bean:write name="ctView"
-                          property="curDayFmt.fullDateString"/></longdate><%--
-      Value (example): Wednesday, February 11, 2004 --%>
-    <shortdate><bean:write name="ctView" property="curDayFmt.shortDateString"/></shortdate><%--
-      Value (example): 2/8/04 - short representation of the date --%>
-    <monthname><bean:write name="ctView" property="curDayFmt.monthName"/></monthname><%--
-      Value (example): January - full month name --%>
-  </currentdate>
-  <firstday><%-- The first date appearing in the currently selected time period --%>
-    <date><bean:write name="ctView" property="firstDayFmt.dateDigits"/></date><%--
-      Value: yyyymmdd - date value --%>
-    <longdate><bean:write name="ctView"
-                          property="firstDayFmt.fullDateString"/></longdate><%--
-      Value (example): Wednesday, February 11, 2004 --%>
-    <shortdate><bean:write name="ctView" property="firstDayFmt.shortDateString"/></shortdate><%--
-      Value (example): 2/8/04 - short representation of the date --%>
-    <monthname><bean:write name="ctView" property="firstDayFmt.monthName"/></monthname><%--
-      Value (example): January - full month name --%>
-  </firstday>
-  <lastday><%-- The last date appearing in the currently selected time period --%>
-    <date><bean:write name="ctView" property="lastDayFmt.dateDigits"/></date><%--
-      Value: yyyymmdd - date value --%>
-    <longdate><bean:write name="ctView"
-                          property="lastDayFmt.fullDateString"/></longdate><%--
-      Value (example): Wednesday, February 11, 2004 --%>
-    <shortdate><bean:write name="ctView" property="lastDayFmt.shortDateString"/></shortdate><%--
-      Value (example): 2/8/04 - short representation of the date --%>
-    <monthname><bean:write name="ctView" property="lastDayFmt.monthName"/></monthname><%--
-      Value (example): January - full month name --%>
-  </lastday>
-  <previousdate><bean:write name="ctView" property="prevDate"/></previousdate><%--
-    Value: YYYYMMDD - The previous "firstdate" in the selected time period  --%>
-  <nextdate><bean:write name="ctView" property="nextDate"/></nextdate><%--
-    Value: YYYYMMDD - The next "firstdate" in the selected time period --%>
   <periodname><bean:write name="ctView" property="periodName"/></periodname><%--
     Values: Day, Week, Month, Year - The current time period name.   --%>
-  <multiday><bean:write name="ctView" property="multiDay"/></multiday><%--
-    Values: true, false - Flag if we are viewing multiple days --%>
   <bw:emitText name="calForm" property="hour24" /><%--
     Values: true, false - Flag if we are using 24 hour time --%>
 

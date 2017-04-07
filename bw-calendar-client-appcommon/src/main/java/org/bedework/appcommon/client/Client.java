@@ -1401,6 +1401,18 @@ public interface Client extends Serializable {
    */
   List<BwResource> getAllResources(String path) throws CalFacadeException;
 
+  /** Get resources to which this user has access - content is not fetched.
+   *
+   * @param  path           String path to containing collection
+   * @param start from here                       
+   * @param count this many                       
+   * @return List     of BwResource
+   * @throws CalFacadeException
+   */
+  List<BwResource> getResources(String path,
+                                int start,
+                                int count) throws CalFacadeException;
+
   /** Update a resource.
    *
    * @param  val          resource

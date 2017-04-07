@@ -1471,6 +1471,15 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public List<BwResource> getResources(final String path,
+                                       final int start,
+                                       final int count)
+          throws CalFacadeException {
+    checkUpdate();
+    return svci.getResourcesHandler().get(path, start, count);
+  }
+
+  @Override
   public void updateResource(final BwResource val,
                              final boolean updateContent)
           throws CalFacadeException {

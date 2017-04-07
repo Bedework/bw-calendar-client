@@ -218,10 +218,16 @@ public class BwModuleState implements Serializable {
 
   /** The current view (day, week, month etc)
    *
-   * @param val
+   * @param val the current time view
    */
   public void setCurTimeView(final TimeView val) {
     curTimeView = val;
+    
+    if (val != null) {
+      curDayFmt = val.getCurDayFmt();
+      firstDayFmt = val.getFirstDayFmt();
+      lastDayFmt = val.getFirstDayFmt();
+    }
   }
 
   /**
@@ -230,6 +236,22 @@ public class BwModuleState implements Serializable {
    */
   public TimeView getCurTimeView() {
     return curTimeView;
+  }
+  
+  private TimeView.CalFmt curDayFmt;
+  private TimeView.CalFmt firstDayFmt;
+  private TimeView.CalFmt lastDayFmt;
+  
+  public TimeView.CalFmt getCurDayFmt() {
+    return curDayFmt;
+  }
+
+  public TimeView.CalFmt getFirstDayFmt() {
+    return firstDayFmt;
+  }
+
+  public TimeView.CalFmt getLastDayFmt() {
+    return lastDayFmt;
   }
 
   /** This often appears as the request parameter specifying the view.

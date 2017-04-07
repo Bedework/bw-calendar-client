@@ -165,6 +165,9 @@ public class ColCloner extends Logged{
       numCopied++;
       clCol = val.cloneWrapper();
       clonedCols.put(val.getPath(), clCol);
+      if (openStates != null) {
+        clCol.setOpen(openStates.contains(clCol.getPath()));
+      }
 
       return new CloneResult(clCol, true);
     }

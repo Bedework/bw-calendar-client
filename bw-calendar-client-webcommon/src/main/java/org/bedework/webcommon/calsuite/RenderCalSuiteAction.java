@@ -44,22 +44,19 @@ import java.util.Set;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class RenderCalSuiteAction extends RenderAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
-    String name = form.getCalSuiteName();
+    final String name = form.getCalSuiteName();
 
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
 
-    BwCalSuiteWrapper cs = cl.getCalSuite(name);
+    final BwCalSuiteWrapper cs = cl.getCalSuite(name);
 
     if (cs == null) {
       form.getErr().emit(ClientError.unknownCalendarSuite);
@@ -67,9 +64,9 @@ public class RenderCalSuiteAction extends RenderAction {
     }
 
     SubContext suiteCtx = null;
-    BwSystem syspars = cl.getSyspars();
-    Set<SubContext> contexts = syspars.getContexts();
-    for (SubContext subContext : contexts) {
+    final BwSystem syspars = cl.getSyspars();
+    final Set<SubContext> contexts = syspars.getContexts();
+    for (final SubContext subContext : contexts) {
       if (subContext.getCalSuite().equals(cs.getName())) {
         suiteCtx = subContext;
       }
@@ -84,7 +81,7 @@ public class RenderCalSuiteAction extends RenderAction {
     }
     form.setCalSuite(cs);
 
-    String reqpar = request.getReqPar("delete");
+    final String reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
       return forwardDelete;

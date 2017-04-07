@@ -22,7 +22,6 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.CollectionCollator;
-import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.MonthView;
@@ -42,6 +41,7 @@ import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
+import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.util.misc.Logged;
@@ -331,7 +331,7 @@ public class BwSessionImpl extends Logged implements BwSession {
       cols.setUserCollections(getUserCollections(req));
     }
 
-    /* TOD what;'s this
+    /* TODO what's this
     if (!BedeworkDefs.appTypeWebpublic.equals(cl.getAppType())) {
       cols.setCollections(getAppCollections(req));
     }

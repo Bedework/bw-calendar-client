@@ -35,10 +35,10 @@ import org.bedework.webcommon.RenderAction;
  */
 public class EditResourceAction extends RenderAction {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    String name = request.getReqPar("name");
-    String class_ = request.getReqPar("class");
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final String name = request.getReqPar("name");
+    final String class_ = request.getReqPar("class");
 
     form.setResourceName(name);
     form.setResourceClass(class_);

@@ -38,7 +38,7 @@ public class RenderSearchResultAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     request.setRequestAttr(BwRequest.bwSearchListName,
                            cl.getSearchResult(Position.current));

@@ -57,7 +57,7 @@ public class RenderResourcesAction extends RenderAction {
    * Gets the resources to be displayed in the UI.
    * @param cl the client
    * @param currentCalSuite calendar suite
-   * @throws CalFacadeException
+   * @throws CalFacadeException on errors
    */
   protected List<CalSuiteResource> getResources(final Client cl,
                                                 final BwCalSuite currentCalSuite)

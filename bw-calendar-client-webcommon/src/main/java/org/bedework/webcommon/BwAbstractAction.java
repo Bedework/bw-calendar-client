@@ -138,10 +138,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final BwCallback cb = getCb(request, form);
 
-    final int status = cb.in(request);
+    final int status;
+    
+    try {
+      status = cb.in(request);
+    } catch (final Throwable t) {
+      error(t);
+      invalidateSession(request);
+      return forwards[forwardError];
+    }
+
     if (status != HttpServletResponse.SC_OK) {
       request.getResponse().setStatus(status);
       getLogger().error("Callback.in status=" + status);
+      invalidateSession(request);
       return forwards[forwardError];
     }
 
@@ -1592,6 +1602,18 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return null;
+  }
+
+  /** Invalidate session.
+   *
+   * @param request    HttpServletRequest
+   */
+  protected void invalidateSession(final Request request) {
+    final HttpSession sess = request.getRequest().getSession(false);
+
+    if (sess != null) {
+      sess.invalidate();
+    }
   }
 
   /* ********************************************************************

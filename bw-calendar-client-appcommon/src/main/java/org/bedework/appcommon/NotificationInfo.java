@@ -102,7 +102,7 @@ public class NotificationInfo implements Serializable {
      */
 
     final Collection<BwResource> rs =
-            cl.getAllResources(col.getPath());
+            cl.getResources(col.getPath(), 0, 25);
 
     final Map<String, NotifyResource> toDelete =
         new HashMap<>(notes);

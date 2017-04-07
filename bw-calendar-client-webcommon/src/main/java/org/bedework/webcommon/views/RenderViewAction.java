@@ -36,21 +36,19 @@ import org.bedework.webcommon.RenderAction;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class RenderViewAction extends RenderAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
-    String name = form.getViewName();
+    final String name = form.getViewName();
 
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
 
-    BwView view = cl.getView(name);
+    final BwView view = cl.getView(name);
 
     if (view == null) {
       form.getErr().emit(ClientError.unknownView, name);
@@ -59,7 +57,7 @@ public class RenderViewAction extends RenderAction {
 
     form.setView(view);
 
-    String reqpar = request.getReqPar("delete");
+    final String reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
       return forwardDelete;

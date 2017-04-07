@@ -18,12 +18,16 @@
 */
 package org.bedework.webcommon.calendars;
 
-import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.responses.CollectionsResponse;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
+
+import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,13 +48,98 @@ public class FetchCollectionsAction extends BwAbstractAction {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
-    //resp.setHeader("Content-Disposition",
-    //               "Attachment; Filename=\"categoryList.json\"");
-    resp.setContentType("application/json; charset=UTF-8");
+    final String format = request.getReqPar("format");
+    
+    if (format == null) {
+      //resp.setHeader("Content-Disposition",
+      //               "Attachment; Filename=\"categoryList.json\"");
+      resp.setContentType("application/json; charset=UTF-8");
 
-    cl.writeJson(resp, cols);
-    resp.getOutputStream().close();
+      cl.writeJson(resp, cols);
+      resp.getOutputStream().close();
 
+      return forwardNull;
+    }
+
+    if (format.equals("cmds")) {
+      // Create a bunch of commands
+      
+      final BwCalendar col;
+      
+      if (cols.getCollections() != null) {
+        col = cols.getCollections();
+      } else if (cols.getPublicCollections() != null) {
+        col = cols.getPublicCollections();
+      } else if (cols.getUserCollections() != null) {
+        col = cols.getUserCollections();
+      } else {
+        col = null;
+      }
+
+      resp.setContentType("application/text; charset=UTF-8");
+
+      if (col == null) {
+        return forwardNull;
+      }
+
+      final PrintWriter pw = resp.getWriter();
+      
+      writeCol(col, pw);
+    }
+    
     return forwardNull;
+  }
+  
+  private void writeCol(final BwCalendar col, 
+                        final PrintWriter pw) {
+    pw.print("create collection ");
+    pw.print("\"" + col.getPath() + "\" ");
+    pw.print("\"" + col.getName() + "\"");
+    
+    if (col.getCalType() == BwCalendar.calTypeFolder) {
+      pw.print(" folder ");
+    } else if (col.getCalType() == BwCalendar.calTypeCalendarCollection) {
+      pw.print(" calendar ");
+    } else if (col.getCalType() == BwCalendar.calTypeAlias) {
+      if (col.getIsTopicalArea()) {
+        pw.print(" topic ");
+      } else {
+        pw.print(" alias ");
+      }
+    } else {
+      pw.print(" *" + col.getCalType() + "* ");
+    }
+
+    pw.print(col.getOwnerHref());
+
+    if (col.getCalType() == BwCalendar.calTypeAlias) {
+      final String uri = col.getAliasUri();
+      
+      if (!uri.startsWith("bwcal://")) {
+        pw.print(" \"" + col.getAliasUri() + "\"");
+      } else {
+        pw.print(" \"" + col.getAliasUri().substring(8) + "\"");
+      }
+    }
+    
+    if (col.getFilterExpr() != null) {
+      pw.print(" filter=\"" + col.getFilterExpr() + "\"");
+    }
+    
+    if (!Util.isEmpty(col.getCategoryUids())) {
+      for (final String cuid: col.getCategoryUids()) {
+        pw.print(" category=\"" + cuid + "\"");
+      }
+    }
+
+    pw.println();
+    
+    if (Util.isEmpty(col.getChildren())) {
+      return;
+    }
+
+    for (final BwCalendar child: col.getChildren()) {
+      writeCol(child, pw);
+    }
   }
 }

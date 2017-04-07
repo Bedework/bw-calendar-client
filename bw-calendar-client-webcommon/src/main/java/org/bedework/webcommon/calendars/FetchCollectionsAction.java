@@ -27,6 +27,8 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -111,6 +113,8 @@ public class FetchCollectionsAction extends BwAbstractAction {
     }
 
     pw.print(col.getOwnerHref());
+    pw.print(" ");
+    pw.print(col.getCreatorHref());
 
     if (col.getCalType() == BwCalendar.calTypeAlias) {
       final String uri = col.getAliasUri();
@@ -123,13 +127,21 @@ public class FetchCollectionsAction extends BwAbstractAction {
     }
     
     if (col.getFilterExpr() != null) {
-      pw.print(" filter=\"" + col.getFilterExpr() + "\"");
+      pw.print(" filter=\"" + 
+                       StringEscapeUtils.escapeJava(col.getFilterExpr())
+                       + "\"");
     }
     
     if (!Util.isEmpty(col.getCategoryUids())) {
       for (final String cuid: col.getCategoryUids()) {
         pw.print(" category=\"" + cuid + "\"");
       }
+    }
+
+    if (col.getDescription() != null) {
+      pw.print(" desc=\"" +
+                       StringEscapeUtils.escapeJava(col.getDescription())
+                       + "\"");
     }
 
     pw.println();

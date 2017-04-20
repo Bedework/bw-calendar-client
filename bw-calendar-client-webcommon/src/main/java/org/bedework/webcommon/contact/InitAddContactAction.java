@@ -53,6 +53,7 @@ public class InitAddContactAction extends BwAbstractAction {
     form.assignAddingContact(true);
     form.setContact(BwContact.makeContact());
     form.setContactName(null);
+    form.setContactStatus(null);
 
     return forwardContinue;
   }

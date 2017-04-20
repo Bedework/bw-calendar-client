@@ -78,6 +78,7 @@ public class FetchContactAction extends BwAbstractAction {
 
     if (contact.getCn() != null) {
       form.setContactName((BwString)contact.getCn().clone());
+      form.setContactStatus(contact.getCn().getLang());
     } else {
       form.setContactName(null);
     }

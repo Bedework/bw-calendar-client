@@ -6,15 +6,12 @@
   <bw:emitText name="category" property="uid" />
   <%-- text value of the category --%>
   <logic:present name="category" property="word" >
-    <logic:present name="category" property="word.value" >
-      <bw:emitText name="category" property="word.value" tagName="value" />
-    </logic:present>
-    <logic:notPresent name="category" property="word.value" >
-      <value></value>
-    </logic:notPresent>
+    <bw:emitText name="category" property="word.value" tagName="value" />
+    <bw:emitText name="category" property="word.lang" tagName="status" />
   </logic:present>
   <logic:notPresent name="category" property="word" >
     <value></value>
+    <status></status>
   </logic:notPresent>
   <logic:present name="category" property="colPath" >
     <bw:emitText name="category" property="colPath" />
@@ -23,7 +20,6 @@
     <bw:emitText name="category" property="name" />
   </logic:present>
   <%-- description of the category  --%>
-    <%-- description of the category  --%>
     <logic:present name="category" property="descriptionVal" >
       <bw:emitText name="category" property="descriptionVal" tagName="description" />
     </logic:present>

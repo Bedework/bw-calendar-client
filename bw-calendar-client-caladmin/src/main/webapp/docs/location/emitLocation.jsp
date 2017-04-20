@@ -8,7 +8,7 @@
 <location>
   <address>
     <genurl:link page="<%=rpitemp%>">
-      <bean:write name="location" property="address.value" />
+      <bean:write name="location" property="addressField" />
     </genurl:link>
   </address>
   <subaddress>

@@ -51,6 +51,7 @@ public class InitAddLocationAction extends BwAbstractAction {
     form.assignAddingLocation(true);
     form.setLocation(BwLocation.makeLocation());
     form.setLocationAddress(null);
+    form.setLocationStatus(null);
     form.setLocationSubaddress(null);
 
     return forwardContinue;

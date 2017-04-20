@@ -339,14 +339,13 @@ public class BwWebUtil {
   /**
    * @param form struts form
    * @return ValidateResult
-   * @throws Throwable
    */
-  public static ValidateResult validateLocation(final BwActionFormBase form)
-        throws Throwable {
+  public static ValidateResult validateLocation(final BwActionFormBase form) {
     final ValidateResult vr = new ValidateResult();
 
     final BwLocation loc = form.getLocation();
 
+    /*
     BwString str = loc.getAddress();
     BwString frmstr = form.getLocationAddress();
     if (frmstr != null) {
@@ -366,9 +365,10 @@ public class BwWebUtil {
     } else if (str.update(frmstr)) {
       vr.changed = true;
     }
+    */
 
-    str = loc.getSubaddress();
-    frmstr = form.getLocationSubaddress();
+    final BwString str = loc.getSubaddress();
+    BwString frmstr = form.getLocationSubaddress();
     if (frmstr != null) {
       if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
         frmstr = null;
@@ -387,26 +387,41 @@ public class BwWebUtil {
       vr.changed = true;
     }
 
-    if (loc.getAddress() == null) {
+    final BwString addr = loc.getAddress();
+    if (addr == null) {
       form.getErr().emit(ValidationError.missingAddress);
       vr.ok = false;
+    } else {
+      /* Put the status in the address lang */
+
+      final String formSt = Util.checkNull(form.getCategoryStatus());
+
+      if (formSt == null) {
+        vr.changed = addr.getLang() != null;
+        addr.setLang(null);
+      } else if (!formSt.equals(addr.getLang())) {
+        addr.setLang(formSt);
+        vr.changed = true;
+      }
     }
+    
+    // XXX - always true for the moment
+    vr.changed = true;
 
     return vr;
   }
 
   /**
    *
-   * @param form
+   * @param form for data
    * @return ValidateResult
-   * @throws CalFacadeException
    */
-  public static ValidateResult validateContact(final BwActionFormBase form) throws CalFacadeException {
-    ValidateResult vr = new ValidateResult();
+  public static ValidateResult validateContact(final BwActionFormBase form) {
+    final ValidateResult vr = new ValidateResult();
 
-    BwContact contact = form.getContact();
+    final BwContact contact = form.getContact();
 
-    BwString str = contact.getCn();
+    final BwString str = contact.getCn();
     BwString frmstr = form.getContactName();
     if (frmstr != null) {
       if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
@@ -429,6 +444,20 @@ public class BwWebUtil {
       vr.ok = false;
     } else if (str.update(frmstr)) {
       vr.changed = true;
+    }
+    
+    if (str != null) {
+      /* Put the status in the cn lang */
+
+      final String formSt = Util.checkNull(form.getCategoryStatus());
+
+      if (formSt == null) {
+        vr.changed = str.getLang() != null;
+        str.setLang(null);
+      } else if (!formSt.equals(str.getLang())) {
+        str.setLang(formSt);
+        vr.changed = true;
+      }
     }
 
     contact.setPhone(Util.checkNull(contact.getPhone()));

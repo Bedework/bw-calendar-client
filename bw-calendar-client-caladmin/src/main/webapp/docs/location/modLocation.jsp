@@ -26,6 +26,7 @@
     <subaddress><html:text property="locationSubaddress.value" size="30" /></subaddress>
     <link><html:text property="location.link" size="30" /></link>
     <accessible><html:checkbox property="location.accessible" /></accessible>
+    <status><html:text property="locationStatus" size="30" /></status>
 
      <!-- these are the values that may be submitted to the update action -->
     <submitButtons>

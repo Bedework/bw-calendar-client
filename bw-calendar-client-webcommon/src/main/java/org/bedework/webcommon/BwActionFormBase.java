@@ -353,6 +353,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   private BwString locationAddress;
 
+  private String locationStatus;
+
   /** Location subAddress
    */
   private BwString locationSubaddress;
@@ -392,6 +394,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private BwContact contact;
 
   private BwString contactName;
+
+  private String contactStatus;
 
   /* ....................................................................
    *                       Calendars
@@ -1922,9 +1926,10 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     if (val != null) {
       final BwString s = val.getWord();
       if (s != null) {
-        categoryWord = (BwString)s.clone();
+        setCategoryWord((BwString)s.clone());
       }
       categoryDesc = val.getDescriptionVal();
+      setCategoryStatus(val.getStatus());
     }
   }
 
@@ -1985,7 +1990,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    * @return String  Category Status
    */
   public String getCategoryStatus() {
-    return categoryStatus;
+    return Util.checkNull(categoryStatus);
   }
 
   /** This is the current category,
@@ -2061,6 +2066,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     }
 
     return contactName;
+  }
+
+  /**
+   * @param val
+   */
+  public void setContactStatus(final String val) {
+    contactStatus = val;
+  }
+
+  /**
+   * @return contact status
+   */
+  public String getContactStatus() {
+    return Util.checkNull(contactStatus);
   }
 
   /**
@@ -2160,6 +2179,20 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   /**
    * @param val
    */
+  public void setLocationStatus(final String val) {
+    locationStatus = val;
+  }
+
+  /**
+   * @return location status
+   */
+  public String getLocationStatus() {
+    return Util.checkNull(locationStatus);
+  }
+
+  /**
+   * @param val
+   */
   public void setLocationSubaddress(final BwString val) {
     locationSubaddress = val;
   }
@@ -2217,6 +2250,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
       setLocationUid(val.getUid());
       if (val.getAddress() != null) {
         setLocationAddress((BwString)val.getAddress().clone());
+        setLocationStatus(val.getAddress().getLang());
       } else {
         setLocationAddress(null);
       }

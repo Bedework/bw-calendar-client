@@ -8,14 +8,12 @@
       <location>
         <id><bean:write name="location" property="id"/></id><%--
             Value: integer - location id --%>
-        <bw:emitText name="location" property="address.value" tagName="address"/><%--
+        <bw:emitText name="location" property="addressField" tagName="address"/><%--
           Value: string - physical address of the location --%>
         <bw:emitText name="location" property="link"/><%--
             Value: URI - link to a web address for the location --%>
-        <logic:present name="location" property="subaddress">
-          <bw:emitText name="location" property="subaddress.value" tagName="subaddress"/><%--
+        <bw:emitText name="location" property="subaddressField" tagName="subaddress"/><%--
             Value: string - more address information --%>
-        </logic:present>
         <bw:emitText name="location" property="creatorHref" tagName="creator" /><%--
           Value: string - location creator id --%>
       </location>

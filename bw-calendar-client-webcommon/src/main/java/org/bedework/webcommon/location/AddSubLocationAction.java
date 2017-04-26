@@ -103,15 +103,15 @@ public class AddSubLocationAction extends BwAbstractAction {
     final BwString addr = newloc.getAddress();
 
     // Strip off any old room
-    if (addr.getValue().contains(BwLocation.roomDelimiter)) {
-      final int pos = addr.getValue().lastIndexOf(BwLocation.roomDelimiter);
+    if (addr.getValue().contains(BwLocation.fieldDelimiter)) {
+      final int pos = addr.getValue().lastIndexOf(BwLocation.fieldDelimiter);
 
       addr.setValue(addr.getValue().substring(0, pos));
     }
 
     // Add new room
     addr.setValue(
-            addr.getValue() + BwLocation.roomDelimiter + subaddr);
+            addr.getValue() + BwLocation.fieldDelimiter + subaddr);
 
     if (location.getSubaddress() != null) {
       newloc.setSubaddress(

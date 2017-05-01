@@ -24,10 +24,10 @@
     <subField2><html:text property="location.subField2" size="30" /></subField2>
     <geouri><html:text property="location.geouri" size="30" /></geouri>
     <subaddress><html:text property="location.subaddressField" size="30" /></subaddress>
-    <street><html:text property="location.streetField" size="30" /></street>
-    <city><html:text property="location.cityField" size="30" /></city>
-    <state><html:text property="location.stateField" size="30" /></state>
-    <zip><html:text property="location.zipField" size="30" /></zip>
+    <street><html:text property="location.street" size="30" /></street>
+    <city><html:text property="location.city" size="30" /></city>
+    <state><html:text property="location.state" size="30" /></state>
+    <zip><html:text property="location.zip" size="30" /></zip>
     <link><html:text property="location.link" size="30" /></link>
     <accessible><html:checkbox property="location.accessible" /></accessible>
     <status><html:text property="locationStatus" size="30" /></status>

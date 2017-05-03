@@ -365,7 +365,6 @@ public class BwWebUtil {
     } else if (str.update(frmstr)) {
       vr.changed = true;
     }
-    */
 
     final BwString str = loc.getSubaddress();
     BwString frmstr = form.getLocationSubaddress();
@@ -386,6 +385,7 @@ public class BwWebUtil {
     } else if (str.update(frmstr)) {
       vr.changed = true;
     }
+    */
 
     final BwString addr = loc.getAddress();
     if (addr == null) {

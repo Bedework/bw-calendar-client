@@ -18,8 +18,8 @@ try {
 <creating><bean:write name="calForm" property="addingCategory"/></creating>
 
 <currentLocation>
-  <bw:emitText name="calForm" property="locationAddress.value" tagName="address" />
-  <bw:emitText name="calForm" property="locationSubaddress.value" tagName="subaddress"/>
+  <bw:emitText name="calForm" property="location.addressField" tagName="address" />
+  <bw:emitText name="calForm" property="location.Street" tagName="subaddress"/>
   <bw:emitText name="calForm" property="location.link" tagName="link"/>
   <bw:emitText name="calForm" property="location.uid" tagName="uid"/>
 </currentLocation>

@@ -6,9 +6,28 @@
       <location>
         <id><bean:write name="location" property="id"/></id><%--
             Value: integer - location id --%>
-        <address><bean:write name="location" property="address.value"/></address><%--
+        <bw:emitText name="location" property="addressField" tagName="address"/><%--
           Value: string - physical address of the location --%>
-        <link><bean:write name="location" property="link"/></link><%--
+        <bw:emitText name="location" property="roomField" />
+        <bw:emitText name="location" property="subField1" />
+        <bw:emitText name="location" property="subField2" />
+        <logic:equal name="location" property="accessible" value="true" >
+          <accessible>true</accessible>
+        </logic:equal>
+        <logic:notEqual name="location" property="accessible" value="true" >
+          <accessible>false</accessible>
+        </logic:notEqual>
+        <bw:emitText name="location" property="geouri" />
+        <bw:emitText name="location" property="status" />
+        <logic:present name="location" property="subaddress">
+          <bw:emitText name="location" property="subaddress.value" tagName="subaddress"/><%--
+            Value: string - more address information --%>
+        </logic:present>
+        <bw:emitText name="location" property="street" />
+        <bw:emitText name="location" property="city" />
+        <bw:emitText name="location" property="state" />
+        <bw:emitText name="location" property="zip" />
+        <bw:emitText name="location" property="link"/><%--
             Value: URI - link to a web address for the location --%>
       </location>
     </logic:present>

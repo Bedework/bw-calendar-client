@@ -13,6 +13,19 @@
     </genurl:link>
   </address>
 
+  <bw:emitText name="location" property="roomField" />
+  <bw:emitText name="location" property="subField1" />
+  <bw:emitText name="location" property="subField2" />
+
+  <logic:equal name="location" property="accessible" value="true" >
+    <accessible>true</accessible>
+  </logic:equal>
+  <logic:notEqual name="location" property="accessible" value="true" >
+    <accessible>false</accessible>
+  </logic:notEqual>
+  <bw:emitText name="location" property="geouri" />
+  <bw:emitText name="location" property="status" />
+
   <subaddress>
     <logic:present name="location" property="subaddress" >
       <bean:write name="location" property="subaddress.value" />

@@ -19,10 +19,8 @@ try {
   <logic:iterate id="location" name="bw_editable_locations_list"
                  scope="session" >
     <location>
-      <bw:emitText name="location" property="address.value" tagName="address" />
-      <logic:present name="location" property="subaddress">
-        <bw:emitText name="location" property="subaddress.value" tagName="subaddress"/>
-      </logic:present>
+      <bw:emitText name="location" property="addressField" tagName="address" />
+      <bw:emitText name="location" property="street" tagName="subaddress"/>
       <bw:emitText name="location" property="link" />
       <bw:emitText name="location" property="uid" />
     </location>

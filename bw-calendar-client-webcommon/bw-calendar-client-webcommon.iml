@@ -51,9 +51,9 @@
     <orderEntry type="library" name="Maven: org.imgscalr:imgscalr-lib:4.2" level="project" />
     <orderEntry type="module" module-name="bw-calendar-engine-facade" />
     <orderEntry type="module" module-name="bw-calendar-engine-annotations" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util-security:4.0.12-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="bw-util-security" />
     <orderEntry type="module" module-name="bw-webdav" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util-vcard:4.0.12-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="bw-util-vcard" />
     <orderEntry type="module" module-name="bw-caldav-util" />
     <orderEntry type="library" name="Maven: org.bedework:bw-ws-caldav:4.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:apache-jdkim-library:0.4" level="project" />
@@ -92,7 +92,7 @@
     <orderEntry type="library" name="Maven: org.bedework:bw-ws-synchws:4.0.4-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="bwsysev-monitor" />
     <orderEntry type="module" module-name="bwsysev-common" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util-args:4.0.12-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="bw-util-args" />
     <orderEntry type="library" name="Maven: javax.jms:jms:1.1" level="project" />
     <orderEntry type="module" module-name="bw-msg-sysevmsgs" />
     <orderEntry type="library" name="Maven: javax.servlet:servlet-api:2.4" level="project" />

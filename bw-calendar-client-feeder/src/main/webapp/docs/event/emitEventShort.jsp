@@ -1,5 +1,6 @@
 <%@ taglib uri='struts-bean' prefix='bean' %>
 <%@ taglib uri='struts-logic' prefix='logic' %>
+<%@ taglib uri='bedework' prefix='bw' %>
     <%-- Output any event fields with forms specific to short format displays --%>
     <logic:present  name="event" property="location">
       <bean:define id="location" name="event" property="location"/>

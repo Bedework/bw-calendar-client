@@ -322,6 +322,7 @@
                validate="false">
       <forward name="success" path="/docs/event/eventList.jsp"/>
       <forward name="listEvents" path="/docs/event/eventList.jsp"/>
+      <forward name="noAction" path="docs/event/eventList.jsp"/>
     </action>
 
   <!-- ===============================================================

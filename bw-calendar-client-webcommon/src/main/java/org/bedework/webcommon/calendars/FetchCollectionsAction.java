@@ -20,6 +20,9 @@ package org.bedework.webcommon.calendars;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.util.misc.Util;
@@ -135,22 +138,45 @@ public class FetchCollectionsAction extends BwAbstractAction {
                        + "\"");
     }
     
-    if (col.getFilterExpr() != null) {
-      pw.print(" filter=\"" + 
-                       escapeJava(col.getFilterExpr())
-                       + "\"");
-    }
+    //if (col.getFilterExpr() != null) {
+    //  pw.print(" filter=\"" + 
+    //                   escapeJava(col.getFilterExpr())
+    //                   + "\"");
+    //}
+    
+    final StringBuilder filterExpr = new StringBuilder();
     
     if (!Util.isEmpty(col.getCategoryUids())) {
-      for (final String cuid: col.getCategoryUids()) {
-        try {
-          final String wd = cl.getCategory(cuid).getWordVal();
+      try {
+        final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
+        final BwPrincipal principal = cl.getCurrentPrincipal();
+
+        for (final String cuid: col.getCategoryUids()) {
+          final BwCategory cat = cl.getCategory(cuid);
+
+          cat.fixNames(basicSysprops, principal);
+
+          pw.print(" category=\"" + cat.getHref() + "\"");
           
-          pw.print(" category=\"" + wd + "\"");
-        } catch (final CalFacadeException cfe) {
-          pw.print(" category=\"*******" + cuid + "*******\"");
+          if (filterExpr.length() == 0) {
+            filterExpr.append("(");
+          } else {
+            filterExpr.append(" | ");
+          }
+          filterExpr.append("categories.href=\"");
+          filterExpr.append(cat.getHref());
+          filterExpr.append("\"");
         }
+      } catch (final CalFacadeException cfe) {
+        pw.print(" category-error=\"" + cfe.getDetailMessage() + "\"");
       }
+    }
+    
+    if (filterExpr.length() != 0) {
+      filterExpr.append(")");
+      pw.print(" filter=\"");
+      pw.print(escapeJava(filterExpr.toString()));
+      pw.print("\"");
     }
 
     pw.println();

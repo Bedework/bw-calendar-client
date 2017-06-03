@@ -92,9 +92,10 @@
     <orderEntry type="library" name="Maven: org.bedework:bw-ws-synchws:4.0.4-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="bwsysev-monitor" />
     <orderEntry type="module" module-name="bwsysev-common" />
+    <orderEntry type="module" module-name="bwsysev-msgs" />
     <orderEntry type="module" module-name="bw-util-args" />
     <orderEntry type="library" name="Maven: javax.jms:jms:1.1" level="project" />
-    <orderEntry type="module" module-name="bw-msg-sysevmsgs" />
+    <orderEntry type="library" name="Maven: org.bedework.bw-msg:bw-msg-sysevmsgs:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:servlet-api:2.4" level="project" />
     <orderEntry type="library" name="Maven: javax.portlet:portlet-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet.jsp:javax.servlet.jsp-api:2.3.1" level="project" />

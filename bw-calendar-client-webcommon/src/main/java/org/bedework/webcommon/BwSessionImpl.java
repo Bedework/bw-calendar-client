@@ -496,7 +496,16 @@ public class BwSessionImpl extends Logged implements BwSession {
         p = cl.getCurrentPrincipal();
       }
 
+      if (debug) {
+        debug("Get Calendar home for " + p.getPrincipalRef());
+      }
+      
       col = cl.getHome(p, false);
+      
+      if (col == null) {
+        warn("No home collection for " + p.getPrincipalRef());
+        return null;
+      }
 
       return getClonedCollection(request, col,
                                  false);

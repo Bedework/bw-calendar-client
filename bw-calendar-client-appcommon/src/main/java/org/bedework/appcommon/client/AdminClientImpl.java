@@ -363,7 +363,6 @@ public class AdminClientImpl extends ClientImpl {
 
   @Override
   public boolean isCalSuiteEntity(final BwShareableDbentity ent) throws CalFacadeException {
-    refreshAdminGroupInfo();
     if (ownerHrefs == null) {
       return false;
     }

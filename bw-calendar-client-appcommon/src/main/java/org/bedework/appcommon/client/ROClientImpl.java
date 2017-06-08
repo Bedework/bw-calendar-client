@@ -1879,7 +1879,6 @@ public class ROClientImpl implements Client {
     return svci.getCalSuitesHandler().get(group);
   }
 
-  private static final Map<String, SubContext> suiteToContextMap = new HashMap<>();
   private static Collection<BwCalSuite> suites;
 
   @Override
@@ -2052,7 +2051,7 @@ public class ROClientImpl implements Client {
     }
 
     synchronized (adminGroupLocker) {
-      suiteToContextMap.clear();
+      final Map<String, SubContext> suiteToContextMap = new HashMap<>();
 
       for (final SubContext subContext : getSyspars().getContexts()) {
         suiteToContextMap.put(subContext.getCalSuite(), subContext);
@@ -2082,21 +2081,24 @@ public class ROClientImpl implements Client {
 
       adminGroupsInfo = new ArrayList<>();
       calsuiteAdminGroupsInfo = new ArrayList<>();
+      
+      final Map<String, BwPrincipal> cloned = new HashMap<>();
 
       final Collection<BwGroup> ags =
               svci.getAdminDirectories().getAll(true);
 
       for (final BwGroup g: ags) {
-        final BwGroup cg = (BwGroup)g.clone();
+        final BwGroup cg = cloneGroup(g, cloned);
 
         if (groupHrefs.contains(cg.getPrincipalRef())) {
           calsuiteAdminGroupsInfo.add(cg);
         }
 
+        // Set the memberships for this group.
         final Collection<BwGroup> mgs = getAllAdminGroups(g);
 
         for (final BwGroup mg: mgs) {
-          final BwGroup cmg = (BwGroup)mg.clone();
+          final BwGroup cmg = cloneGroup(mg, cloned);
 
           cg.addGroup(cmg);
         }
@@ -2106,6 +2108,39 @@ public class ROClientImpl implements Client {
 
       lastAdminGroupsInfoRefresh = System.currentTimeMillis();
     }
+  }
+  
+  private BwGroup cloneGroup(final BwGroup g,
+                             final Map<String, BwPrincipal> cloned) {
+    BwGroup cg = (BwGroup)cloned.get(g.getPrincipalRef());
+
+    if (cg != null) {
+      return cg;
+    }
+    
+    cg = g.shallowClone();
+    cloned.put(g.getPrincipalRef(), cg);
+
+    Collection<BwPrincipal> ms = g.getGroupMembers();
+    if (ms == null) {
+      return cg;
+    }
+
+    for (BwPrincipal mbr: ms) {
+      BwPrincipal cmbr = cloned.get(mbr.getPrincipalRef());
+
+      if (cmbr == null) {
+        if (mbr instanceof BwGroup) {
+          cmbr = cloneGroup((BwGroup)mbr, cloned);
+        } else {
+          cmbr = (BwPrincipal)mbr.clone();
+        }
+        cloned.put(mbr.getPrincipalRef(), cmbr);
+      }
+      cg.addGroupMember(cmbr);
+    }
+    
+    return cg;
   }
 
   protected String getCSResourcesPath(final BwCalSuite suite,

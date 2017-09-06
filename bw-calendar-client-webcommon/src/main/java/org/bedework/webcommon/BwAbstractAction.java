@@ -103,6 +103,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import static org.bedework.appcommon.BedeworkDefs.appTypeWebsubmit;
+
 /** This abstract action performs common setup actions before the real
  * action method is called.
  *
@@ -243,6 +245,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setPublicView(true);
     } else {
       form.assignImageUploadDirectory(prefs.getDefaultImageDirectory());
+    }
+
+    if (cl.getWebSubmit() && (request.getReqPar("cs") != null)) {
+      form.setCalSuiteName(request.getReqPar("cs"));
     }
 
     if (form.getNewSession()) {
@@ -2163,11 +2169,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       sb.append(portalPlatform);
     }
 
-    /* If calendar suite is non-null append that. */
-    String calSuite = form.getConfig().getCalSuite();
-    if (calSuite != null) {
-      sb.append(".");
-      sb.append(calSuite);
+    if (!appTypeWebsubmit.equals(form.getConfig().getAppType())) { 
+      /* If calendar suite is non-null append that. */
+      String calSuite = form.getConfig().getCalSuite();
+      if (calSuite != null) {
+        sb.append(".");
+        sb.append(calSuite);
+      }
     }
 
     return sb.toString();

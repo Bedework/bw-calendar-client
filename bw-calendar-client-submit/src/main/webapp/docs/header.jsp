@@ -9,6 +9,7 @@ try {
 
   <bean:define id="bwconfig" name="calForm" property="config" toScope="session" />
   <bean:define id="moduleState" name="bw_module_state" scope="request" />
+  <bw:emitText name="calForm" property="calSuiteName" />
 
   <now><%-- The actual date right "now" - this may not be the same as currentdate --%>
     <bean:define id="fmtnow" name="calForm" property="today.formatted" />

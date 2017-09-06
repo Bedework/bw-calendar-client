@@ -44,6 +44,7 @@ import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.responses.Response;
+import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.util.misc.Logged;
 import org.bedework.util.struts.Request;
@@ -319,7 +320,6 @@ public class BwSessionImpl extends Logged implements BwSession {
 
   @Override
   public CollectionsResponse getCollections(final BwRequest req) {
-    final Client cl = req.getClient();
     final CollectionsResponse cols = new CollectionsResponse();
 
     if ("true".equals(req.getStringActionPar("public="))) {
@@ -484,24 +484,53 @@ public class BwSessionImpl extends Logged implements BwSession {
     final BwCalendar col;
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
-    final boolean publicAdmin = form.getConfig().getPublicAdmin();
+    final boolean publicAdmin = cl.getPublicAdmin(); //form.getConfig().getPublicAdmin();
 
     try {
       final BwPrincipal p;
 
-      if ((publicAdmin) && (form.getCurrentCalSuite() != null)) {
-        // Use calendar suite owner
-        p = cl.getPrincipal(
-                form.getCurrentCalSuite().getGroup().getOwnerHref());
-      } else {
-        p = cl.getCurrentPrincipal();
-      }
+      if (cl.getWebSubmit()) {
+        // Use calsuite in form or default
+        String calSuiteName = form.getCalSuiteName();
+        if (calSuiteName == null) {
+          calSuiteName = form.getConfig().getCalSuite();
+        }
+        
+        if (calSuiteName == null) {
+          error("No default calendar suite - nor one requested");
+          return null;
+        }
 
-      if (debug) {
-        debug("Get Calendar home for " + p.getPrincipalRef());
+        BwCalSuite cs = cl.getCalSuite(calSuiteName);
+
+        if (cs == null) {
+          error("No calendar suite with name " + calSuiteName);
+          return null;
+        }
+
+        p = cl.getPrincipal(cs.getGroup().getOwnerHref());
+
+        if (debug) {
+          debug("Get Calendar home for " + p.getPrincipalRef());
+        }
+
+        col = cl.getHome(p, false);
+      } else {
+        if ((publicAdmin) && (form.getCurrentCalSuite() != null)) {
+          // Use calendar suite owner
+          p = cl.getPrincipal(
+                  form.getCurrentCalSuite().getGroup()
+                      .getOwnerHref());
+        } else {
+          p = cl.getCurrentPrincipal();
+        }
+
+        if (debug) {
+          debug("Get Calendar home for " + p.getPrincipalRef());
+        }
+
+        col = cl.getHome(p, false);
       }
-      
-      col = cl.getHome(p, false);
       
       if (col == null) {
         warn("No home collection for " + p.getPrincipalRef());
@@ -871,7 +900,6 @@ public class BwSessionImpl extends Logged implements BwSession {
    * @param req the request
    * @param filterName a filter name
    * @return BwFilter or null
-   * @throws Throwable on error
    */
   private FilterBase getFilter(final BwRequest req,
                                final String filterName) {

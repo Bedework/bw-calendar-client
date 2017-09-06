@@ -28,6 +28,8 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.util.calendar.IcalDefs;
@@ -281,42 +283,51 @@ public class BwRequest extends Request {
 
   /** If filterName or fexpr is specified will return a parsed filter definition
    *
-   * @return BwFilterDef or null
-   * @throws Throwable on fatal error
+   * @return GetFilterDefResponse
    */
-  public BwFilterDef getFilterDef() throws Throwable {
+  public GetFilterDefResponse getFilterDef() {
     final Client cl = getClient();
     final String name = getReqPar("filterName");
     String fexpr = getReqPar("fexpr");
 
-    BwFilterDef fd = null;
-
     if ((name == null) && ((fexpr == null) || fexpr.equals("no--filter"))) {
-      return null;
+      return new GetFilterDefResponse();
     }
 
+    final GetFilterDefResponse gfdr;
+
     if (name != null) {
-      fd = cl.getFilter(name);
-      if (fd == null) {
+      gfdr = cl.getFilter(name);
+      if (gfdr.getStatus() == Response.Status.notFound) {
         form.getErr().emit(ClientError.unknownFilter, name);
-        return null;
+        return gfdr;
+      }
+      
+      if (gfdr.getStatus() != Response.Status.ok) {
+        form.getErr().emit(ClientError.exc, gfdr.getMessage());
+        return gfdr;
       }
     } else {
       fexpr = fexpr.replace("-_", "|"); //  For the old webcache
-      fd = new BwFilterDef();
-      fd.setDefinition(fexpr);
+      gfdr = new GetFilterDefResponse();
+      gfdr.setFilterDef(new BwFilterDef());
+      gfdr.getFilterDef().setDefinition(fexpr);
     }
 
+    final BwFilterDef fd = gfdr.getFilterDef();
+    
     if (fd.getFilters() == null) {
       final ParseResult pr = cl.parseFilter(fd);
       if (!pr.ok) {
-        getErr().emit(pr.message + 
-                " expression: " + fd.getDefinition());
-        return null;
+        gfdr.setStatus(Response.Status.failed);
+        gfdr.setMessage(pr.message +
+                                " expression: " + fd.getDefinition());
+        getErr().emit(gfdr.getMessage());
+        return gfdr;
       }
     }
 
-    return fd;
+    return gfdr;
   }
 
   /**

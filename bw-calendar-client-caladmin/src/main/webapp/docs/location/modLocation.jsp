@@ -30,6 +30,8 @@
     <zip><html:text property="location.zip" size="30" /></zip>
     <link><html:text property="location.link" size="30" /></link>
     <accessible><html:checkbox property="location.accessible" /></accessible>
+    <code><html:text property="location.code" size="30" /></code>
+    <alternateAddress><html:text property="location.alternateAddress" size="30" /></alternateAddress>
     <status><html:text property="locationStatus" size="30" /></status>
 
      <!-- these are the values that may be submitted to the update action -->

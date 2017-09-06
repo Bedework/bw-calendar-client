@@ -4,6 +4,7 @@
 <category>
   <%-- unique id  --%>
   <bw:emitText name="category" property="uid" />
+  <bw:emitText name="category" property="href" />
   <%-- text value of the category --%>
   <logic:present name="category" property="word" >
     <bw:emitText name="category" property="word.value" tagName="value" />

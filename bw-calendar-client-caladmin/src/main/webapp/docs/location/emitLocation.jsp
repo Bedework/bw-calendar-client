@@ -37,5 +37,8 @@
   <bw:emitText name="location" property="state" />
   <bw:emitText name="location" property="zip" />
   <bw:emitText name="location" property="link" />
+
+  <bw:emitText name="location" property="code" />
+  <bw:emitText name="location" property="alternateAddress" />
 </location>
 

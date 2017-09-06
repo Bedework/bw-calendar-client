@@ -10,9 +10,19 @@
   <bw:emitText name="calForm" property="eventRegAdminToken"/>
   <logic:present name="bw_search_result" scope="request">
     <bean:define id="sres" name="bw_search_result" scope="request" />
-    <bean:define id="params" name="bw_search_params" scope="request" />
-    <bw:emitText name="params" property="curOffset" />
-    <bw:emitText name="params" property="pageSize" />
+    <logic:present name="bw_search_params" scope="request" >
+      <bean:define id="params" name="bw_search_params" scope="request" />
+      <bw:emitText name="params" property="curOffset" />
+      <bw:emitText name="params" property="pageSize" />
+      <logic:present  name="params" property="toDate">
+        <bw:emitText name="params" property="toDate.dtval" />
+      </logic:present>
+    </logic:present>
+    <logic:notPresent name="bw_search_params" scope="request" >
+      <curOffset>0</curOffset>
+      <pageSize>0</pageSize>
+      <toDate.dtval>19530315</toDate.dtval>
+    </logic:notPresent>
 
     <paged>true</paged>
     <bw:emitText name="sres" property="found" tagName="resultSize" />

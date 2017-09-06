@@ -44,7 +44,6 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
-import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
@@ -63,6 +62,7 @@ import org.bedework.calfacade.filter.BwCategoryFilter;
 import org.bedework.calfacade.filter.BwCreatorFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.locale.BwLocale;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
@@ -543,7 +543,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   protected int setSearchParams(final BwRequest request,
                                 final SearchParams params,
-                                final String viewMode) throws Throwable {
+                                final boolean gridMode) throws Throwable {
     final BwActionFormBase form = request.getBwForm();
     final BwModuleState mstate = request.getModule().getState();
     final Client cl = request.getClient();
@@ -555,20 +555,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     filterAndQuery(request, params);
 
-    String sort = request.getReqPar("sort");
-    if (sort == null) {
-      // TODO - this shouldn't be a fixed string
-      sort = "dtstart.utc:asc";
-    }
-
-    final ParseResult pr = cl.parseSort(request.getReqPar("sort"));
-    if (!pr.ok) {
-      form.getErr().emit(pr.message);
-    } else {
-      params.setSort(pr.sortTerms);
-    }
-
-    if (Client.gridViewMode.equals(viewMode)) {
+    if (gridMode) {
       TimeView tv = mstate.getCurTimeView();
       if (tv == null) {
         // Pretty much broken here
@@ -703,21 +690,27 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return forwardSuccess;
   }
 
-  private void filterAndQuery(final BwRequest request,
-                              final SearchParams params) throws Throwable {
+  private boolean filterAndQuery(final BwRequest request,
+                                 final SearchParams params) throws Throwable {
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
     params.setQuery(request.getReqPar("query"));
     params.setRelevance(request.getBooleanReqPar("relevance", false));
 
-    FilterBase filter = null;
-    final BwFilterDef fd = request.getFilterDef();
+    final GetFilterDefResponse gfdr = request.getFilterDef();
 
-    if (fd != null) {
-      filter = fd.getFilters();
+    if (gfdr.getStatus() != Response.Status.ok) {
+      params.setStatus(gfdr.getStatus());
+      params.setMessage(gfdr.getMessage());
+      return false;
     }
 
+    FilterBase filter = null;
+    if (gfdr.getFilterDef() != null) {
+      filter = gfdr.getFilterDef().getFilters();
+    }
+    
     if (cl.getWebSubmit() || cl.getPublicAdmin()) {
       boolean ignoreCreator = false; //cl.getWebSubmit();
 
@@ -736,12 +729,23 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     params.setFilter(filter);
 
-    final ParseResult pr = cl.parseSort(request.getReqPar("sort"));
+    String sort = request.getReqPar("sort");
+    if (sort == null) {
+      // TODO - this shouldn't be a fixed string
+      sort = "dtstart.utc:asc";
+    }
+
+    final ParseResult pr = cl.parseSort(sort);
     if (!pr.ok) {
       form.getErr().emit(pr.message);
-    } else {
-      params.setSort(pr.sortTerms);
+      params.setStatus(Response.Status.failed);
+      params.setMessage(pr.message);
+      return false;
     }
+    
+    params.setSort(pr.sortTerms);
+    
+    return true;
   }
 
   protected BwDateTime todaysDateTime() throws Throwable {

@@ -62,6 +62,7 @@ import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -1984,8 +1985,7 @@ public class ROClientImpl implements Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwFilterDef getFilter(final String name)
-          throws CalFacadeException {
+  public GetFilterDefResponse getFilter(final String name) {
     return svci.getFiltersHandler().get(name);
   }
 
@@ -2233,7 +2233,7 @@ public class ROClientImpl implements Client {
     lastUpdate = System.currentTimeMillis();
   }
 
-  protected void checkUpdate() throws CalFacadeException {
+  protected void checkUpdate() {
     /*
     if (debug) {
       debugMsg("checkUpdate: \n" +
@@ -2258,8 +2258,9 @@ public class ROClientImpl implements Client {
     if (toWait > 0) {
       try {
         Thread.sleep(toWait);
-      } catch (final InterruptedException ie) {
-        throw new CalFacadeException(ie);
+      } catch (final InterruptedException ignored) {
+        //throw new CalFacadeException(ie);
+        // Assume we're shutting down.
       }
 
       lastUpdate = 0; // Only wait once

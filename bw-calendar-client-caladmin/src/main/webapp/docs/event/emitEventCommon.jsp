@@ -4,6 +4,8 @@
 
 <%-- Output a single event. This page handles fields common to all views --%>
   <event>
+    <bw:emitText name="event" property="created"/>
+    <bw:emitText name="event" property="lastmod"/>
     <start><%-- start date and time --%>
       <bean:define id="date" name="eventFmt"
                    property="start"

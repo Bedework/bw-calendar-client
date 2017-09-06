@@ -24,6 +24,7 @@ import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResultEntry;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.ScheduleMethods;
@@ -89,7 +90,7 @@ public class SearchParamsAction extends EventActionBase {
     }
 
     final int forward = setSearchParams(request, params,
-                                        cl.getViewMode());
+                                        gridMode);
     if (forward != forwardSuccess) {
       return forward;
     }
@@ -137,10 +138,12 @@ public class SearchParamsAction extends EventActionBase {
 
     request.setRequestAttr(BwRequest.bwSearchParamsName, params);
 
+    if (params.getStatus() == Response.Status.ok) {
 //    if (!gridMode) {
       /* Do the search */
       mstate.setSearchResult(cl.search(params));
-  //  }
+      //  }
+    }
 
     request.refresh();
 
@@ -204,9 +207,11 @@ public class SearchParamsAction extends EventActionBase {
       return forwardNull;
     }
 
-    request.setRequestAttr(BwRequest.bwSearchResultName,
-                           mstate.getSearchResult());
-
+    if (params.getStatus() == Response.Status.ok) {
+      request.setRequestAttr(BwRequest.bwSearchResultName,
+                             mstate.getSearchResult());
+    }
+    
     final BwSession sess = request.getSess();
 
     /* Embed the writable collections in session for admin client */
@@ -223,9 +228,11 @@ public class SearchParamsAction extends EventActionBase {
 
     /* Embed the result */
 
-    request.setRequestAttr(BwRequest.bwSearchListName,
-                           cl.getSearchResult(Position.current));
-
+    if (params.getStatus() == Response.Status.ok) {
+      request.setRequestAttr(BwRequest.bwSearchListName,
+                             cl.getSearchResult(Position.current));
+    }
+    
     /* Ensure we have categories embedded in session */
     sess.embedCategories(request, false,
                                       BwSession.ownersEntity);

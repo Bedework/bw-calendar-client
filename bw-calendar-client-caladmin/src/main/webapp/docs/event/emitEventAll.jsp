@@ -6,8 +6,6 @@
     <logic:present  name="event" property="organizer">
       <bean:define id="organizer" name="event" property="organizer"/>
       <organizer>
-        <id><bean:write name="organizer" property="id"/></id><%--
-            Value: integer - organizer id --%>
         <bw:emitText name="organizer" property="cn"/><%--
           Value: string - cn of the organizer --%>
         <bw:emitText name="organizer" property="dir"/><%--

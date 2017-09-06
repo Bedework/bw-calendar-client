@@ -12,6 +12,9 @@
     <bean:define id="params" name="bw_search_params" scope="request" />
     <bw:emitText name="params" property="curOffset" />
     <bw:emitText name="params" property="pageSize" />
+    <logic:present  name="params" property="toDate">
+      <bw:emitText name="params" property="toDate.dtval" />
+    </logic:present>
 
     <paged>true</paged>
     <bw:emitText name="sres" property="found" tagName="resultSize" />

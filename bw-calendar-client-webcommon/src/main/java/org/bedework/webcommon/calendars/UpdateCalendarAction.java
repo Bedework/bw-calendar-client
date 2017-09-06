@@ -24,10 +24,11 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.util.misc.Util;
 import org.bedework.util.xml.tagdefs.WebdavTags;
 import org.bedework.webcommon.BwAbstractAction;
@@ -128,18 +129,20 @@ public class UpdateCalendarAction extends BwAbstractAction {
       }
     }
 
-    final BwFilterDef fd = request.getFilterDef();
+    final GetFilterDefResponse gfdr = request.getFilterDef();
 
-    if (request.getErrorsEmitted()) {
+    if (gfdr.getStatus() == Response.Status.notFound) {
+      cal.setFilterExpr(null);
+    } else if (gfdr.getStatus() != Response.Status.ok) {
       return forwardRetry;
-    } else if (fd != null) {
-      final String fdef = fd.getDefinition();
+    } else if (gfdr.getFilterDef() == null) {
+      cal.setFilterExpr(null);
+    } else {
+      final String fdef = gfdr.getFilterDef().getDefinition();
 
       if (!Util.equalsString(fdef, cal.getFilterExpr())) {
         cal.setFilterExpr(fdef);
       }
-    } else if (cal.getFilterExpr() != null) {
-      cal.setFilterExpr(null);
     }
 
     /* -------------------------- Categories ------------------------------ */

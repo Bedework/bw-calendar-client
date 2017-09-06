@@ -90,15 +90,34 @@ public class FetchCollectionsAction extends BwAbstractAction {
 
       final PrintWriter pw = resp.getWriter();
       
-      writeCol(cl, col, pw);
+      writeCols(cl, col, pw);
     }
     
     return forwardNull;
   }
   
+  private void writeCols(final Client cl,
+                         final BwCalendar col, 
+                         final PrintWriter pw) {
+    writeCol(cl, col, pw);
+    
+    if (Util.isEmpty(col.getChildren())) {
+      return;
+    }
+
+    for (final BwCalendar child: col.getChildren()) {
+      writeCols(cl, child, pw);
+    }
+  }
+
   private void writeCol(final Client cl,
-                        final BwCalendar col, 
+                        final BwCalendar col,
                         final PrintWriter pw) {
+    if (col.getColPath() == null) {
+      // Skip root collections
+      return;
+    }
+
     pw.print("create collection ");
 
     if (col.getCalType() == BwCalendar.calTypeFolder) {
@@ -114,8 +133,8 @@ public class FetchCollectionsAction extends BwAbstractAction {
     } else {
       pw.print(" *" + col.getCalType() + "* ");
     }
-    
-    pw.print("\"" + col.getPath() + "\" ");
+
+    pw.print("\"" + col.getColPath() + "\" ");
     pw.print("\"" + col.getName() + "\" ");
     pw.print("\"" + escapeJava(col.getSummary()) + "\" ");
 
@@ -128,7 +147,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
         pw.print(" \"" + col.getAliasUri().substring(8) + "\" ");
       }
     }
-    
+
     pw.print("\"" + col.getOwnerHref() + "\" ");
     pw.print("\"" + col.getCreatorHref() + "\" ");
 
@@ -137,15 +156,15 @@ public class FetchCollectionsAction extends BwAbstractAction {
                        escapeJava(col.getDescription())
                        + "\"");
     }
-    
+
     //if (col.getFilterExpr() != null) {
     //  pw.print(" filter=\"" + 
     //                   escapeJava(col.getFilterExpr())
     //                   + "\"");
     //}
-    
+
     final StringBuilder filterExpr = new StringBuilder();
-    
+
     if (!Util.isEmpty(col.getCategoryUids())) {
       try {
         final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
@@ -157,7 +176,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
           cat.fixNames(basicSysprops, principal);
 
           pw.print(" category=\"" + cat.getHref() + "\"");
-          
+
           if (filterExpr.length() == 0) {
             filterExpr.append("(");
           } else {
@@ -171,7 +190,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
         pw.print(" category-error=\"" + cfe.getDetailMessage() + "\"");
       }
     }
-    
+
     if (filterExpr.length() != 0) {
       filterExpr.append(")");
       pw.print(" filter=\"");
@@ -180,13 +199,5 @@ public class FetchCollectionsAction extends BwAbstractAction {
     }
 
     pw.println();
-    
-    if (Util.isEmpty(col.getChildren())) {
-      return;
-    }
-
-    for (final BwCalendar child: col.getChildren()) {
-      writeCol(cl, child, pw);
-    }
   }
 }

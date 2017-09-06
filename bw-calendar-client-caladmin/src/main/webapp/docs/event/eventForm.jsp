@@ -312,12 +312,12 @@
                   <bean:define id="xparName" name="xpar" property="name"/>
                   <% String xparStart = "<" + (String)xparName + ">";
                      String xparEnd = "</" + (String)xparName + ">";%>
-                  <%=xparStart%><![CDATA[<bean:write name="xpar" property="value" />]]><%=xparEnd%>
+                  <%=xparStart%><![CDATA[<bean:write name="xpar" filter="false" property="value" />]]><%=xparEnd%>
                 </logic:iterate>
                 </parameters>
               </logic:present>
               <values>
-                <text><![CDATA[<bean:write name="xprop" property="value"/>]]></text>
+                <text><![CDATA[<bean:write name="xprop" filter="false" property="value"/>]]></text>
               </values>
             <%=xpropEnd%>
           </logic:equal>

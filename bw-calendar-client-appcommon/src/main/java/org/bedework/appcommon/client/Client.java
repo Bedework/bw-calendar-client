@@ -52,6 +52,7 @@ import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.mail.Message;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -1979,10 +1980,9 @@ public interface Client extends Serializable {
   /** Get a filter given the name
    *
    * @param  name     String internal name of filter
-   * @return BwFilter null for unknown filter
-   * @throws CalFacadeException
+   * @return GetFilterDefResponse withstatus set
    */
-  BwFilterDef getFilter(String name) throws CalFacadeException;
+  GetFilterDefResponse getFilter(String name);
 
   /** Parse the definition in the given filter object
    *

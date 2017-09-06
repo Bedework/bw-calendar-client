@@ -61,7 +61,7 @@ public class MainAction extends BwAbstractAction {
 
       params = new SearchParams();
       final int forward = setSearchParams(request, params,
-                                          Client.listViewMode);
+                                          false);
 
       if (forward != forwardSuccess) {
         return forward;

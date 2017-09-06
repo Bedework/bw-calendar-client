@@ -23,6 +23,7 @@ import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.filter.SortTerm;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.util.misc.ToString;
 
 import java.io.Serializable;
@@ -32,7 +33,7 @@ import java.util.List;
  *
  * @author Mike Douglass douglm - rpi.edu
  */
-public class SearchParams implements Serializable {
+public class SearchParams extends Response implements Serializable {
   private boolean publicIndexRequested;
 
   /* null if times not limited. */
@@ -254,6 +255,8 @@ public class SearchParams implements Serializable {
   @Override
   public String toString() {
     final ToString ts = new ToString(this);
+    
+    super.toStringSegment(ts);
 
     ts.append("publicIndexRequested", getPublicIndexRequested())
             .append("fromDate", getFromDate())

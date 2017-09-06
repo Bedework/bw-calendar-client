@@ -18,7 +18,8 @@
 */
 package org.bedework.webcommon.filter;
 
-import org.bedework.calfacade.BwFilterDef;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -40,23 +41,20 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm     rpi.edu
  */
 public class SetFilterAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    BwFilterDef fd = request.getFilterDef();
+                      final BwActionFormBase form) {
+    final GetFilterDefResponse gfdr = request.getFilterDef();
 
-    if (request.getErrorsEmitted()) {
-      return forwardError;
-    }
-
-    if (fd == null) {
+    if (gfdr.getStatus() == Response.Status.notFound) {
       return forwardNotFound;
     }
 
-    form.setCurrentFilter(fd);
+    if (gfdr.getStatus() != Response.Status.ok) {
+      return forwardError;
+    }
+    
+    form.setCurrentFilter(gfdr.getFilterDef());
     request.refresh();
     return forwardSuccess;
   }

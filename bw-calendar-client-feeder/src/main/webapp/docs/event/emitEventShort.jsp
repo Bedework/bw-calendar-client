@@ -30,6 +30,8 @@
         <bw:emitText name="location" property="zip" />
         <bw:emitText name="location" property="link"/><%--
             Value: URI - link to a web address for the location --%>
+        <bw:emitText name="location" property="code" />
+        <bw:emitText name="location" property="alternateAddress" />
       </location>
     </logic:present>
     <logic:notPresent  name="event" property="location">

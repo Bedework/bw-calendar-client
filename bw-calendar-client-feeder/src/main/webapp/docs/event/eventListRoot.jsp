@@ -10,6 +10,8 @@
   <logic:present name="bw_search_result" scope="request">
     <bean:define id="sres" name="bw_search_result" scope="request" />
     <bean:define id="params" name="bw_search_params" scope="request" />
+    <bw:emitText name="params" property="status" />
+    <bw:emitText name="params" property="message" />
     <bw:emitText name="params" property="curOffset" />
     <bw:emitText name="params" property="pageSize" />
     <logic:present name="params" property="fromDate">

@@ -93,9 +93,8 @@ public interface BwSession extends Serializable {
    * calendars.
    *
    * @param request - current request
-   * @throws Throwable
    */
-  void embedCollections(final BwRequest request) throws Throwable;
+  void embedCollections(final BwRequest request);
 
   /**
    *
@@ -120,9 +119,8 @@ public interface BwSession extends Serializable {
   /** Make these available
    *
    * @param request - current request
-   * @throws Throwable
    */
-  void embedUserCollections(BwRequest request) throws Throwable;
+  void embedUserCollections(BwRequest request);
 
   /** Return a list of calendars in which calendar objects can be
    * placed by the current user.

@@ -29,7 +29,10 @@
         <bw:emitText name="location" property="city" />
         <bw:emitText name="location" property="state" />
         <bw:emitText name="location" property="zip" />
-        <bw:emitText name="location" property="link"/><%--
+        <bw:emitText name="location" property="link"/>
+
+        <bw:emitText name="location" property="code" />
+        <bw:emitText name="location" property="alternateAddress" /><%--
             Value: URI - link to a web address for the location --%>
         <bw:emitText name="location" property="creatorHref" tagName="creator" /><%--
           Value: string - location creator id --%>

@@ -42,6 +42,7 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.util.misc.Logged;
@@ -873,18 +874,26 @@ public class BwSessionImpl extends Logged implements BwSession {
    * @throws Throwable on error
    */
   private FilterBase getFilter(final BwRequest req,
-                               final String filterName) throws Throwable {
+                               final String filterName) {
     final BwActionFormBase form = req.getBwForm();
     final Client cl = req.getClient();
 
     BwFilterDef fdef = null;
 
     if (filterName != null) {
-      fdef = cl.getFilter(filterName);
+      final GetFilterDefResponse gfdr = cl.getFilter(filterName);
 
-      if (fdef == null) {
-        req.getErr().emit(ClientError.unknownFilter, filterName);
+      if (gfdr.getStatus() == Response.Status.notFound) {
+        form.getErr().emit(ClientError.unknownFilter, filterName);
+        return null;
       }
+
+      if (gfdr.getStatus() != Response.Status.ok) {
+        form.getErr().emit(ClientError.exc, gfdr.getMessage());
+        return null;
+      }
+      
+      fdef = gfdr.getFilterDef();
     }
 
     if (fdef == null) {

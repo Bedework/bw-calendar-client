@@ -524,7 +524,7 @@
       <forward name="success" path="/calendar/showPublicCals.rdo" redirect="true" />
     </action>
 
-    <!-- renderUrl -->
+    <!-- renderUrl 
     <action    path="/calendar/showCals"
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
@@ -543,7 +543,7 @@
       <forward name="success" path="/calendar/showCals.rdo" redirect="true" />
     </action>
 
-    <!-- renderUrl -->
+    < ! - - renderUrl - - >
     <action    path="/calendar/showCalendarForExport"
                type="org.bedework.webcommon.calendars.RenderCalendarAction"
                name="calForm"
@@ -563,7 +563,7 @@
       <forward name="success" path="/calendar/showCalendarForExport.rdo" redirect="true" />
     </action>
 
-    <!-- renderUrl -->
+    < ! - - renderUrl - - >
     <action    path="/calendar/showCalendar"
                type="org.bedework.webcommon.calendars.RenderCalendarAction"
                name="calForm"
@@ -583,7 +583,7 @@
       <forward name="success" path="/calendar/showCalendar.rdo" redirect="true" />
     </action>
 
-    <!-- renderUrl -->
+    < ! - - renderUrl - - >
     <action    path="/calendar/listForExport"
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
@@ -593,8 +593,8 @@
       <forward name="success" path="/docs/calendar/calendarListForExport.jsp"/>
     </action>
 
-    <!-- === display a page of descriptions for public calendars (not currently used) === -->
-    <!-- renderUrl -->
+    < ! - - === display a page of descriptions for public calendars (not currently used) === - - >
+    < ! - - renderUrl - - >
     <action    path="/calendar/showDescriptionList"
                type="org.bedework.webcommon.RenderAction"
                name="calForm"
@@ -603,7 +603,7 @@
                validate="false">
       <forward name="success" path="/docs/calendar/calendarDescriptions.jsp"/>
     </action>
-
+    -->
     <!-- ===============================================================
                      Searching
          =============================================================== -->

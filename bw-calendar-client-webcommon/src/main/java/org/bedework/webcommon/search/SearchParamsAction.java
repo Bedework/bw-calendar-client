@@ -150,7 +150,7 @@ public class SearchParamsAction extends EventActionBase {
     if (generateCalendarContent) {
       final Collection<SearchResultEntry> sres = cl.getSearchResult(
               Position.current);
-      if (sres.size() == 0) {
+      if ((sres == null) || (sres.size() == 0)) {
         return forwardNull;
       }
 

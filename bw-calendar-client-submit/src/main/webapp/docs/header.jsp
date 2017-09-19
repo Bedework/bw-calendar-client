@@ -11,6 +11,16 @@ try {
   <bean:define id="moduleState" name="bw_module_state" scope="request" />
   <bw:emitText name="calForm" property="calSuiteName" />
 
+  <logic:present name="calForm" property="currentCalSuite" >
+    <currentCalSuite>
+      <bw:emitText name="calForm" property="currentCalSuite.name" tagName="name" />
+      <bw:emitText name="calForm" property="currentCalSuite.group.account" tagName="group" />
+      <bw:emitText name="calForm" property="currentCalSuite.group.principalRef" tagName="groupHref" />
+      <bw:emitText name="calForm" property="currentCalSuite.resourcesHome" tagName="resourcesHome" />
+      <bw:emitCurrentPrivs name="calForm" property="currentCalSuite.currentAccess" tagName="currentAccess"/>
+    </currentCalSuite>
+  </logic:present>
+
   <now><%-- The actual date right "now" - this may not be the same as currentdate --%>
     <bean:define id="fmtnow" name="calForm" property="today.formatted" />
     <date><bean:write name="fmtnow" property="date"/></date><%--
@@ -160,11 +170,13 @@ try {
       <addEventRef><bw:rewrite actionURL="true" page="/event/addEventRef.do?b=de"/></addEventRef>
     </event>
 
+      <%--
     <calendar>
       <fetchPublicCalendars><bw:rewrite actionURL="true" page="/calendar/fetchPublicCalendars.do?b=de"/></fetchPublicCalendars>
       <fetchCalendars><bw:rewrite actionURL="true" page="/calendar/fetchCalendars.do?b=de"/></fetchCalendars>
       <fetchForExport><bw:rewrite actionURL="true" page="/calendar/fetchForExport.do?b=de"/></fetchForExport>
     </calendar>
+    --%>
 
     <search>
       <search><bw:rewrite renderURL="true" page="/search/search.rdo?b=de"/></search>

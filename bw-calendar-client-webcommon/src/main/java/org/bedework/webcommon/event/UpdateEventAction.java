@@ -380,6 +380,10 @@ public class UpdateEventAction extends EventActionBase {
       return forwardRetry;
     }
 
+    /* -------------------------- CalSuite ------------------------------ */
+    
+    ev.setCalSuite(form.getCalSuiteName());
+
     /* -------------------------- Location ------------------------------ */
 
     if (publicAdmin) {

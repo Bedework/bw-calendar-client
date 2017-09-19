@@ -27,7 +27,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
-public class RenderMainAction extends BwAbstractAction {
+public class RenderMainAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {

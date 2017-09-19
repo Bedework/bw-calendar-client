@@ -44,8 +44,8 @@ import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.responses.Response;
-import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
+import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.util.misc.Logged;
 import org.bedework.util.struts.Request;
 
@@ -259,7 +259,7 @@ public class BwSessionImpl extends Logged implements BwSession {
         if (!BedeworkDefs.appTypeFeeder.equals(appType)) {
           embedFilters(req);
 
-          if (!BedeworkDefs.appTypeWebpublic.equals(appType)) {
+          if (cl.getPublicAdmin() || cl.getWebSubmit()) {
             if (debug) {
               debug("About to embed collections");
             }
@@ -494,19 +494,22 @@ public class BwSessionImpl extends Logged implements BwSession {
         String calSuiteName = form.getCalSuiteName();
         if (calSuiteName == null) {
           calSuiteName = form.getConfig().getCalSuite();
+          form.setCalSuiteName(calSuiteName);
         }
-        
+
         if (calSuiteName == null) {
           error("No default calendar suite - nor one requested");
           return null;
         }
 
-        BwCalSuite cs = cl.getCalSuite(calSuiteName);
+        BwCalSuiteWrapper cs = cl.getCalSuite(calSuiteName);
 
         if (cs == null) {
-          error("No calendar suite with name " + calSuiteName);
+          form.getErr().emit("No calendar suite with name ", calSuiteName);
           return null;
         }
+        
+        form.setCurrentCalSuite(cs);
 
         p = cl.getPrincipal(cs.getGroup().getOwnerHref());
 

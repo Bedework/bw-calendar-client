@@ -1226,8 +1226,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     final String guid = request.getReqPar("guid");
-    final String eventName = request.getReqPar("eventName");
-
+    String eventName = request.getReqPar("eventName");
+    
+    if (eventName == null) {
+      eventName = request.getReqPar("contentName");
+    }
+    
     if (guid != null) {
       if (debug) {
         debugMsg("Get event by guid");

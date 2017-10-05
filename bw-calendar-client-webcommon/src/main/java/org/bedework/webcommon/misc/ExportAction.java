@@ -21,8 +21,11 @@ package org.bedework.webcommon.misc;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwTimeRange;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.icalendar.IcalTranslator;
@@ -33,6 +36,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.DateTime;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -56,9 +60,6 @@ import java.util.TreeSet;
  * @author Mike Douglass
  */
 public class ExportAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -70,7 +71,8 @@ public class ExportAction extends BwAbstractAction {
     int method = Icalendar.methodTypePublish;
 
     if ((request.getReqPar("guid") != null) ||
-        (request.getReqPar("eventName") != null)) {
+        (request.getReqPar("eventName") != null) ||
+            (request.getReqPar("contentName") != null)) {
       if (debug) {
         debugMsg("Export event by guid or name");
       }
@@ -79,9 +81,6 @@ public class ExportAction extends BwAbstractAction {
 
       if (ev == null) {
         return forwardNoAction;
-      }
-      if (debug) {
-        debugMsg("Got event by guid");
       }
 
       method = ev.getEvent().getScheduleMethod();
@@ -99,24 +98,50 @@ public class ExportAction extends BwAbstractAction {
         return forwardNotFound;
       }
 
-      BwTimeRange tr = new BwTimeRange();
-
       String dl = request.getReqPar("dateLimits");
+      final BwDateTime start;
+      final BwDateTime end;
+
+      BwTimeRange tr = null;
+      final AuthProperties authp = cl.getAuthProperties();
+
 
       if (dl != null) {
         if (dl.equals("active")) {
-          tr = new BwTimeRange(BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
-                                                          true, false,
-                                                          null),   // tzid
-                                                          null);
+          tr = new BwTimeRange(
+                  BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
+                                             true, false,
+                                             null),   // tzid
+                  null);
         } else if (dl.equals("limited")) {
           tr = form.getEventDates().getTimeRange();
         }
       }
+      
+      if (tr != null) {
+        start = tr.getStart();
+        end = tr.getEnd();
+      } else {
+        start = BwDateTime.makeBwDateTime(new DateTime());
+
+        int days = request.getIntReqPar("days", -32767);
+        
+        final int max = authp.getMaxWebCalPeriod();
+        if (days < 0) {
+          days = max;
+        } else if ((days > max) && !cl.isSuperUser()) {
+          days = max;
+        }
+        
+        final BwDuration dur = new BwDuration();
+        dur.setDays(days);
+
+        end = start.addDuration(dur);
+      }
 
       evs = cl.getEvents("(colPath='" + col.getPath() + "')",
-                         tr.getStart(),
-                         tr.getEnd(),
+                         start,
+                         end,
                          request.present("expand"));
 
       if (evs == null) {

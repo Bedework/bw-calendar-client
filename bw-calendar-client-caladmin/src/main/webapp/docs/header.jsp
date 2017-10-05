@@ -298,6 +298,8 @@ try {
     </filter>
   </urlPrefixes>
 
+  <bw:emitText name="calForm" property="calSuiteName" />
+
   <logic:present name="calForm" property="currentCalSuite" >
     <currentCalSuite>
       <bw:emitText name="calForm" property="currentCalSuite.name" tagName="name" />

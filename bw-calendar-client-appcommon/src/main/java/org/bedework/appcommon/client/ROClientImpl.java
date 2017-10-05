@@ -389,20 +389,17 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public AuthProperties getAuthProperties()
-          throws CalFacadeException {
+  public AuthProperties getAuthProperties() {
     return svci.getAuthProperties();
   }
 
   @Override
-  public SystemProperties getSystemProperties()
-          throws CalFacadeException {
+  public SystemProperties getSystemProperties() {
     return svci.getSystemProperties();
   }
 
   @Override
-  public BasicSystemProperties getBasicSystemProperties()
-          throws CalFacadeException {
+  public BasicSystemProperties getBasicSystemProperties() {
     return svci.getBasicSystemProperties();
   }
 

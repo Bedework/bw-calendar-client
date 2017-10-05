@@ -200,23 +200,20 @@ public interface Client extends Serializable {
   /** Return authentication relevant properties.
    *
    * @return AuthProperties object - never null.
-   * @throws CalFacadeException
    */
-  AuthProperties getAuthProperties() throws CalFacadeException;
+  AuthProperties getAuthProperties();
 
   /** Return properties about the system.
    *
    * @return SystemProperties object - never null.
-   * @throws CalFacadeException
    */
-  SystemProperties getSystemProperties() throws CalFacadeException;
+  SystemProperties getSystemProperties();
 
   /** Return basic (mostly immutable) properties about the system.
    *
    * @return BasicSystemProperties object - never null.
-   * @throws CalFacadeException
    */
-  BasicSystemProperties getBasicSystemProperties() throws CalFacadeException;
+  BasicSystemProperties getBasicSystemProperties();
 
   /**
    * If possible roll back the changes.

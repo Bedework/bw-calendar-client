@@ -7,6 +7,8 @@
 <creating><bean:write name="calForm" property="addingEvent"/></creating>
 <bw:emitText name="calForm" property="hour24" /><%--
     Values: true, false - Flag if we are using 24 hour time --%>
+<bw:emitText name="calForm" property="authpars.maxInstances" />
+<bw:emitText name="calForm" property="authpars.maxYears" />
 
 <%-- formElements sections take advantage of Struts' form processing features. --%>
 <formElements>

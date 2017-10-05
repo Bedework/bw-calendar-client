@@ -20,6 +20,7 @@
     </end>
     <bw:emitText name="event" property="creatorHref" tagName="creator"/>
     <bw:emitText name="event" property="name"/>
+    <bw:emitText name="event" property="calSuite"/>
 
     <id><bean:write name="event" property="id"/></id><%--
       Value: integer - event id --%>

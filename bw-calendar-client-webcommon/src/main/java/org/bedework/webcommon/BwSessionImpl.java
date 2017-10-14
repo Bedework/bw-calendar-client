@@ -86,8 +86,9 @@ public class BwSessionImpl extends Logged implements BwSession {
     new ConcurrentHashMap<>();
   private long sessionNum = 0;
   
-  private static String publicCollectionsChangeToken;
-  private static BwCalendar clonedPublicCollections;  
+  // Both indexed by isSuper
+  private static String[] publicCollectionsChangeToken = {null, null};
+  private static BwCalendar[] clonedPublicCollections = {null, null};
 
   /** The current user - null for guest
    */
@@ -450,16 +451,23 @@ public class BwSessionImpl extends Logged implements BwSession {
       final Client cl = request.getClient();
       final String changeToken = cl.getCurrentChangeToken();
       final boolean fromCopy;
+      // TODo fix all this as admins might have different access rights
+      final int accessIndex;
+      if (cl.isSuperUser()) {
+        accessIndex = 0;
+      } else {
+        accessIndex = 1;
+      }
 
-      fromCopy = (publicCollectionsChangeToken != null) &&
-              publicCollectionsChangeToken.equals(changeToken);
+      fromCopy = (publicCollectionsChangeToken[accessIndex] != null) &&
+              publicCollectionsChangeToken[accessIndex].equals(changeToken);
 
       final BwCalendar root;
       if (!fromCopy) {
         debug("Discarding cached public and rebuilding");
         root = cl.getPublicCalendars();
       } else {
-        root = clonedPublicCollections;
+        root = clonedPublicCollections[accessIndex];
       }
 
       if (root == null) {
@@ -468,12 +476,13 @@ public class BwSessionImpl extends Logged implements BwSession {
         return null;
       }
 
-      publicCollectionsChangeToken = changeToken;
-      clonedPublicCollections = getClonedCollection(request,
-                                                      root,
-                                                      fromCopy);
+      publicCollectionsChangeToken[accessIndex] = changeToken;
+      clonedPublicCollections[accessIndex] = 
+              getClonedCollection(request,
+                                  root,
+                                  fromCopy);
       
-      return clonedPublicCollections;
+      return clonedPublicCollections[accessIndex];
     } catch (final Throwable t) {
       request.getErr().emit(t);
       return null;

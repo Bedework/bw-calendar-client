@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
@@ -44,15 +45,18 @@ public class RenderEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    /*
     if (form.getNewSession()) {
       request.refresh();
       return forwardGotomain;
     }
+    */
 
     BwModuleState mstate = request.getModule().getState();
     EventKey ekey = form.getEventKey();
 
     if (ekey == null) {
+      request.getErr().emit(ClientError.unknownEvent, "No key supplied");
       return forwardNoAction;
     }
 

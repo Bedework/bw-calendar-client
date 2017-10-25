@@ -2039,7 +2039,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                         form.getAppType());
           }
 
-          client.requestIn(request.getConversationType());
+          cb.in(request);
+          //client.requestIn(request.getConversationType());
           mstate.setRefresh(true);
         }
       } else {

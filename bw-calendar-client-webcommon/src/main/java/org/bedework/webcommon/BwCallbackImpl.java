@@ -38,7 +38,7 @@ public class BwCallbackImpl extends BwCallback {
 
   private transient Logger log;
 
-  BwActionFormBase form;
+  final BwActionFormBase form;
   ActionForward errorForward;
 
   BwCallbackImpl(final BwActionFormBase form,
@@ -75,8 +75,8 @@ public class BwCallbackImpl extends BwCallback {
   }
 
   @Override
-  public void out(HttpServletRequest hreq) throws Throwable {
-    BwModule module = form.fetchModule(
+  public void out(final HttpServletRequest hreq) throws Throwable {
+    final BwModule module = form.fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
     if (debug) {
@@ -87,9 +87,9 @@ public class BwCallbackImpl extends BwCallback {
   }
 
   @Override
-  public void close(HttpServletRequest hreq,
-                    boolean cleanUp) throws Throwable {
-    BwModule module = form.fetchModule(
+  public void close(final HttpServletRequest hreq,
+                    final boolean cleanUp) throws Throwable {
+    final BwModule module = form.fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
     if (debug) {
@@ -108,8 +108,8 @@ public class BwCallbackImpl extends BwCallback {
       /* Redirect to an error action
        */
 
-    String forwardPath = errorForward.getPath();
-    String uri = null;
+    final String forwardPath = errorForward.getPath();
+    String uri;
 
     // paths not starting with / should be passed through without any processing
     // (ie. they're absolute)
@@ -125,7 +125,7 @@ public class BwCallbackImpl extends BwCallback {
     }
     try {
       hresp.sendRedirect(hresp.encodeRedirectURL(uri));
-    } catch (Throwable t1) {
+    } catch (final Throwable ignored) {
       // Presumably illegal state
     }
   }

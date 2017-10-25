@@ -52,15 +52,15 @@ public class RenderEventAction extends EventActionBase {
     }
     */
 
-    BwModuleState mstate = request.getModule().getState();
-    EventKey ekey = form.getEventKey();
+    final BwModuleState mstate = request.getModule().getState();
+    final EventKey ekey = form.getEventKey();
 
     if (ekey == null) {
       request.getErr().emit(ClientError.unknownEvent, "No key supplied");
       return forwardNoAction;
     }
 
-    EventInfo ei = findEvent(request, ekey);
+    final EventInfo ei = findEvent(request, ekey);
 
     if (ei == null) {
       return forwardNoAction;
@@ -68,22 +68,24 @@ public class RenderEventAction extends EventActionBase {
 
     form.setEventInfo(ei, false);
 
-    Client cl = request.getClient();
-    BwEvent ev = ei.getEvent();
+    final Client cl = request.getClient();
+    final BwEvent ev = ei.getEvent();
 
     // Not export - just set up for display
 
     if (ev.getRrules() != null) {
-      Collection<RecurRuleComponents> rrcs = RecurRuleComponents.fromEventRrules(ev);
+      final Collection<RecurRuleComponents> rrcs =
+              RecurRuleComponents.fromEventRrules(ev);
 
       form.setRruleComponents(rrcs);
     } else {
       form.setRruleComponents(null);
     }
 
-    EventFormatter ef = new EventFormatter(cl,
-                                           new IcalTranslator(new IcalCallbackcb(cl)),
-                                           ei);
+    final EventFormatter ef =
+            new EventFormatter(cl,
+                               new IcalTranslator(new IcalCallbackcb(cl)),
+                               ei);
 
     form.setCurEventFmt(ef);
 
@@ -97,14 +99,14 @@ public class RenderEventAction extends EventActionBase {
       // Replies have all sorts of missing fields
       /* Only change date if current date is outside range of event. */
 
-      String cur = mstate.getViewMcDate().getDateDigits();
+      final String cur = mstate.getViewMcDate().getDateDigits();
 
       /* Get start date in current locale */
 
       Date evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtstart().getDate());
 
       /* Get the date in the current user timezone */
-      String evst = DateTimeUtil.isoDate(evdt).substring(0, 8);
+      final String evst = DateTimeUtil.isoDate(evdt).substring(0, 8);
 
       if (debug) {
         debugMsg("******* evdt=" + evdt + " evst=" + evst +
@@ -112,7 +114,7 @@ public class RenderEventAction extends EventActionBase {
       }
 
       evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtend().getDate());
-      String evend = DateTimeUtil.isoDate(evdt).substring(0, 8);
+      final String evend = DateTimeUtil.isoDate(evdt).substring(0, 8);
 
       /* This doesn't seem altogether correct */
       if ((cur.compareTo(evst) < 0) ||

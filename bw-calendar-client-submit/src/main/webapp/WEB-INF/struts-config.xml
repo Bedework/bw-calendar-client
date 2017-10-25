@@ -352,6 +352,7 @@
       <forward name="noAction" path="/event/showAddEvent.rdo" redirect="true" />
       <forward name="error" path="/event/showAddEvent.rdo" redirect="true" />
       <forward name="validationError" path="/event/showAddEvent.rdo" redirect="true" />
+      <forward name="retry" path="/event/showAddEvent.rdo" redirect="true" />
       <forward name="duplicate" path="/event/showAddEvent.rdo" redirect="true" />
       <forward name="continue" path="/event/showEditEvent.rdo" redirect="true" />
       <forward name="delete" path="/event/showDeleteConfirm.rdo" redirect="true" />

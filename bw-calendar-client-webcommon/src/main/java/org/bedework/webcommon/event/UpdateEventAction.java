@@ -261,48 +261,6 @@ public class UpdateEventAction extends EventActionBase {
 
     final String preserveColPath = ev.getColPath();
 
-    if (!request.setEventCalendar(ei, changes)) {
-      return forwardRetry;
-    }
-
-    final String colPath = ev.getColPath();
-
-    if (publishEvent) {
-      /* Event MUST NOT be in a submission calendar */
-      if (colPath.startsWith(submissionsRoot)) {
-        form.getErr().emit(ValidationError.inSubmissionsCalendar);
-        cl.rollback();
-        return forwardValidationError;
-      }
-    } else if (approveEvent) {
-      /* Event MUST NOT be in a workflow calendar */
-      if (colPath.startsWith(workflowRoot)) {
-        form.getErr().emit(ValidationError.inSubmissionsCalendar);
-        restore(ev, preserveColPath);
-        cl.rollback();
-        return forwardValidationError;
-      }
-
-      // See if colpath changed and if so change the overrides
-      if (ev.getRecurring() &&
-              !preserveColPath.equals(colPath) &&
-              (ei.getOverrideProxies() != null)) {
-        for (final BwEvent oev: ei.getOverrideProxies()) {
-          oev.setColPath(ev.getColPath());
-        }
-      }
-
-    } else if (updateSubmitEvent) {
-      /* Event MUST be in a submission calendar */
-      if (!colPath.startsWith(submissionsRoot)) {
-        form.getErr().emit(ValidationError.notSubmissionsCalendar);
-        cl.rollback();
-        return forwardValidationError;
-      }
-    } else if ((workflowRoot != null) && colPath.startsWith(workflowRoot)) {
-      awaitingApprovalEvent = adding;
-    }
-
     /* ------------------------ Text fields ------------------------------ */
 
     setEventText(request, ev, adding, changes);
@@ -492,25 +450,6 @@ public class UpdateEventAction extends EventActionBase {
       ev.setStatus(fStatus);
     }
 
-    /* ------------------ final validation -------------------------- */
-
-    /* If we're updating but not publishing a submitted event, treat it as
-     * if it were the submit app.
-     */
-    final List<ValidationError> ves =
-            BwWebUtil.validateEvent(cl,
-                                    updateSubmitEvent || submitApp,
-                                    publicAdmin,
-                                    ev);
-
-    if (ves != null) {
-      for (final ValidationError ve: ves) {
-        form.getErr().emit(ve.getErrorCode(), ve.getExtra());
-      }
-      restore(ev, preserveColPath);
-      return forwardRetry;
-    }
-
     /* ------------------------- Scheduling ---------------------------- */
 
     /* -------------------------- Attendees ---------------------------- */
@@ -538,26 +477,6 @@ public class UpdateEventAction extends EventActionBase {
     if (request.getErrFlag()) {
       restore(ev, preserveColPath);
       return forwardRetry;
-    }
-
-    /* ------------- web submit - copy entities and change owner ------------ */
-
-    if (publishEvent) {
-      copyEntities(ev);
-      changeOwner(ev, cl);
-      changes.changed(PropertyInfoIndex.CREATOR, null,
-                      ev.getCreatorHref());
-
-      // Do the same for any overrides
-
-      if (ev.getRecurring() &&
-          (ei.getOverrideProxies() != null)) {
-        for (final BwEvent oev: ei.getOverrideProxies()) {
-          copyEntities(oev);
-          changeOwner(oev, cl);
-          oev.setColPath(ev.getColPath());
-        }
-      }
     }
 
     /* -------------------------- Recurrences ------------------------------ */
@@ -644,6 +563,95 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     updateRExdates(request, ev, evDateOnly, changes);
+
+    /* ------------------ final validation -------------------------- */
+
+    /* If we're updating but not publishing a submitted event, treat it as
+     * if it were the submit app.
+     */
+    final List<ValidationError> ves =
+            BwWebUtil.validateEvent(cl,
+                                    updateSubmitEvent || submitApp,
+                                    publicAdmin,
+                                    ev);
+
+    if (ves != null) {
+      for (final ValidationError ve: ves) {
+        form.getErr().emit(ve.getErrorCode(), ve.getExtra());
+      }
+      restore(ev, preserveColPath);
+      return forwardRetry;
+    }
+
+    /* ------------- web submit - copy entities and change owner ------------ */
+
+    if (!request.setEventCalendar(ei, changes)) {
+      return forwardRetry;
+    }
+
+    final String colPath = ev.getColPath();
+
+    if (publishEvent) {
+      /* Event MUST NOT be in a submission calendar */
+      if (colPath.startsWith(submissionsRoot)) {
+        form.getErr().emit(ValidationError.inSubmissionsCalendar);
+        cl.rollback();
+        return forwardValidationError;
+      }
+    } else if (approveEvent) {
+      /* Event MUST NOT be in a workflow calendar */
+      if (colPath.startsWith(workflowRoot)) {
+        form.getErr().emit(ValidationError.inSubmissionsCalendar);
+        restore(ev, preserveColPath);
+        cl.rollback();
+        return forwardValidationError;
+      }
+
+      // See if colpath changed and if so change the overrides
+      if (ev.getRecurring() &&
+              !preserveColPath.equals(colPath) &&
+              (ei.getOverrideProxies() != null)) {
+        for (final BwEvent oev: ei.getOverrideProxies()) {
+          oev.setColPath(ev.getColPath());
+        }
+      }
+
+    } else if (updateSubmitEvent) {
+      /* Event MUST be in a submission calendar */
+      if (!colPath.startsWith(submissionsRoot)) {
+        form.getErr().emit(ValidationError.notSubmissionsCalendar);
+        cl.rollback();
+        return forwardValidationError;
+      }
+    } else if ((workflowRoot != null) && colPath.startsWith(workflowRoot)) {
+      awaitingApprovalEvent = adding;
+    }
+
+    if (publishEvent) {
+      copyEntities(ev);
+      changeOwner(ev, cl);
+      changes.changed(PropertyInfoIndex.CREATOR, null,
+                      ev.getCreatorHref());
+
+      // Do the same for any overrides
+
+      if (ev.getRecurring() &&
+              (ei.getOverrideProxies() != null)) {
+        for (final BwEvent oev: ei.getOverrideProxies()) {
+          copyEntities(oev);
+          changeOwner(oev, cl);
+          oev.setColPath(ev.getColPath());
+        }
+      }
+    }
+
+    /* --------------------- Must have a calendar ------------------ */
+
+    if (ev.getColPath() == null) {
+      form.getErr().emit(ValidationError.missingCalendar);
+      cl.rollback();
+      return forwardValidationError;
+    }
 
     /* --------------------- Add or update the event ------------------------ */
 

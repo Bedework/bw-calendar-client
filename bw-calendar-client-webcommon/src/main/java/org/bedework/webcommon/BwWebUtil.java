@@ -184,12 +184,6 @@ public class BwWebUtil {
 
     ev.setLink(checkNull(ev.getLink()));
 
-    /* --------------------- Must have a calendar ------------------ */
-
-    if (ev.getColPath() == null) {
-      ves = addError(ves, ValidationError.missingCalendar);
-    }
-
     /* ------------- Check summary and description ------------------ */
     AuthProperties apars = cl.getAuthProperties();
     int maxDescLen;

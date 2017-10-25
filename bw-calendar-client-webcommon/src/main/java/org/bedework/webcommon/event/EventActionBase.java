@@ -310,21 +310,12 @@ public abstract class EventActionBase extends BwAbstractAction {
 
   protected EventInfo findEvent(final BwRequest request,
                                 final EventKey ekey) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
     EventInfo ev = null;
-    BwCalendar cal = null;
 
     if (ekey.getColPath() == null) {
       // bogus request
       request.getErr().emit(ValidationError.missingCalendarPath);
-      return null;
-    }
-
-    cal = cl.getCollection(ekey.getColPath());
-
-    if (cal == null) {
-      // Assume no access
-      request.getErr().emit(ClientError.noAccess);
       return null;
     }
 
@@ -337,15 +328,16 @@ public abstract class EventActionBase extends BwAbstractAction {
       key = ekey.getGuid();
       String rid = ekey.getRecurrenceId();
       // DORECUR is this right?
-      RecurringRetrievalMode rrm;
+      final RecurringRetrievalMode rrm;
       if (ekey.getForExport()) {
         rrm = RecurringRetrievalMode.overrides;
         rid = null;
       } else {
         rrm = RecurringRetrievalMode.expanded;
       }
-      Collection<EventInfo> evs =
-              cl.getEventByUid(cal.getPath(),
+
+      final Collection<EventInfo> evs =
+              cl.getEventByUid(ekey.getColPath(),
                                ekey.getGuid(),
                                rid, rrm);
       if (debug) {
@@ -363,7 +355,8 @@ public abstract class EventActionBase extends BwAbstractAction {
       }
       key = ekey.getName();
 
-      ev = cl.getEvent(cal.getPath(), ekey.getName(),
+      ev = cl.getEvent(ekey.getColPath(),
+                       ekey.getName(),
                        ekey.getRecurrenceId());
     }
 

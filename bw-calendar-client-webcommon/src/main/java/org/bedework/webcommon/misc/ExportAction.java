@@ -71,6 +71,7 @@ public class ExportAction extends BwAbstractAction {
     int method = Icalendar.methodTypePublish;
 
     if ((request.getReqPar("guid") != null) ||
+        (request.getReqPar("href") != null) ||
         (request.getReqPar("eventName") != null) ||
             (request.getReqPar("contentName") != null)) {
       if (debug) {

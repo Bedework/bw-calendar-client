@@ -29,6 +29,7 @@
     <id><bean:write name="event" property="id"/></id><%--
       Value: integer - event id --%>
     <bw:emitText name="event" property="uid" tagName="guid" />
+    <bw:emitText name="event" property="encodedHref" />
     <bw:emitText name="event" property="recurrenceId" tagName="recurrenceId" />
     <bw:emitText name="event" property="summary" /><%--
       Value: string - short description, typically used for the event title  --%>

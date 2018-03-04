@@ -14,7 +14,7 @@
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 		<!-- Bedework Versions -->
     <bw-msg.version>4.0.0-SNAPSHOT</bw-msg.version>
-		<bw-ws.version>4.0.4-SNAPSHOT</bw-ws.version>
+		<bw-xml.version>4.0.5-SNAPSHOT</bw-xml.version>
 		<bw-util.version>4.0.6-SNAPSHOT</bw-util.version>
 		<bw-access.version>4.0.2-SNAPSHOT</bw-access.version>
 		<bw-webdav.version>4.0.2-SNAPSHOT</bw-webdav.version>
@@ -166,18 +166,18 @@
 			<!-- Bedework: Web Services -->
 			<dependency>
 				<groupId>org.bedework</groupId>
-				<artifactId>bw-ws-icalendar</artifactId>
-				<version>${bw-ws.version}</version>
+				<artifactId>bw-xml-icalendar</artifactId>
+				<version>${bw-xml.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.bedework</groupId>
-				<artifactId>bw-ws-tzsvr</artifactId>
-				<version>${bw-ws.version}</version>
+				<artifactId>bw-xml-tzsvr</artifactId>
+				<version>${bw-xml.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.bedework</groupId>
-				<artifactId>bw-ws-calws-soap</artifactId>
-				<version>${bw-ws.version}</version>
+				<artifactId>bw-xml-calws-soap</artifactId>
+				<version>${bw-xml.version}</version>
 			</dependency>
 
       <dependency>

@@ -27,8 +27,11 @@ import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.calfacade.util.ChangeTable;
+import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedResponseEvent;
+import org.bedework.util.calendar.PropertyIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -58,7 +61,7 @@ public class SuggestAction extends EventActionBase {
     final Client cl = request.getClient();
     final HttpServletResponse response = request.getResponse();
 
-    /** Check access
+    /* Check access
      */
     final boolean publicAdmin = cl.getPublicAdmin();
     if (cl.isGuest() || !publicAdmin || !form.getCurUserApproverUser()) {
@@ -113,6 +116,8 @@ public class SuggestAction extends EventActionBase {
       return forwardNull;
     }
 
+    final ChangeTable changes = ei.getChangeset(
+            cl.getCurrentPrincipalHref());
     final char newStatus;
 
     if (accept) {
@@ -124,14 +129,22 @@ public class SuggestAction extends EventActionBase {
     final String newSt = new BwEvent.SuggestedTo(newStatus,
                                                  st.getGroupHref(),
                                                  st.getSuggestedByHref()).toString();
+    /* TODO - reenable after data fixed
     if (newSt.equals(st.toString())) {
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return forwardNull;
     }
+    */
 
     theProp.setValue(newSt);
 
+    final ChangeTableEntry xpCte = changes.getEntry(
+            PropertyIndex.PropertyInfoIndex.XPROP);
+    xpCte.addChangedValue(theProp);
+
     final Set<String> catuids = cl.getCalsuitePreferences().getDefaultCategoryUids();
+    final ChangeTableEntry catCte = changes.getEntry(
+            PropertyIndex.PropertyInfoIndex.CATEGORIES);
 
     if (debug) {
       debugMsg("About to add " + catuids.size() + " categories");
@@ -147,8 +160,10 @@ public class SuggestAction extends EventActionBase {
 
         if (accept) {
           ev.addCategory(cat);
+          catCte.addAddedValue(cat);
         } else {
           ev.removeCategory(cat);
+          catCte.addRemovedValue(cat);
         }
       } else {
         warn("Default category uid " + uid + " is missing");
@@ -156,7 +171,8 @@ public class SuggestAction extends EventActionBase {
     }
 
     try {
-      cl.updateEvent(ei, true, null);
+      cl.updateEvent(ei, true, null,
+                     true); // TODO - set this back to false after data is fixed
     } catch (final CalFacadeException cfe) {
       cl.rollback();
       throw cfe;

@@ -302,6 +302,16 @@ public class UpdateCalendarAction extends BwAbstractAction {
       remotePw = null;
     }
 
+    final boolean orgSyncV2 = request.present("orgSyncV2");
+    if (orgSyncV2) {
+      cal.setSubscriptionTargetType("orgSyncV2");
+    } else {
+      cal.setSubscriptionTargetType("file");
+    }
+
+    cal.setOrgSyncPublicOnly(request.present("orgSyncPublicOnly"));
+    cal.setLocationKey(request.getReqPar("locKey"));
+
     /* Set the  etag and last refresh to null to force a refresh */
 //    cal.setLastRefresh(null);
   //  cal.setLastEtag(null);

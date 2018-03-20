@@ -41,10 +41,13 @@ import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.UserAuth;
+import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.util.misc.Util;
+
+import org.hibernate.Hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,7 +109,8 @@ public class AdminClientImpl extends ClientImpl {
                            conf.getAllowEditAllCategories(),
                            conf.getAllowEditAllLocations(),
                            conf.getAllowEditAllContacts(),
-                           false);    // sessionless
+                           false, // sessionless
+                           false); // system
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
 
@@ -171,10 +175,32 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public BwAuthUser getAuthUser(final String userid)
+  public BwAuthUser getAuthUser(final BwPrincipal pr)
           throws CalFacadeException {
     final UserAuth ua = svci.getUserAuth();
-    return ua.getUser(userid);
+    BwAuthUser au = ua.getUser(pr.getAccount());
+
+    if (au == null) {
+      if (!isSuperUser()) {
+        return null;
+      }
+
+      au = BwAuthUser.makeAuthUser(pr.getPrincipalRef(),
+                                   UserAuth.publicEventUser);
+      addAuthUser(au);
+
+      return au;
+    }
+
+    // For the time being force initialization of the prefs
+
+    final BwAuthUserPrefs prefs = au.getPrefs();
+    Hibernate.initialize(prefs.getCalendarPrefs().getPreferred());
+    Hibernate.initialize(prefs.getCategoryPrefs().getPreferred());
+    Hibernate.initialize(prefs.getContactPrefs().getPreferred());
+    Hibernate.initialize(prefs.getLocationPrefs().getPreferred());
+
+    return au;
   }
 
   @Override
@@ -445,8 +471,8 @@ public class AdminClientImpl extends ClientImpl {
                                   .getPrincipalRef());
     }
 
-    int lastSlashPos = path.lastIndexOf("/");
-    String parentPath;
+    final int lastSlashPos = path.lastIndexOf("/");
+    final String parentPath;
 
     if (lastSlashPos == 0) {
       parentPath = "/";
@@ -468,7 +494,7 @@ public class AdminClientImpl extends ClientImpl {
       aces.add(Ace.makeAce(AceWho.all, readPrivs, null));
 
       changeAccess(resCol, aces, true);
-    } catch (AccessException ae) {
+    } catch (final AccessException ae) {
       throw new CalFacadeException(ae);
     }
 
@@ -528,8 +554,8 @@ public class AdminClientImpl extends ClientImpl {
   /** For the admin client the default context is the
    * editable collections.
    *
-   * @return
-   * @throws CalFacadeException
+   * @return filter
+   * @throws CalFacadeException on fatal error
    */
   @Override
   protected FilterBase getDefaultFilterContext()

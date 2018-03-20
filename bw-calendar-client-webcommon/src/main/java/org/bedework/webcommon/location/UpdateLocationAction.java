@@ -22,6 +22,7 @@ package org.bedework.webcommon.location;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -73,11 +74,32 @@ public class UpdateLocationAction extends BwAbstractAction {
 
     boolean added = false;
 
-    /* We are just updating from the current form values.
+    /* We are updating from the current form values or setting keys.
      */
+
+    final String keyName = request.getReqPar("keyName");
+
+    if (keyName != null) {
+      final String keyValue = request.getReqPar("keyValue");
+
+      if (keyValue == null) {
+        location.delKey(keyName);
+      } else {
+        location.updKey(keyName, keyValue);
+      }
+    }
+
     final ValidateResult ver = BwWebUtil.validateLocation(form);
     if (!ver.ok) {
       return forwardRetry;
+    }
+
+    if (cl.isSuperUser()) {
+      final String deleted = request.getReqPar("deleted");
+
+      if ("true".equals(deleted)) {
+        location.setStatus(BwEventProperty.statusDeleted);
+      }
     }
 
     if (add) {

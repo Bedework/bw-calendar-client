@@ -19,7 +19,7 @@
 package org.bedework.webcommon.monitor;
 
 import org.bedework.calfacade.MonitorStat;
-import org.bedework.sysevents.monitor.BwSysMonitorMBean;
+import org.bedework.calfacade.svc.BwSysMonitorMBean;
 import org.bedework.util.jmx.MBeanUtil;
 import org.bedework.util.xml.XmlEmit;
 import org.bedework.webcommon.BwAbstractAction;

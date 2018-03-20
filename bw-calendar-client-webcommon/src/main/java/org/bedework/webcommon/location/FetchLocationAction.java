@@ -42,13 +42,13 @@ public class FetchLocationAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
       return forwardNoAccess;
     }
 
-    /** User requested a location from the list. Retrieve it, embed it in
+    /* User requested a location from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
     final String uid = request.getReqPar("uid");

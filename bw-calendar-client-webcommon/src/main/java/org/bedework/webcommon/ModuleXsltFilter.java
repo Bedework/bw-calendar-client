@@ -44,7 +44,7 @@ public class ModuleXsltFilter extends ConfiguredXSLTFilter {
       req.setAttribute(globalsName, fg);
 
       if (debug) {
-        getLogger().debug("Created new FilterGlobals");
+        debug("Created new FilterGlobals");
       }
     } else {
       fg = (FilterGlobals)o;

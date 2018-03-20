@@ -10,6 +10,7 @@
 <page>deleteEventConfirm</page>
 <tab>main</tab>
 
+<markDeleted><bean:write name="calForm" property="markDeleted"/></markDeleted>
 <bean:define id="allView" value="true" toScope="request"/>
 <bean:define id="eventFormatter"
                  name="calForm"

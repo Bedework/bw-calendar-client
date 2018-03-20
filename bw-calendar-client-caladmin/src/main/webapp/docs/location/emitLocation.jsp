@@ -40,5 +40,13 @@
 
   <bw:emitText name="location" property="code" />
   <bw:emitText name="location" property="alternateAddress" />
+  <keys>
+    <logic:present name="location" property="keys">
+      <logic:iterate id="keyFld" name="location" property="keys">
+        <bw:emitText name="keyFld" property="keyName" />
+        <bw:emitText name="keyFld" property="keyVal" />
+      </logic:iterate>
+    </logic:present>
+  </keys>
 </location>
 

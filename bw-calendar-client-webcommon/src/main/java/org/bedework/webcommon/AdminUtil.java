@@ -26,7 +26,6 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
-import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.util.struts.Request;
@@ -44,7 +43,7 @@ public class AdminUtil implements ForwardDefs {
    *
    * @param request request object
    * @return int foward index
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public static int actionSetup(final BwRequest request) throws Throwable {
     final boolean debug = getLogger().isDebugEnabled();
@@ -52,16 +51,10 @@ public class AdminUtil implements ForwardDefs {
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
-    BwAuthUser au = cl.getAuthUser(form.getCurrentUser());
+    final BwAuthUser au = cl.getAuthUser(cl.getAuthPrincipal());
 
     if (au == null) {
-      if (!cl.isSuperUser()) {
-        return forwardNoAccess;
-      }
-
-      au = BwAuthUser.makeAuthUser(cl.getCurrentPrincipalHref(),
-                                   UserAuth.publicEventUser);
-      cl.addAuthUser(au);
+      return forwardNoAccess;
     }
 
     // Refresh current auth user prefs.
@@ -110,7 +103,7 @@ public class AdminUtil implements ForwardDefs {
    * @param initCheck true if this is a check to see if we're initialised,
    *                  otherwise this is an explicit request to change group.
    * @return int   forward index
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public static int checkGroup(final BwRequest request,
                                final boolean initCheck) throws Throwable {
@@ -124,7 +117,7 @@ public class AdminUtil implements ForwardDefs {
 
     try {
       if (cl.getChoosingGroup()) {
-        /** This should be the response to presenting a list of groups.
+        /* This should be the response to presenting a list of groups.
             We handle it here rather than in a separate action to ensure our
             client is not trying to bypass the group setting.
          */
@@ -156,7 +149,7 @@ public class AdminUtil implements ForwardDefs {
         return setGroup(request, adg);
       }
 
-      /** If the user is in no group or in one group we just go with that,
+      /* If the user is in no group or in one group we just go with that,
           otherwise we ask them to select the group
        */
 
@@ -175,7 +168,7 @@ public class AdminUtil implements ForwardDefs {
       }
 
       if (adgs.isEmpty()) {
-        /** If we require that all users be in a group we return to an error
+        /* If we require that all users be in a group we return to an error
             page. The only exception will be superUser.
          */
 
@@ -197,7 +190,7 @@ public class AdminUtil implements ForwardDefs {
                         (BwAdminGroup)adgs.iterator().next());
       }
 
-      /** Go ahead and present the possible groups
+      /* Go ahead and present the possible groups
        */
       request.setSessionAttr(BwRequest.bwUserAdminGroupsInfoName,
                              adgs);
@@ -260,7 +253,7 @@ public class AdminUtil implements ForwardDefs {
    * @param request the request object
    * @param cl client
    * @return calendar suite wrapper
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public static BwCalSuiteWrapper findCalSuite(final Request request,
                                                final Client cl) throws Throwable {
@@ -286,7 +279,7 @@ public class AdminUtil implements ForwardDefs {
    * @param cl client
    * @param adg admin group
    * @return calendar suite wrapper
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   private static BwCalSuiteWrapper findCalSuite(final Request request,
                                                 final Client cl,

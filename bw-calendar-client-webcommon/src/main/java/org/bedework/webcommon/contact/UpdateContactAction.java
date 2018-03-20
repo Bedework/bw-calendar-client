@@ -22,6 +22,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwContact;
+import org.bedework.calfacade.BwEventProperty;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -39,32 +40,29 @@ import org.bedework.webcommon.BwWebUtil.ValidateResult;
  * @author Mike Douglass   douglm   rpi.edu
  */
 public class UpdateContactAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest() ||
             (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
 
-    String reqpar = request.getReqPar("delete");
+    final String reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
       return forwardDelete;
     }
 
-    boolean add = form.getAddingContact();
+    final boolean add = form.getAddingContact();
 
-    /** We are just updating from the current form values.
+    /* We are just updating from the current form values.
      */
-    ValidateResult vr = BwWebUtil.validateContact(form);
+    final ValidateResult vr = BwWebUtil.validateContact(form);
     if (!vr.ok) {
       return forwardRetry;
     }
@@ -75,6 +73,14 @@ public class UpdateContactAction extends BwAbstractAction {
      */
 
     BwContact c = form.getContact();
+
+    if (cl.isSuperUser()) {
+      final String deleted = request.getReqPar("deleted");
+
+      if ("true".equals(deleted)) {
+        c.setStatus(BwEventProperty.statusDeleted);
+      }
+    }
 
     if (add) {
       c.setPublick(cl.getPublicAdmin());

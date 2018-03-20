@@ -44,6 +44,7 @@ import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
+import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.icalendar.Icalendar;
 import org.bedework.sysevents.events.SysEventBase;
@@ -73,6 +74,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static org.bedework.calfacade.responses.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
  * distinguish.
@@ -223,7 +226,23 @@ public class UpdateEventAction extends EventActionBase {
 
     if (request.hasDelete()) {
       // Delete button in form
+      form.assignMarkDeleted(false);
       return forwardDelete;
+    }
+
+    if (request.hasMarkDeleted()) {
+      // Mark Deleted button in form
+      form.assignMarkDeleted(true);
+      return forwardDelete;
+    }
+
+    if (cl.isSuperUser() && ev.getDeleted()) {
+      if (!request.present("deleted")) {
+        changes.changed(PropertyInfoIndex.DELETED,
+                        true,
+                        false);
+        ev.setDeleted(false);
+      }
     }
 
     /* -------------------------- Collection ------------------------------ */
@@ -374,13 +393,23 @@ public class UpdateEventAction extends EventActionBase {
     Set<BwCategory> cats = null;
     if (cl.getPublicAdmin() ||
             request.getBwForm().getSubmitApp()) {
-      try {
-        cats = cl.reAlias(ev);
-      } catch (final CalFacadeException cfe) {
-        request.getErr().emit(ClientError.unknownCalendar, cfe.getExtra());
+        final RealiasResult resp = cl.reAlias(ev);
+      if (resp.getStatus() != ok) {
+        if (debug) {
+          debugMsg("Failed to get topical areas? " + resp);
+        }
+        cl.rollback();
+        form.getErr().emit(ValidationError.missingTopic);
+        restore(ev, preserveColPath);
+        return forwardRetry;
       }
 
+      cats = resp.getCats();
+
       if (publicAdmin && !updateSubmitEvent && Util.isEmpty(cats)) {
+        if (debug) {
+          debugMsg("No topical areas? " + resp);
+        }
         form.getErr().emit(ValidationError.missingTopic);
         restore(ev, preserveColPath);
         return forwardRetry;

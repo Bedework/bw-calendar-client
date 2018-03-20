@@ -16,6 +16,7 @@
   <preferredViewPeriod><bean:write name="userPrefs" property="preferredViewPeriod"/></preferredViewPeriod>
   <!-- whether user will use 12 (am/pm) or 24 hour mode when entering events -->
   <bw:emitText name="userPrefs" property="hour24"/>
+  <bw:emitText name="userPrefs" property="noNotifications"/>
   <skinName><bean:write name="userPrefs" property="skinName"/></skinName>
   <skinStyle><bean:write name="userPrefs" property="skinStyle"/></skinStyle>
   <!-- pref end type = date or duration -->
@@ -26,6 +27,12 @@
   <bw:emitText name="userPrefs" property="pageSize"/>
   <bw:emitText name="userPrefs" property="adminResourcesDirectory"/>
   <bw:emitText name="userPrefs" property="suiteResourcesDirectory"/>
+  <bw:emitText name="userPrefs" property="calsuiteApprovers"/>
+  <approvers>
+    <logic:iterate id="approver" name="userPrefs" property="calsuiteApproversList">
+      <bw:emitText name="approver"/>
+    </logic:iterate>
+  </approvers>
 </prefs>
 
 <categories>

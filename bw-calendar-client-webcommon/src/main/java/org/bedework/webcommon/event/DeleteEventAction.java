@@ -26,6 +26,7 @@ import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -35,9 +36,8 @@ import java.util.List;
 /**
  * Action to delete an event
  * <p>Request parameters:<ul>
- *      <li>  guid  - uid for event or...</li>.
- *      <li>  eventName  - name for event</li>.
- *      <li>  recurrenceId  - for event instance</li>.
+ *      <li>  reference to an event (href)</li>.
+ *      <li>  soft=true really delete - needs access: false mark only</li>.
  * </ul>
  * <p>Forwards to:<ul>
  *      <li>"noAction"     for guest mode.</li>
@@ -57,7 +57,7 @@ public class DeleteEventAction extends EventActionBase {
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
@@ -66,6 +66,8 @@ public class DeleteEventAction extends EventActionBase {
     final boolean publicAdmin = cl.getPublicAdmin();
     final boolean submitApp = form.getSubmitApp();
     final boolean publicEvents = publicAdmin || submitApp;
+    final boolean soft = request.getBooleanReqPar("soft", false) ||
+            form.getMarkDeleted();
 
     String submitterEmail = null;
 
@@ -85,17 +87,31 @@ public class DeleteEventAction extends EventActionBase {
       final List<BwXproperty> xps = ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
 
       if (!Util.isEmpty(xps)) {
-        submitterEmail = xps.iterator().next().getValue();
+        submitterEmail = xps.get(0).getValue();
       }
     }
 
-    try {
-      if (!cl.deleteEvent(ei, !publicEvents)) {
-        form.getErr().emit(ClientError.unknownEvent);
-        return forwardNoAction;
+    boolean deleted = false;
+
+    if (!soft) {
+      try {
+        if (!cl.deleteEvent(ei, !publicEvents)) {
+          form.getErr().emit(ClientError.unknownEvent);
+          return forwardNoAction;
+        }
+
+        deleted = true;
+      } catch (final CalFacadeAccessException ignored) {
+        // No access to delete - make it a soft delete
       }
-    } catch (final CalFacadeAccessException cfe) {
+    }
+
+    if (!deleted) {
       if (publicEvents) {
+        ei.getChangeset(cl.getCurrentPrincipalHref()).
+                changed(PropertyInfoIndex.DELETED,
+                        ev.getDeleted(),
+                        true);
         ev.setDeleted(true);
         try {
           cl.updateEvent(ei, true, null);
@@ -105,7 +121,7 @@ public class DeleteEventAction extends EventActionBase {
         }
       } else {
         try {
-          /* Can't really delete it - try annotating it */
+        /* Can't really delete it - try annotating it */
           cl.markDeleted(ev);
         } catch (final CalFacadeAccessException cfe1) {
           form.getErr().emit(ClientError.noAccess);

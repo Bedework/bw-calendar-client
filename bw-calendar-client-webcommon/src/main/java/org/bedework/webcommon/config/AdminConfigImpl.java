@@ -28,8 +28,8 @@ import org.bedework.util.misc.ToString;
  */
 public class AdminConfigImpl extends ConfigCommonImpl implements
         AdminConfig {
-  /* True if categories are optional.
-   */
+  private boolean registrationsExternal;
+
   private boolean categoryOptional = true;
 
   private boolean allowEditAllCategories;
@@ -39,6 +39,16 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
   private boolean noGroupAllowed;
 
   private String adminGroupsIdPrefix;
+
+  @Override
+  public void setRegistrationsExternal(final boolean val) {
+    registrationsExternal = val;
+  }
+
+  @Override
+  public boolean getRegistrationsExternal() {
+    return registrationsExternal;
+  }
 
   @Override
   public void setCategoryOptional(final boolean val) {
@@ -119,6 +129,7 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
 
     copyTo(conf);
 
+    conf.setRegistrationsExternal(getRegistrationsExternal());
     conf.setCategoryOptional(getCategoryOptional());
     conf.setAllowEditAllCategories(getAllowEditAllCategories());
     conf.setAllowEditAllLocations(getAllowEditAllLocations());

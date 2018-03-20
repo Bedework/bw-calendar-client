@@ -227,25 +227,29 @@ public class BwRequest extends Request {
 
   /**
    * @return true for "copy" present
-   * @throws Throwable
    */
-  public boolean hasCopy() throws Throwable {
+  public boolean hasCopy() {
     return present("copy");
   }
 
   /**
    * @return true for "delete" present
-   * @throws Throwable
    */
-  public boolean hasDelete() throws Throwable {
+  public boolean hasDelete() {
     return present("delete");
   }
 
   /**
-   * @return true for "export" present
-   * @throws Throwable
+   * @return true for "marKeleted" present
    */
-  public boolean hasExport() throws Throwable {
+  public boolean hasMarkDeleted() {
+    return present("markDeleted");
+  }
+
+  /**
+   * @return true for "export" present
+   */
+  public boolean hasExport() {
     return present("export");
   }
 
@@ -256,10 +260,9 @@ public class BwRequest extends Request {
    * </ul>
    *
    * @return int
-   * @throws Throwable
    */
-  public int getEntityType() throws Throwable {
-    String s = getReqPar("entityType");
+  public int getEntityType() {
+    final String s = getReqPar("entityType");
 
     if ((s == null) || "event".equals(s)) {
       return IcalDefs.entityTypeEvent;

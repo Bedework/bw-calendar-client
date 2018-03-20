@@ -2,11 +2,31 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.bedeworkbwwebcl</groupId>
+		<groupId>org.bedework.bwwebcl</groupId>
 		<artifactId>bw-calendar-client</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>3.12.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>bwwebcl-cal</artifactId>
+
+	<artifactId>bw-calendar-client-cal</artifactId>
 	<packaging>war</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <!-- In version 2.1-alpha-1, this was incorrectly named warSourceExcludes -->
+          <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

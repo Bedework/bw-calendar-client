@@ -26,6 +26,17 @@ import org.bedework.util.jmx.MBeanInfo;
  *
  */
 public interface AdminConfig extends ConfigCommon {
+  /**
+   *
+   * @param val true if external registrations allowed
+   */
+  void setRegistrationsExternal(boolean val);
+
+  /**
+   * @return boolean
+   */
+  boolean getRegistrationsExternal();
+
   /** True if categories are optional.
    *
    * @param val

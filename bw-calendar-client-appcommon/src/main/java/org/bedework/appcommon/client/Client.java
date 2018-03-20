@@ -52,6 +52,7 @@ import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.mail.Message;
+import org.bedework.calfacade.responses.GetEntityResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
@@ -59,9 +60,11 @@ import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
+import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.sysevents.events.SysEventBase;
@@ -428,11 +431,11 @@ public interface Client extends Serializable {
    * exceptional conditions.) An unauthorised user will have a usertype of
    * noPrivileges.
    *
-   * @param  userid        String user id
+   * @param  pr the principal
    * @return BwAuthUser    users entry
    * @throws CalFacadeException
    */
-  BwAuthUser getAuthUser(String userid) throws CalFacadeException;
+  BwAuthUser getAuthUser(BwPrincipal pr) throws CalFacadeException;
 
   /** Update the user entry
    *
@@ -892,17 +895,6 @@ public interface Client extends Serializable {
    */
   Collection<BwCategory> getPublicCategories() throws CalFacadeException;
 
-  /** Return the listed categories The
-   * returned objects will be non-persistent copies of the database
-   * entities. The returned list may be shorter than the supplied
-   * list of uids.
-   *
-   * @param uids       Collection of String uid
-   * @return Collection of BwCategory objects.
-   * @throws CalFacadeException
-   */
-  Collection<BwCategory> getCategories(Collection<String> uids) throws CalFacadeException;
-
   /** Return all entities to which the current
    * user has edit access.
    *
@@ -1133,6 +1125,16 @@ public interface Client extends Serializable {
    */
   BwLocation findLocation(BwString address) throws CalFacadeException;
 
+  /** Find a location owned by the current user which has a named
+   * key field which matches the value.
+   *
+   * @param name - of key field
+   * @param val - expected full value
+   * @return null or location object
+   */
+  GetEntityResponse<BwLocation> fetchLocationByKey(String name,
+                                                   String val);
+
   /** Add the location
    * @param val
    * @return true if added
@@ -1181,9 +1183,8 @@ public interface Client extends Serializable {
    *
    * @param ev  event
    * @return set of categories referenced by the aliases           
-   * @throws CalFacadeException on unknown alias
    */
-  Set<BwCategory> reAlias(BwEvent ev) throws CalFacadeException;
+  RealiasResult reAlias(BwEvent ev);
 
   /** Return a Collection of EventInfo objects. More than one for a recurring
    * event with overrides.
@@ -1275,9 +1276,9 @@ public interface Client extends Serializable {
    * @return UpdateResult Counts of changes.
    * @throws CalFacadeException
    */
-  EventInfo.UpdateResult addEvent(EventInfo ei,
-                                  boolean noInvites,
-                                  boolean rollbackOnError) throws CalFacadeException;
+  UpdateResult addEvent(EventInfo ei,
+                        boolean noInvites,
+                        boolean rollbackOnError) throws CalFacadeException;
 
   /** Update an event in response to an attendee. Exactly as normal update if
    * fromAtt is null. Otherwise no status update is sent to the given attendee
@@ -1290,9 +1291,26 @@ public interface Client extends Serializable {
    * @return UpdateResult Counts of changes.
    * @throws CalFacadeException
    */
-  EventInfo.UpdateResult updateEvent(final EventInfo ei,
-                                     final boolean noInvites,
-                                     String fromAttUri) throws CalFacadeException;
+  UpdateResult updateEvent(final EventInfo ei,
+                           final boolean noInvites,
+                           String fromAttUri) throws CalFacadeException;
+
+  /** Update an event in response to an attendee. Exactly as normal update if
+   * fromAtt is null. Otherwise no status update is sent to the given attendee
+   *
+   * <p>  Any changeset should be embedded in the event info object.
+   *
+   * @param ei           EventInfo object to be added
+   * @param noInvites    True for don't send invitations.
+   * @param fromAttUri   attendee responding
+   * @param alwaysWrite  write and reindex whatever changetable says
+   * @return UpdateResult Counts of changes.
+   * @throws CalFacadeException on error
+   */
+  UpdateResult updateEvent(final EventInfo ei,
+                           final boolean noInvites,
+                           String fromAttUri,
+                           boolean alwaysWrite) throws CalFacadeException;
 
   /** Delete an event.
    *

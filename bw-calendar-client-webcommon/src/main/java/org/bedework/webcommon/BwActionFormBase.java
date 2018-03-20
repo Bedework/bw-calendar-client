@@ -68,12 +68,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -82,7 +82,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author  Mike Douglass     douglm - rpi.edu
  */
 public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
-  private Map<String, BwModule> modules = new HashMap<>();
+  private Map<String, BwModule> modules = new ConcurrentHashMap<>();
 
   private DateTimeFormatter today;
 
@@ -119,6 +119,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   private boolean suggestionEnabled;
   private boolean workflowEnabled;
   private String workflowRoot;
+
+  private boolean markDeleted;
 
   /** true if this is a guest (unauthenticated) user
    */
@@ -1221,6 +1223,14 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
    */
   public boolean getSubmitApp() {
     return BedeworkDefs.appTypeWebsubmit.equals(appType);
+  }
+
+  public void assignMarkDeleted(final boolean val) {
+    markDeleted = val;
+  }
+
+  public boolean getMarkDeleted() {
+    return markDeleted;
   }
 
   /* ====================================================================

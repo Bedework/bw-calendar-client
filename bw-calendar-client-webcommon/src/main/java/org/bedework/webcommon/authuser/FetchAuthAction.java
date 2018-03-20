@@ -41,20 +41,20 @@ public class FetchAuthAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
 
-    /** User requested a user from the list or by entering the id.
+    /* User requested a user from the list or by entering the id.
      */
-    final String userHref = form.getEditAuthUserId();
+    final String userId = form.getEditAuthUserId();
 
-    final BwAuthUser au = cl.getAuthUser(userHref);
+    final BwAuthUser au = cl.getAuthUser(cl.getUser(userId));
 
     if (au == null) {
-      form.getErr().emit(ClientError.unknownUserid, userHref);
+      form.getErr().emit(ClientError.unknownUserid, userId);
       return forwardNotFound;
     }
 

@@ -81,7 +81,7 @@ public class UpdateAGAction extends BwAbstractAction {
 
     try {
       if (request.getReqPar("addGroupMember") != null) {
-        /** Add a user to the group we are updating.
+        /* Add a user to the group we are updating.
          */
         final String mbr = BwWebUtil.checkNull(form.getUpdGroupMember());
         if (mbr == null) {
@@ -113,7 +113,7 @@ public class UpdateAGAction extends BwAbstractAction {
            * @param val      BwUser account
            */
 
-          BwAuthUser au = cl.getAuthUser(p.getAccount());
+          BwAuthUser au = cl.getAuthUser(p);
 
           if ((au != null) && au.isUnauthorized()) {
             return forwardNotAllowed;

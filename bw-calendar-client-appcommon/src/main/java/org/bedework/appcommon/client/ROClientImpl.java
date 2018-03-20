@@ -57,11 +57,13 @@ import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.indexing.BwIndexer;
+import org.bedework.calfacade.indexing.BwIndexer.DeletedState;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
+import org.bedework.calfacade.responses.GetEntityResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
@@ -69,12 +71,14 @@ import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
+import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.icalendar.IcalTranslator;
@@ -102,6 +106,8 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.includeDeleted;
+import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.noDeleted;
 import static org.bedework.calsvci.CalSuitesI.ResourceClass;
 
 /**
@@ -227,7 +233,8 @@ public class ROClientImpl implements Client {
                            false, // adminCanEditAllPublicCategories,
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
-                           false);    // sessionless
+                           false, // sessionless
+                           false); // system
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
     resetIndexers();
@@ -567,7 +574,7 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public BwAuthUser getAuthUser(final String userid)
+  public BwAuthUser getAuthUser(final BwPrincipal pr)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
@@ -739,7 +746,7 @@ public class ROClientImpl implements Client {
   @Override
   public void updatePreferences(final BwPreferences val)
           throws CalFacadeException {
-    svci.getPrefsHandler().update(val);
+    throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   @Override
@@ -1081,12 +1088,6 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public Collection<BwCategory> getCategories(final Collection<String> uids)
-          throws CalFacadeException {
-    return svci.getCategoriesHandler().get(uids);
-  }
-
-  @Override
   public Collection<BwCategory> getPublicCategories()
           throws CalFacadeException {
     checkUpdate();
@@ -1250,6 +1251,13 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public GetEntityResponse<BwLocation> fetchLocationByKey(
+          final String name,
+          final String val) {
+    return svci.getLocationsHandler().fetchLocationByKey(name, val);
+  }
+
+  @Override
   public boolean addLocation(final BwLocation val)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
@@ -1271,7 +1279,7 @@ public class ROClientImpl implements Client {
   public CheckEntityResult<BwLocation> ensureLocationExists(final BwLocation val,
                                                             final String ownerHref)
           throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   /* ------------------------------------------------------------
@@ -1280,12 +1288,12 @@ public class ROClientImpl implements Client {
 
   @Override
   public void claimEvent(final BwEvent ev) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
-  public Set<BwCategory> reAlias(final BwEvent ev) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+  public RealiasResult reAlias(final BwEvent ev) {
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
@@ -1349,11 +1357,12 @@ public class ROClientImpl implements Client {
                                              startDate,
                                              endDate,
                                              null,
+                                             noDeleted,
                                              rrm);
   }
 
   @Override
-  public EventInfo.UpdateResult addEvent(final EventInfo ei,
+  public UpdateResult addEvent(final EventInfo ei,
                                          final boolean noInvites,
                                          final boolean rollbackOnError)
           throws CalFacadeException {
@@ -1361,9 +1370,18 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public EventInfo.UpdateResult updateEvent(final EventInfo ei,
+  public UpdateResult updateEvent(final EventInfo ei,
                                             final boolean noInvites,
                                             final String fromAttUri)
+          throws CalFacadeException {
+    throw new CalFacadeException("org.bedework.read.only.client");
+  }
+
+  @Override
+  public UpdateResult updateEvent(final EventInfo ei,
+                                  final boolean noInvites,
+                                  final String fromAttUri,
+                                  final boolean alwaysWrite)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
@@ -1780,6 +1798,14 @@ public class ROClientImpl implements Client {
       publicIndex = true;
     }
 
+    final DeletedState delState;
+
+    if (getPublicAdmin() && isSuperUser()) {
+      delState = includeDeleted;
+    } else {
+      delState = noDeleted;
+    }
+
     lastSearch = getIndexer(publicIndex).search(
             params.getQuery(),
             params.getRelevance(),
@@ -1789,6 +1815,7 @@ public class ROClientImpl implements Client {
             start,
             end,
             params.getPageSize(),
+            delState,
             params.getRecurMode());
 
     return lastSearch;

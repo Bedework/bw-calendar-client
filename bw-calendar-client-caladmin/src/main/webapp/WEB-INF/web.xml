@@ -148,7 +148,7 @@
   <!-- add servlet mappings here -->
 
   <session-config>
-    <session-timeout>30</session-timeout>
+    <session-timeout>${app.session-timeout}</session-timeout>
   </session-config>
 
   <!-- This should be the name of the action we want to execute for a

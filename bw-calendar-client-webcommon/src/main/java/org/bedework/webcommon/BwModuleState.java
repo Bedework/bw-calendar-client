@@ -226,7 +226,7 @@ public class BwModuleState implements Serializable {
     if (val != null) {
       curDayFmt = val.getCurDayFmt();
       firstDayFmt = val.getFirstDayFmt();
-      lastDayFmt = val.getFirstDayFmt();
+      lastDayFmt = val.getLastDayFmt();
     }
   }
 

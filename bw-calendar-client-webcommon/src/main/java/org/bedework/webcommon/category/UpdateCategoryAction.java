@@ -22,6 +22,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.util.misc.Util;
@@ -76,6 +77,14 @@ public class UpdateCategoryAction extends BwAbstractAction {
      */
 
     final BwCategory cat = form.getCategory();
+
+    if (cl.isSuperUser()) {
+      final String deleted = request.getReqPar("deleted");
+
+      if ("true".equals(deleted)) {
+        cat.setStatus(BwEventProperty.statusDeleted);
+      }
+    }
 
     if (add) {
       cat.setPublick(cl.getPublicAdmin());

@@ -30,6 +30,16 @@ public class AdminConf extends ClientConf<AdminConfigImpl>
    * ======================================================================== */
 
   @Override
+  public void setRegistrationsExternal(final boolean val) {
+    getConfig().setRegistrationsExternal(val);
+  }
+
+  @Override
+  public boolean getRegistrationsExternal() {
+    return getConfig().getRegistrationsExternal();
+  }
+
+  @Override
   public void setCategoryOptional(final boolean val) {
     getConfig().setCategoryOptional(val);
   }

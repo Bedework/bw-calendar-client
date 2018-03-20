@@ -73,8 +73,8 @@ public class UpdatePrefsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-    BwPreferences prefs;
+    final Client cl = request.getClient();
+    final BwPreferences prefs;
     boolean tzChanged = false;
 
     /* Refetch the prefs */
@@ -89,19 +89,39 @@ public class UpdatePrefsAction extends BwAbstractAction {
       prefs = cl.getPreferences();
     }
 
-    String str = request.getReqPar("defaultImageDirectory");
-    if (str != null) {
-      BwCalendar cal = cl.getCollection(str);
-      if (cal == null) {
-        form.getErr().emit(ClientError.unknownCalendar, str);
-        return forwardNotFound;
+    String str;
+    if (cl.getPublicAdmin() && cl.isSuperUser()) {
+      if (request.present("approvers")) {
+        prefs.setCalsuiteApprovers(request.getReqPar("approvers"));
       }
-      prefs.setDefaultImageDirectory(str);
-      form.assignImageUploadDirectory(str);
-    }
 
-    if (form.getCurUserSuperUser()) {
-      int maxEntitySize = request.getIntReqPar("maxEntitySize", -1);
+      if (request.present("approver")) {
+        str = request.getReqPar("approver");
+
+        if (str == null) {
+          // Remove all
+          prefs.removeProperties(BwPreferences.propertyCalsuiteApprovers);
+        } else {
+          final Collection<String> approvers =
+                  request.getReqPars("approver");
+
+          prefs.setCalsuiteApprovers(String.join(",", approvers));
+        }
+      }
+
+      str = request.getReqPar("defaultImageDirectory");
+      if (str != null) {
+        final BwCalendar cal = cl.getCollection(str);
+        if (cal == null) {
+          form.getErr().emit(ClientError.unknownCalendar, str);
+          return forwardNotFound;
+        }
+        prefs.setDefaultImageDirectory(str);
+        form.assignImageUploadDirectory(str);
+      }
+
+      final int maxEntitySize =
+              request.getIntReqPar("maxEntitySize", -1);
 
       if (maxEntitySize > 0) {
         prefs.setMaxEntitySize(maxEntitySize);
@@ -143,10 +163,11 @@ public class UpdatePrefsAction extends BwAbstractAction {
         // Remove all
         prefs.removeProperties(BwPreferences.propertyDefaultCategory);
       } else {
-        Collection<String> inUids = request.getReqPars("defaultCategory");
-        Set<String> uids = new TreeSet<String>();
+        final Collection<String> inUids =
+                request.getReqPars("defaultCategory");
+        final Set<String> uids = new TreeSet<>();
 
-        for (String uid: inUids) {
+        for (final String uid: inUids) {
           if (uid == null) {
             continue;
           }
@@ -180,9 +201,13 @@ public class UpdatePrefsAction extends BwAbstractAction {
       prefs.setEmail(str);
     }
 
+    if (request.present("noNotifications")) {
+      prefs.setNoNotifications(request.getBooleanReqPar("noNotifications"));
+    }
+
     str = request.getReqPar("newCalPath");
     if (str != null) {
-      BwCalendar cal = cl.getCollection(str);
+      final BwCalendar cal = cl.getCollection(str);
       if (cal == null) {
         form.getErr().emit(ClientError.unknownCalendar, str);
         return forwardNotFound;
@@ -190,7 +215,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
       prefs.setDefaultCalendarPath(cal.getPath());
     }
 
-    int mode = request.getIntReqPar("userMode", -1);
+    final int mode = request.getIntReqPar("userMode", -1);
 
     if (mode != -1) {
       if ((mode < 0) || (mode > BwPreferences.maxMode)) {
@@ -201,7 +226,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
       prefs.setUserMode(mode);
     }
 
-    int pageSize = request.getIntReqPar("pageSize", -1);
+    final int pageSize = request.getIntReqPar("pageSize", -1);
 
     if (pageSize != -1) {
       if (pageSize < 0) {
@@ -306,7 +331,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
       return null;
     }
 
-    String ls = s.toLowerCase();
+    final String ls = s.toLowerCase();
 
     if ("list".equals(ls)) {
       return ls;

@@ -37,13 +37,16 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.Contacts;
 import org.bedework.calsvci.EventProperties;
+import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SharingI;
 
@@ -51,7 +54,8 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Blob;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+
+import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.includeDeleted;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:05 PM
@@ -89,7 +93,8 @@ public class ClientImpl extends ROClientImpl {
                            false, // adminCanEditAllPublicCategories,
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
-                           false);    // sessionless
+                           false, // sessionless
+                           false); // system
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
     resetIndexers();
@@ -128,6 +133,16 @@ public class ClientImpl extends ROClientImpl {
     }
 
     return getCurrentPrincipal();
+  }
+
+  /* ------------------------------------------------------------
+   *                     Preferences
+   * ------------------------------------------------------------ */
+
+  @Override
+  public void updatePreferences(final BwPreferences val)
+          throws CalFacadeException {
+    svci.getPrefsHandler().update(val);
   }
 
   /* ------------------------------------------------------------
@@ -408,14 +423,14 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public Set<BwCategory> reAlias(final BwEvent ev) throws CalFacadeException {
+  public RealiasResult reAlias(final BwEvent ev) {
     return svci.getEventsHandler().reAlias(ev);
   }
 
   @Override
-  public EventInfo.UpdateResult addEvent(final EventInfo ei,
-                                         final boolean noInvites,
-                                         final boolean rollbackOnError)
+  public UpdateResult addEvent(final EventInfo ei,
+                               final boolean noInvites,
+                               final boolean rollbackOnError)
           throws CalFacadeException {
     return update(svci.getEventsHandler().add(ei, noInvites,
                                               false,
@@ -423,13 +438,25 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public EventInfo.UpdateResult updateEvent(final EventInfo ei,
-                                            final boolean noInvites,
-                                            final String fromAttUri)
+  public UpdateResult updateEvent(final EventInfo ei,
+                                  final boolean noInvites,
+                                  final String fromAttUri)
           throws CalFacadeException {
     return update(svci.getEventsHandler().update(ei,
                                                  noInvites,
                                                  fromAttUri));
+  }
+
+  @Override
+  public UpdateResult updateEvent(final EventInfo ei,
+                                  final boolean noInvites,
+                                  final String fromAttUri,
+                                  final boolean alwaysWrite)
+          throws CalFacadeException {
+    return update(svci.getEventsHandler().update(ei,
+                                                 noInvites,
+                                                 fromAttUri,
+                                                 alwaysWrite));
   }
 
   @Override
@@ -646,6 +673,7 @@ public class ClientImpl extends ROClientImpl {
                       null,
                       null,
                       null, // retrieveList
+                      includeDeleted,
                       RecurringRetrievalMode.overrides);
 
     for (final EventInfo ei: eis) {

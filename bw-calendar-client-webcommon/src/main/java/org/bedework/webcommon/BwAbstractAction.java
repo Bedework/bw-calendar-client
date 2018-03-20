@@ -94,6 +94,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -1947,6 +1948,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       if (cs != null) {
         calSuiteName = cs.getName();
         client.setCalSuite(cs);
+
+        // Use preferences to set approver
+        final List<String> approvers =
+                client.getCalsuitePreferences().getCalsuiteApproversList();
+
+        if (approvers.contains(form.getCurrentUser())) {
+          form.assignCurUserApproverUser(true);
+        }
       }
       
       form.setCalSuiteName(calSuiteName);

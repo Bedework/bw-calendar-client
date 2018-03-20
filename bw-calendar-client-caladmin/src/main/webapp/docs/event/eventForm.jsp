@@ -9,6 +9,9 @@
     Values: true, false - Flag if we are using 24 hour time --%>
 <bw:emitText name="calForm" property="authpars.maxInstances" />
 <bw:emitText name="calForm" property="authpars.maxYears" />
+<bw:emitText name="calForm" property="config.registrationsExternal"
+             tagName="registrationsExternal"/>
+<bw:emitCurrentPrivs name="calForm" property="eventInfo.currentAccess" />
 
 <%-- formElements sections take advantage of Struts' form processing features. --%>
 <formElements>
@@ -24,6 +27,7 @@
 
   <genurl:form action="event/update" >
     <title><html:text property="summary" size="40" styleId="iTitle" styleClass="edit"/></title>
+    <deleted><html:checkbox property="event.deleted" /></deleted>
     <calendar>
       <logic:present name="calForm" property="preferredCalendars">
         <%-- all publishing calendars a user has previously used. --%>

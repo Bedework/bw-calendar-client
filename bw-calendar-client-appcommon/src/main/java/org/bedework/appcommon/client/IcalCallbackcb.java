@@ -24,6 +24,7 @@ import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.responses.GetEntityResponse;
 import org.bedework.icalendar.IcalCallback;
 
 import java.util.Collection;
@@ -103,6 +104,13 @@ public class IcalCallbackcb implements IcalCallback {
   }
 
   @Override
+  public GetEntityResponse<BwLocation> fetchLocationByKey(
+          final String name,
+          final String val) {
+    return null;
+  }
+
+  @Override
   public BwLocation findLocation(final BwString address) throws CalFacadeException {
     return cl.findLocation(address);
   }
@@ -122,7 +130,9 @@ public class IcalCallbackcb implements IcalCallback {
 
   @Override
   public boolean getTimezonesByReference() throws CalFacadeException {
-    return cl.getSystemProperties().getTimezonesByReference();
+    //return cl.getSystemProperties().getTimezonesByReference();
+    // We use this for export - should always contain the timezone
+    return false;
   }
 }
 

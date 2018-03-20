@@ -34,7 +34,7 @@
     <alternateAddress><html:text property="location.alternateAddress" size="30" /></alternateAddress>
     <status><html:text property="locationStatus" size="30" /></status>
 
-     <!-- these are the values that may be submitted to the update action -->
+    <!-- these are the values that may be submitted to the update action -->
     <submitButtons>
       <button type="add">addLocation</button>
       <button type="update">updateLocation</button>

@@ -87,8 +87,8 @@ public class BwSessionImpl extends Logged implements BwSession {
   private long sessionNum = 0;
   
   // Both indexed by isSuper
-  private static String[] publicCollectionsChangeToken = {null, null};
-  private static BwCalendar[] clonedPublicCollections = {null, null};
+  private static final String[] publicCollectionsChangeToken = {null, null};
+  private static final BwCalendar[] clonedPublicCollections = {null, null};
 
   /** The current user - null for guest
    */
@@ -435,6 +435,12 @@ public class BwSessionImpl extends Logged implements BwSession {
               getClonedCollection(request, col,
                                     false);
 
+      if (cloned == null) {
+        warn("Unable to clone " + col);
+        request.getErr().emit("Unable to clone home collection");
+        return null;
+      }
+
       if (debug) {
         debug("Cloned: " + col.getPath());
       }
@@ -459,7 +465,8 @@ public class BwSessionImpl extends Logged implements BwSession {
         accessIndex = 1;
       }
 
-      fromCopy = (publicCollectionsChangeToken[accessIndex] != null) &&
+      fromCopy = (clonedPublicCollections[accessIndex] != null) &&
+              (publicCollectionsChangeToken[accessIndex] != null) &&
               publicCollectionsChangeToken[accessIndex].equals(changeToken);
 
       final BwCalendar root;
@@ -476,12 +483,16 @@ public class BwSessionImpl extends Logged implements BwSession {
         return null;
       }
 
-      publicCollectionsChangeToken[accessIndex] = changeToken;
-      clonedPublicCollections[accessIndex] = 
+      clonedPublicCollections[accessIndex] =
               getClonedCollection(request,
                                   root,
                                   fromCopy);
-      
+      if (clonedPublicCollections[accessIndex] == null) {
+        return null;
+      }
+
+      publicCollectionsChangeToken[accessIndex] = changeToken;
+
       return clonedPublicCollections[accessIndex];
     } catch (final Throwable t) {
       request.getErr().emit(t);
@@ -511,7 +522,7 @@ public class BwSessionImpl extends Logged implements BwSession {
           return null;
         }
 
-        BwCalSuiteWrapper cs = cl.getCalSuite(calSuiteName);
+        final BwCalSuiteWrapper cs = cl.getCalSuite(calSuiteName);
 
         if (cs == null) {
           form.getErr().emit("No calendar suite with name ", calSuiteName);
@@ -549,8 +560,16 @@ public class BwSessionImpl extends Logged implements BwSession {
         return null;
       }
 
-      return getClonedCollection(request, col,
-                                 false);
+      final BwCalendar cloned = getClonedCollection(request, col,
+                                                    false);
+
+      if (cloned == null) {
+        warn("Unable to clone " + col);
+        request.getErr().emit("Unable to clone user collection");
+        return null;
+      }
+
+      return cloned;
     } catch (final Throwable t) {
       request.getErr().emit(t);
       return null;
@@ -572,9 +591,8 @@ public class BwSessionImpl extends Logged implements BwSession {
       attrName = BwRequest.bwCategoriesListName;
 
       //noinspection unchecked
-      vals = (Collection<BwCategory>)request
-              .getSessionAttr(BwRequest.bwCategoriesListName);
-      if (!refresh && vals  != null) {
+      vals = (Collection<BwCategory>)request.getSessionAttr(attrName);
+      if (!refresh && vals != null) {
         return vals;
       }
 
@@ -583,9 +601,8 @@ public class BwSessionImpl extends Logged implements BwSession {
       attrName = BwRequest.bwEditableCategoriesListName;
 
       //noinspection unchecked
-      vals = (Collection<BwCategory>)request
-              .getSessionAttr(BwRequest.bwEditableCategoriesListName);
-      if (!refresh && vals  != null) {
+      vals = (Collection<BwCategory>)request.getSessionAttr(attrName);
+      if (!refresh && vals != null) {
         return vals;
       }
 
@@ -593,16 +610,13 @@ public class BwSessionImpl extends Logged implements BwSession {
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredCategoriesListName;
 
-      final Client cl = request.getClient();
-
-      vals = cl.getCategories(curAuthUserPrefs.getCategoryPrefs().getPreferred());
+      vals = curAuthUserPrefs.getCategoryPrefs().getPreferred();
     } else if (kind == defaultEntity) {
       attrName = BwRequest.bwDefaultCategoriesListName;
 
       //noinspection unchecked
-      vals = (Set<BwCategory>)request
-              .getSessionAttr(BwRequest.bwDefaultCategoriesListName);
-      if (!refresh && vals  != null) {
+      vals = (Set<BwCategory>)request.getSessionAttr(attrName);
+      if (!refresh && vals != null) {
         return vals;
       }
 
@@ -699,7 +713,7 @@ public class BwSessionImpl extends Logged implements BwSession {
 
       vals = curAuthUserPrefs.getContactPrefs().getPreferred();
     } else {
-      throw new Exception("Software error - bad kind " + kind);
+      throw new RuntimeException("Software error - bad kind " + kind);
     }
 
     request.setSessionAttr(attrName,
@@ -811,12 +825,36 @@ public class BwSessionImpl extends Logged implements BwSession {
     final ColCloner.CloneResult clres = cc.deepClone(col, fromCopy);
     
     if (!clres.isOk()) {
+      warn("getClonedCollection failed: " + clres.getStatus() +
+                   " " + clres.getMessage());
       return null;
     }
 
     return clres.getCol();
   }
 
+  /*
+  private void resetOpenState(final BwRequest request,
+                              final BwCalendar col) {
+    resetOpenStates(col, request.getBwForm().getCalendarsOpenState()); 
+  }
+
+  private void resetOpenStates(final BwCalendar col,
+                               final Set<String> openStates) {
+    if (openStates == null) {
+      return;
+    }
+    col.setOpen(openStates.contains(col.getPath()));
+    
+    if (col.getCollectionInfo().childrenAllowed &&
+            !Util.isEmpty(col.getChildren())) {
+      for (final BwCalendar chCol: col.getChildren()) {
+        resetOpenStates(chCol, openStates);
+      }
+    }
+    
+  }*/
+  
   private void refreshView(final BwRequest req) {
     final BwModuleState mstate = req.getModule().getState();
     final BwActionFormBase form = req.getBwForm();

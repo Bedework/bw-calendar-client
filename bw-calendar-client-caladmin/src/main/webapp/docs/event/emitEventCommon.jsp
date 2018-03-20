@@ -31,6 +31,7 @@
       Value: string - short description, typically used for the event title  --%>
     <bw:emitText name="event" property="link"/><%--
       Value: URI - link associated with the event --%>
+    <deleted><bean:write name="event" property="deleted"/></deleted>
     <public><bean:write name="event" property="publick"/></public>
     <editable><bean:write name="eventInfo" property="editable"/></editable><%--
       Value: true,false - true if user can edit (and delete) event, false otherwise --%>

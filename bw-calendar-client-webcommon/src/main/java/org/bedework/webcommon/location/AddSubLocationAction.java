@@ -52,14 +52,14 @@ public class AddSubLocationAction extends BwAbstractAction {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
-    /** Check access
+    /* Check access
      */
     if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
       resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
       return forwardNull;
     }
 
-    /** Find the location we base the new one on
+    /* Find the location we base the new one on
      */
     final String uid = request.getReqPar("uid");
 

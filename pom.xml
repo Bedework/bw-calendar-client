@@ -70,6 +70,7 @@
     <module>bw-calendar-client-submit</module>
     <module>bw-calendar-client-ucal</module>
     <module>bw-calendar-client-ear</module>
+    <module>bw-calendar-client-bwcommon</module>
     <!--
 		<module>bw-calendar-client-resources</module>
 		<module>bw-calendar-client-ucaldav</module>

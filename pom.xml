@@ -31,6 +31,11 @@
 		<servlet-api.version>2.4</servlet-api.version>
 		<junit.version>4.8.2</junit.version>
 		<log4j.version>1.2.15</log4j.version>
+
+    <apache-jdkim-library.version>0.4</apache-jdkim-library.version>
+    <digester-version>1.8</digester-version>
+    <elasticsearch.version>1.5.2</elasticsearch.version>
+    <javax.mail.version>1.5.4</javax.mail.version>
 	</properties>
 
 	<organization>
@@ -64,6 +69,7 @@
     <module>bw-calendar-client-feeder</module>
     <module>bw-calendar-client-submit</module>
     <module>bw-calendar-client-ucal</module>
+    <module>bw-calendar-client-ear</module>
     <!--
 		<module>bw-calendar-client-resources</module>
 		<module>bw-calendar-client-ucaldav</module>
@@ -116,13 +122,55 @@
 			<!-- Bedework Project Dependencies -->
       <dependency>
         <groupId>org.bedework</groupId>
+        <artifactId>bw-util-args</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-caching</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
         <artifactId>bw-util-config</artifactId>
         <version>${bw-util.version}</version>
       </dependency>
 
       <dependency>
         <groupId>org.bedework</groupId>
+        <artifactId>bw-util-dav</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-elasticsearch</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-hibernate</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-http</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
         <artifactId>bw-util-indexing</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-jmx</artifactId>
         <version>${bw-util.version}</version>
       </dependency>
 
@@ -140,6 +188,24 @@
 
       <dependency>
         <groupId>org.bedework</groupId>
+        <artifactId>bw-util-security</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-servlet</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-servlet-filters</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
         <artifactId>bw-util-struts</artifactId>
         <version>${bw-util.version}</version>
       </dependency>
@@ -152,7 +218,19 @@
 
       <dependency>
         <groupId>org.bedework</groupId>
+        <artifactId>bw-util-xml</artifactId>
+        <version>${bw-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
         <artifactId>bw-util2-calendar</artifactId>
+        <version>${bw-util2.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util2-vcard</artifactId>
         <version>${bw-util2.version}</version>
       </dependency>
 
@@ -168,18 +246,43 @@
 				<version>${bw-webdav.version}</version>
 			</dependency>
 
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-caldav-server</artifactId>
+        <version>${bw-caldav-util.version}</version>
+      </dependency>
+
 			<dependency>
 				<groupId>org.bedework</groupId>
 				<artifactId>bw-caldav-util</artifactId>
 				<version>${bw-caldav-util.version}</version>
 			</dependency>
+
 			<!-- Bedework: Web Services -->
 
-			<dependency>
-				<groupId>org.bedework</groupId>
-				<artifactId>bw-xml-icalendar</artifactId>
-				<version>${bw-xml.version}</version>
-			</dependency>
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-xml-caldav</artifactId>
+        <version>${bw-xml.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-xml-calws-soap</artifactId>
+        <version>${bw-xml.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-xml-icalendar</artifactId>
+        <version>${bw-xml.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-xml-synchws</artifactId>
+        <version>${bw-xml.version}</version>
+      </dependency>
 
 			<dependency>
 				<groupId>org.bedework</groupId>
@@ -187,25 +290,82 @@
 				<version>${bw-xml.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.bedework</groupId>
-				<artifactId>bw-xml-calws-soap</artifactId>
-				<version>${bw-xml.version}</version>
-			</dependency>
+      <!-- Bedework Calendar Engine wars-->
 
-			<!-- Bedework Calendar Engine -->
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-notifyws</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-pubcaldav</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-publicws</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-synchws</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-ucaldav</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-userws</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <!-- Bedework Calendar Engine -->
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-api</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-caldav</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-chgnote</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-dumprestore</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
 			<dependency>
 				<groupId>org.bedework.caleng</groupId>
         <artifactId>bw-calendar-engine-facade</artifactId>
 				<version>${bw-calendar-engine.version}</version>
 			</dependency>
-      
-			<dependency>
-				<groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-api</artifactId>
-				<version>${bw-calendar-engine.version}</version>
-			</dependency>
-      
+
 			<dependency>
 				<groupId>org.bedework.caleng</groupId>
         <artifactId>bw-calendar-engine-ical</artifactId>
@@ -214,46 +374,96 @@
 
       <dependency>
         <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-impl</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-indexer</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-inoutsched</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-interfaces</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-mail</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-sysevents-common</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
         <artifactId>bw-calendar-engine-sysevents-msgs</artifactId>
         <version>${bw-calendar-engine.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-tools</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
 			<!-- Third Party Libraries -->
+
 			<dependency>
 				<groupId>org.imgscalr</groupId>
 				<artifactId>imgscalr-lib</artifactId>
 				<version>${imgscalr.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.struts</groupId>
 				<artifactId>struts-core</artifactId>
 				<version>${struts.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.struts</groupId>
 				<artifactId>struts-taglib</artifactId>
 				<version>${struts.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>javax.portlet</groupId>
 				<artifactId>portlet-api</artifactId>
 				<version>${portlet-api.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>javax.servlet.jsp-api</artifactId>
 				<version>${jsp-api.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>${gson.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.portals.bridges</groupId>
 				<artifactId>portals-bridges-common</artifactId>
 				<version>${portals-bridge.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.apache.portals.bridges</groupId>
 				<artifactId>portals-bridges-struts-1.2.7</artifactId>
@@ -291,7 +501,42 @@
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
-		</dependencies>
+
+      <!-- Third Party Libraries for engine -->
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>apache-jdkim-library</artifactId>
+        <version>${apache-jdkim-library.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <version>${digester-version}</version>
+      </dependency>
+
+      <!-- Extras for ear -->
+
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>${javax.mail.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>javax.mail-api</artifactId>
+        <version>${javax.mail.version}</version>
+      </dependency>
+
+    </dependencies>
 	</dependencyManagement>
 
 	<build>

@@ -133,31 +133,31 @@
 
     <taglib>
       <taglib-uri>struts-bean</taglib-uri>
-      <taglib-location>/WEB-INF/tlds/struts-bean.tld</taglib-location>
+      <taglib-location>/tlds/struts-bean.tld</taglib-location>
     </taglib>
     <taglib>
       <taglib-uri>struts-html</taglib-uri>
-      <taglib-location>/WEB-INF/tlds/struts-html.tld</taglib-location>
+      <taglib-location>/tlds/struts-html.tld</taglib-location>
     </taglib>
 
     <taglib>
       <taglib-uri>struts-genurl</taglib-uri>
-      <taglib-location>/WEB-INF/tlds/@GENURL-TAGLIB-TLD@</taglib-location>
+      <taglib-location>/tlds/@GENURL-TAGLIB-TLD@</taglib-location>
     </taglib>
 
     <taglib>
       <taglib-uri>struts-logic</taglib-uri>
-      <taglib-location>/WEB-INF/tlds/struts-logic.tld</taglib-location>
+      <taglib-location>/tlds/struts-logic.tld</taglib-location>
     </taglib>
     <!-- Doesn't exist
     <taglib>
       <taglib-uri>struts-template</taglib-uri>
-      <taglib-location>/WEB-INF/tlds/struts-template.tld</taglib-location>
+      <taglib-location>/tlds/struts-template.tld</taglib-location>
     </taglib>-->
 
     <taglib>
       <taglib-uri>bedework</taglib-uri>
-      <taglib-location>/WEB-INF/tlds/bedework.tld</taglib-location>
+      <taglib-location>/tlds/bedework.tld</taglib-location>
     </taglib>
   </jsp-config>
 

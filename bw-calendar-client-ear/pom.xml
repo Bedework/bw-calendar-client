@@ -165,7 +165,44 @@
       </exclusions>
     </dependency>
 
+    <!-- Bedework Calendar client -->
+
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-appcommon</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-webcommon</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <!-- Bedework Calendar Engine -->
+
+    <dependency>
+      <groupId>org.bedework.caleng</groupId>
+      <artifactId>bw-calendar-engine-annotations</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <dependency>
       <groupId>org.bedework.caleng</groupId>
@@ -192,6 +229,17 @@
     <dependency>
       <groupId>org.bedework.caleng</groupId>
       <artifactId>bw-calendar-engine-chgnote</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.caleng</groupId>
+      <artifactId>bw-calendar-engine-core</artifactId>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -694,6 +742,16 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>${ical4j.groupId}</groupId>
+      <artifactId>${ical4j.artifactId}</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-ical4j-vcard</artifactId>
+    </dependency>
+
     <!-- Extras for ear -->
 
     <dependency>
@@ -959,7 +1017,7 @@
             <webModule>
               <groupId>org.bedework.caleng</groupId>
               <artifactId>bw-calendar-engine-pubcaldav</artifactId>
-              <contextRoot>/pubcalws</contextRoot>
+              <contextRoot>/pubcaldav</contextRoot>
             </webModule>
             <webModule>
               <groupId>org.bedework.caleng</groupId>
@@ -998,6 +1056,7 @@
           </execution>
         </executions>
         <configuration>
+          <debug>true</debug>
           <noversion>true</noversion>
           <delete>true</delete>
           <earName>bw-cal</earName>

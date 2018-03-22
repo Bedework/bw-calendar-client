@@ -35,6 +35,10 @@
     <apache-jdkim-library.version>0.4</apache-jdkim-library.version>
     <digester-version>1.8</digester-version>
     <elasticsearch.version>1.5.2</elasticsearch.version>
+    <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>
+    <ical4j.artifactId>ical4j</ical4j.artifactId>
+    <ical4j.version>2.0.6</ical4j.version>
+    <ical4j-vcard.version>1.0.4</ical4j-vcard.version>
     <javax.mail.version>1.5.4</javax.mail.version>
 	</properties>
 
@@ -339,6 +343,12 @@
 
       <dependency>
         <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-annotations</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
         <artifactId>bw-calendar-engine-api</artifactId>
         <version>${bw-calendar-engine.version}</version>
       </dependency>
@@ -352,6 +362,12 @@
       <dependency>
         <groupId>org.bedework.caleng</groupId>
         <artifactId>bw-calendar-engine-chgnote</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-core</artifactId>
         <version>${bw-calendar-engine.version}</version>
       </dependency>
 
@@ -470,6 +486,18 @@
 				<artifactId>portals-bridges-struts-1.2.7</artifactId>
 				<version>${portals-bridge.version}</version>
 			</dependency>
+
+      <dependency>
+        <groupId>${ical4j.groupId}</groupId>
+        <artifactId>${ical4j.artifactId}</artifactId>
+        <version>${ical4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-ical4j-vcard</artifactId>
+        <version>${ical4j-vcard.version}</version>
+      </dependency>
 
 			<dependency>
 				<groupId>javax.servlet</groupId>

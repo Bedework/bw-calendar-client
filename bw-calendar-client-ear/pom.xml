@@ -692,6 +692,18 @@
     </dependency>
 
     <dependency>
+      <groupId>struts</groupId>
+      <artifactId>struts</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--
+    <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts-core</artifactId>
       <exclusions>
@@ -712,6 +724,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <!-- Third Party Libraries for engine -->
 
@@ -745,14 +758,38 @@
     <dependency>
       <groupId>${ical4j.groupId}</groupId>
       <artifactId>${ical4j.artifactId}</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-ical4j-vcard</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Extras for ear -->
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>4.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.2</version>
+    </dependency>
 
     <dependency>
       <groupId>commons-fileupload</groupId>

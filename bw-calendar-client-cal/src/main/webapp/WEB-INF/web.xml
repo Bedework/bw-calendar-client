@@ -213,7 +213,7 @@
 
     <taglib>
       <taglib-uri>struts-genurl</taglib-uri>
-      <taglib-location>/tlds/@GENURL-TAGLIB-TLD@</taglib-location>
+      <taglib-location>/tlds/struts-html.tld</taglib-location>
     </taglib>
 
     <taglib>

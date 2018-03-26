@@ -90,6 +90,16 @@ public class AdminConf extends ClientConf<AdminConfigImpl>
   }
 
   @Override
+  public void setAdminGroupApprovers(final boolean val) {
+    getConfig().setAdminGroupApprovers(val);
+  }
+
+  @Override
+  public boolean getAdminGroupApprovers() {
+    return getConfig().getAdminGroupApprovers();
+  }
+
+  @Override
   public void setAdminGroupsIdPrefix(final String val) {
     getConfig().setAdminGroupsIdPrefix(val);
   }

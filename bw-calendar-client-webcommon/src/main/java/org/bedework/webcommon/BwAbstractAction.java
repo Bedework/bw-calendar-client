@@ -1941,8 +1941,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       /* Note that we redo this once we have a group set. The first call
          (before we have any client) has no group name set in the form
        */
-      BwCalSuiteWrapper cs = AdminUtil.findCalSuite(request,
-                                                    client);
+      final BwCalSuiteWrapper cs =
+              AdminUtil.findCalSuite(request,
+                                     client);
       form.setCurrentCalSuite(cs);
 
       if (cs != null) {
@@ -1954,6 +1955,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                 client.getCalsuitePreferences().getCalsuiteApproversList();
 
         if (approvers.contains(form.getCurrentUser())) {
+          form.assignCurUserApproverUser(true);
+        }
+
+        // If membership of an admin group implies approver - use that
+        final boolean adminGroupImpliesApprover =
+                ((AdminConfig)form.getConfig()).getAdminGroupApprovers();
+
+        if (adminGroupImpliesApprover &&
+                (cs.getGroup() != null) &&
+                cs.getGroup().getAccount().equals(form.getAdminGroupName())) {
           form.assignCurUserApproverUser(true);
         }
       }

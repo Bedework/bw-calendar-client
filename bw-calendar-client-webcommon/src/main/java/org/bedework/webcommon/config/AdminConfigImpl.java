@@ -38,6 +38,8 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
 
   private boolean noGroupAllowed;
 
+  private boolean adminGroupApprovers;
+
   private String adminGroupsIdPrefix;
 
   @Override
@@ -101,6 +103,16 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
   }
 
   @Override
+  public void setAdminGroupApprovers(final boolean val) {
+    adminGroupApprovers = val;
+  }
+
+  @Override
+  public boolean getAdminGroupApprovers() {
+    return adminGroupApprovers;
+  }
+
+  @Override
   public void setAdminGroupsIdPrefix(final String val) {
     adminGroupsIdPrefix = val;
   }
@@ -136,6 +148,7 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
     conf.setAllowEditAllContacts(getAllowEditAllContacts());
 
     conf.setNoGroupAllowed(getNoGroupAllowed());
+    conf.setAdminGroupApprovers(getAdminGroupApprovers());
     conf.setAdminGroupsIdPrefix(getAdminGroupsIdPrefix());
 
     return conf;

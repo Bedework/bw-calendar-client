@@ -89,6 +89,16 @@ public interface AdminConfig extends ConfigCommon {
   boolean getNoGroupAllowed();
 
   /**
+   *  @param val true if all in admin group are approvers
+   */
+  void setAdminGroupApprovers(boolean val);
+
+  /**
+   * @return true if all in admin group are approvers
+   */
+  boolean getAdminGroupApprovers();
+
+  /**
    *  @param val
    */
   void setAdminGroupsIdPrefix(String val);

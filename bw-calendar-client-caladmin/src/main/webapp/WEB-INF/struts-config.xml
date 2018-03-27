@@ -1058,6 +1058,7 @@
                parameter="actionType=render"
                validate="false">
       <forward name="success" path="/docs/calsuite/modCalSuite.jsp"/>
+      <forward name="retry" path="/docs/calsuite/calSuiteList.jsp"/>
     </action>
 
     <action    path="/calsuite/fetchForUpdate"

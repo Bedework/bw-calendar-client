@@ -2088,6 +2088,13 @@ public class ROClientImpl implements Client {
       for (final BwCalSuite suite: svci.getCalSuitesHandler().getAll()) {
         final BwCalSuite cs = (BwCalSuite)suite.clone();
 
+        // For the moment we skip suites if the group description starts with "INACTIVE"
+        final String desc = cs.getGroup().getDescription();
+
+        if ((desc != null) && desc.startsWith("INACTIVE")) {
+          continue;
+        }
+
         groupHrefs.add(cs.getGroup().getPrincipalRef());
 
         final SubContext subContext = suiteToContextMap.get(cs.getName());

@@ -96,7 +96,7 @@ public class AddCalSuiteAction extends BwAbstractAction {
       cl.updateSyspars(syspars);
     }
 
-    form.setCalSuiteName(name);
+    form.setEditCalSuiteName(name);
 
     return forwardSuccess;
   }

@@ -169,6 +169,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
 
   private String calSuiteName;
 
+  private String editCalSuiteName;
+
   private BwCalSuiteWrapper calSuite;
 
   private boolean addingCalSuite;
@@ -1252,7 +1254,7 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     return currentCalSuite;
   }
 
-  /** Name of CalSuite to fetch.
+  /** Name of current CalSuite.
    *
    * @param val
    */
@@ -1260,12 +1262,28 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
     calSuiteName = val;
   }
 
-  /** name of CalSuite to fetch.
+  /** name of current CalSuite.
    *
    * @return String
    */
   public String getCalSuiteName() {
     return calSuiteName;
+  }
+
+  /** Name of CalSuite to edit/add/delete.
+   *
+   * @param val
+   */
+  public void setEditCalSuiteName(final String val) {
+    editCalSuiteName = val;
+  }
+
+  /** name of CalSuite to edit/add/delete.
+   *
+   * @return String
+   */
+  public String getEditCalSuiteName() {
+    return editCalSuiteName;
   }
 
   /** CalSuite we are editing or creating.

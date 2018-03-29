@@ -49,7 +49,7 @@ public class RenderCalSuiteAction extends RenderAction {
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    final String name = form.getCalSuiteName();
+    final String name = form.getEditCalSuiteName();
 
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);

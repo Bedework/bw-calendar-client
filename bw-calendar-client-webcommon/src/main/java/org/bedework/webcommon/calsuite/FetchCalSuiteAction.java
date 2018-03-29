@@ -50,7 +50,7 @@ public class FetchCalSuiteAction extends BwAbstractAction {
       return forwardRetry;
     }
 
-    form.setCalSuiteName(name);
+    form.setEditCalSuiteName(name);
 
     return forwardSuccess;
   }

@@ -1856,7 +1856,7 @@ public class RONetClientImpl implements Client {
     checkUpdate();
 
     return formatSearchResult(lastSearch.getIndexer().
-            getSearchResult(lastSearch, start, num, PrivilegeDefs.privAny));
+            getSearchResult(lastSearch, start, num, PrivilegeDefs.privRead));
   }
 
   @Override

@@ -276,6 +276,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
       cal.setSynchAdminCreateEprops(request.present("adminAllowCreateEprops"));
       cal.setSynchXlocXcontacts(request.present("xlocxcontact"));
       cal.setSynchXcategories(request.present("xcategories"));
+      cal.setSynchDeleteSuppressed(request.present("deleteSuppressed"));
     }
 
     // default to 15 mins refresh then turn to seconds

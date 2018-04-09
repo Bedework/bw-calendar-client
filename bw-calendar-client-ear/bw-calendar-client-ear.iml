@@ -20,7 +20,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="bw-calendar-client-bwcommon" />
+    <orderEntry type="module" module-name="bw-calendar-client-bedework-common" />
     <orderEntry type="module" module-name="bw-calendar-client-cal" />
     <orderEntry type="module" module-name="bw-calendar-client-caladmin" />
     <orderEntry type="module" module-name="bw-calendar-client-feeder" />

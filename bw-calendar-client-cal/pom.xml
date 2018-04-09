@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.bedework.bwwebcl</groupId>
 		<artifactId>bw-calendar-client</artifactId>
-		<version>3.12.0</version>
+		<version>3.12.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

@@ -62,9 +62,9 @@ public class AdminUtil implements ForwardDefs {
 
     ((BwSessionImpl)request.getSess()).setCurAuthUserPrefs(prefs);
     form.setCurAuthUserPrefs(prefs);
-    if (form.getNewSession()) {
-      // First time through here for this session. svci is still set up for the
-      // authenticated user. Set access rights.
+
+    if (!cl.getGroupSet()) {
+      // Set default access rights.
 
       form.assignCurUserPublicEvents(au.isPublicEventUser());
       form.assignCurUserContentAdminUser(au.isContentAdminUser());
@@ -75,9 +75,6 @@ public class AdminUtil implements ForwardDefs {
 
     if (debug) {
       logIt("form.getGroupSet()=" + cl.getGroupSet());
-    }
-
-    if (debug) {
       logIt("-------- isSuperUser: " + form.getCurUserSuperUser());
     }
 

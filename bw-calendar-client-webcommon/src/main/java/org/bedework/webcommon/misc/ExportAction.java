@@ -72,10 +72,9 @@ public class ExportAction extends BwAbstractAction {
 
     if ((request.getReqPar("guid") != null) ||
         (request.getReqPar("href") != null) ||
-        (request.getReqPar("eventName") != null) ||
-            (request.getReqPar("contentName") != null)) {
+        (request.getReqPar("eventName") != null)) {
       if (debug) {
-        debugMsg("Export event by guid or name");
+        debugMsg("Export event by guid, href or name");
       }
 
       ev = findEvent(request, Rmode.overrides);

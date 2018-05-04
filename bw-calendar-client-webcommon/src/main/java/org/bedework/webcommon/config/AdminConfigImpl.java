@@ -30,6 +30,8 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
         AdminConfig {
   private boolean registrationsExternal;
 
+  private boolean defaultClearFormsOnSubmit;
+
   private boolean categoryOptional = true;
 
   private boolean allowEditAllCategories;
@@ -50,6 +52,16 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
   @Override
   public boolean getRegistrationsExternal() {
     return registrationsExternal;
+  }
+
+  @Override
+  public void setDefaultClearFormsOnSubmit(final boolean val) {
+    defaultClearFormsOnSubmit = val;
+  }
+
+  @Override
+  public boolean getDefaultClearFormsOnSubmit() {
+    return defaultClearFormsOnSubmit;
   }
 
   @Override
@@ -135,6 +147,7 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
     return ts.toString();
   }
 
+  @SuppressWarnings("MethodDoesntCallSuperMethod")
   @Override
   public Object clone() {
     final AdminConfigImpl conf = new AdminConfigImpl();
@@ -142,6 +155,7 @@ public class AdminConfigImpl extends ConfigCommonImpl implements
     copyTo(conf);
 
     conf.setRegistrationsExternal(getRegistrationsExternal());
+    conf.setDefaultClearFormsOnSubmit(getDefaultClearFormsOnSubmit());
     conf.setCategoryOptional(getCategoryOptional());
     conf.setAllowEditAllCategories(getAllowEditAllCategories());
     conf.setAllowEditAllLocations(getAllowEditAllLocations());

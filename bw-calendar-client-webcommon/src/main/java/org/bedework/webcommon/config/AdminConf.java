@@ -40,6 +40,16 @@ public class AdminConf extends ClientConf<AdminConfigImpl>
   }
 
   @Override
+  public void setDefaultClearFormsOnSubmit(final boolean val) {
+    getConfig().setDefaultClearFormsOnSubmit(val);
+  }
+
+  @Override
+  public boolean getDefaultClearFormsOnSubmit() {
+    return getConfig().getDefaultClearFormsOnSubmit();
+  }
+
+  @Override
   public void setCategoryOptional(final boolean val) {
     getConfig().setCategoryOptional(val);
   }

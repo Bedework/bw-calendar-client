@@ -20,6 +20,7 @@ package org.bedework.webcommon.event;
 
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
+import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.TimeView;
@@ -688,6 +689,8 @@ public class UpdateEventAction extends EventActionBase {
       debugMsg(changes.toString());
     }
 
+    boolean clearForm = false;
+
     try {
       final UpdateResult ur;
       ei.setNewEvent(adding);
@@ -705,6 +708,24 @@ public class UpdateEventAction extends EventActionBase {
       }
 
       form.assignAddingEvent(false);
+
+      if (cl.getPublicAdmin()) {
+        final String clearFormPref = cl.getCalsuitePreferences().
+                getClearFormsOnSubmit();
+
+        if (clearFormPref == null) {
+          clearForm = ((AdminConfig)form.getConfig())
+                  .getDefaultClearFormsOnSubmit();
+        } else {
+          clearForm = Boolean.valueOf(clearFormPref);
+        }
+
+        if (clearForm) {
+          form.setLocation(null);
+          form.setContact(null);
+          form.resetSelectIds();
+        }
+      }
 
       /* -------------------------- Access ------------------------------ */
 
@@ -812,7 +833,7 @@ public class UpdateEventAction extends EventActionBase {
         notifyEventReg(request, ei);
       }
 
-      resetEvent(request);
+      resetEvent(request, clearForm);
     } else {
       request.refresh();
     }

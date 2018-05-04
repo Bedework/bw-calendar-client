@@ -90,6 +90,11 @@ public class UpdatePrefsAction extends BwAbstractAction {
     }
 
     String str;
+
+    if (cl.getPublicAdmin() && request.present("admin-clear-event-form")) {
+      prefs.setClearFormsOnSubmit(request.getReqPar("admin-clear-event-form"));
+    }
+
     if (cl.getPublicAdmin() && cl.isSuperUser()) {
       if (request.present("approvers")) {
         prefs.setCalsuiteApprovers(request.getReqPar("approvers"));

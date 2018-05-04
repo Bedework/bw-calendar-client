@@ -263,12 +263,13 @@ public abstract class EventActionBase extends BwAbstractAction {
     ei = new EventInfo(evcopy);
 
     form.setEventInfo(ei, false);
-    resetEvent(request);
+    resetEvent(request, false);
     form.assignAddingEvent(true);
   }
 
   /* Mostly for admin use at the moment. */
-  protected void resetEvent(final BwRequest request) throws Throwable {
+  protected void resetEvent(final BwRequest request,
+                            final boolean clearForm) throws Throwable {
     BwActionFormBase form = request.getBwForm();
     Client cl = request.getClient();
     //form.setEventInfo(null);
@@ -279,23 +280,25 @@ public abstract class EventActionBase extends BwAbstractAction {
     form.retrieveCategoryKey().reset(null, IntSelectId.AHasPrecedence);
     */
 
-    BwContact s = event.getContact();
-    String uid = null;
-    if (s != null) {
-      uid = s.getUid();
-      form.setContact(s);
+    if (!clearForm) {
+      BwContact s = event.getContact();
+      String uid = null;
+      if (s != null) {
+        uid = s.getUid();
+        form.setContact(s);
+      }
+
+      form.retrieveCtctId().reset(uid, SelectId.AHasPrecedence);
+
+      BwLocation l = event.getLocation();
+      uid = null;
+      if (l != null) {
+        uid = l.getUid();
+        form.setLocation(l);
+      }
+
+      form.retrieveLocId().reset(uid, SelectId.AHasPrecedence);
     }
-
-    form.retrieveCtctId().reset(uid, SelectId.AHasPrecedence);
-
-    BwLocation l = event.getLocation();
-    uid = null;
-    if (l != null) {
-      uid = l.getUid();
-      form.setLocation(l);
-    }
-
-    form.retrieveLocId().reset(uid, SelectId.AHasPrecedence);
 
     BwCalendar c = cl.getCollection(event.getColPath());
     String path = null;

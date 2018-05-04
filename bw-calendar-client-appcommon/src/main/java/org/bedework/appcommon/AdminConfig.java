@@ -37,6 +37,17 @@ public interface AdminConfig extends ConfigCommon {
    */
   boolean getRegistrationsExternal();
 
+  /**
+   *
+   * @param val true if we clear (some of) the admin form on submit
+   */
+  void setDefaultClearFormsOnSubmit(boolean val);
+
+  /**
+   * @return boolean
+   */
+  boolean getDefaultClearFormsOnSubmit();
+
   /** True if categories are optional.
    *
    * @param val

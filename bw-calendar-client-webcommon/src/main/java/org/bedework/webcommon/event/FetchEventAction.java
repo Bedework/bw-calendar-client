@@ -91,7 +91,7 @@ public class FetchEventAction extends EventActionBase {
         return forwardCopy;
       }
 
-      resetEvent(request);
+      resetEvent(request, false);
     }
 
     return fwd;

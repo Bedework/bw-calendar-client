@@ -77,7 +77,7 @@ public class RequestFreeBusy extends BwAbstractAction {
       Client cl = request.getClient();
 
       Collection<String> attendees = request.getReqPars("attendeeUri");
-      Set<String> attendeeUris = new TreeSet<String>();
+      Set<String> attendeeUris = new TreeSet<>();
 
       for (String att: attendees) {
         attendeeUris.add(cl.uriToCaladdr(att));
@@ -219,7 +219,7 @@ public class RequestFreeBusy extends BwAbstractAction {
     outputJsonValue(wtr, indentPlus, "organizer",
                     ev.getOrganizer().getOrganizerUri());
 
-    Collection<String> attUris = new ArrayList<String>();
+    Collection<String> attUris = new ArrayList<>();
     for (BwAttendee att: ev.getAttendees()) {
       attUris.add(att.getAttendeeUri());
     }
@@ -267,7 +267,7 @@ public class RequestFreeBusy extends BwAbstractAction {
 
   private void outputJsonValue(final Writer wtr,
                                final int indent,
-                               final String name,
+                               @SuppressWarnings("SameParameterValue") final String name,
                                final String val,
                                final boolean withComma) throws Throwable {
     outputJsonStart(wtr, indent, name, false);
@@ -277,7 +277,7 @@ public class RequestFreeBusy extends BwAbstractAction {
   private void outputJsonValues(final Writer wtr,
                                 final int indent,
                                 final String name,
-                                final Collection<? extends Object> vals,
+                                final Collection<?> vals,
                                 final boolean withComma) throws Throwable {
     outputJsonStart(wtr, indent, name, true);
     int indentPlus = indent + indentSize;
@@ -301,7 +301,7 @@ public class RequestFreeBusy extends BwAbstractAction {
                                final boolean multi) throws Throwable {
     indented(wtr, indent, "\"");
 
-    wtr.write(JsonUtil.jsonName(name));
+    wtr.write(name.toLowerCase());
 
     if (multi) {
       wtr.write("\" : [");

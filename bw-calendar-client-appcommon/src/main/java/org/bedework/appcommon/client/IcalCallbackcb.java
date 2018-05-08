@@ -65,7 +65,7 @@ public class IcalCallbackcb implements IcalCallback {
 
   @Override
   public String getCaladdr(final String val) throws CalFacadeException {
-    return cl.getCalendarAddress(val);
+    return cl.uriToCaladdr(val);
   }
 
   @Override

@@ -52,6 +52,7 @@ import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.mail.Message;
+import org.bedework.calfacade.responses.GetEntitiesResponse;
 import org.bedework.calfacade.responses.GetEntityResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -1091,6 +1092,21 @@ public interface Client extends Serializable {
    * @throws CalFacadeException
    */
   Collection<BwLocation> getLocations() throws CalFacadeException;
+
+  /** Return all current user entities that match the filter.
+   *
+   * <p>Returns an empty collection for none.
+   *
+   * <p>The returned objects may not be persistent objects but the result of a
+   * report query.
+   *
+   * @param fexpr filter expression
+   * @return Collection     of objects
+   * @throws CalFacadeException
+   */
+  GetEntitiesResponse<BwLocation> getLocations(String fexpr,
+                                               final int from,
+                                               final int size) throws CalFacadeException;
 
   /** Return all public entiities.
    *

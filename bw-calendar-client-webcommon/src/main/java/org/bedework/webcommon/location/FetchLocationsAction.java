@@ -19,11 +19,12 @@
 
 package org.bedework.webcommon.location;
 
-import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.BasicSystemProperties;
+import org.bedework.calfacade.responses.GetEntitiesResponse;
+import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -55,8 +56,17 @@ public class FetchLocationsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    final String fexpr = request.getReqPar("fexpr");
+
+    if (fexpr != null) {
+      doSearch(request, form, fexpr);
+
+      return forwardNull;
+    }
+
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
+
     form.setNocache(false);
     final String changeToken = cl.getCurrentChangeToken();
 
@@ -73,19 +83,15 @@ public class FetchLocationsAction extends BwAbstractAction {
     final BwSession sess = request.getSess();
 
     final Collection<BwLocation> vals;
-    final String attrName;
 
     final String kind = request.getReqPar("kind", "owners");
 
     switch (kind) {
       case "owners":
-        attrName = BwRequest.bwLocationsListName;
         vals = sess.getLocations(request, BwSession.ownersEntity,
                                  true);
         break;
       case "editable":
-        attrName = BwRequest.bwEditableLocationsListName;
-
         vals = sess.getLocations(request, BwSession.editableEntity,
                                  false);
 //    } else if (kind.equals("preferred")) {
@@ -132,5 +138,33 @@ public class FetchLocationsAction extends BwAbstractAction {
     resp.getOutputStream().close();
 
     return forwardNull;
+  }
+
+  private void doSearch(final BwRequest request,
+                        final BwActionFormBase form,
+                        final String fexpr) throws Throwable {
+    final Client cl = request.getClient();
+    final HttpServletResponse resp = request.getResponse();
+
+    form.setNocache(true);
+
+    resp.setContentType("text/json; charset=UTF-8");
+
+    final LocationsResponse locs = new LocationsResponse();
+
+    GetEntitiesResponse<BwLocation> ges = cl.getLocations(fexpr,
+                                                          request.getIntReqPar("from", 0),
+                                                          request.getIntReqPar("size", 10));
+
+    if (ges.isOk()) {
+      okReturn(locs);
+      locs.setLocations(ges.getEntities());
+    } else {
+      locs.setStatus(ges.getStatus());
+      locs.setMessage(ges.getMessage());
+    }
+
+    cl.writeJson(resp, locs);
+    resp.getOutputStream().close();
   }
 }

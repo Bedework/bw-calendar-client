@@ -63,6 +63,7 @@ import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
+import org.bedework.calfacade.responses.GetEntitiesResponse;
 import org.bedework.calfacade.responses.GetEntityResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -1233,6 +1234,13 @@ public class RONetClientImpl implements Client {
           throws CalFacadeException {
     checkUpdate();
     return svci.getLocationsHandler().get();
+  }
+
+  @Override
+  public GetEntitiesResponse<BwLocation> getLocations(final String fexpr,
+                                                      final int from,
+                                                      final int size) {
+    return svci.getLocationsHandler().find(fexpr, from, size);
   }
 
   @Override

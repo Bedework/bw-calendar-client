@@ -1003,11 +1003,6 @@
           <modules>
             <webModule>
               <groupId>${project.groupId}</groupId>
-              <artifactId>bw-calendar-client-bedework-common</artifactId>
-              <contextRoot>/bedework-common</contextRoot>
-            </webModule>
-            <webModule>
-              <groupId>${project.groupId}</groupId>
               <artifactId>bw-calendar-client-cal</artifactId>
               <contextRoot>/cal</contextRoot>
             </webModule>

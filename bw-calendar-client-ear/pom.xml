@@ -13,19 +13,6 @@
   <dependencies>
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
-      <artifactId>bw-calendar-client-bedework-common</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.bedework.bwwebcl</groupId>
       <artifactId>bw-calendar-client-cal</artifactId>
       <version>${project.version}</version>
       <type>war</type>

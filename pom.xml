@@ -39,8 +39,8 @@
     <elasticsearch.version>1.5.2</elasticsearch.version>
     <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>
     <ical4j.artifactId>ical4j</ical4j.artifactId>
-    <ical4j.version>2.0.6</ical4j.version>
-    <ical4j-vcard.version>1.0.4</ical4j-vcard.version>
+    <ical4j.version>2.0.9</ical4j.version>
+    <ical4j-vcard.version>1.0.5</ical4j-vcard.version>
     <javax.mail.version>1.5.4</javax.mail.version>
 	</properties>
 

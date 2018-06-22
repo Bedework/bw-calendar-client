@@ -1163,6 +1163,13 @@ public class ROClientImpl implements Client {
   }
 
   @Override
+  public GetEntitiesResponse<BwContact> getContacts(final String fexpr,
+                                                    final int from,
+                                                    final int size) {
+    return svci.getContactsHandler().find(fexpr, from, size);
+  }
+
+  @Override
   public Collection<BwContact> getPublicContacts()
           throws CalFacadeException {
     checkUpdate();

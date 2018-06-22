@@ -979,6 +979,22 @@ public interface Client extends Serializable {
    */
   Collection<BwContact> getContacts() throws CalFacadeException;
 
+  /** Return all current user entities that match the filter.
+   *
+   * <p>Returns an empty collection for none.
+   *
+   * <p>The returned objects may not be persistent objects but the result of a
+   * report query.
+   *
+   * @param fexpr filter expression
+   * @return Collection     of objects
+   * @throws CalFacadeException on fatal error
+   */
+  GetEntitiesResponse<BwContact> getContacts(String fexpr,
+                                             final int from,
+                                             final int size)
+          throws CalFacadeException;
+
   /** Return all public entities.
    *
    * <p>Returns an empty collection for none.

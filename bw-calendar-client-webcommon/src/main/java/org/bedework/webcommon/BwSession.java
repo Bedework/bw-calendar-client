@@ -19,11 +19,12 @@
 
 package org.bedework.webcommon;
 
-import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.configs.AuthProperties;
+import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.util.struts.Request;
 
 import java.io.Serializable;
@@ -170,6 +171,16 @@ public interface BwSession extends Serializable {
   public static final int editableEntity = 2;
   public static final int preferredEntity = 3;
   public static final int defaultEntity = 4;
+
+  /**
+   * @param request - current request
+   * @param kind of entity
+   * @param forEventUpdate if we are updating an event
+   * @return the contacts
+   */
+  Collection<BwContact> getContacts(final BwRequest request,
+                                    final int kind,
+                                    final boolean forEventUpdate);
 
   /**
    *

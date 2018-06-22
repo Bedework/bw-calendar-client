@@ -955,6 +955,29 @@
       <forward name="continue" path="/category/showModForm.rdo" redirect="true" />
     </action>
 
+    <!-- ===============================================================
+                         Contact Actions
+         =============================================================== -->
+
+    <action    path="/contact/fetchForDisplay"
+               type="org.bedework.webcommon.contact.FetchContactAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=action"
+               validate="false">
+      <forward name="notFound" path="/main/showMain.rdo" redirect="true" />
+      <forward name="continue" path="/contact/showContact.rdo" redirect="true" />
+    </action>
+
+    <!-- Must be a gdo action - returns json -->
+    <action    path="/contact/all"
+               type="org.bedework.webcommon.contact.FetchContactsAction"
+               name="calForm"
+               scope="session"
+               parameter="actionType=resource;conversation=only;mdl=locations"
+               validate="false">
+    </action>
+
   <!-- ===============================================================
                         Locations
        =============================================================== -->

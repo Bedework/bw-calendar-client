@@ -688,6 +688,53 @@ public class BwSessionImpl extends Logged implements BwSession {
    * ==================================================================== */
 
   @Override
+  public Collection<BwContact> getContacts(final BwRequest request,
+                                           final int kind,
+                                           final boolean forEventUpdate) {
+    try {
+      final BwActionFormBase form = request.getBwForm();
+      final Client cl = request.getClient();
+      Collection<BwContact> vals = null;
+
+      if (kind == ownersEntity) {
+        if (cl.getWebSubmit()) {
+          // Use public
+          vals = cl.getPublicContacts();
+        } else {
+          // Current owner
+          vals = cl.getContacts();
+
+          final BwEvent ev = form.getEvent();
+
+          if (!publicAdmin && forEventUpdate && (ev != null)) {
+            final BwContact ent = ev.getContact();
+
+            if ((ent != null) &&
+                    (!ent.getOwnerHref().equals(cl.getCurrentPrincipalHref()))) {
+              vals.add(ent);
+            }
+          }
+        }
+      } else if (kind == preferredEntity) {
+        vals = curAuthUserPrefs.getContactPrefs().getPreferred();
+      } else if (kind == editableEntity) {
+        vals = cl.getEditableContacts();
+      }
+
+      if (vals == null) {
+        // Won't need this with 1.5
+        throw new Exception("Software error - bad kind " + kind);
+      }
+
+      return getContactCollator().getCollatedCollection(vals);
+    } catch (final Throwable t) {
+      t.printStackTrace();
+      request.getErr().emit(t);
+      return new ArrayList<>();
+    }
+  }
+
+  @Override
   public void embedContactCollection(final BwRequest request,
                                      final int kind) throws Throwable {
     final Client cl = request.getClient();

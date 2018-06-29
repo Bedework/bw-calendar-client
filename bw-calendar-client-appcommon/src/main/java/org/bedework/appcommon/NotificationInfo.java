@@ -101,13 +101,11 @@ public class NotificationInfo implements Serializable {
      * resources. We should retrieve a max number of the latest ones.
      */
 
-    final Collection<BwResource> rs =
-            cl.getResources(col.getPath(), 0, 25);
-
     final Map<String, NotifyResource> toDelete =
         new HashMap<>(notes);
 
-    for (final BwResource r: rs) {
+    for (final BwResource r: cl.getResources(col.getPath(),
+                                             25)) {
       final String rname = r.getName();
 
       toDelete.remove(rname);

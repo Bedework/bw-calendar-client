@@ -54,7 +54,7 @@ public class FetchCategoryAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    BwCategory category = request.getClient().getCategory(catUid);
+    BwCategory category = request.getClient().getCategoryByUid(catUid);
 
     if (debug) {
       if (category == null) {

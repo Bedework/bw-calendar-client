@@ -55,7 +55,7 @@ public class FetchLocationAction extends BwAbstractAction {
 
     BwLocation location = null;
     if (uid != null) {
-      location = cl.getLocation(uid);
+      location = cl.getLocationByUid(uid);
     }
 
     if (debug) {

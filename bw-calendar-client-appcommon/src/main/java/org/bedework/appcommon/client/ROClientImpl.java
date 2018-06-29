@@ -49,7 +49,6 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwShareableDbentity;
-import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.BasicSystemProperties;
@@ -1069,10 +1068,17 @@ public class ROClientImpl implements Client {
   }
 
   @Override
-  public BwCategory getCategory(final String uid)
+  public BwCategory getCategoryByUid(final String uid)
           throws CalFacadeException {
     checkUpdate();
-    return svci.getCategoriesHandler().get(uid);
+    return svci.getCategoriesHandler().getByUid(uid);
+  }
+
+  @Override
+  public BwCategory getCategory(final String href)
+          throws CalFacadeException {
+    checkUpdate();
+    return svci.getCategoriesHandler().get(href);
   }
 
   @Override
@@ -1143,10 +1149,10 @@ public class ROClientImpl implements Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwContact getContact(final String uid)
+  public BwContact getContactByUid(final String uid)
           throws CalFacadeException {
     checkUpdate();
-    return svci.getContactsHandler().get(uid);
+    return svci.getContactsHandler().getByUid(uid);
   }
 
   @Override
@@ -1219,7 +1225,7 @@ public class ROClientImpl implements Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwLocation getLocation(final String uid)
+  public BwLocation getLocationByUid(final String uid)
           throws CalFacadeException {
     checkUpdate();
     return svci.getLocationsHandler().get(uid);
@@ -1503,11 +1509,10 @@ public class ROClientImpl implements Client {
 
   @Override
   public List<BwResource> getResources(final String path,
-                                       final int start,
                                        final int count)
           throws CalFacadeException {
     checkUpdate();
-    return svci.getResourcesHandler().get(path, start, count);
+    return svci.getResourcesHandler().get(path, count);
   }
 
   @Override
@@ -2385,20 +2390,11 @@ public class ROClientImpl implements Client {
     for (final SearchResultEntry sre: entries) {
       final Object o = sre.getEntity();
 
-      if (o instanceof CategorisedEntity) {
-        restoreCategories((CategorisedEntity)o);
-      }
-
       if (!(o instanceof EventInfo)) {
         continue;
       }
 
       final BwEvent ev = ((EventInfo)o).getEvent();
-      restoreCategories(ev);
-
-      if (ev.getLocationUid() != null){
-        ev.setLocation(getLocation(ev.getLocationUid()));
-      }
 
       final EventFormatter ef = new EventFormatter(this,
                                                    trans,
@@ -2407,26 +2403,6 @@ public class ROClientImpl implements Client {
     }
 
     return entries;
-  }
-
-  private void restoreCategories(final CategorisedEntity ce) throws CalFacadeException {
-    final Set<String> uids = ce.getCategoryUids();
-    if (Util.isEmpty(uids)) {
-      return;
-    }
-
-//    Set<String> catUids = new TreeSet<>();
-
-    for (final Object o: uids) {
-      final String uid = (String)o;
-//      catUids.add(uid);
-      final BwCategory cat = getCategory(uid);
-      if (cat == null) {
-        warn("Unable to access category with UID " + uid);
-        continue;
-      }
-      ce.addCategory(cat);
-    }
   }
 
   private Collection<Locale> getSupportedLocales() throws CalFacadeException {

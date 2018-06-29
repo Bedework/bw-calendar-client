@@ -199,15 +199,16 @@ public class ColCloner extends Logged{
 
     if ((val.getCalType() == BwCalendar.calTypeAlias) &&
             (val.getAliasUri() != null)) {
-      final BwCalendar aliased;
+      BwCalendar aliased;
       try {
         numAliasResolve++;
         aliased = cl.resolveAlias(val, false, false);
       } catch (final Throwable t) {
-        if (debug) {
+//        if (debug) {
           error(t);
-        }
-        return Response.error(new CloneResult(), t.getMessage());
+  //      }
+    //    return Response.error(new CloneResult(), t.getMessage());
+        aliased = null;
       }
       
       if (aliased != null) {

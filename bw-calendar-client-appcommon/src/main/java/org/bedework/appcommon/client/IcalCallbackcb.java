@@ -80,7 +80,7 @@ public class IcalCallbackcb implements IcalCallback {
 
   @Override
   public BwContact getContact(final String uid) throws CalFacadeException {
-    return cl.getContact(uid);
+    return cl.getContactByUid(uid);
   }
 
   @Override
@@ -95,7 +95,7 @@ public class IcalCallbackcb implements IcalCallback {
 
   @Override
   public BwLocation getLocation(final String uid) throws CalFacadeException {
-    return cl.getLocation(uid);
+    return cl.getLocationByUid(uid);
   }
 
   @Override

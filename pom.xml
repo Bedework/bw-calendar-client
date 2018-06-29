@@ -363,6 +363,12 @@
 
       <dependency>
         <groupId>org.bedework.caleng</groupId>
+        <artifactId>bw-calendar-engine-core-common</artifactId>
+        <version>${bw-calendar-engine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.caleng</groupId>
         <artifactId>bw-calendar-engine-dumprestore</artifactId>
         <version>${bw-calendar-engine.version}</version>
       </dependency>

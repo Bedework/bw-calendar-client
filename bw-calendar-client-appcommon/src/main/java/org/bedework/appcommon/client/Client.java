@@ -863,7 +863,14 @@ public interface Client extends Serializable {
    * @return category entity or null.
    * @throws CalFacadeException
    */
-  BwCategory getCategory(String uid) throws CalFacadeException;
+  BwCategory getCategoryByUid(String uid) throws CalFacadeException;
+
+  /**
+   * @param href of the category
+   * @return category entity or null.
+   * @throws CalFacadeException
+   */
+  BwCategory getCategory(String href) throws CalFacadeException;
 
   /**
    * @param uid of the category
@@ -957,7 +964,7 @@ public interface Client extends Serializable {
    * @return contact object
    * @throws CalFacadeException
    */
-  BwContact getContact(String uid) throws CalFacadeException;
+  BwContact getContactByUid(String uid) throws CalFacadeException;
 
   /** Get the contact with the given uid.
    *
@@ -1087,7 +1094,7 @@ public interface Client extends Serializable {
    * @return Location object
    * @throws CalFacadeException
    */
-  BwLocation getLocation(String uid) throws CalFacadeException;
+  BwLocation getLocationByUid(String uid) throws CalFacadeException;
 
   /** Get the location with the given uid.
    *
@@ -1452,13 +1459,11 @@ public interface Client extends Serializable {
   /** Get resources to which this user has access - content is not fetched.
    *
    * @param  path           String path to containing collection
-   * @param start from here                       
-   * @param count this many                       
+   * @param count this many
    * @return List     of BwResource
    * @throws CalFacadeException
    */
   List<BwResource> getResources(String path,
-                                int start,
                                 int count) throws CalFacadeException;
 
   /** Update a resource.

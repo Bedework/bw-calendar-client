@@ -165,13 +165,13 @@ public class FetchCollectionsAction extends BwAbstractAction {
 
     final StringBuilder filterExpr = new StringBuilder();
 
-    if (!Util.isEmpty(col.getCategoryUids())) {
+    if (!Util.isEmpty(col.getCategoryHrefs())) {
       try {
         final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
         final BwPrincipal principal = cl.getCurrentPrincipal();
 
-        for (final String cuid: col.getCategoryUids()) {
-          final BwCategory cat = cl.getCategory(cuid);
+        for (final String href: col.getCategoryHrefs()) {
+          final BwCategory cat = cl.getCategory(href);
 
           cat.fixNames(basicSysprops, principal);
 

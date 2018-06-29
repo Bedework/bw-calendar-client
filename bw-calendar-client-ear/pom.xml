@@ -235,6 +235,17 @@
 
     <dependency>
       <groupId>org.bedework.caleng</groupId>
+      <artifactId>bw-calendar-engine-core-common</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.caleng</groupId>
       <artifactId>bw-calendar-engine-dumprestore</artifactId>
       <exclusions>
         <exclusion>

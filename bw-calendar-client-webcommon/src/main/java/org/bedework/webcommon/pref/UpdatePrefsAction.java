@@ -177,7 +177,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
             continue;
           }
 
-          if (cl.getCategory(uid) != null) {
+          if (cl.getCategoryByUid(uid) != null) {
             uids.add(uid);
           }
         }

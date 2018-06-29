@@ -23,7 +23,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.BwCalendar.EventListEntry;
+import org.bedework.calfacade.EventListEntry;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -45,9 +45,6 @@ import java.util.SortedSet;
  * </ul>
  */
 public class AddEventSubAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -65,19 +62,16 @@ public class AddEventSubAction extends EventActionBase {
     return forwardSuccess;
   }
 
-  /** Add an event subscription. The collection to add it to is defined by the request
+  /* Add an event subscription. The collection to add it to is defined by the request
    * parameter newColPath.
    *
-   * @param request
-   * @param form
-   * @return int forward index sucess for OK or an error index.
-   * @throws Throwable
+   * returns int forward index sucess for OK or an error index.
    */
   private int addEventSub(final BwRequest request,
                           final BwActionFormBase form) throws Throwable {
     Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
@@ -97,7 +91,7 @@ public class AddEventSubAction extends EventActionBase {
     }
 
     String subColPath = request.getReqPar("subColPath");
-    BwCalendar col = null;
+    BwCalendar col;
 
     if (subColPath != null) {
       /* See if the collection exists and is an event list collection */

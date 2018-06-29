@@ -627,7 +627,7 @@ public class BwSessionImpl extends Logged implements BwSession {
       final Set<String> catuids = cl.getPreferences().getDefaultCategoryUids();
 
       for (final String uid: catuids) {
-        final BwCategory cat = cl.getCategory(uid);
+        final BwCategory cat = cl.getCategoryByUid(uid);
 
         if (cat != null) {
           vals.add(cat);
@@ -874,7 +874,6 @@ public class BwSessionImpl extends Logged implements BwSession {
     if (!clres.isOk()) {
       warn("getClonedCollection failed: " + clres.getStatus() +
                    " " + clres.getMessage());
-      return null;
     }
 
     return clres.getCol();

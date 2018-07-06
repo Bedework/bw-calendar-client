@@ -37,6 +37,7 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
@@ -114,7 +115,7 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public void unindex(final String href) throws CalFacadeException {
-    getIndexer().unindexEntity(href);
+    getIndexer().unindexEntity(BwIndexer.docTypeEvent, href);
   }
 
   /* ------------------------------------------------------------

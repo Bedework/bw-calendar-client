@@ -33,7 +33,7 @@ public class UnindexAction extends BwAbstractAction {
                       BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (!cl.isSuperUser()) {
       return forwardNoAccess;

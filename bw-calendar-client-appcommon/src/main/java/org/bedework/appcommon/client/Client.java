@@ -36,7 +36,6 @@ import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwString;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.RecurringRetrievalMode;
@@ -186,20 +185,6 @@ public interface Client extends Serializable {
    */
   void writeJson(final HttpServletResponse resp,
                  final Object val) throws CalFacadeException;
-
-  /** Get the (possibly cached) system pars using name supplied at init
-   *
-   * @return BwSystem object
-   * @throws CalFacadeException if not admin
-   */
-  BwSystem getSyspars() throws CalFacadeException;
-
-  /** Update the system pars
-   *
-   * @param val BwSystem object
-   * @throws CalFacadeException if not admin
-   */
-  void updateSyspars(BwSystem val) throws CalFacadeException;
 
   /** Return authentication relevant properties.
    *

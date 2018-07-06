@@ -43,11 +43,9 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwString;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
-import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
@@ -382,17 +380,6 @@ public class ROClientImpl implements Client {
     } catch (final Throwable t) {
       throw new CalFacadeException(t);
     }
-  }
-
-  @Override
-  public BwSystem getSyspars() throws CalFacadeException {
-    return svci.getSysparsHandler().get();
-  }
-
-  @Override
-  public void updateSyspars(final BwSystem val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   @Override
@@ -2095,12 +2082,6 @@ public class ROClientImpl implements Client {
     }
 
     synchronized (adminGroupLocker) {
-      final Map<String, SubContext> suiteToContextMap = new HashMap<>();
-
-      for (final SubContext subContext : getSyspars().getContexts()) {
-        suiteToContextMap.put(subContext.getCalSuite(), subContext);
-      }
-
       final Set<String> groupHrefs = new TreeSet<>();
 
       suites = new ArrayList<>();
@@ -2117,15 +2098,8 @@ public class ROClientImpl implements Client {
 
         groupHrefs.add(cs.getGroup().getPrincipalRef());
 
-        final SubContext subContext = suiteToContextMap.get(cs.getName());
-
-        if (subContext != null) {
-          cs.setContext(subContext.getContextName());
-          cs.setDefaultContext(subContext.getDefaultContext());
-        } else {
-          cs.setContext(null);
-          cs.setDefaultContext(false);
-        }
+        cs.setContext(null);
+        cs.setDefaultContext(false);
 
         suites.add(cs);
       }

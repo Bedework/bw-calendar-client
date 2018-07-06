@@ -21,7 +21,6 @@ package org.bedework.webcommon.calsuite;
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -69,17 +68,6 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
     if (request.present("delete")) {
       cl.deleteCalSuite(csw);
 
-      // After deleting the calendar suite, make sure to remove that suite's
-      // sub-context if it has one.
-
-      BwSystem syspars = cl.getSyspars();
-      String ctxName = csw.getContext();
-      if (ctxName != null) {
-        CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
-        if (contextHelper.removeSuiteContext(ctxName)) {
-          cl.updateSyspars(syspars);
-        }
-      }
       return forwardSuccess;
     }
 
@@ -97,16 +85,6 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
       cl.changeAccess(csw, acl.getAces(), true);
     }
 
-    /* -------------------------- Context ----------------------------- */
-
-    BwSystem syspars = cl.getSyspars();
-    CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
-    String newContextName = request.getReqPar("context");
-    boolean newDefContext = "true".equals(request.getReqPar("defaultContext"));
-
-    if (contextHelper.updateSuiteContext(csw, newContextName, newDefContext)) {
-      cl.updateSyspars(syspars);
-    }
     return forwardSuccess;
   }
 }

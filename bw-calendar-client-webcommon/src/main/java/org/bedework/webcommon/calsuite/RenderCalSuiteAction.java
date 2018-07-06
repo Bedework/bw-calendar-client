@@ -20,15 +20,11 @@ package org.bedework.webcommon.calsuite;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwSystem;
-import org.bedework.calfacade.SubContext;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
-
-import java.util.Set;
 
 /** Fetch a calendar suite for update/display/delete. Name is in form
  * property calsuiteName.
@@ -63,22 +59,8 @@ public class RenderCalSuiteAction extends RenderAction {
       return forwardNotFound;
     }
 
-    SubContext suiteCtx = null;
-    final BwSystem syspars = cl.getSyspars();
-    final Set<SubContext> contexts = syspars.getContexts();
-    for (final SubContext subContext : contexts) {
-      if (subContext.getCalSuite().equals(cs.getName())) {
-        suiteCtx = subContext;
-      }
-    }
-
-    if (suiteCtx != null) {
-      cs.setContext(suiteCtx.getContextName());
-      cs.setDefaultContext(suiteCtx.getDefaultContext());
-    } else {
-      cs.setContext(null);
-      cs.setDefaultContext(false);
-    }
+    cs.setContext(null);
+    cs.setDefaultContext(false);
     form.setCalSuite(cs);
 
     final String reqpar = request.getReqPar("delete");

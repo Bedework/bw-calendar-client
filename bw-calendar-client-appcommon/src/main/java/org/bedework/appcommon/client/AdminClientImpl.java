@@ -32,7 +32,6 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.exc.CalFacadeException;
@@ -147,12 +146,6 @@ public class AdminClientImpl extends ClientImpl {
   @Override
   public boolean isGuest() {
     return false;
-  }
-
-  @Override
-  public void updateSyspars(final BwSystem val)
-          throws CalFacadeException {
-    svci.getSysparsHandler().update(val);
   }
 
   /* ------------------------------------------------------------

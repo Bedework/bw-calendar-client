@@ -20,7 +20,6 @@ package org.bedework.webcommon.calsuite;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwSystem;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
@@ -85,18 +84,6 @@ public class AddCalSuiteAction extends BwAbstractAction {
       form.getErr().emit(ClientError.calsuiteNotAdded);
       return forwardNotAdded;
     }
-
-    /* -------------------------- Context ----------------------------- */
-    BwSystem syspars = cl.getSyspars();
-    CalSuiteContextHelper contextHelper = new CalSuiteContextHelper(syspars);
-    String newContextName = request.getReqPar("context");
-    boolean newDefContext = "true".equals(request.getReqPar("defaultContext"));
-
-    if (contextHelper.updateSuiteContext(suite, newContextName, newDefContext)) {
-      cl.updateSyspars(syspars);
-    }
-
-    form.setEditCalSuiteName(name);
 
     return forwardSuccess;
   }

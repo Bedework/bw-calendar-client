@@ -1445,6 +1445,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
       } else {
         pi.image = new BwResource();
+        pi.image.setColPath(imagecolPath);
         pi.image.setName(fns.fn);
       }
 
@@ -1488,7 +1489,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       } else {
         pi.thumbnail = new BwResource();
         pi.thumbnail.setName(fns.thumbFn);
-
+        pi.thumbnail.setColPath(imagecolPath);
       }
 
       pi.thumbnail.setContentType("image/" + thumbType);
@@ -1496,13 +1497,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       cl.setResourceValue(pi.thumbnail, thumbContent);
 
       if (!replace) {
-        cl.saveResource(imageCol.getPath(), pi.image);
+        cl.saveResource(pi.image);
       } else {
         cl.updateResource(pi.image, true);
       }
 
       if (!replaceThumb) {
-        cl.saveResource(imageCol.getPath(), pi.thumbnail);
+        cl.saveResource(pi.thumbnail);
       } else {
         cl.updateResource(pi.thumbnail, true);
       }

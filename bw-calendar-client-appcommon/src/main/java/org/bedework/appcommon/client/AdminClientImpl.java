@@ -407,8 +407,8 @@ public class AdminClientImpl extends ClientImpl {
                             final BwResource res,
                             final String rc)
           throws CalFacadeException {
-    svci.getResourcesHandler().save(getCSResourcesDir(suite, rc),
-                                    res,
+    res.setColPath(getCSResourcesDir(suite, rc));
+    svci.getResourcesHandler().save(res,
                                     false);
     updated();
   }

@@ -1459,8 +1459,7 @@ public class ROClientImpl implements Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public void saveResource(final String path,
-                           final BwResource val) throws CalFacadeException {
+  public void saveResource(final BwResource val) throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
 

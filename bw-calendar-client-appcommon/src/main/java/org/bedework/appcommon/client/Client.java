@@ -1408,12 +1408,10 @@ public interface Client extends Serializable {
    * ------------------------------------------------------------ */
   /** Save a resource at the given collection path. The collection MUST exist.
    *
-   * @param  path      String path to containing collection
    * @param  val       resource with attached content
    * @throws CalFacadeException for errors including duplicate name
    */
-  void saveResource(String path,
-                    BwResource val) throws CalFacadeException;
+  void saveResource(BwResource val) throws CalFacadeException;
 
   /** Get a resource given the path - does not getResource content
    *

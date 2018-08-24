@@ -46,8 +46,6 @@ import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.util.misc.Util;
 
-import org.hibernate.Hibernate;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -185,13 +183,23 @@ public class AdminClientImpl extends ClientImpl {
       return au;
     }
 
-    // For the time being force initialization of the prefs
+    /* For the time being force initialization of the prefs
+       Not sure why we need this - probably because these objects
+       become detached but we need the collections.
+
+       For the moment get the size of the object. Means no explicit
+       hibernate dependency
+     */
 
     final BwAuthUserPrefs prefs = au.getPrefs();
-    Hibernate.initialize(prefs.getCalendarPrefs().getPreferred());
-    Hibernate.initialize(prefs.getCategoryPrefs().getPreferred());
-    Hibernate.initialize(prefs.getContactPrefs().getPreferred());
-    Hibernate.initialize(prefs.getLocationPrefs().getPreferred());
+    int totalSize = // to avoid intellij messages and being optimized out
+            prefs.getCalendarPrefs().getPreferred().size() +
+                    prefs.getCategoryPrefs().getPreferred().size() +
+                    prefs.getContactPrefs().getPreferred().size() +
+                    prefs.getLocationPrefs().getPreferred().size();
+    if (debug) {
+      debug("The size was " + totalSize);
+    }
 
     return au;
   }

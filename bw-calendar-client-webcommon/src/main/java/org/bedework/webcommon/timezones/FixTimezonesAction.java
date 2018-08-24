@@ -62,10 +62,10 @@ public class FixTimezonesAction extends BwAbstractAction {
 
     if (debug) {
       for (UnknownTimezoneInfo uti: info.getUnknownTzids()) {
-        debugMsg(uti.toString());
+        debug(uti.toString());
       }
       for (BwEventKey ekey: info.getUpdatedList()) {
-        debugMsg(ekey.toString());
+        debug(ekey.toString());
       }
     }
 

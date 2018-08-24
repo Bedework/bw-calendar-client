@@ -396,7 +396,7 @@ public class TimeView implements Serializable {
     //String endLocal = endDt.getDtval();
 
     //if (debug) {
-    //  debugMsg("Did UTC stuff in " + (System.currentTimeMillis() - millis));
+    //  debug("Did UTC stuff in " + (System.currentTimeMillis() - millis));
     //}
 
     /* The following looks for events in the given day. There is a special case
@@ -476,7 +476,7 @@ public class TimeView implements Serializable {
 
         /*
         if (debug) {
-          debugMsg("Event (floating=" + floating + ") passed range " +
+          debug("Event (floating=" + floating + ") passed range " +
               start + "(" + startLocal + ")-" +
               end + "(" + endLocal +
               ") with dates " + evStart + "-" + evEnd +

@@ -24,6 +24,7 @@
 		<bw-calendar-engine.version>3.12.1-SNAPSHOT</bw-calendar-engine.version>
 
 		<!-- Third Party Library Versions -->
+    <dom4j-version>1.6.1</dom4j-version>
 		<portlet-api.version>1.0</portlet-api.version>
 		<jsp-api.version>2.3.1</jsp-api.version>
 		<gson.version>1.5</gson.version>
@@ -435,7 +436,13 @@
 
 			<!-- Third Party Libraries -->
 
-			<dependency>
+      <dependency>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>${dom4j-version}</version>
+      </dependency>
+
+      <dependency>
 				<groupId>org.imgscalr</groupId>
 				<artifactId>imgscalr-lib</artifactId>
 				<version>${imgscalr.version}</version>

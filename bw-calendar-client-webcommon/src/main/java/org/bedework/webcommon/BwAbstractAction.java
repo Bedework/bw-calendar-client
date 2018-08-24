@@ -289,7 +289,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /*if (debug) {
       BwFilter filter = bwreq.getFilter(debug);
       if (filter != null) {
-        debugMsg(filter.toString());
+        debug(filter.toString());
       }
     }*/
 

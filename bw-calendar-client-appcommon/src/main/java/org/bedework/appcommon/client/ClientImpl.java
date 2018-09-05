@@ -37,7 +37,6 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
@@ -57,6 +56,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.includeDeleted;
+import static org.bedework.calfacade.indexing.BwIndexer.docTypeEvent;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:05 PM
@@ -115,7 +115,7 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public void unindex(final String href) throws CalFacadeException {
-    getIndexer().unindexEntity(BwIndexer.docTypeEvent, href);
+    getIndexer(docTypeEvent).unindexEntity(docTypeEvent, href);
   }
 
   /* ------------------------------------------------------------

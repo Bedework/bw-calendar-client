@@ -106,6 +106,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.includeDeleted;
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.noDeleted;
+import static org.bedework.calfacade.indexing.BwIndexer.docTypeEvent;
+import static org.bedework.calfacade.indexing.BwIndexer.docTypeUpdateTracker;
 import static org.bedework.calsvci.CalSuitesI.ResourceClass;
 
 /**
@@ -136,8 +138,8 @@ public class ROClientImpl extends Logged implements Client {
   private transient CollectionCollator<BwCalendar> calendarCollator;
   protected String appType;
 
-  private BwIndexer publicIndexer;
-  private BwIndexer userIndexer;
+  private Map<String, BwIndexer> publicIndexers = new HashMap<>();
+  private Map<String, BwIndexer> userIndexers = new HashMap<>();
   private SearchResult lastSearch;
   private List<SearchResultEntry> lastSearchEntries;
 
@@ -235,8 +237,8 @@ public class ROClientImpl extends Logged implements Client {
   }
   
   protected void resetIndexers() {
-    publicIndexer = null;
-    userIndexer = null;
+    publicIndexers.clear();
+    userIndexers.clear();
   }
 
   @Override
@@ -301,8 +303,8 @@ public class ROClientImpl extends Logged implements Client {
             new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
                              reqTimeMillis));
     svci.setState("Request out");
-    publicIndexer = null;
-    userIndexer = null;
+    publicIndexers.clear();
+    userIndexers.clear();
 
     if (!isOpen()) {
       return;
@@ -350,7 +352,7 @@ public class ROClientImpl extends Logged implements Client {
 
   @Override
   public String getCurrentChangeToken() throws CalFacadeException {
-    return getIndexer().currentChangeToken();
+    return getIndexer(docTypeUpdateTracker).currentChangeToken();
   }
 
   @Override
@@ -1808,7 +1810,7 @@ public class ROClientImpl extends Logged implements Client {
       delState = noDeleted;
     }
 
-    lastSearch = getIndexer(publicIndex).search(
+    lastSearch = getIndexer(publicIndex, docTypeEvent).search(
             params.getQuery(),
             params.getRelevance(),
             params.getFilter(),
@@ -2222,24 +2224,30 @@ public class ROClientImpl extends Logged implements Client {
     return calendarCollator;
   }
 
-  protected BwIndexer getIndexer() throws CalFacadeException {
-    return getIndexer(isDefaultIndexPublic());
+  protected BwIndexer getIndexer(final String docType) throws CalFacadeException {
+    return getIndexer(isDefaultIndexPublic(),
+                      docType);
   }
 
-  protected BwIndexer getIndexer(final boolean publick) throws CalFacadeException {
+  protected BwIndexer getIndexer(final boolean publick,
+                                 final String docType) throws CalFacadeException {
     if (publick) {
-      if (publicIndexer == null) {
-        publicIndexer = svci.getIndexer(true);
+      BwIndexer idx = publicIndexers.get(docType);
+      if (idx == null) {
+        idx = svci.getIndexer(true, docType);
+        publicIndexers.put(docType, idx);
       }
 
-      return publicIndexer;
+      return idx;
     }
 
-    if (userIndexer == null) {
-      userIndexer = svci.getIndexer(false);
+    BwIndexer idx = userIndexers.get(docType);
+    if (idx == null) {
+      idx = svci.getIndexer(false, docType);
+      userIndexers.put(docType, idx);
     }
 
-    return userIndexer;
+    return idx;
   }
 
   private final static long indexerDelay = 1010; // Just over a sec for the indexer

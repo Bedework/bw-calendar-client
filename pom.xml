@@ -27,6 +27,7 @@
 		<!-- Third Party Library Versions -->
     <dom4j-version>1.6.1</dom4j-version>
 		<portlet-api.version>1.0</portlet-api.version>
+    <jackson.version>2.9.6</jackson.version>
 		<jsp-api.version>2.3.1</jsp-api.version>
 		<gson.version>1.5</gson.version>
 		<portals-bridge.version>1.0.4</portals-bridge.version>
@@ -479,6 +480,24 @@
 				<artifactId>javax.servlet.jsp-api</artifactId>
 				<version>${jsp-api.version}</version>
 			</dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
 
 			<dependency>
 				<groupId>com.google.code.gson</groupId>

@@ -20,7 +20,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="bw-util-hibernate" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-hibernate:4.0.19-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="bw-calendar-client-cal" />
     <orderEntry type="module" module-name="bw-calendar-client-caladmin" />

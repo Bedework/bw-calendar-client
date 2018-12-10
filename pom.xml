@@ -15,14 +15,14 @@
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 		<!-- Bedework Versions -->
 
-		<bw-xml.version>4.0.6</bw-xml.version>
-		<bw-util.version>4.0.19</bw-util.version>
-    <bw-util-hibernate.version>4.0.19</bw-util-hibernate.version>
-    <bw-util2.version>4.0.1</bw-util2.version>
+		<bw-xml.version>4.0.7-SNAPSHOT</bw-xml.version>
+		<bw-util.version>4.0.20-SNAPSHOT</bw-util.version>
+    <bw-util-hibernate.version>4.0.20-SNAPSHOT</bw-util-hibernate.version>
+    <bw-util2.version>4.0.2-SNAPSHOT</bw-util2.version>
 		<bw-access.version>4.0.3</bw-access.version>
 		<bw-webdav.version>4.0.4</bw-webdav.version>
-		<bw-caldav-util.version>4.0.4</bw-caldav-util.version>
-		<bw-calendar-engine.version>3.12.1</bw-calendar-engine.version>
+		<bw-caldav-util.version>4.0.5-SNAPSHOT</bw-caldav-util.version>
+		<bw-calendar-engine.version>3.12.2-SNAPSHOT</bw-calendar-engine.version>
 
 		<!-- Third Party Library Versions -->
     <dom4j-version>1.6.1</dom4j-version>

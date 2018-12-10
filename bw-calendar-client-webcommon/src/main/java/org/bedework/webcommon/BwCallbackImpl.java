@@ -56,7 +56,7 @@ public class BwCallbackImpl extends BwCallback {
       /* On the way in we set up the client from the default client
          embedded in the form.
        */
-    synchronized (form) {
+    //synchronized (form) {
       final BwModule module = form.fetchModule(req.getModuleName());
       if (debug) {
         getLogger().debug("About to claim module " + module.getModuleName());
@@ -71,7 +71,7 @@ public class BwCallbackImpl extends BwCallback {
       module.requestIn();
 
       return HttpServletResponse.SC_OK;
-    }
+    //}
   }
 
   @Override

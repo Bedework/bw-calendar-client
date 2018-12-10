@@ -1828,7 +1828,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                              final MessageResources messages,
                              final String adminUserId) throws Throwable {
     //noinspection SynchronizationOnLocalVariableOrMethodParameter
-    synchronized (form) {
+    //synchronized (form) {
       BwSession s = BwWebUtil.getState(request.getRequest());
       final HttpSession sess = request.getRequest().getSession(false);
       final String appName = getAppName(sess);
@@ -1861,7 +1861,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                      rhost + "(" + raddr + ")");
 
         if (!form.getConfig().getPublicAdmin()) {
-          /** Ensure the session timeout interval is longer than our refresh period
+          /* Ensure the session timeout interval is longer than our refresh period
            */
           //  Should come from db -- int refInt = s.getRefreshInterval();
           final int refInt = 60; // 1 min refresh?
@@ -1878,12 +1878,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
       }
 
-      /** Ensure we have a CalSvcI object
+      /* Ensure we have a CalSvcI object
        */
       checkSvci(request, s, adminUserId, false);
 
       return s;
-    }
+    //}
   }
 
   private String getAppName(final HttpSession sess) {
@@ -1917,7 +1917,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     BwActionFormBase form = (BwActionFormBase)request.getForm();
     final ConfigCommon conf = form.getConfig();
     boolean publicAdmin = conf.getPublicAdmin();
-    boolean guestMode = conf.getGuestMode();
+    boolean guestMode = !publicAdmin && conf.getGuestMode();
     String calSuiteName = null;
 
 
@@ -1990,7 +1990,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     boolean reinitClient = false;
 
     try {
-      /** Make some checks to see if this is an old - restarted session.
+      /* Make some checks to see if this is an old - restarted session.
         If so discard the svc interface
        */
       if (client != null) {
@@ -2017,11 +2017,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
           if (!user.equals(curUser)) {
             if (!canSwitch) {
-              /** Trying to switch but not allowed */
+              /* Trying to switch but not allowed */
               return false;
             }
 
-            /** Switching user */
+            /* Switching user */
             client.endTransaction();
             client.close();
             reinitClient = true;
@@ -2037,28 +2037,17 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
 
         if (reinitClient) {
+          // We did a module close will need to reclaim - always public admin
           if (debug) {
             debugMsg("Client-- reinit for user " + user);
           }
 
           form.flushModules(request.getModuleName());
 
-          if (guestMode) {
-            ((ROClientImpl)client).reinit(form.getCurrentUser(),
-                                          user,
-                                          calSuiteName,
-                                          form.getAppType(),
-                                          true);
-          } else if (publicAdmin) {
-            ((AdminClientImpl)client).reinit(form.getCurrentUser(),
-                                             user,
-                                             calSuiteName,
-                                             (AdminConfig)form.getConfig());
-          } else {
-            ((ClientImpl)client).reinit(form.getCurrentUser(),
-                                        user,
-                                        form.getAppType());
-          }
+          ((AdminClientImpl)client).reinit(form.getCurrentUser(),
+                                           user,
+                                           calSuiteName,
+                                           (AdminConfig)form.getConfig());
 
           cb.in(request);
           //client.requestIn(request.getConversationType());
@@ -2092,6 +2081,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         module.setClient(client);
         module.setRequest(request);
 
+        // Didn't release module - just reflag entry
         module.requestIn();
         mstate.setRefresh(true);
         sess.reset(request);

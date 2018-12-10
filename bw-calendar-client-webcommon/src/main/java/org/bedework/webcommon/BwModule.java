@@ -189,6 +189,7 @@ public class BwModule extends Logged implements Serializable {
     }
 
 //    decWaiters();
+    assert(getInuse());
     setInuse(true);
     timeIn = System.currentTimeMillis();
 

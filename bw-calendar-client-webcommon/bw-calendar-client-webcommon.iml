@@ -33,6 +33,7 @@
     <orderEntry type="module" module-name="bw-util-xml" />
     <orderEntry type="module" module-name="bw-util-json" />
     <orderEntry type="module" module-name="bw-util-misc" />
+    <orderEntry type="module" module-name="bw-util-logging" />
     <orderEntry type="module" module-name="bw-util-struts" />
     <orderEntry type="module" module-name="bw-util-servlet" />
     <orderEntry type="module" module-name="bw-util-jmx" />

@@ -18,9 +18,8 @@
 */
 package org.bedework.appcommon;
 
+import org.bedework.util.logging.Logged;
 import org.bedework.util.servlet.MessageEmit;
-
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import java.util.Collection;
  *
  * @author  Mike Douglass douglm   rpi.edu
  */
-public class TimeViewDailyInfo implements Serializable {
+public class TimeViewDailyInfo implements Logged, Serializable {
   /** The view that created this.
    */
   private TimeView view;
@@ -506,7 +505,7 @@ public class TimeViewDailyInfo implements Serializable {
   private Collection<EventFormatter> getDaysEvents(final MyCalendarVO date)
           throws Throwable {
     if (!getDayEntry()) {
-      Logger.getLogger(this.getClass()).error("*******Not a day entry*****");
+      error("*******Not a day entry*****");
       throw new IllegalStateException("Not a day entry");
     }
 

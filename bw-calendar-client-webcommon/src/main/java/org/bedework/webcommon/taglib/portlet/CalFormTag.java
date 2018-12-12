@@ -33,7 +33,8 @@
  */
 package org.bedework.webcommon.taglib.portlet;
 
-import org.apache.log4j.Logger;
+import org.bedework.util.logging.Logged;
+
 import org.apache.struts.taglib.html.FormTag;
 
 import javax.servlet.jsp.JspException;
@@ -49,9 +50,7 @@ import javax.servlet.jsp.JspException;
  * @author Dave Brondsema
  * @version $Id: RewriteTag.java 2005-10-25 12:31:13Z satish $
  */
-public class CalFormTag extends FormTag {
-  private transient Logger log;
-
+public class CalFormTag extends FormTag implements Logged {
   /*
    * Modifies the default generated form action url to be a valid Portlet ActionURL
    * when in the context of a {@link PortletServlet#isPortletRequest(ServletRequest) PortletRequest}.
@@ -59,8 +58,6 @@ public class CalFormTag extends FormTag {
    */
   @Override
   protected String renderFormStartElement() {
-    boolean debug = getLogger().isDebugEnabled();
-
     String formStartElement;
     try {
       formStartElement = super.renderFormStartElement();
@@ -81,8 +78,8 @@ public class CalFormTag extends FormTag {
     String urlStr = formStartElement.substring(actionURLStart,
                                                actionURLEnd);
 
-    if (debug) {
-      trace("UrlStr = " + urlStr);
+    if (debug()) {
+      debug("UrlStr = " + urlStr);
     }
 
     /* Drop the context
@@ -92,15 +89,15 @@ public class CalFormTag extends FormTag {
       urlStr = urlStr.substring(pos);
     }
 
-    if (debug) {
-      trace("UrlStr = " + urlStr);
+    if (debug()) {
+      debug("UrlStr = " + urlStr);
     }
 
     urlStr = TagsSupport.getURL(pageContext, urlStr,
                                 PortletURLTypes.URLType.ACTION);
 
-    if (debug) {
-      trace("UrlStr = " + urlStr);
+    if (debug()) {
+      debug("UrlStr = " + urlStr);
     }
 
     /* remove embedded anchor because calendar xsl stylesheet
@@ -118,28 +115,12 @@ public class CalFormTag extends FormTag {
     //Generate valid xml markup for transformation
     urlStr = urlStr.replaceAll("&", "&amp;");
 
-    if (debug) {
-      trace("UrlStr = " + urlStr);
+    if (debug()) {
+      debug("UrlStr = " + urlStr);
     }
 
     return formStartElement.substring(0, actionURLStart) +
            urlStr + formStartElement.substring(actionURLEnd);
            */
-  }
-
-  private void trace(final String msg) {
-    getLogger().debug(msg);
-  }
-
-  private void error(final Throwable t) {
-    getLogger().error(this, t);
-  }
-
-  private Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
   }
 }

@@ -18,7 +18,7 @@
 */
 package org.bedework.appcommon;
 
-import org.bedework.access.Acl.CurrentAccess;
+import org.bedework.access.CurrentAccess;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;

@@ -46,7 +46,7 @@ import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.util.misc.Logged;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.Request;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Mike Douglass   douglm     rpi.edu
  */
-public class BwSessionImpl extends Logged implements BwSession {
+public class BwSessionImpl implements Logged, BwSession {
   //private static final String refreshTimeAttr = "bw_refresh_time";
   //private static final long refreshRate = 1 * 60 * 1000;
 
@@ -114,8 +114,6 @@ public class BwSessionImpl extends Logged implements BwSession {
     
     this.config = config;
     this.user = user;
-
-    debug = getLogger().isDebugEnabled();
 
     publicAdmin = config.getPublicAdmin();
 
@@ -261,39 +259,39 @@ public class BwSessionImpl extends Logged implements BwSession {
           embedFilters(req);
 
           if (cl.getPublicAdmin() || cl.getWebSubmit()) {
-            if (debug) {
+            if (debug()) {
               debug("About to embed collections");
             }
 
             embedCollections(req);
           }
 
-          if (debug) {
+          if (debug()) {
             debug("About to embed public collections");
           }
 
           embedPublicCollections(req);
 
-          if (debug) {
+          if (debug()) {
             debug("About to embed user collections");
           }
 
           embedUserCollections(req);
 
-          if (debug) {
+          if (debug()) {
             debug("About to embed views");
           }
 
           embedViews(req);
         }
 
-        if (debug) {
+        if (debug()) {
           debug("About to embed prefs");
         }
 
         embedPrefs(req);
 
-        if (debug) {
+        if (debug()) {
           debug("After embed prefs");
         }
 
@@ -420,14 +418,14 @@ public class BwSessionImpl extends Logged implements BwSession {
       } 
 
       if (col.getPath().equals(cl.getPublicCalendarsRootPath())) {
-        if (debug) {
+        if (debug()) {
           debug("Return public root");
         }
 
         return getPublicCollections(request);
       }
       
-      if (debug) {
+      if (debug()) {
         debug("About to clone: " + col.getPath());
       }
 
@@ -441,7 +439,7 @@ public class BwSessionImpl extends Logged implements BwSession {
         return null;
       }
 
-      if (debug) {
+      if (debug()) {
         debug("Cloned: " + col.getPath());
       }
       
@@ -533,7 +531,7 @@ public class BwSessionImpl extends Logged implements BwSession {
 
         p = cl.getPrincipal(cs.getGroup().getOwnerHref());
 
-        if (debug) {
+        if (debug()) {
           debug("Get Calendar home for " + p.getPrincipalRef());
         }
 
@@ -548,7 +546,7 @@ public class BwSessionImpl extends Logged implements BwSession {
           p = cl.getCurrentPrincipal();
         }
 
-        if (debug) {
+        if (debug()) {
           debug("Get Calendar home for " + p.getPrincipalRef());
         }
 

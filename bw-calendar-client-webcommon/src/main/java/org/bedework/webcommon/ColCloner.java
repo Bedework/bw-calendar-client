@@ -8,7 +8,7 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.responses.Response;
-import org.bedework.util.misc.Logged;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 
 import java.util.ArrayDeque;
@@ -25,7 +25,7 @@ import static org.bedework.calfacade.responses.Response.Status.ok;
 /**
  * User: mike Date: 3/17/16 Time: 22:49
  */
-public class ColCloner extends Logged{
+public class ColCloner implements Logged {
   private final Map<String, BwCalendar> clonedCols = new HashMap<>();
 
   private final Map<String, BwCategory> clonedCats = new HashMap<>();
@@ -99,13 +99,13 @@ public class ColCloner extends Logged{
   CloneResult deepClone(final BwCalendar val,
                         final boolean fromCopy) {
     final long start = System.currentTimeMillis();
-    if (debug) {
+    if (debug()) {
       debug("start clone. fromCopy: " + fromCopy);
     }
     
     final CloneResult cr = deepClone(new CloneStatus(), val, fromCopy);
 
-    if (debug) {
+    if (debug()) {
       debug("================================");
       debug("          cloned: " + numCloned);
       debug("          cached: " + numCached);
@@ -204,7 +204,7 @@ public class ColCloner extends Logged{
         numAliasResolve++;
         aliased = cl.resolveAlias(val, false, false);
       } catch (final Throwable t) {
-//        if (debug) {
+//        if (debug()) {
           error(t);
   //      }
     //    return Response.error(new CloneResult(), t.getMessage());
@@ -257,7 +257,7 @@ public class ColCloner extends Logged{
         numSearches++;
         children = cl.getChildren(col);
       } catch (final Throwable t) {
-        if (debug) {
+        if (debug()) {
           error(t);
         }
         return Response.error(new CloneResult(), t.getMessage());

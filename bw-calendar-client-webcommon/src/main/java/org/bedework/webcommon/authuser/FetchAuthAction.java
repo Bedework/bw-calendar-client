@@ -58,8 +58,8 @@ public class FetchAuthAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    if (debug) {
-      logIt("Retrieved auth user " + au);
+    if (debug()) {
+      info("Retrieved auth user " + au);
     }
 
     form.setEditAuthUser(au);

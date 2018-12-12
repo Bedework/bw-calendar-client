@@ -18,9 +18,9 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.Request;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.util.RequestUtils;
@@ -33,18 +33,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass douglm@rpi.edu
  */
-public class BwCallbackImpl extends BwCallback {
-  protected boolean debug = false;
-
-  private transient Logger log;
-
+public class BwCallbackImpl extends BwCallback implements Logged {
   final BwActionFormBase form;
   ActionForward errorForward;
 
   BwCallbackImpl(final BwActionFormBase form,
                  final ActionMapping mapping) {
     this.form = form;
-    debug = getLogger().isDebugEnabled();
     errorForward = mapping.findForward("error");
     if (errorForward == null) {
       throw new RuntimeException("Forward \"error\" must be defined in struts-comfig");
@@ -58,8 +53,8 @@ public class BwCallbackImpl extends BwCallback {
        */
     //synchronized (form) {
       final BwModule module = form.fetchModule(req.getModuleName());
-      if (debug) {
-        getLogger().debug("About to claim module " + module.getModuleName());
+      if (debug()) {
+        debug("About to claim module " + module.getModuleName());
       }
 
       if (!module.claim()) {
@@ -79,8 +74,8 @@ public class BwCallbackImpl extends BwCallback {
     final BwModule module = form.fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
-    if (debug) {
-      getLogger().debug("Request out for module " + module.getModuleName());
+    if (debug()) {
+      debug("Request out for module " + module.getModuleName());
     }
 
     module.requestOut();
@@ -92,8 +87,8 @@ public class BwCallbackImpl extends BwCallback {
     final BwModule module = form.fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
-    if (debug) {
-      getLogger().debug("Close for module " + module.getModuleName());
+    if (debug()) {
+      debug("Close for module " + module.getModuleName());
     }
 
     module.close(cleanUp);
@@ -128,17 +123,5 @@ public class BwCallbackImpl extends BwCallback {
     } catch (final Throwable ignored) {
       // Presumably illegal state
     }
-  }
-
-  /** Get a logger for messages
-   *
-   * @return Logger
-   */
-  public Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
   }
 }

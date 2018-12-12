@@ -80,15 +80,15 @@ public class AttendeeAction extends EventActionBase {
       Gson gson = new Gson();
 
       for (String s: attjson) {
-        if (debug) {
-          debugMsg("json=" + s);
+        if (debug()) {
+          debug("json=" + s);
         }
 
         try {
           JsonAttendee att = gson.fromJson(s, JsonAttendee.class);
 
-          if (debug) {
-            debugMsg(att.toString());
+          if (debug()) {
+            debug(att.toString());
           }
           res = doAttendee(request,
                            form, request.present("delete"),

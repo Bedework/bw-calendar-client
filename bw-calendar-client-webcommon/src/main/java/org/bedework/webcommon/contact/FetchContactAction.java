@@ -60,11 +60,11 @@ public class FetchContactAction extends BwAbstractAction {
       contact = cl.getContactByUid(uid);
     }
 
-    if (debug) {
+    if (debug()) {
       if (contact == null) {
-        logIt("No contact with id " + uid);
+        info("No contact with id " + uid);
       } else {
-        logIt("Retrieved contact " + contact.getUid());
+        info("Retrieved contact " + contact.getUid());
       }
     }
 

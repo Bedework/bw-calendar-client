@@ -59,11 +59,11 @@ public class RenderCalendarAction extends BwAbstractAction {
     final Client cl = request.getClient();
     final BwCalendar calendar = cl.getCollection(calPath);
 
-    if (debug) {
+    if (debug()) {
       if (calendar == null) {
-        logIt("No calendar with path " + calPath);
+        info("No calendar with path " + calPath);
       } else {
-        logIt("Retrieved calendar " + calendar.getId());
+        info("Retrieved calendar " + calendar.getId());
 
         final Set<String> cos = form.getCalendarsOpenState();
 

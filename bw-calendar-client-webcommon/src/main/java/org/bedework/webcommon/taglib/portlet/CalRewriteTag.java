@@ -33,7 +33,8 @@
  */
 package org.bedework.webcommon.taglib.portlet;
 
-import org.apache.log4j.Logger;
+import org.bedework.util.logging.Logged;
+
 import org.apache.struts.taglib.html.RewriteTag;
 
 import javax.servlet.jsp.JspException;
@@ -52,9 +53,7 @@ import javax.servlet.jsp.JspException;
  * @author Dave Brondsema
  * @version $Id: RewriteTag.java 2005-10-25 12:31:13Z satish $
  */
-public class CalRewriteTag extends RewriteTag {
-  private transient Logger log;
-
+public class CalRewriteTag extends RewriteTag implements Logged {
   /** Specifically flagged as action url
    */
   protected boolean actionURL = false;
@@ -81,8 +80,6 @@ public class CalRewriteTag extends RewriteTag {
    * @exception JspException if a JSP exception has occurred
    */
   public int doStartTag() throws JspException {
-    //boolean debug = getLogger().isDebugEnabled();
-
     return super.doStartTag();
 
     /* Disable portal support for the time being - class loader errors in wildfly
@@ -94,7 +91,7 @@ public class CalRewriteTag extends RewriteTag {
 
     super.doStartTag();
     String urlStr = bodyContent.getString();
-    if (debug) {
+    if (debug()) {
       trace(bodyContent.getString());
     }
 
@@ -108,7 +105,7 @@ public class CalRewriteTag extends RewriteTag {
       urlType = TagsSupport.calculateURLType(urlStr);
     }
 
-    if (debug) {
+    if (debug()) {
       String type = "unknown";
       if (urlType == null) {
         type = "null";
@@ -119,7 +116,7 @@ public class CalRewriteTag extends RewriteTag {
       } else if (urlType.equals(PortletURLTypes.URLType.RESOURCE)) {
         type = "RESOURCE";
       }
-      trace("urlType = " + type + " UrlStr = " + urlStr);
+      debug("urlType = " + type + " UrlStr = " + urlStr);
     }
 
     urlStr = commonStartTag(urlStr);
@@ -188,16 +185,14 @@ public class CalRewriteTag extends RewriteTag {
    * @exception JspException if a JSP exception has occurred
    * /
   protected String commonStartTag(String urlStr) throws JspException {
-    boolean debug = getLogger().isDebugEnabled();
-
-    if (debug) {
-      trace("UrlStr = " + urlStr);
+    if (debug()) {
+      debug("UrlStr = " + urlStr);
     }
 
     urlStr = TagsSupport.getURL(pageContext, urlStr, urlType);
 
-    if (debug) {
-      trace("UrlStr = " + urlStr);
+    if (debug()) {
+      debug("UrlStr = " + urlStr);
     }
 
     /* remove embedded anchor because calendar xsl stylesheet
@@ -215,8 +210,8 @@ public class CalRewriteTag extends RewriteTag {
     //Generate valid xml markup for transformation
     urlStr = urlStr.replaceAll("&", "&amp;");
 
-    if (debug) {
-      trace("UrlStr = " + urlStr);
+    if (debug()) {
+      debug("UrlStr = " + urlStr);
     }
 
     return urlStr;
@@ -228,15 +223,4 @@ public class CalRewriteTag extends RewriteTag {
   }
 
   */
-  protected void trace(String msg) {
-    getLogger().debug(msg);
-  }
-
-  protected Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
-  }
 }

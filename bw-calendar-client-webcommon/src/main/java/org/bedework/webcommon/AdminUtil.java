@@ -28,9 +28,8 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.util.logging.SLogged;
 import org.bedework.util.struts.Request;
-
-import org.apache.log4j.Logger;
 
 import java.util.Collection;
 
@@ -38,7 +37,10 @@ import java.util.Collection;
  * @author Mike Douglass
  *
  */
-public class AdminUtil implements ForwardDefs {
+public class AdminUtil implements SLogged, ForwardDefs {
+  static {
+    SLogged.setLoggerClass(AdminUtil.class);
+  }
   /** Called just before action.
    *
    * @param request request object
@@ -46,8 +48,6 @@ public class AdminUtil implements ForwardDefs {
    * @throws Throwable on fatal error
    */
   public static int actionSetup(final BwRequest request) throws Throwable {
-    final boolean debug = getLogger().isDebugEnabled();
-
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
@@ -73,16 +73,16 @@ public class AdminUtil implements ForwardDefs {
       form.assignAuthorisedUser(!au.isUnauthorized());
     }
 
-    if (debug) {
-      logIt("form.getGroupSet()=" + cl.getGroupSet());
-      logIt("-------- isSuperUser: " + form.getCurUserSuperUser());
+    if (SLogged.debug()) {
+      SLogged.info("form.getGroupSet()=" + cl.getGroupSet());
+      SLogged.info("-------- isSuperUser: " + form.getCurUserSuperUser());
     }
 
     final int temp = checkGroup(request, true);
 
     if (temp != forwardNoAction) {
-      if (debug) {
-        logIt("form.getGroupSet()=" + cl.getGroupSet());
+      if (SLogged.debug()) {
+        SLogged.info("form.getGroupSet()=" + cl.getGroupSet());
       }
       return temp;
     }
@@ -132,8 +132,8 @@ public class AdminUtil implements ForwardDefs {
 
         final BwAdminGroup adg = (BwAdminGroup)cl.findGroup(reqpar);
         if (adg == null) {
-          if (getLogger().isDebugEnabled()) {
-            logIt("No user admin group with name " + reqpar);
+          if (SLogged.debug()) {
+            SLogged.info("No user admin group with name " + reqpar);
           }
 
           form.assignCalSuites(cl.getContextCalSuites());
@@ -207,12 +207,10 @@ public class AdminUtil implements ForwardDefs {
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
-    final boolean debug = getLogger().isDebugEnabled();
-
     cl.getMembers(adg);
 
-    if (debug) {
-      logIt("Set admin group to " + adg);
+    if (SLogged.debug()) {
+      SLogged.info("Set admin group to " + adg);
     }
 
     cl.setAdminGroupName(adg.getAccount());
@@ -307,41 +305,5 @@ public class AdminUtil implements ForwardDefs {
     }
 
     return null;
-  }
-
-  /**
-   * @param msg the message
-   */
-  public static void logIt(final String msg) {
-    getLogger().info(msg);
-  }
-
-  /**
-   * @return Logger
-   */
-  public static Logger getLogger() {
-    return Logger.getLogger(AdminUtil.class);
-  }
-
-  /** Info message
-   *
-   * @param msg the message
-   */
-  public static void info(final String msg) {
-    getLogger().info(msg);
-  }
-
-  /**
-   * @param msg the message
-   */
-  public void debugMsg(final String msg) {
-    getLogger().debug(msg);
-  }
-
-  /**
-   * @param t Throwable
-   */
-  public void error(final Throwable t) {
-    getLogger().error(this, t);
   }
 }

@@ -31,12 +31,12 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.icalendar.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.logging.Logged;
+import org.bedework.util.misc.ToString;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
-
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -63,9 +63,7 @@ import java.util.Map;
  *
  * @author  Mike Douglass douglm  rpi.edu
  */
-public class TimeView implements Serializable {
-  protected boolean debug;
-
+public class TimeView implements Logged, Serializable {
   private MessageEmit err;
 
   protected IcalTranslator trans;
@@ -236,7 +234,6 @@ public class TimeView implements Serializable {
     this.nextDate = nextDate;
     this.showData = showData;
     this.filter = filter;
-    debug = Logger.getLogger(this.getClass()).isDebugEnabled();
 
     viewStart = getBwDate(firstDay);
     viewEnd = getBwDate(lastDay).getNextDay();
@@ -395,7 +392,7 @@ public class TimeView implements Serializable {
     //String startLocal = startDt.getDtval();
     //String endLocal = endDt.getDtval();
 
-    //if (debug) {
+    //if (debug()) {
     //  debug("Did UTC stuff in " + (System.currentTimeMillis() - millis));
     //}
 
@@ -475,7 +472,7 @@ public class TimeView implements Serializable {
         // Passed the tests.
 
         /*
-        if (debug) {
+        if (debug()) {
           debug("Event (floating=" + floating + ") passed range " +
               start + "(" + startLocal + ")-" +
               end + "(" + endLocal +
@@ -589,9 +586,9 @@ public class TimeView implements Serializable {
       gtpi.todaysMonth = new MyCalendarVO(   // XXX Expensive??
                    new Date(System.currentTimeMillis())).getTwoDigitMonth();
 
-      if (debug) {
-        debugMsg("getFirstDayOfWeek() = " + getFirstDayOfWeek());
-        debugMsg("gtpi.first.getFirstDayOfWeek() = " +
+      if (debug()) {
+        debug("getFirstDayOfWeek() = " + getFirstDayOfWeek());
+        debug("gtpi.first.getFirstDayOfWeek() = " +
                  getCalInfo().getFirstDayOfWeek());
       }
 
@@ -657,7 +654,7 @@ public class TimeView implements Serializable {
 
       return tvdis;
     } catch (Throwable t) {
-      Logger.getLogger(this.getClass()).error("getTimePeriodInfo", t);
+      error("getTimePeriodInfo", t);
       //XXX We need an error object
 
       return null;
@@ -770,8 +767,8 @@ public class TimeView implements Serializable {
     int dayOfWeek = gtpi.currentDay.getDayOfWeek();
     int dayNum = getFirstDayOfWeek();
 
-    if (debug) {
-      debugMsg("dayOfWeek=" + dayOfWeek + " dayNum = " + dayNum);
+    if (debug()) {
+      debug("dayOfWeek=" + dayOfWeek + " dayNum = " + dayNum);
     }
 
     while (dayNum != dayOfWeek) {
@@ -781,8 +778,8 @@ public class TimeView implements Serializable {
       days.add(tvdi);
       dayNum++;
 
-      if (debug) {
-        debugMsg("dayNum = " + dayNum);
+      if (debug()) {
+        debug("dayNum = " + dayNum);
       }
 
       if (dayNum > 7) {
@@ -857,26 +854,15 @@ public class TimeView implements Serializable {
                     days.size()]);
   }
 
-  /**
-   * @param msg
-   */
-  public void debugMsg(final String msg) {
-    Logger.getLogger(this.getClass()).debug(msg);
-  }
-
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer();
+    final ToString ts = new ToString(this);
 
-    sb.append("TimeView{");
-    sb.append(periodName);
-    sb.append(", firstDay=");
-    sb.append(String.valueOf(firstDay));
-    sb.append(", lastDay=");
-    sb.append(String.valueOf(lastDay));
-    sb.append("}");
+    ts.append("", periodName);
+    ts.append("firstDay", String.valueOf(firstDay));
+    ts.append("lastDay", String.valueOf(lastDay));
 
-    return sb.toString();
+    return ts.toString();
   }
 }
 

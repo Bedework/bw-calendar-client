@@ -22,8 +22,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
-
-import org.apache.log4j.Logger;
+import org.bedework.util.logging.Logged;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -35,11 +34,7 @@ import java.util.Map;
  * @author Mike Douglass   douglm@rpi.edu
  *  @version 1.0
  */
-public class NotificationInfo implements Serializable {
-  protected boolean debug = false;
-
-  private transient Logger log;
-
+public class NotificationInfo implements Logged, Serializable {
   private long lastRefresh;
 
   private final long minRefresh = 15 * 1000; // 15 seconds
@@ -55,7 +50,6 @@ public class NotificationInfo implements Serializable {
    * @throws CalFacadeException
    */
   public NotificationInfo() throws CalFacadeException {
-    debug = getLogger().isDebugEnabled();
   }
 
   /** Refresh the information
@@ -126,7 +120,7 @@ public class NotificationInfo implements Serializable {
         final NotifyResource ri = new NotifyResource(cl, r);
         notes.put(rname, ri);
       } catch (final Throwable t) {
-        if (debug) {
+        if (debug()) {
           error(t);
         }
 
@@ -163,31 +157,5 @@ public class NotificationInfo implements Serializable {
    */
   public Collection<NotifyResource> getNotifications() {
     return notes.values();
-  }
-
-  /** Get a logger for messages
-   *
-   * @return Logger
-   */
-  private Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
-  }
-
-  /**
-   * @param msg the message
-   */
-  private void error(final String msg) {
-    getLogger().error(msg);
-  }
-
-  /**
-   * @param t - the exception
-   */
-  private void error(final Throwable t) {
-    getLogger().error(t);
   }
 }

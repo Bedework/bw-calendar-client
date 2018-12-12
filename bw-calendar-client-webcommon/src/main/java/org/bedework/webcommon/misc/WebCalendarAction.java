@@ -142,8 +142,8 @@ public class WebCalendarAction extends BwAbstractAction {
       BwDateTime edt = BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(end.getTime()),
                                                   true, false, null);
 
-      if (debug) {
-        debugMsg("getEvents for start = " + sdt +
+      if (debug()) {
+        debug("getEvents for start = " + sdt +
                  " end = " + edt);
       }
 

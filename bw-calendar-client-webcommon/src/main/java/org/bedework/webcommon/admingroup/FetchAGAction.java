@@ -59,11 +59,11 @@ public class FetchAGAction extends BwAbstractAction {
 
     BwAdminGroup ag = cl.findAdminGroup(account);
 
-    if (debug) {
+    if (debug()) {
       if (ag == null) {
-        logIt("No group with name " + account);
+        info("No group with name " + account);
       } else {
-        logIt("Retrieved admin group " + ag.getAccount());
+        info("Retrieved admin group " + ag.getAccount());
       }
     }
 

@@ -656,16 +656,6 @@ public class TimeDateComponents implements Serializable {
     }
   }
 
-  /* Get a logger for messages
-   * /
-  private Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
-  }*/
-
   /* ====================================================================
    *                        Object methods
    * ==================================================================== */

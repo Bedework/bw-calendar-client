@@ -68,11 +68,11 @@ public class AddSubLocationAction extends BwAbstractAction {
       location = cl.getLocationByUid(uid);
     }
 
-    if (debug) {
+    if (debug()) {
       if (location == null) {
-        logIt("No location with id " + uid);
+        info("No location with id " + uid);
       } else {
-        logIt("Retrieved location " + location.getUid());
+        info("Retrieved location " + location.getUid());
       }
     }
 
@@ -123,7 +123,7 @@ public class AddSubLocationAction extends BwAbstractAction {
     try {
       cl.addLocation(newloc);
     } catch (final Throwable t) {
-      if (debug) {
+      if (debug()) {
         error(t);
       }
       resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -56,11 +56,11 @@ public class FetchCategoryAction extends BwAbstractAction {
 
     BwCategory category = request.getClient().getCategoryByUid(catUid);
 
-    if (debug) {
+    if (debug()) {
       if (category == null) {
-        logIt("No category with uid " + catUid);
+        info("No category with uid " + catUid);
       } else {
-        logIt("Retrieved category " + catUid);
+        info("Retrieved category " + catUid);
       }
     }
 

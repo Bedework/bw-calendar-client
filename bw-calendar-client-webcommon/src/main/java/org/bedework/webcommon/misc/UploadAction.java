@@ -228,7 +228,7 @@ public class UploadAction extends BwAbstractAction {
         }
       }
     } catch (CalFacadeException cfe) {
-      if (debug) {
+      if (debug()) {
         cfe.printStackTrace();
       }
       form.getErr().emit(cfe.getMessage(), cfe.getExtra());

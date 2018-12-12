@@ -153,7 +153,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (status != HttpServletResponse.SC_OK) {
       request.getResponse().setStatus(status);
-      getLogger().error("Callback.in status=" + status);
+      error("Callback.in status=" + status);
       invalidateSession(request);
       return forwards[forwardError];
     }
@@ -169,8 +169,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    if (debug) {
-      debugMsg("About to get state");
+    if (debug()) {
+      debug("About to get state");
     }
 
     final BwSession bsess = getState(request, form, messages, adminUserId);
@@ -180,8 +180,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardError];
     }
 
-    if (debug) {
-      debugMsg("About to get state");
+    if (debug()) {
+      debug("About to get state");
     }
 
     form.setSession(bsess);
@@ -253,7 +253,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (form.getNewSession()) {
-      if (debug && !configTraced) {
+      if (debug() && !configTraced) {
         traceConfig(request);
         configTraced = true;
       }
@@ -272,8 +272,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       bsess.embedFilters(bwreq);
 
-      if (debug) {
-        debugMsg("Filters embedded");
+      if (debug()) {
+        debug("Filters embedded");
       }
 
       if (!cl.getPublicAdmin()) {
@@ -286,15 +286,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    /*if (debug) {
+    /*if (debug()) {
       BwFilter filter = bwreq.getFilter(debug);
       if (filter != null) {
         debug(filter.toString());
       }
     }*/
 
-    if (debug) {
-      debugMsg("About to prepare render");
+    if (debug()) {
+      debug("About to prepare render");
     }
 
     bsess.prepareRender(bwreq);
@@ -305,8 +305,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                    mstate.getViewType());
     }
 
-    if (debug) {
-      debugMsg("current change token: " +
+    if (debug()) {
+      debug("current change token: " +
                        bwreq.getSessionAttr(BwSession.changeTokenAttr));
     }
 
@@ -466,7 +466,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                          refreshInt, refreshAction, form);
     }
 
-    //if (debug) {
+    //if (debug()) {
     //  log.debug("curTimeView=" + form.getCurTimeView());
     //}
 
@@ -1121,8 +1121,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
                                     null, null, false);
-    if (debug) {
-      debugMsg(sr.toString());
+    if (debug()) {
+      debug(sr.toString());
     }
 
     if (sr.recipientResults != null) {
@@ -1213,8 +1213,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         request.getForm().getErr().emit(ClientError.unknownEvent,
                                         /*eid*/ekey.getName());
         return null;
-      } else if (debug) {
-        debugMsg("Get event found " + ev.getEvent());
+      } else if (debug()) {
+        debug("Get event found " + ev.getEvent());
       }
 
       return ev;
@@ -1234,8 +1234,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
     
     if (guid != null) {
-      if (debug) {
-        debugMsg("Get event by guid");
+      if (debug()) {
+        debug("Get event by guid");
       }
       String rid = request.getReqPar("recurrenceId");
       // DORECUR is this right?
@@ -1252,8 +1252,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       final Collection<EventInfo> evs =
               cl.getEventByUid(cal.getPath(),
                                guid, rid, rrm);
-      if (debug) {
-        debugMsg("Get event by guid found " + evs.size());
+      if (debug()) {
+        debug("Get event by guid found " + evs.size());
       }
       if (evs.size() == 1) {
         ev = evs.iterator().next();
@@ -1262,8 +1262,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         warn("Multiple result from getEvent");
       }
     } else if (eventName != null) {
-      if (debug) {
-        debugMsg("Get event by name");
+      if (debug()) {
+        debug("Get event by name");
       }
 
       ev = cl.getEvent(cal.getPath(), eventName,
@@ -1274,8 +1274,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       request.getForm().getErr().emit(ClientError.unknownEvent, /*eid*/
                                       guid);
       return null;
-    } else if (debug) {
-      debugMsg("Get event found " + ev.getEvent());
+    } else if (debug()) {
+      debug("Get event found " + ev.getEvent());
     }
 
     return ev;
@@ -1459,7 +1459,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       } catch (final Throwable t) {
         /* Probably an image type we can't process or maybe not an image at all
          */
-        if (debug) {
+        if (debug()) {
           error(t);
         }
 
@@ -1510,7 +1510,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       pi.OK = true;
     } catch (final Throwable t) {
-      if (debug) {
+      if (debug()) {
         error(t);
         request.getErr().emit(t);
       }
@@ -1557,11 +1557,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (cb == null) {
       if (form.getDebug()) {
-        debugMsg("No cb object for logout");
+        debug("No cb object for logout");
       }
     } else {
       if (form.getDebug()) {
-        debugMsg("cb object found for logout");
+        debug("cb object found for logout");
       }
       try {
         cb.out(request);
@@ -1598,14 +1598,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             cb.out();
           }
         } catch (Throwable t) {
-          getLogger().error("Callback exception: ", t);
+          error("Callback exception: ", t);
           /* Probably no point in throwing it. We're leaving anyway. * /
         } finally {
           if (cb != null) {
             try {
               cb.close();
             } catch (Throwable t) {
-              getLogger().error("Callback exception: ", t);
+              error("Callback exception: ", t);
               /* Probably no point in throwing it. We're leaving anyway. * /
             }
           }
@@ -1657,8 +1657,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      */
     boolean newView = false;
 
-    if (debug) {
-      debugMsg("ViewType=" + newViewType);
+    if (debug()) {
+      debug("ViewType=" + newViewType);
     }
 
     MyCalendarVO dt;
@@ -1676,8 +1676,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         dt = new MyCalendarVO(jdt);
         newView = true;
       } else {
-        if (debug) {
-          debugMsg("No date supplied: go with current date");
+        if (debug()) {
+          debug("No date supplied: go with current date");
         }
 
         // Just stay here
@@ -1688,8 +1688,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
       }
     } else {
-      if (debug) {
-        debugMsg("Date=" + date + ": go with that");
+      if (debug()) {
+        debug("Date=" + date + ": go with that");
       }
 
       Date jdt = DateTimeUtil.fromISODate(date);
@@ -1731,8 +1731,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       if (checkDateInRange(request, year)) {
         final String vsdate = viewStart.getDateTime().getDtval().substring(0, 8);
-        if (debug) {
-          debugMsg("vsdate=" + vsdate);
+        if (debug()) {
+          debug("vsdate=" + vsdate);
         }
 
         if (!(vsdate.equals(request.getSess().getCurTimeView(request).getFirstDayFmt().getDateDigits()))) {
@@ -1779,8 +1779,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     Date jdt = DateTimeUtil.fromISODate(date);
     MyCalendarVO dt = new MyCalendarVO(jdt);
 
-    if (debug) {
-      debugMsg("calvo dt = " + dt);
+    if (debug()) {
+      debug("calvo dt = " + dt);
     }
 
     if (!checkDateInRange(request, dt.getYear())) {
@@ -1834,16 +1834,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       final String appName = getAppName(sess);
 
       if (s != null) {
-        if (debug) {
-          debugMsg("getState-- obtainedfrom session");
-          debugMsg("getState-- timeout interval = " +
+        if (debug()) {
+          debug("getState-- obtainedfrom session");
+          debug("getState-- timeout interval = " +
                            sess.getMaxInactiveInterval());
         }
 
         form.assignNewSession(false);
       } else {
-        if (debug) {
-          debugMsg("getState-- get new object");
+        if (debug()) {
+          debug("getState-- get new object");
         }
 
         form.assignNewSession(true);
@@ -1871,7 +1871,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
             if (timeout <= refInt) {
               // An extra minute should do it.
-              debugMsg("@+@+@+@+@+ set timeout to " + (refInt + 60));
+              debug("@+@+@+@+@+ set timeout to " + (refInt + 60));
               sess.setMaxInactiveInterval(refInt + 60);
             }
           }
@@ -1972,11 +1972,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       
       form.setCalSuiteName(calSuiteName);
 
-      if (debug) {
+      if (debug()) {
         if (cs != null) {
-          debugOut("Found calSuite " + cs);
+          debug("Found calSuite " + cs);
         } else {
-          debugOut("No calsuite found");
+          debug("No calsuite found");
         }
       }
     } else {
@@ -2031,15 +2031,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
 
         /* Already there and already opened */
-        if (debug) {
-          debugMsg("Client interface -- Obtained from session for user " +
+        if (debug()) {
+          debug("Client interface -- Obtained from session for user " +
                            client.getCurrentPrincipalHref());
         }
 
         if (reinitClient) {
           // We did a module close will need to reclaim - always public admin
-          if (debug) {
-            debugMsg("Client-- reinit for user " + user);
+          if (debug()) {
+            debug("Client-- reinit for user " + user);
           }
 
           form.flushModules(request.getModuleName());
@@ -2054,8 +2054,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           mstate.setRefresh(true);
         }
       } else {
-        if (debug) {
-          debugMsg("Client-- getResource new object for user " + user);
+        if (debug()) {
+          debug("Client-- getResource new object for user " + user);
         }
 
         if (guestMode) {
@@ -2112,8 +2112,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       hsess.setAttribute(BwCallback.cbAttrName, cb);
     }
 
-    if (debug) {
-      debugMsg("checkSvci-- set req in cb - form action path = " +
+    if (debug()) {
+      debug("checkSvci-- set req in cb - form action path = " +
                        request.getActionPath() +
                        " conv-type = " + request.getConversationType());
     }

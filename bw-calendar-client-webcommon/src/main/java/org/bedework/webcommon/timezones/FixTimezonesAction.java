@@ -60,7 +60,7 @@ public class FixTimezonesAction extends BwAbstractAction {
 
     form.setUpdateFromTimeZonesInfo(info);
 
-    if (debug) {
+    if (debug()) {
       for (UnknownTimezoneInfo uti: info.getUnknownTzids()) {
         debug(uti.toString());
       }

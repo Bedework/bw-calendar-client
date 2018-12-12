@@ -33,7 +33,6 @@
  */
 package org.bedework.webcommon.taglib.portlet;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.taglib.html.LinkTag;
 
 import javax.servlet.ServletRequest;
@@ -49,8 +48,6 @@ import javax.servlet.jsp.JspException;
  * @version $Id: RewriteTag.java 2005-10-25 12:31:13Z satish $
  */
 public class CalLinkTag extends LinkTag {
-  private transient Logger log;
-
   /** Indicates which type of a url must be generated: action, render or resource.
    * <p>If not specified, the type will be determined by
    * {@link PortletURLTypes#getType(String)}</p>.
@@ -65,8 +62,6 @@ public class CalLinkTag extends LinkTag {
    * @exception JspException if a JSP exception has occurred
    * /
   protected String calculateURL() throws JspException {
-    boolean debug = getLogger().isDebugEnabled();
-
     String urlStr = super.calculateURL();
 
     if (!PortletServlet.isPortletRequest(pageContext.getRequest())) {
@@ -79,8 +74,8 @@ public class CalLinkTag extends LinkTag {
 
       urlType = TagsSupport.calculateURLType(urlStr);
 
-      if (debug) {
-        trace("UrlStr = " + urlStr);
+      if (debug()) {
+        debug("UrlStr = " + urlStr);
       }
 
       /* Drop the context
@@ -90,14 +85,14 @@ public class CalLinkTag extends LinkTag {
         urlStr = urlStr.substring(pos);
       }
 
-      if (debug) {
-        trace("UrlStr = " + urlStr);
+      if (debug()) {
+        debug("UrlStr = " + urlStr);
       }
 
       urlStr = TagsSupport.getURL(pageContext, urlStr, urlType);
 
-      if (debug) {
-        trace("UrlStr = " + urlStr);
+      if (debug()) {
+        debug("UrlStr = " + urlStr);
       }
 
       /* remove embedded anchor because calendar xsl stylesheet
@@ -120,8 +115,8 @@ public class CalLinkTag extends LinkTag {
       //Generate valid xml markup for transformation
       urlStr = urlStr.replaceAll("&", "&amp;");
 
-      if (debug) {
-        trace("UrlStr = " + urlStr);
+      if (debug()) {
+        debug("UrlStr = " + urlStr);
       }
     } catch (URISyntaxException use) {
       throw new JspException(use);
@@ -133,18 +128,6 @@ public class CalLinkTag extends LinkTag {
   public void release() {
     super.release();
     urlType = null;
-  }
-
-  private void trace(String msg) {
-    getLogger().debug(msg);
-  }
-
-  private Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
   }
   */
 }

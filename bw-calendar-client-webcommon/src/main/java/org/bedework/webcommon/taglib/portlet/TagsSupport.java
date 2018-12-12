@@ -150,13 +150,13 @@ class TagsSupport {
     Logger log = Logger.getLogger(TagsSupport.class);
     boolean debug = log.isDebugEnabled();
 
-    if (debug) {
+    if (debug()) {
       log.debug("url = " + url);
     }
 
     url = getContextRelativeURL(pageContext, url, false);
 
-    if (debug) {
+    if (debug()) {
       log.debug("url = " + url);
     }
 
@@ -173,7 +173,7 @@ class TagsSupport {
       StrutsPortletConfig strutsPortletConfig = (StrutsPortletConfig)pageContext.getAttribute(StrutsPortlet.STRUTS_PORTLET_CONFIG,PageContext.APPLICATION_SCOPE);
       type = strutsPortletConfig.getPortletURLTypes().getType(urlStr);
     }
-    if (debug) {
+    if (debug()) {
       log.debug("urlType = " + type + " url = " + url);
     }
 

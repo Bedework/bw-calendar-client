@@ -197,7 +197,7 @@ public class AdminClientImpl extends ClientImpl {
                     prefs.getCategoryPrefs().getPreferred().size() +
                     prefs.getContactPrefs().getPreferred().size() +
                     prefs.getLocationPrefs().getPreferred().size();
-    if (debug) {
+    if (debug()) {
       debug("The size was " + totalSize);
     }
 

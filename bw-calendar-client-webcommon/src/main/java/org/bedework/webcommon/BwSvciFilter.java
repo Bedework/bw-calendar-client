@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon;
 
-import org.apache.log4j.Logger;
+import org.bedework.util.logging.Logged;
 
 import java.io.IOException;
 
@@ -43,17 +43,11 @@ import javax.servlet.http.HttpSession;
  *
  * @author Mike Douglass douglm rpi.edu
  */
-public class BwSvciFilter implements Filter {
+public class BwSvciFilter implements Filter, Logged {
   protected ServletContext ctx;
-
-  protected boolean debug = false;
-
-  private transient Logger log;
 
   public void init(final FilterConfig cnfg) throws ServletException {
     ctx = cnfg.getServletContext();
-
-    debug = getLogger().isDebugEnabled();
   }
 
   public void doFilter(final ServletRequest req,
@@ -75,7 +69,7 @@ public class BwSvciFilter implements Filter {
         int status = cb.in();
         if (status != HttpServletResponse.SC_OK) {
           hresp.setStatus(status);
-          getLogger().error("Callback.in status=" + status);
+          error("Callback.in status=" + status);
           return;
         }
       }
@@ -89,12 +83,12 @@ public class BwSvciFilter implements Filter {
       try {
         chain.doFilter(req, resp);
       } catch (Throwable dft) {
-        getLogger().error("Exception in filter: ", dft);
+        error("Exception in filter: ", dft);
         thr = dft;
         try {
           cb.error(hreq, hresp, dft);
         } catch (Throwable t1) {
-          getLogger().error("Callback exception: ", t1);
+          error("Callback exception: ", t1);
         }
       }
 
@@ -103,12 +97,12 @@ public class BwSvciFilter implements Filter {
         cb.out(hreq);
       }
     } catch (Throwable t) {
-      getLogger().error("Callback exception: ", t);
+      error("Callback exception: ", t);
       thr = t;
       try {
         cb.error(hreq, hresp, t);
       } catch (Throwable t1) {
-        getLogger().error("Callback exception: ", t1);
+        error("Callback exception: ", t1);
       }
     } finally {
       try {
@@ -118,7 +112,7 @@ public class BwSvciFilter implements Filter {
           cb.close(hreq, false);
         }
       } catch (Throwable t) {
-        getLogger().error("Callback exception: ", t);
+        error("Callback exception: ", t);
         thr = t;
       }
 
@@ -137,42 +131,30 @@ public class BwSvciFilter implements Filter {
   private BwCallback getCb(final HttpSession sess,
                               final String tracer) throws Throwable {
     if (sess == null) {
-      if (debug) {
-        getLogger().debug(tracer + " no session object");
+      if (debug()) {
+        debug(tracer + " no session object");
       }
       return null;
     }
 
     try {
       BwCallback cb = (BwCallback)sess.getAttribute(BwCallback.cbAttrName);
-      if (debug) {
+      if (debug()) {
         if (cb != null) {
-          getLogger().debug(tracer + " Obtained BwCallback object");
+          debug(tracer + " Obtained BwCallback object");
         } else {
-          getLogger().debug(tracer + " no BwCallback available");
+          debug(tracer + " no BwCallback available");
         }
       }
 
       return cb;
     } catch (IllegalStateException ise) {
       // Invalidated session - assume logged out
-      if (debug) {
-        getLogger().debug(tracer + " Invalidated session - assume logged out");
+      if (debug()) {
+        debug(tracer + " Invalidated session - assume logged out");
       }
       return null;
     }
-  }
-
-  /** Get a logger for messages
-   *
-   * @return Logger
-   */
-  public Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
   }
 }
 

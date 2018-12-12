@@ -56,6 +56,7 @@ import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.icalendar.RecurRuleComponents;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.TimeZoneName;
@@ -81,7 +82,8 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author  Mike Douglass     douglm - rpi.edu
  */
-public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
+public class BwActionFormBase extends UtilActionForm
+        implements Logged, BedeworkDefs {
   private Map<String, BwModule> modules = new ConcurrentHashMap<>();
 
   private DateTimeFormatter today;
@@ -2856,8 +2858,8 @@ public class BwActionFormBase extends UtilActionForm implements BedeworkDefs {
   public DurationBean getEventDuration() {
 //    return getEventDates().getDuration();
     DurationBean db = getEventDates().getDuration();
-    if (debug) {
-      debugMsg("Event duration=" + db);
+    if (debug()) {
+      debug("Event duration=" + db);
     }
 
     return db;

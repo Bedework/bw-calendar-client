@@ -174,8 +174,8 @@ public class UpdateAGAction extends BwAbstractAction {
           return forwardRetry;
         }
 
-        if (debug) {
-          debugMsg("About to update " + updgrp);
+        if (debug()) {
+          debug("About to update " + updgrp);
         }
         cl.updateAdminGroup(updgrp);
       }

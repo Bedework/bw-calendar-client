@@ -127,8 +127,8 @@ public class FreeBusyPublishAction extends BwAbstractAction {
     }
 
     try {
-      if (debug) {
-        debugMsg("getFreeBusy for start =  " + tr.getStart()+
+      if (debug()) {
+        debug("getFreeBusy for start =  " + tr.getStart()+
                  " end = " + tr.getEnd());
       }
 

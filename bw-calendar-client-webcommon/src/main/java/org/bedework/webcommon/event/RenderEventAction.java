@@ -108,8 +108,8 @@ public class RenderEventAction extends EventActionBase {
       /* Get the date in the current user timezone */
       final String evst = DateTimeUtil.isoDate(evdt).substring(0, 8);
 
-      if (debug) {
-        debugMsg("******* evdt=" + evdt + " evst=" + evst +
+      if (debug()) {
+        debug("******* evdt=" + evdt + " evst=" + evst +
                  " default tz=" + Timezones.getThreadDefaultTzid());
       }
 

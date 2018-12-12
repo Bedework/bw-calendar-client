@@ -57,8 +57,8 @@ public class UpdateAuthAction extends BwAbstractAction {
 
     au.setUsertype(form.getEditAuthUserType());
 
-    if (debug) {
-      debugMsg("Update authUser " + au);
+    if (debug()) {
+      debug("Update authUser " + au);
     }
 
     cl.updateAuthUser(au);

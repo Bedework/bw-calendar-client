@@ -19,7 +19,7 @@
 
 package org.bedework.appcommon;
 
-import org.bedework.access.Acl;
+import org.bedework.access.CurrentAccess;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
@@ -27,9 +27,9 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.icalendar.EventTimeZonesRegistry;
 import org.bedework.icalendar.IcalTranslator;
+import org.bedework.util.logging.Logged;
 
 import net.fortuna.ical4j.model.TimeZoneRegistry;
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 
@@ -38,7 +38,7 @@ import java.io.Serializable;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class EventFormatter extends EventTimeZonesRegistry
-  implements TimeZoneRegistry, Serializable {
+  implements Logged, TimeZoneRegistry, Serializable {
   /** The event
    */
   private EventInfo eventInfo;
@@ -68,7 +68,7 @@ public class EventFormatter extends EventTimeZonesRegistry
     this.eventInfo = eventInfo;
 
     try {
-      Acl.CurrentAccess ca = eventInfo.getCurrentAccess();
+      CurrentAccess ca = eventInfo.getCurrentAccess();
 
       if (ca == null) {
         warn("No current access for " + eventInfo.getEvent().getUid());
@@ -176,18 +176,5 @@ public class EventFormatter extends EventTimeZonesRegistry
   public String getXmlAccess() {
     return xmlAccess;
   }
-
-  /* ===================================================================
-                      Private methods
-     ==================================================================== */
-
-  private void error(final Throwable t) {
-    Logger.getLogger(this.getClass()).error(this, t);
-  }
-
-  private void warn(final String s) {
-    Logger.getLogger(this.getClass()).warn(s);
-  }
-
 }
 

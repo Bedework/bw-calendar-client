@@ -83,7 +83,7 @@ import org.bedework.icalendar.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
 import org.bedework.sysevents.events.SysEventBase;
-import org.bedework.util.misc.Logged;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
 
@@ -113,7 +113,7 @@ import static org.bedework.calsvci.CalSuitesI.ResourceClass;
 /**
  * User: douglm Date: 6/27/13 Time: 2:03
  */
-public class ROClientImpl extends Logged implements Client {
+public class ROClientImpl implements Logged, Client {
   protected String id;
 
   protected CalSvcIPars pars;
@@ -197,8 +197,7 @@ public class ROClientImpl extends Logged implements Client {
     this.id = id;
     cstate = new ClientState(this);
 
-    debug = getLogger().isDebugEnabled();
-    if (debug) {
+    if (debug()) {
       mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
     }
 
@@ -752,7 +751,7 @@ public class ROClientImpl extends Logged implements Client {
       /* See if it's acceptable */
       final Locale l = BwLocale.matchLocales(sysLocales, locale);
       if (l != null) {
-        if (debug) {
+        if (debug()) {
           debug("Setting locale to " + l);
         }
         return l;
@@ -794,7 +793,7 @@ public class ROClientImpl extends Logged implements Client {
       final Locale l = BwLocale.matchLocales(sysLocales,
                                              makeLocale(preferredLocaleStr));
       if (l != null) {
-        if (debug) {
+        if (debug()) {
           debug("Setting locale to " + l);
         }
         return l;
@@ -805,7 +804,7 @@ public class ROClientImpl extends Logged implements Client {
       final Locale l = BwLocale.matchLocales(sysLocales,
                                              makeLocale(lastLocaleStr));
       if (l != null) {
-        if (debug) {
+        if (debug()) {
           debug("Setting locale to " + l);
         }
         return l;
@@ -820,7 +819,7 @@ public class ROClientImpl extends Logged implements Client {
       for (final Locale loc: locales) {
         final Locale l = BwLocale.matchLocales(sysLocales, loc);
         if (l != null) {
-          if (debug) {
+          if (debug()) {
             debug("Setting locale to " + l);
           }
           return l;
@@ -832,7 +831,7 @@ public class ROClientImpl extends Logged implements Client {
      * there's always at least one in the collection */
     final Locale l = sysLocales.iterator().next();
 
-    if (debug) {
+    if (debug()) {
       debug("Setting locale to " + l);
     }
     return l;
@@ -2263,7 +2262,7 @@ public class ROClientImpl extends Logged implements Client {
 
   protected void checkUpdate() {
     /*
-    if (debug) {
+    if (debug()) {
       debug("checkUpdate: \n" +
                        " req=" + requestEnd + "\n" +
                        "last=" + lastUpdate + "\n" +

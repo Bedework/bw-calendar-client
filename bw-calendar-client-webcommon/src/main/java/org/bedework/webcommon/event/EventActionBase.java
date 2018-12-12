@@ -122,11 +122,11 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     BwLocation loc = ev.getLocation();
 
-    if (debug) {
+    if (debug()) {
       if (loc == null) {
-        debugMsg("Set event with null location");
+        debug("Set event with null location");
       } else {
-        debugMsg("Set event with location " + loc);
+        debug("Set event with location " + loc);
       }
     }
 
@@ -325,8 +325,8 @@ public abstract class EventActionBase extends BwAbstractAction {
     String key = null;
 
     if (ekey.getGuid() != null) {
-      if (debug) {
-        debugMsg("Get event by guid");
+      if (debug()) {
+        debug("Get event by guid");
       }
       key = ekey.getGuid();
       String rid = ekey.getRecurrenceId();
@@ -343,8 +343,8 @@ public abstract class EventActionBase extends BwAbstractAction {
               cl.getEventByUid(ekey.getColPath(),
                                ekey.getGuid(),
                                rid, rrm);
-      if (debug) {
-        debugMsg("Get event by guid found " + evs.size());
+      if (debug()) {
+        debug("Get event by guid found " + evs.size());
       }
 
       if (evs.size() == 1) {
@@ -353,8 +353,8 @@ public abstract class EventActionBase extends BwAbstractAction {
         // XXX this needs dealing with
       }
     } else if (ekey.getName() != null) {
-      if (debug) {
-        debugMsg("Get event by name");
+      if (debug()) {
+        debug("Get event by name");
       }
       key = ekey.getName();
 
@@ -366,8 +366,8 @@ public abstract class EventActionBase extends BwAbstractAction {
     if (ev == null) {
       request.getErr().emit(ClientError.unknownEvent, key);
       return null;
-    } else if (debug) {
-      debugMsg("Get event found " + ev.getEvent());
+    } else if (debug()) {
+      debug("Get event found " + ev.getEvent());
     }
 
     return ev;
@@ -418,8 +418,8 @@ public abstract class EventActionBase extends BwAbstractAction {
               cl.getEventByUid(cal.getPath(),
                                uid, rid,
                                RecurringRetrievalMode.overrides);
-      if (debug) {
-        debugMsg("Get event by guid found " + evs.size());
+      if (debug()) {
+        debug("Get event by guid found " + evs.size());
       }
 
       if (evs.size() == 1) {
@@ -432,8 +432,8 @@ public abstract class EventActionBase extends BwAbstractAction {
     if (ei == null) {
       request.getErr().emit(ClientError.unknownEvent, key);
       return null;
-    } else if (debug) {
-      debugMsg("Fetch event found " + ei.getEvent());
+    } else if (debug()) {
+      debug("Fetch event found " + ei.getEvent());
     }
 
     return ei;

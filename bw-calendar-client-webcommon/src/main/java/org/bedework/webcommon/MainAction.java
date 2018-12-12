@@ -40,8 +40,8 @@ public class MainAction extends BwAbstractAction {
     final boolean gridMode = !listMode &&
             Client.gridViewMode.equals(cl.getViewMode());
 
-    if (debug) {
-      debugMsg("Client mode is " + cl.getViewMode());
+    if (debug()) {
+      debug("Client mode is " + cl.getViewMode());
     }
 
     /* If not in list mode set up later */

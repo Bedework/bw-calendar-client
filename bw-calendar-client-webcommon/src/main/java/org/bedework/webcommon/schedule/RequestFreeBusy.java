@@ -135,7 +135,7 @@ public class RequestFreeBusy extends BwAbstractAction {
 
       outputJson(resp, sr);
     } catch (Throwable t) {
-      if (debug) {
+      if (debug()) {
         error(t);
       }
       request.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,

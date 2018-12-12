@@ -20,8 +20,7 @@ package org.bedework.appcommon.client;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.CalFacadeException;
-
-import org.apache.log4j.Logger;
+import org.bedework.util.logging.Logged;
 
 import java.io.Serializable;
 
@@ -31,11 +30,7 @@ import java.io.Serializable;
  * @author Mike Douglass
  *
  */
-public class ClientState implements Serializable {
-  private transient Logger log;
-
-  private boolean debug;
-
+public class ClientState implements Logged, Serializable {
   private SearchParams searchParams;
 
   private String currentDate;
@@ -47,7 +42,6 @@ public class ClientState implements Serializable {
    */
   public ClientState(final Client cl) {
     this.cl = cl;
-    debug = getLogger().isDebugEnabled();
   }
 
   /* ====================================================================
@@ -81,18 +75,4 @@ public class ClientState implements Serializable {
   /* ====================================================================
    *                   Private methods
    * ==================================================================== */
-
-  /* Get a logger for messages
-   */
-  private Logger getLogger() {
-    if (log == null) {
-      log = Logger.getLogger(this.getClass());
-    }
-
-    return log;
-  }
-
-  protected void trace(final String msg) {
-    getLogger().debug("trace: " + msg);
-  }
 }

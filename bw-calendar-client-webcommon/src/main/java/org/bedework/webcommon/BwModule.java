@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.client.Client;
-import org.bedework.util.misc.Logged;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
 
@@ -39,7 +39,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author Mike Douglass   douglm  rpi.edu
  */
-public class BwModule extends Logged implements Serializable {
+public class BwModule implements Logged, Serializable {
   /** */
   public static final String defaultModuleName = "default";
 
@@ -157,7 +157,7 @@ public class BwModule extends Logged implements Serializable {
   public synchronized boolean claim() {
     int attempts = 0;
     while (getInuse()) {
-      if (debug) {
+      if (debug()) {
         debug("Module " + getModuleName() +
                       " in use by " + getWaiters() +
                       " Timestamp: " + whenClaimed);

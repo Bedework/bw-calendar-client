@@ -79,7 +79,7 @@ public class SubscribeAction extends BwAbstractAction {
       }
     } catch (final CalFacadeException cfe) {
       cl.rollback();
-      if (debug) {
+      if (debug()) {
         error(cfe);
       }
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

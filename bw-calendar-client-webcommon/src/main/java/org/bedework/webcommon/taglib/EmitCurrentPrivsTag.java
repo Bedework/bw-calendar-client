@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.bedework.access.Acl.CurrentAccess;
+import org.bedework.access.CurrentAccess;
 import org.bedework.appcommon.AccessXmlUtil;
 
 import javax.servlet.jsp.JspTagException;

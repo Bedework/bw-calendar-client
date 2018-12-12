@@ -58,11 +58,11 @@ public class FetchLocationAction extends BwAbstractAction {
       location = cl.getLocationByUid(uid);
     }
 
-    if (debug) {
+    if (debug()) {
       if (location == null) {
-        logIt("No location with id " + uid);
+        info("No location with id " + uid);
       } else {
-        logIt("Retrieved location " + location.getUid());
+        info("Retrieved location " + location.getUid());
       }
     }
 

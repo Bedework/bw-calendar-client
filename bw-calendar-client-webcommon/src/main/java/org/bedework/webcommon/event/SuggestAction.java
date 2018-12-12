@@ -146,16 +146,16 @@ public class SuggestAction extends EventActionBase {
     final ChangeTableEntry catCte = changes.getEntry(
             PropertyIndex.PropertyInfoIndex.CATEGORIES);
 
-    if (debug) {
-      debugMsg("About to add " + catuids.size() + " categories");
+    if (debug()) {
+      debug("About to add " + catuids.size() + " categories");
     }
 
     for (final String uid: catuids) {
       final BwCategory cat = cl.getPersistentCategory(uid);
 
       if (cat != null) {
-        if (debug) {
-          debugMsg("Found " + cat.getWordVal());
+        if (debug()) {
+          debug("Found " + cat.getWordVal());
         }
 
         if (accept) {

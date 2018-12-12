@@ -396,8 +396,8 @@ public class UpdateEventAction extends EventActionBase {
             request.getBwForm().getSubmitApp()) {
         final RealiasResult resp = cl.reAlias(ev);
       if (resp.getStatus() != ok) {
-        if (debug) {
-          debugMsg("Failed to get topical areas? " + resp);
+        if (debug()) {
+          debug("Failed to get topical areas? " + resp);
         }
         cl.rollback();
         form.getErr().emit(ValidationError.missingTopic);
@@ -408,8 +408,8 @@ public class UpdateEventAction extends EventActionBase {
       cats = resp.getCats();
 
       if (publicAdmin && !updateSubmitEvent && Util.isEmpty(cats)) {
-        if (debug) {
-          debugMsg("No topical areas? " + resp);
+        if (debug()) {
+          debug("No topical areas? " + resp);
         }
         form.getErr().emit(ValidationError.missingTopic);
         restore(ev, preserveColPath);
@@ -685,8 +685,8 @@ public class UpdateEventAction extends EventActionBase {
 
     /* --------------------- Add or update the event ------------------------ */
 
-    if (debug) {
-      debugMsg(changes.toString());
+    if (debug()) {
+      debug(changes.toString());
     }
 
     boolean clearForm = false;
@@ -1459,8 +1459,8 @@ public class UpdateEventAction extends EventActionBase {
       return null;
     }
 
-    if (debug) {
-      debugMsg(rruleStr);
+    if (debug()) {
+      debug(rruleStr);
     }
 
     return rruleStr;

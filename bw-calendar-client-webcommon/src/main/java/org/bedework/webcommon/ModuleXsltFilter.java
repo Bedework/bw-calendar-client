@@ -43,7 +43,7 @@ public class ModuleXsltFilter extends ConfiguredXSLTFilter {
       fg = newFilterGlobals();
       req.setAttribute(globalsName, fg);
 
-      if (debug) {
+      if (debug()) {
         debug("Created new FilterGlobals");
       }
     } else {

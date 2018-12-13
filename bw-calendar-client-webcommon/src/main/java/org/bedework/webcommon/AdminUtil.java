@@ -28,7 +28,7 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.util.logging.SLogged;
+import org.bedework.util.logging.BwLogger;
 import org.bedework.util.struts.Request;
 
 import java.util.Collection;
@@ -37,10 +37,10 @@ import java.util.Collection;
  * @author Mike Douglass
  *
  */
-public class AdminUtil implements SLogged, ForwardDefs {
-  static {
-    SLogged.setLoggerClass(AdminUtil.class);
-  }
+public class AdminUtil implements ForwardDefs {
+  private static BwLogger logger =
+          new BwLogger().setLoggedClass(AdminUtil.class);
+
   /** Called just before action.
    *
    * @param request request object
@@ -73,16 +73,16 @@ public class AdminUtil implements SLogged, ForwardDefs {
       form.assignAuthorisedUser(!au.isUnauthorized());
     }
 
-    if (SLogged.debug()) {
-      SLogged.info("form.getGroupSet()=" + cl.getGroupSet());
-      SLogged.info("-------- isSuperUser: " + form.getCurUserSuperUser());
+    if (logger.debug()) {
+      logger.info("form.getGroupSet()=" + cl.getGroupSet());
+      logger.info("-------- isSuperUser: " + form.getCurUserSuperUser());
     }
 
     final int temp = checkGroup(request, true);
 
     if (temp != forwardNoAction) {
-      if (SLogged.debug()) {
-        SLogged.info("form.getGroupSet()=" + cl.getGroupSet());
+      if (logger.debug()) {
+        logger.info("form.getGroupSet()=" + cl.getGroupSet());
       }
       return temp;
     }
@@ -132,8 +132,8 @@ public class AdminUtil implements SLogged, ForwardDefs {
 
         final BwAdminGroup adg = (BwAdminGroup)cl.findGroup(reqpar);
         if (adg == null) {
-          if (SLogged.debug()) {
-            SLogged.info("No user admin group with name " + reqpar);
+          if (logger.debug()) {
+            logger.info("No user admin group with name " + reqpar);
           }
 
           form.assignCalSuites(cl.getContextCalSuites());
@@ -209,8 +209,8 @@ public class AdminUtil implements SLogged, ForwardDefs {
 
     cl.getMembers(adg);
 
-    if (SLogged.debug()) {
-      SLogged.info("Set admin group to " + adg);
+    if (logger.debug()) {
+      logger.info("Set admin group to " + adg);
     }
 
     cl.setAdminGroupName(adg.getAccount());

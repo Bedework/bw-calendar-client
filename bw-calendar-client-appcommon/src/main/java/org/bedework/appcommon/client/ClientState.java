@@ -20,6 +20,7 @@ package org.bedework.appcommon.client;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
 import java.io.Serializable;
@@ -73,6 +74,17 @@ public class ClientState implements Logged, Serializable {
   }
 
   /* ====================================================================
-   *                   Private methods
+   *                   Logged methods
    * ==================================================================== */
+
+  private BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
+  }
 }

@@ -33,6 +33,7 @@
  */
 package org.bedework.webcommon.taglib.portlet;
 
+import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
 import org.apache.struts.taglib.html.FormTag;
@@ -122,5 +123,20 @@ public class CalFormTag extends FormTag implements Logged {
     return formStartElement.substring(0, actionURLStart) +
            urlStr + formStartElement.substring(actionURLEnd);
            */
+  }
+
+  /* ====================================================================
+   *                   Logged methods
+   * ==================================================================== */
+
+  private BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
   }
 }

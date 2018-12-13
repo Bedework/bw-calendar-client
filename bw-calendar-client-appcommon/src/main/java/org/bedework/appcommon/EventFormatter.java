@@ -27,6 +27,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.icalendar.EventTimeZonesRegistry;
 import org.bedework.icalendar.IcalTranslator;
+import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -175,6 +176,21 @@ public class EventFormatter extends EventTimeZonesRegistry
   @SuppressWarnings("unused")
   public String getXmlAccess() {
     return xmlAccess;
+  }
+
+  /* ====================================================================
+   *                   Logged methods
+   * ==================================================================== */
+
+  private BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
   }
 }
 

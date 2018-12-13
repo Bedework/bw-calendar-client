@@ -33,6 +33,7 @@
  */
 package org.bedework.webcommon.taglib.portlet;
 
+import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
 import org.apache.struts.taglib.html.RewriteTag;
@@ -223,4 +224,19 @@ public class CalRewriteTag extends RewriteTag implements Logged {
   }
 
   */
+
+  /* ====================================================================
+   *                   Logged methods
+   * ==================================================================== */
+
+  private BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
+  }
 }

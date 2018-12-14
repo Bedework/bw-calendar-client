@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.bedework.bwwebcl</groupId>
 	<artifactId>bw-calendar-client</artifactId>
-	<version>3.12.2</version>
+	<version>3.12.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>bw-calendar-client</name>
   <description>Calendar web client code for bedework</description>
@@ -63,7 +63,7 @@
 		<connection>scm:git:git@github.com:Bedework/bw-calendar-client.git</connection>
 		<developerConnection>scm:git:git@github.com:Bedework/bw-calendar-client.git</developerConnection>
 		<url>https://github.com/Bedework/bw-calendar-client</url>
-	  <tag>bw-calendar-client-3.12.2</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<issueManagement>

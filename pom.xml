@@ -16,13 +16,13 @@
 		<!-- Bedework Versions -->
 
 		<bw-xml.version>4.0.7</bw-xml.version>
-		<bw-util.version>4.0.20</bw-util.version>
+		<bw-util.version>4.0.21-SNAPSHOT</bw-util.version>
     <bw-util-hibernate.version>4.0.20</bw-util-hibernate.version>
     <bw-util-logging.version>4.0.0</bw-util-logging.version>
     <bw-util2.version>4.0.2</bw-util2.version>
-		<bw-access.version>4.0.4</bw-access.version>
-		<bw-webdav.version>4.0.5</bw-webdav.version>
-		<bw-caldav-util.version>4.0.5</bw-caldav-util.version>
+		<bw-access.version>4.0.5-SNAPSHOT</bw-access.version>
+		<bw-webdav.version>4.0.6-SNAPSHOT</bw-webdav.version>
+		<bw-caldav.version>4.0.6-SNAPSHOT</bw-caldav.version>
 		<bw-calendar-engine.version>3.12.3-SNAPSHOT</bw-calendar-engine.version>
 
 		<!-- Third Party Library Versions -->
@@ -253,13 +253,13 @@
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-caldav-server</artifactId>
-        <version>${bw-caldav-util.version}</version>
+        <version>${bw-caldav.version}</version>
       </dependency>
 
 			<dependency>
 				<groupId>org.bedework</groupId>
 				<artifactId>bw-caldav-util</artifactId>
-				<version>${bw-caldav-util.version}</version>
+				<version>${bw-caldav.version}</version>
 			</dependency>
 
 			<!-- Bedework: Web Services -->

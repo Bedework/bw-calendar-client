@@ -19,7 +19,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.util.logging.BwLogger;
-import org.bedework.util.logging.Logged;
+import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.struts.Request;
 
 import org.apache.struts.action.ActionForward;
@@ -34,7 +34,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass douglm@rpi.edu
  */
-public class BwCallbackImpl extends BwCallback implements Logged {
+public class BwCallbackImpl extends BwCallback implements
+        HttpAppLogger {
   final BwActionFormBase form;
   ActionForward errorForward;
 
@@ -92,6 +93,8 @@ public class BwCallbackImpl extends BwCallback implements Logged {
       debug("Close for module " + module.getModuleName());
     }
 
+    logRequestOut(hreq);
+
     module.close(cleanUp);
   }
 
@@ -139,5 +142,10 @@ public class BwCallbackImpl extends BwCallback implements Logged {
     }
 
     return logger;
+  }
+
+  @Override
+  public String getLogPrefix(final HttpServletRequest request) {
+    return "bwclientcb";
   }
 }

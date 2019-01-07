@@ -1213,7 +1213,7 @@ public class ROClientImpl implements Logged, Client {
   public BwLocation getLocationByUid(final String uid)
           throws CalFacadeException {
     checkUpdate();
-    return svci.getLocationsHandler().get(uid);
+    return svci.getLocationsHandler().getByUid(uid);
   }
 
   @Override

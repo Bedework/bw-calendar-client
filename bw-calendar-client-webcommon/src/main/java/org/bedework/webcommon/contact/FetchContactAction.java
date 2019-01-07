@@ -37,23 +37,21 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm   rpi.edu
  */
 public class FetchContactAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
       return forwardNoAccess;
     }
 
-    /** User requested a contact from the list. Retrieve it, embed it in
+    /* User requested a contact from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
-    String uid = request.getReqPar("uid");
+    final String uid = request.getReqPar("uid");
 
     BwContact contact = null;
     if (uid != null) {

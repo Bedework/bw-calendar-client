@@ -93,7 +93,9 @@ public class BwCallbackImpl extends BwCallback implements
       debug("Close for module " + module.getModuleName());
     }
 
-    logRequestOut(hreq);
+    if (!cleanUp) {
+      logRequestOut(hreq);
+    }
 
     module.close(cleanUp);
   }

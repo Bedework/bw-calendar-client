@@ -2259,6 +2259,7 @@ public class ROClientImpl implements Logged, Client {
 
   protected void updated() {
     lastUpdate = System.currentTimeMillis();
+   adminGroupsInfo = null;
   }
 
   protected void checkUpdate() {

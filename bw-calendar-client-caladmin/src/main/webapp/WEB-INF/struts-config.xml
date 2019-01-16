@@ -1079,7 +1079,7 @@
       <forward name="cancelled" path="/calsuite/showCalSuites.rdo" redirect="true" />
       <forward name="notAdded" path="/calsuite/showCalSuites.rdo" redirect="true" />
       <forward name="retry" path="/calsuite/showModForm.rdo" redirect="true" />
-      <forward name="success" path="/calsuite/showModForm.rdo" redirect="true" />
+      <forward name="success" path="/calsuite/showCalSuites.rdo" redirect="true" />
     </action>
 
     <action    path="/calsuite/update"

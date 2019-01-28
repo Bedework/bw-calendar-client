@@ -19,6 +19,7 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.access.Ace;
+import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
@@ -62,6 +63,9 @@ import static org.bedework.calfacade.indexing.BwIndexer.docTypeEvent;
  * User: douglm Date: 6/27/13 Time: 2:05 PM
  */
 public class ClientImpl extends ROClientImpl {
+  protected boolean defaultFilterContextSet;
+  protected FilterBase defaultFilterContext;
+
   public ClientImpl(final String id,
                     final String authUser,
                     final String runAsUser,
@@ -719,5 +723,30 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     svci.getFiltersHandler().delete(name);
     updated();
+  }
+
+  protected FilterBase getDefaultFilterContext() throws CalFacadeException {
+    if (defaultFilterContextSet) {
+      return defaultFilterContext;
+    }
+
+    final BwView preferred = getView(null);
+
+    if (preferred == null) {
+      defaultFilterContextSet = true;
+      return defaultFilterContext;
+    }
+
+    final String fexpr = "view=\"" + preferred.getName() +"\"";
+
+    final BwFilterDef fd = new BwFilterDef();
+    fd.setDefinition(fexpr);
+
+    parseFilter(fd);
+
+    defaultFilterContextSet = true;
+    defaultFilterContext = fd.getFilters();
+
+    return defaultFilterContext;
   }
 }

@@ -83,6 +83,7 @@ import org.bedework.icalendar.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
 import org.bedework.sysevents.events.SysEventBase;
+import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
@@ -144,9 +145,6 @@ public class ROClientImpl implements Logged, Client {
   private SearchResult lastSearch;
   private List<SearchResultEntry> lastSearchEntries;
 
-  protected boolean defaultFilterContextSet;
-  protected FilterBase defaultFilterContext;
-
   /* Set this whenever an update occurs. We may want to delay or flush
    */
   protected long lastUpdate;
@@ -180,7 +178,7 @@ public class ROClientImpl implements Logged, Client {
    * @param calSuiteName the calednar suite
    * @param appType type of application: submit, admin etc
    * @param publicView true for the public RO client
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   public ROClientImpl(final String id,
                       final String authUser,
@@ -1120,9 +1118,7 @@ public class ROClientImpl implements Logged, Client {
       final BwPreferences prefs = getCalsuitePreferences(suite);
 
       if ((prefs != null) && (prefs.getDefaultCategoryUids() != null)) {
-        for (final String uid: prefs.getDefaultCategoryUids()) {
-          catUids.add(uid);
-        }
+        catUids.addAll(prefs.getDefaultCategoryUids());
       }
     }
 
@@ -2171,7 +2167,7 @@ public class ROClientImpl implements Logged, Client {
 
     return svci.getCalSuitesHandler().getResourcesPath(suite, csRc);
 
-    /**
+    /*
     if (rc.equals(CalSuiteResource.resourceClassGlobal)) {
       return Util.buildPath(false, getBasicSyspars().getGlobalResourcesPath());
     }
@@ -2212,9 +2208,11 @@ public class ROClientImpl implements Logged, Client {
      */
   }
 
+  /*
   protected BasicSystemProperties getBasicSyspars() throws CalFacadeException {
     return svci.getBasicSystemProperties();
   }
+  */
 
   protected CollectionCollator<BwCalendar> getCalendarCollator() {
     if (calendarCollator == null) {
@@ -2304,16 +2302,27 @@ public class ROClientImpl implements Logged, Client {
     }
   }
 
+  private final static FlushMap<String, FilterBase> defaultFilters =
+          new FlushMap<>();
+
   protected FilterBase getDefaultFilterContext() throws CalFacadeException {
-    if (defaultFilterContextSet) {
-      return defaultFilterContext;
+    final BwPrincipal pr = getCurrentPrincipal();
+    final String phref;
+    if (pr == null) {
+      phref = null;
+    } else {
+      phref = pr.getPrincipalRef();
+    }
+
+    FilterBase tblVal = defaultFilters.get(phref);
+    if (tblVal != null) {
+      return tblVal;
     }
 
     final BwView preferred = getView(null);
 
     if (preferred == null) {
-      defaultFilterContextSet = true;
-      return defaultFilterContext;
+      return null;
     }
 
     final String fexpr = "view=\"" + preferred.getName() +"\"";
@@ -2323,10 +2332,17 @@ public class ROClientImpl implements Logged, Client {
 
     parseFilter(fd);
 
-    defaultFilterContextSet = true;
-    defaultFilterContext = fd.getFilters();
+    tblVal = fd.getFilters();
 
-    return defaultFilterContext;
+    if (tblVal == null) {
+      warn("Null filter for " + phref);
+    }
+
+    synchronized (defaultFilters) {
+      defaultFilters.put(phref, tblVal);
+    }
+
+    return tblVal;
   }
 
   /* ------------------------------------------------------------
@@ -2343,8 +2359,6 @@ public class ROClientImpl implements Logged, Client {
       if (!(o instanceof EventInfo)) {
         continue;
       }
-
-      final BwEvent ev = ((EventInfo)o).getEvent();
 
       final EventFormatter ef = new EventFormatter(this,
                                                    trans,

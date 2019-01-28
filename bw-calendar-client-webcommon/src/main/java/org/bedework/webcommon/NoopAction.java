@@ -18,23 +18,14 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.client.Client;
-
 /** This is a no-op action
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
-public class NoopAction extends MainAction {
+public class NoopAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    // TODO is this correct?
-    final Client cl = request.getClient();
-
-    if (cl.getPublicAdmin() || !form.getNewSession()) {
-      return forwardSuccess;
-    }
-
-    return super.doAction(request, form);
+    return forwardSuccess;
   }
 }

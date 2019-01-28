@@ -18,6 +18,12 @@
     </dependency>
 
     <!-- Bedework -->
+
+    <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-util-caching</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-config</artifactId>

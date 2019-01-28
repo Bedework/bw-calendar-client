@@ -42,7 +42,13 @@ public class RenderMainAction extends RenderAction {
       /* Set up the search parameters */
 
       params = new SearchParams();
-      final int forward = 
+
+      if (tv != null) {
+        params.setFromDate(tv.getViewStart());
+        params.setToDate(tv.getViewEnd());
+      }
+
+      final int forward =
               setSearchParams(request, params,
                               Client.gridViewMode.equals(cl.getViewMode()));
 

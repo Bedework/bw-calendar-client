@@ -46,6 +46,7 @@ import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.Request;
@@ -482,6 +483,12 @@ public class BwSessionImpl implements Logged, BwSession {
         return null;
       }
 
+      if (fromCopy && cl.isGuest()) {
+        // Use the cloned calendars. No need to copy
+        debug("Using cloned copy");
+        return root;
+      }
+
       clonedPublicCollections[accessIndex] =
               getClonedCollection(request,
                                   root,
@@ -498,6 +505,11 @@ public class BwSessionImpl implements Logged, BwSession {
       return null;
     }
   }
+
+  /* Key is colpath of root.
+   */
+  private final static FlushMap<String, BwCalendar> publicUserCollections =
+          new FlushMap<>();
 
   public BwCalendar getUserCollections(final BwRequest request) {
     final BwCalendar col;
@@ -559,6 +571,19 @@ public class BwSessionImpl implements Logged, BwSession {
         return null;
       }
 
+      if (cl.isGuest()) {
+        final BwCalendar cloned = publicUserCollections.get(
+                col.getPath());
+
+        if (cloned != null) {
+          if (debug()) {
+            debug("Use cloned from map for " + col.getPath());
+          }
+
+          return cloned;
+        }
+      }
+
       final BwCalendar cloned = getClonedCollection(request, col,
                                                     false);
 
@@ -566,6 +591,12 @@ public class BwSessionImpl implements Logged, BwSession {
         warn("Unable to clone " + col);
         request.getErr().emit("Unable to clone user collection");
         return null;
+      }
+
+      if (cl.isGuest()) {
+        synchronized (publicUserCollections) {
+          publicUserCollections.put(col.getPath(), cloned);
+        }
       }
 
       return cloned;
@@ -997,7 +1028,7 @@ public class BwSessionImpl implements Logged, BwSession {
    * @return BwFilter or null
    */
   private FilterBase getFilter(final BwRequest req,
-                               final String filterName) {
+                               @SuppressWarnings("SameParameterValue") final String filterName) {
     final BwActionFormBase form = req.getBwForm();
     final Client cl = req.getClient();
 

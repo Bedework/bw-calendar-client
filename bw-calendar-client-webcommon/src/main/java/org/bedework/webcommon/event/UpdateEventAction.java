@@ -149,12 +149,12 @@ public class UpdateEventAction extends EventActionBase {
       return forwardNoAction;
     }
 
-    boolean eventOWner = false;
+    final boolean eventOwner;
 
     if (!publicAdmin) {
-      eventOWner = true;
+      eventOwner = true;
     } else {
-      eventOWner = form.getAddingEvent() || cl.isCalSuiteEntity(ev);
+      eventOwner = form.getAddingEvent() || cl.isCalSuiteEntity(ev);
     }
 
     if ((publishEvent || approveEvent) && (ev.getRecurrenceId() != null)) {
@@ -341,7 +341,7 @@ public class UpdateEventAction extends EventActionBase {
 
     List<SuggestedTo> suggestedTo = null;
 
-    if (eventOWner) {
+    if (eventOwner) {
       suggestedTo = doSuggested(request, ev, changes);
     }
 
@@ -998,19 +998,19 @@ public class UpdateEventAction extends EventActionBase {
 
   /** Update rdates and exdates.
    *
-   * @param request
-   * @param event
-   * @param evDateOnly
-   * @param changes
+   * @param request object
+   * @param event to be updated
+   * @param evDateOnly true for date only
+   * @param changes to record changes
    * @return boolean  true if changed.
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   private boolean updateRExdates(final BwRequest request,
                                  final BwEvent event,
                                  final boolean evDateOnly,
                                  final ChangeTable changes) throws Throwable {
     Collection<BwDateTime> reqDates = request.getRdates(evDateOnly);
-    Collection<BwDateTime> evDates = new TreeSet<BwDateTime>();
+    Collection<BwDateTime> evDates = new TreeSet<>();
     if (event.getRdates() != null) {
       evDates.addAll(event.getRdates());
     }
@@ -1035,8 +1035,8 @@ public class UpdateEventAction extends EventActionBase {
       event.setRecurring(true);
       rdChanged = true;
     } else {
-      added = new TreeSet<BwDateTime>();
-      removed = new TreeSet<BwDateTime>();
+      added = new TreeSet<>();
+      removed = new TreeSet<>();
       rdChanged = CalFacadeUtil.updateCollection(false, reqDates,
                                                  event.getRdates(),
                                                  added, removed);
@@ -1074,8 +1074,8 @@ public class UpdateEventAction extends EventActionBase {
       added = reqDates;
       exdChanged = true;
     } else {
-      added = new TreeSet<BwDateTime>();
-      removed = new TreeSet<BwDateTime>();
+      added = new TreeSet<>();
+      removed = new TreeSet<>();
       exdChanged = CalFacadeUtil.updateCollection(false, reqDates,
                                                   event.getExdates(),
                                                   added, removed);
@@ -1267,7 +1267,7 @@ public class UpdateEventAction extends EventActionBase {
 
     List<BwXproperty> xprops = ev.getXproperties();
 
-    List<BwXproperty> strippedXprops = new ArrayList<BwXproperty>();
+    List<BwXproperty> strippedXprops = new ArrayList<>();
 
     if (!publishEvent) {
       for (BwXproperty xp: xprops) {
@@ -1292,7 +1292,7 @@ public class UpdateEventAction extends EventActionBase {
      * The request parameter xprop-preserve names a property to save.
      */
 
-    Map<String, String> plistMap = new HashMap<String, String>();
+    Map<String, String> plistMap = new HashMap<>();
     for (String plistName: request.getReqPars("xprop-preserve")) {
       plistMap.put(plistName, plistName);
     }
@@ -1306,7 +1306,7 @@ public class UpdateEventAction extends EventActionBase {
     return strippedXprops;
   }
 
-  private static HashMap<String, String> validFreq = new HashMap<String, String>();
+  private static HashMap<String, String> validFreq = new HashMap<>();
   static {
     /* Block use of over-frequent recurrences */
     validFreq.put("HOURLY", "HOURLY");
@@ -1339,10 +1339,10 @@ public class UpdateEventAction extends EventActionBase {
    * <p>e.g. Every Friday the 13th,</br>
    *  RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13
    *
-   * @param request
-   * @param form
+   * @param request object
+   * @param form object
    * @return String or null
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public String getRrule(final BwRequest request,
                          final BwActionFormBase form) throws Throwable {
@@ -1413,9 +1413,7 @@ public class UpdateEventAction extends EventActionBase {
       rrule.append(count);
     }
 
-    if ("DAILY".equals(freq)) {
-      // Any more to do?
-    } else {
+    if (!"DAILY".equals(freq)) {
       String byday = request.getReqPar("byday");
 
       if (byday != null) {
@@ -1423,18 +1421,14 @@ public class UpdateEventAction extends EventActionBase {
         rrule.append(byday);
       }
 
-      if ("WEEKLY".equals(freq)) {
-        // Anything else here?
-      } else {
+      if (!"WEEKLY".equals(freq)) {
         String bymonthday = request.getReqPar("bymonthday");
         if (bymonthday != null) {
           rrule.append(";BYMONTHDAY=");
           rrule.append(bymonthday);
         }
 
-        if ("MONTHLY".equals(freq)) {
-          // Anything else here?
-        } else {
+        if (!"MONTHLY".equals(freq)) {
           String bymonth = request.getReqPar("bymonth");
           if (bymonth != null) {
             rrule.append(";BYMONTH=");

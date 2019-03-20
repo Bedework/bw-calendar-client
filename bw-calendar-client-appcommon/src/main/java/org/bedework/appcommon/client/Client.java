@@ -1149,6 +1149,15 @@ public interface Client extends Serializable {
    */
   BwLocation findLocation(BwString address) throws CalFacadeException;
 
+  /** Find the location given the combined address values.
+   *
+   * @param val - address, room, city, state, zip
+   * @param persisted - true if we want the db copy
+   * @return Location object
+   */
+  GetEntityResponse<BwLocation> fetchLocationByCombined(String val,
+                                                        boolean persisted);
+
   /** Find a location owned by the current user which has a named
    * key field which matches the value.
    *

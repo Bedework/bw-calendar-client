@@ -116,6 +116,12 @@ public class IcalCallbackcb implements IcalCallback {
   }
 
   @Override
+  public GetEntityResponse<BwLocation> fetchLocationByCombined(
+          final String val, final boolean persisted) {
+    return cl.fetchLocationByCombined(val, persisted);
+  }
+
+  @Override
   public void addLocation(final BwLocation val) throws CalFacadeException {
     cl.addLocation(val);
   }

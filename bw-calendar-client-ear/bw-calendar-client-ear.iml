@@ -70,16 +70,16 @@
     <orderEntry type="library" name="Maven: org.bedework:bw-util-struts:4.0.23" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-timezones:4.0.23" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-xml:4.0.23" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util2-calendar:4.0.3" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util2-vcard:4.0.3" level="project" />
+    <orderEntry type="module" module-name="bw-util2-calendar" />
+    <orderEntry type="module" module-name="bw-util2-vcard" />
     <orderEntry type="library" name="Maven: org.bedework:bw-xml-caldav:4.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-xml-calws-soap:4.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-xml-icalendar:4.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-xml-synchws:4.0.7" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-xml-tzsvr:4.0.7" level="project" />
     <orderEntry type="module" module-name="bw-webdav" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-caldav-server:4.0.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-caldav-util:4.0.6" level="project" />
+    <orderEntry type="module" module-name="bw-caldav-server" />
+    <orderEntry type="module" module-name="bw-caldav-util" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:1.5" level="project" />
     <orderEntry type="library" name="Maven: org.imgscalr:imgscalr-lib:4.2" level="project" />
     <orderEntry type="library" name="Maven: struts:struts:1.2.9" level="project" />

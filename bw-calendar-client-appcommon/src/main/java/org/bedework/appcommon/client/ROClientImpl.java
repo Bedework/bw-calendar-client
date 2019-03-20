@@ -1253,6 +1253,14 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
+  public GetEntityResponse<BwLocation> fetchLocationByCombined(
+          final String val,
+          final boolean persisted) {
+    return svci.getLocationsHandler().fetchLocationByCombined(val,
+                                                              persisted);
+  }
+
+  @Override
   public GetEntityResponse<BwLocation> fetchLocationByKey(
           final String name,
           final String val) {

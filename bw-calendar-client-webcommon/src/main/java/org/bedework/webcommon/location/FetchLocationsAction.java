@@ -21,7 +21,6 @@ package org.bedework.webcommon.location;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
-import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.responses.GetEntitiesResponse;
 import org.bedework.calfacade.responses.LocationsResponse;
@@ -109,10 +108,9 @@ public class FetchLocationsAction extends BwAbstractAction {
     final LocationsResponse locs = new LocationsResponse();
     locs.setLocations(vals);
     final BasicSystemProperties props = cl.getBasicSystemProperties();
-    final BwPrincipal pr = cl.getCurrentPrincipal();
 
     for (final BwLocation loc: vals) {
-      loc.fixNames(props, pr);
+      loc.fixNames(props);
     }
 
     if (cl.getPublicAdmin()) {
@@ -125,7 +123,7 @@ public class FetchLocationsAction extends BwAbstractAction {
       final List<String> preferred = new ArrayList<>();
 
       for (final BwLocation prefLoc: prefs) {
-        prefLoc.fixNames(props, pr);
+        prefLoc.fixNames(props);
         preferred.add(prefLoc.getHref());
       }
 

@@ -18,11 +18,10 @@
 */
 package org.bedework.webcommon.category;
 
-import org.bedework.calfacade.responses.CategoriesResponse;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.BasicSystemProperties;
+import org.bedework.calfacade.responses.CategoriesResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -76,10 +75,9 @@ public class FetchCategoriesAction extends BwAbstractAction {
          need this.
        */
       final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
-      final BwPrincipal principal = cl.getCurrentPrincipal();
 
       for (final BwCategory cat: vals) {
-        cat.fixNames(basicSysprops, principal);
+        cat.fixNames(basicSysprops);
       }
     }
 

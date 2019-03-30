@@ -1400,11 +1400,12 @@ public interface Client extends Serializable {
    */
   void removeNotification(NotificationType val) throws CalFacadeException;
 
-  /**
+  /** Remove all notifications for given principal
    *
-   * @throws CalFacadeException
+   * @param principalHref principal to clean
+   * @throws CalFacadeException on fatal error
    */
-  void removeAllNotifications() throws CalFacadeException;
+  void removeAllNotifications(final String principalHref) throws CalFacadeException;
 
   void subscribe(final String principalHref,
                  final List<String> emails) throws CalFacadeException;

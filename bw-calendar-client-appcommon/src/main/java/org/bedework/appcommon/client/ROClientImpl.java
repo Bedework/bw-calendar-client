@@ -1438,7 +1438,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void removeAllNotifications() throws CalFacadeException {
+  public void removeAllNotifications(final String PrincipalHref) throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
 

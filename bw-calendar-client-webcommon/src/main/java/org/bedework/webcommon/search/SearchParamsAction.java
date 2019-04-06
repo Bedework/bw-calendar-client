@@ -73,7 +73,9 @@ public class SearchParamsAction extends EventActionBase {
     final BwModuleState mstate = request.getModule().getState();
     final SearchParams params = new SearchParams();
     final Client cl = request.getClient();
-    final boolean forFeederOneShot = "y".equals(request.getReqPar("f"));
+    final boolean forFeederOneShot =
+            "y".equals(request.getReqPar("f")) ||
+                    "y".equals(request.getStringActionPar("f="));
 
     if (request.getBooleanReqPar("listMode", false)) {
       cl.setViewMode(Client.listViewMode);

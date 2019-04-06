@@ -294,6 +294,17 @@
                type="org.bedework.webcommon.search.SearchParamsAction"
                name="calForm"
                scope="session"
+               parameter="f=y;actionType=action;conversation=only"
+               validate="false">
+      <forward name="success" path="/docs/event/eventList.jsp"/>
+      <forward name="listEvents" path="/docs/event/eventList.jsp"/>
+      <forward name="noAction" path="docs/event/eventList.jsp"/>
+    </action>
+    <!--
+    <action    path="/main/listEvents"
+               type="org.bedework.webcommon.search.SearchParamsAction"
+               name="calForm"
+               scope="session"
                parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="success" path="/main/showEventList.rdo" redirect="true" />
@@ -309,6 +320,7 @@
       <forward name="success" path="/docs/event/eventList.jsp"/>
       <forward name="error" path="/docs/event/eventList.jsp"/>
     </action>
+    -->
 
     <!-- ...............................................................
            Display a list of events - no forwarding
@@ -480,8 +492,7 @@
                scope="session"
                parameter="actionType=action;conversation=only"
                validate="false">
-      <forward name="success" path="/widget/showCategories.rdo" redirect="true" />
-      <forward name="listEvents" path="/widget/showCategories.rdo" redirect="true" />
+      <forward name="success" path="/docs/widget/categories.jsp" />
     </action>
 
     <action    path="/widget/showGroups"

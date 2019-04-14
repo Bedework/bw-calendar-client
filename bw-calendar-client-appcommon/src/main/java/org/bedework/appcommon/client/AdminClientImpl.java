@@ -346,9 +346,8 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void removeAllNotifications() throws CalFacadeException {
-    svci.getNotificationsHandler().removeAll(
-            getCalSuite().getGroup().getOwnerHref());
+  public void removeAllNotifications(final String principalHref) throws CalFacadeException {
+    svci.getNotificationsHandler().removeAll(principalHref);
     updated();
   }
 

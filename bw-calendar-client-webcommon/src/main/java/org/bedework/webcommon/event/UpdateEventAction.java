@@ -1280,6 +1280,12 @@ public class UpdateEventAction extends EventActionBase {
           // We output it but don't want it back
           continue;
         }
+
+        // Remove empty ones.
+        if ((xp.getValue() == null) || (xp.getValue().length() == 0)) {
+          continue;
+        }
+
         strippedXprops.add(xp);
       }
       return strippedXprops;

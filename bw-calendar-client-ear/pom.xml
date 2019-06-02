@@ -1106,7 +1106,7 @@
           <noversion>true</noversion>
           <delete>true</delete>
           <earName>bw-cal</earName>
-          <baseDirPath>${project.basedir}/../..</baseDirPath>
+          <baseDirPath>${org.bedework.deployment.basedir}</baseDirPath>
           <propsPath>${org.bedework.deployment.properties}</propsPath>
         </configuration>
       </plugin>

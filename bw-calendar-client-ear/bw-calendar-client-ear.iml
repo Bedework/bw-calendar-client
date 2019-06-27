@@ -26,31 +26,31 @@
     <orderEntry type="module" module-name="bw-calendar-client-feeder" />
     <orderEntry type="module" module-name="bw-calendar-client-submit" />
     <orderEntry type="module" module-name="bw-calendar-client-ucal" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-notifyws:war:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-pubcaldav:war:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-publicws:war:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-synchws:war:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-ucaldav:war:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-userws:war:3.12.6" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-notifyws:war:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-pubcaldav:war:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-publicws:war:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-synchws:war:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-ucaldav:war:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-userws:war:3.12.7" level="project" />
     <orderEntry type="module" module-name="bw-calendar-client-appcommon" />
     <orderEntry type="module" module-name="bw-calendar-client-webcommon" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-annotations:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-api:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-caldav:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-chgnote:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-core:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-core-common:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-dumprestore:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-facade:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-ical:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-impl:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-indexer:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-inoutsched:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-interfaces:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-mail:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-sysevents-common:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-sysevents-msgs:3.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-tools:3.12.6" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-annotations:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-api:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-caldav:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-chgnote:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-core:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-core-common:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-dumprestore:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-facade:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-ical:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-impl:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-indexer:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-inoutsched:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-interfaces:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-mail:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-sysevents-common:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-sysevents-msgs:3.12.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-tools:3.12.7" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-access:4.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-args:4.0.24" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-caching:4.0.24" level="project" />

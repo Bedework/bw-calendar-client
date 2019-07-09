@@ -16,7 +16,7 @@
 		<!-- Bedework Versions -->
 
 		<bw-xml.version>4.0.8</bw-xml.version>
-		<bw-util.version>4.0.24</bw-util.version>
+		<bw-util.version>4.0.25-SNAPSHOT</bw-util.version>
     <bw-util-deploy.version>4.0.24</bw-util-deploy.version>
     <bw-util-hibernate.version>4.0.21</bw-util-hibernate.version>
     <bw-util-logging.version>4.0.2</bw-util-logging.version>
@@ -24,7 +24,7 @@
 		<bw-access.version>4.0.6</bw-access.version>
 		<bw-webdav.version>4.0.7</bw-webdav.version>
 		<bw-caldav.version>4.0.7</bw-caldav.version>
-		<bw-calendar-engine.version>3.12.7</bw-calendar-engine.version>
+		<bw-calendar-engine.version>3.12.8-SNAPSHOT</bw-calendar-engine.version>
 
 		<!-- Third Party Library Versions -->
     <dom4j-version>1.6.1</dom4j-version>
@@ -40,7 +40,7 @@
 
     <apache-jdkim-library.version>0.4</apache-jdkim-library.version>
     <digester-version>1.8</digester-version>
-    <elasticsearch.version>1.5.2</elasticsearch.version>
+    <elasticsearch.version>7.2.0</elasticsearch.version>
     <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>
     <ical4j.artifactId>ical4j</ical4j.artifactId>
     <ical4j.version>2.0.9</ical4j.version>
@@ -568,6 +568,12 @@
       <dependency>
         <groupId>org.elasticsearch</groupId>
         <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.elasticsearch.client</groupId>
+        <artifactId>elasticsearch-rest-high-level-client</artifactId>
         <version>${elasticsearch.version}</version>
       </dependency>
 

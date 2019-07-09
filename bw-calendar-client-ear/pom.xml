@@ -831,13 +831,11 @@
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
-      <version>${elasticsearch.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.elasticsearch.client</groupId>
+      <artifactId>elasticsearch-rest-high-level-client</artifactId>
     </dependency>
 
     <dependency>
@@ -910,6 +908,7 @@
       <version>1.1.2</version>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers-common</artifactId>
@@ -1005,6 +1004,7 @@
       <artifactId>spatial4j</artifactId>
       <version>0.3</version>
     </dependency>
+    -->
 
     <dependency>
       <groupId>xalan</groupId>

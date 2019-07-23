@@ -39,6 +39,7 @@
 		<junit.version>4.8.2</junit.version>
 
     <commons-lang.version>2.3</commons-lang.version>
+    <commons-beanutils.version>1.9.2</commons-beanutils.version>
     <http-client.version>4.5.8</http-client.version>
     <http-core.version>4.4.11</http-core.version>
 
@@ -631,6 +632,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate-validator.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>${commons-beanutils.version}</version>
       </dependency>
 
       <dependency>

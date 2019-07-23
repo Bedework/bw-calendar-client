@@ -38,7 +38,7 @@
 		<servlet-api.version>4.0.0</servlet-api.version>
 		<junit.version>4.8.2</junit.version>
 
-    <commons.lang.version>2.3</commons.lang.version>
+    <commons-lang.version>2.3</commons-lang.version>
     <http-client.version>4.5.8</http-client.version>
     <http-core.version>4.4.11</http-core.version>
 

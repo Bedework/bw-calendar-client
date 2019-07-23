@@ -38,9 +38,15 @@
 		<servlet-api.version>4.0.0</servlet-api.version>
 		<junit.version>4.8.2</junit.version>
 
+    <commons.lang.version>2.3</commons.lang.version>
+    <http-client.version>4.5.8</http-client.version>
+    <http-core.version>4.4.11</http-core.version>
+
     <apache-jdkim-library.version>0.4</apache-jdkim-library.version>
     <digester-version>1.8</digester-version>
     <elasticsearch.version>7.2.0</elasticsearch.version>
+    <hibernate.version>5.2.5.Final</hibernate.version>
+    <hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
     <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>
     <ical4j.artifactId>ical4j</ical4j.artifactId>
     <ical4j.version>2.0.9</ical4j.version>
@@ -608,6 +614,41 @@
         <groupId>javax.mail</groupId>
         <artifactId>javax.mail-api</artifactId>
         <version>${javax.mail.version}</version>
+      </dependency>
+
+      <!-- These dependencies were modules in wildfly 10.
+           For the moment just load them. Figure out how to install
+           modules later
+        -->
+
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>${commons-lang.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${http-client.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${http-core.version}</version>
       </dependency>
 
     </dependencies>

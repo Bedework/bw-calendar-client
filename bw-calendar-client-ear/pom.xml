@@ -865,7 +865,7 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-ehcache</artifactId>
-      <version>5.2.5.Final</version>
+      <version>${hibernate.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -1026,6 +1026,37 @@
       <artifactId>xalan</artifactId>
       <version>2.7.1</version>
     </dependency>
+
+    <!-- These dependencies were modules in wildfly 10.
+         For the moment just load them. Figure out how to install
+         modules later
+      -->
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>

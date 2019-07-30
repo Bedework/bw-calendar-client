@@ -51,7 +51,7 @@ public class FetchAuthAction extends BwAbstractAction {
      */
     final String userId = form.getEditAuthUserId();
 
-    final BwAuthUser au = cl.getAuthUser(cl.getUser(userId));
+    final BwAuthUser au = cl.getAuthUser(cl.getUserAlways(userId));
 
     if (au == null) {
       form.getErr().emit(ClientError.unknownUserid, userId);

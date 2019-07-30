@@ -19,7 +19,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.access.AccessPrincipal;
-import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwContact;
@@ -35,6 +34,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.icalendar.IcalUtil;
+import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.misc.Util;
 
 import net.fortuna.ical4j.model.Dur;
@@ -244,12 +244,12 @@ public class BwWebUtil {
 
     /* ------------- Transparency and status ------------------ */
 
-    if (!CheckData.checkTransparency(ev.getTransparency())) {
+    if (!checkTransparency(ev.getTransparency())) {
       ves = addError(ves, ValidationError.invalidTransparency,
                      ev.getTransparency());
     }
 
-    if (!CheckData.checkStatus(ev.getStatus())) {
+    if (!checkStatus(ev.getStatus())) {
       ves = addError(ves, ValidationError.invalidStatus,
                      ev.getStatus());
     }
@@ -481,6 +481,29 @@ public class BwWebUtil {
     }
 
     return "http://" + val;
+  }
+
+  /** Check for valid transparency setting
+   *
+   * @param val possible transparency value
+   * @return boolean true for ok
+   */
+  public static boolean checkTransparency(final String val) {
+    return (val == null) ||  // Defaulted
+            IcalDefs.transparencyOpaque.equals(val) ||
+            IcalDefs.transparencyTransparent.equals(val);
+  }
+
+  /** Check for valid status setting
+   *
+   * @param val possible status value
+   * @return boolean true for ok
+   */
+  public static boolean checkStatus(final String val) {
+    return (val == null) ||  // Defaulted
+            BwEvent.statusConfirmed.equals(val) ||
+            BwEvent.statusTentative.equals(val) ||
+            BwEvent.statusCancelled.equals(val);
   }
 
   /** We get a lot of zero length strings in the web world. This will return

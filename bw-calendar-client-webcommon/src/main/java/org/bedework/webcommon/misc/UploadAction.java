@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.misc;
 
-import org.bedework.appcommon.CheckData;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
@@ -39,6 +38,7 @@ import org.bedework.webcommon.AddEventResult;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.BwWebUtil;
 
 import org.apache.struts.upload.FormFile;
 
@@ -76,13 +76,13 @@ public class UploadAction extends BwAbstractAction {
     }
 
     String transparency = request.getReqPar("transparency");
-    if (!CheckData.checkTransparency(transparency)) {
+    if (!BwWebUtil.checkTransparency(transparency)) {
       form.getErr().emit(ValidationError.invalidTransparency, transparency);
       return forwardRetry;
     }
 
     String status = request.getReqPar("status");
-    if (!CheckData.checkStatus(status)) {
+    if (!BwWebUtil.checkStatus(status)) {
       form.getErr().emit(ValidationError.invalidStatus, status);
       return forwardRetry;
     }

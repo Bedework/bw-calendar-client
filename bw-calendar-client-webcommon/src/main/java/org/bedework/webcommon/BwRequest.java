@@ -415,13 +415,7 @@ public class BwRequest extends Request {
    * @return String date in YYYYMMDD format
    */
   public String getDate() {
-    String date = getReqPar("date");
-
-//    if (!CheckData.checkDateString(date)) {
-  //    return new MyCalendarVO(new Date(System.currentTimeMillis())).getDateDigits();
-    //}
-
-    return date;
+    return getReqPar("date");
   }
 
   /**

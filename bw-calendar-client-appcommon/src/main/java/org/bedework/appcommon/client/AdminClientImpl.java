@@ -169,7 +169,11 @@ public class AdminClientImpl extends ClientImpl {
   public BwAuthUser getAuthUser(final BwPrincipal pr)
           throws CalFacadeException {
     final UserAuth ua = svci.getUserAuth();
-    BwAuthUser au = ua.getUser(pr.getAccount());
+    BwAuthUser au = null;
+
+    if (ua != null) {
+      au = ua.getUser(pr.getAccount());
+    }
 
     if (au == null) {
       if (!isSuperUser()) {

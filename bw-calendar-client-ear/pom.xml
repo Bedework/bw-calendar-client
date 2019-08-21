@@ -753,13 +753,17 @@
     <dependency>
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
-      <version>${digester-version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
     </dependency>
 
     <dependency>

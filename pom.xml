@@ -39,6 +39,7 @@
 		<junit.version>4.8.2</junit.version>
 
     <commons-lang.version>2.3</commons-lang.version>
+    <commons.text.version>1.7</commons.text.version>
     <commons-beanutils.version>1.9.2</commons-beanutils.version>
     <http-client.version>4.5.8</http-client.version>
     <http-core.version>4.4.11</http-core.version>
@@ -553,6 +554,12 @@
 			</dependency>
 
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${commons.text.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>${ical4j.groupId}</groupId>
         <artifactId>${ical4j.artifactId}</artifactId>
         <version>${ical4j.version}</version>
@@ -569,6 +576,7 @@
 				<artifactId>javax.servlet-api</artifactId>
 				<version>${servlet-api.version}</version>
 			</dependency>
+
 			<!-- Test Dependencies -->
 			<dependency>
 				<groupId>junit</groupId>

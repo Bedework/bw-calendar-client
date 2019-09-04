@@ -59,6 +59,7 @@
       <location>
         <uid><bean:write name="location" property="uid"/></uid><%--
             Value: location uid --%>
+        <bw:emitText name="location" property="combinedValues" />
         <bw:emitText name="location" property="addressField" tagName="address"/><%--
           Value: string - physical address of the location --%>
         <bw:emitText name="location" property="roomField" />

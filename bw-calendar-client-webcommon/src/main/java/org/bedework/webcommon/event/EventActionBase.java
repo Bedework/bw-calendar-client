@@ -48,7 +48,8 @@ import org.bedework.icalendar.RecurRuleComponents;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.util.http.BasicHttpClient;
+import org.bedework.util.http.PooledHttpClient;
+import org.bedework.util.http.PooledHttpClient.ResponseHolder;
 import org.bedework.util.http.RequestBuilder;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.Attendees;
@@ -1009,7 +1010,7 @@ public abstract class EventActionBase extends BwAbstractAction {
   }
 
   // TODO - this needs to be somewhere it gets shut down properly
-  private static BasicHttpClient http;
+  private static PooledHttpClient http;
 
   protected boolean notifyEventReg(final BwRequest request,
                                    final EventInfo ei) throws Throwable {
@@ -1029,30 +1030,16 @@ public abstract class EventActionBase extends BwAbstractAction {
      */
 
     if (http == null) {
-      http = new BasicHttpClient(30000);
+      http = new PooledHttpClient(new URI(evregUrl));
     }
-
-    http.setBaseURI(new URI(evregUrl));
 
     final RequestBuilder rb = new RequestBuilder("info/eventChg.do");
     rb.par("atkn", evregToken);
     rb.par("href", ei.getEvent().getHref());
 
-    try {
-      final int respCode = http.sendRequest("GET",
-                                            rb.toString(),
-                                            null,
-                                            "application/xml",
-                                            0, // contentLen
-                                            null);    //content
+    final ResponseHolder resp = http.get(rb.toString(),
+                                         "application/xml");
 
-      if (respCode != HttpServletResponse.SC_OK) {
-        return false;
-      }
-    } finally {
-      http.release();
-    }
-
-    return true;
+    return resp.status == HttpServletResponse.SC_OK;
   }
 }

@@ -1038,7 +1038,8 @@ public abstract class EventActionBase extends BwAbstractAction {
     rb.par("href", ei.getEvent().getHref());
 
     final ResponseHolder resp = http.get(rb.toString(),
-                                         "application/xml");
+                                         "application/xml",
+                                         null); // No content expected
 
     return resp.status == HttpServletResponse.SC_OK;
   }

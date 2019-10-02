@@ -159,6 +159,18 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
+  public BwCalendar getCollection(final String path)
+          throws CalFacadeException {
+    checkUpdate();
+    BwCalendar col = svci.getCalendarsHandler().get(path);
+    if (col != null) {
+      col = (BwCalendar)svci.merge(col);
+    }
+
+    return col;
+  }
+
+  @Override
   public BwCalendar addCollection(final BwCalendar val,
                                   final String parentPath)
           throws CalFacadeException {

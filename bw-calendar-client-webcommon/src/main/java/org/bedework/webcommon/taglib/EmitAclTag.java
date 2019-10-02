@@ -60,14 +60,13 @@ public class EmitAclTag extends NameScopePropertyTag {
       }
     } catch(Throwable t) {
       throw new JspTagException("Error: " + t.getMessage());
-    } finally {
     }
 
     return EVAL_PAGE;
   }
 
   private String getXmlAcl(final CurrentAccess ca) throws Throwable {
-    if (ca == null) {
+    if ((ca == null) || (ca.getAcl() == null)) {
       return null;
     }
 

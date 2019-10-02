@@ -108,6 +108,9 @@ public class UpdateCalendarAction extends BwAbstractAction {
           return forwardContinue;
         }
 
+        if (cal.getPublick()) {
+          request.getSess().flushPublicCache();
+        }
         cl.moveCollection(cal, newCal);
         form.getMsg().emit(ClientMessage.updatedCalendar);
 
@@ -223,6 +226,10 @@ public class UpdateCalendarAction extends BwAbstractAction {
       } else {
         form.getMsg().emit(ClientMessage.updatedFolder);
       }
+    }
+
+    if (cal.getPublick()) {
+      request.getSess().flushPublicCache();
     }
 
     /* redo filters */

@@ -107,11 +107,10 @@ public class BwSessionImpl implements Logged, BwSession {
    * @param config     our config
    * @param user       String user id
    * @param appName    String identifying particular application
-   * @throws Throwable on error
    */
   public BwSessionImpl(final ConfigCommon config,
                        final String user,
-                       final String appName) throws Throwable {
+                       final String appName) {
     super();
     
     this.config = config;
@@ -316,6 +315,12 @@ public class BwSessionImpl implements Logged, BwSession {
       // Not much we can do here
       form.getErr().emit(t);
     }
+  }
+
+  @Override
+  public void flushPublicCache() {
+    clonedPublicCollections[0] = null;
+    clonedPublicCollections[1] = null;
   }
 
   @Override

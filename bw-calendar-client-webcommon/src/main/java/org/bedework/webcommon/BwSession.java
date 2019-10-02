@@ -80,6 +80,10 @@ public interface BwSession extends Serializable {
    */
   void prepareRender(BwRequest req);
 
+  /** Flush any cached public info
+   *
+   */
+  void flushPublicCache();
   /**
    * 
    * @param request current 

@@ -19,6 +19,7 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.access.Ace;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
@@ -122,6 +123,12 @@ public interface Client extends Serializable {
    */
   void close() throws CalFacadeException;
 
+  /**
+   *
+   * @return current configuration
+   */
+  ConfigCommon getConf();
+
   /** Flush any backend data we may be hanging on to ready for a new
    * sequence of interactions. This is intended to help with web based
    * applications, especially those which follow the action/render url
@@ -170,6 +177,12 @@ public interface Client extends Serializable {
    * @return true if we are the web submit client.
    */
   boolean getWebSubmit();
+
+  /**
+   *
+   * @return true if we are the authenticated public client.
+   */
+  boolean getPublicAuth();
 
   /** apptype
    *

@@ -13,11 +13,6 @@
     <param-value>CalAdmin</param-value>
   </context-param>
 
-  <context-param>
-    <param-name>bwapptype</param-name>
-    <param-value>webadmin</param-value>
-  </context-param>
-
   <!-- Do not alter or move  the following comment -->
   <!-- add context params here -->
 

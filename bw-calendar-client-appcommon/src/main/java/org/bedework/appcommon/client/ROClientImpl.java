@@ -22,6 +22,7 @@ import org.bedework.access.Ace;
 import org.bedework.access.PrivilegeDefs;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CollectionCollator;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.caldav.util.filter.FilterBase;
@@ -115,6 +116,8 @@ import static org.bedework.calsvci.CalSuitesI.ResourceClass;
  * User: douglm Date: 6/27/13 Time: 2:03
  */
 public class ROClientImpl implements Logged, Client {
+  protected ConfigCommon conf;
+
   protected String id;
 
   protected CalSvcIPars pars;
@@ -171,28 +174,32 @@ public class ROClientImpl implements Logged, Client {
 
   /**
    *
+   * @param conf client configuration
    * @param id identify the client - usually module name
    * @param authUser account
    * @param runAsUser account
-   * @param calSuiteName the calednar suite
+   * @param calSuiteName the calendar suite
    * @param appType type of application: submit, admin etc
    * @param publicView true for the public RO client
    * @throws CalFacadeException on fatal error
    */
-  public ROClientImpl(final String id,
+  public ROClientImpl(final ConfigCommon conf,
+                      final String id,
                       final String authUser,
                       final String runAsUser,
                       final String calSuiteName,
                       final String appType,
                       final boolean publicView)
           throws CalFacadeException {
-    this(id);
+    this(conf, id);
 
     reinit(authUser, runAsUser, calSuiteName, appType, publicView);
   }
 
-  protected ROClientImpl(final String id) {
+  protected ROClientImpl(final ConfigCommon conf,
+                         final String id) {
     this.id = id;
+    this.conf = conf;
     cstate = new ClientState(this);
 
     if (debug()) {
@@ -220,6 +227,7 @@ public class ROClientImpl implements Logged, Client {
                            runAsUser,
                            calSuiteName,
                            false, // publicAdmin,
+                           getPublicAuth(),
                            false, // Allow non-admin super user
                            false, // service
                            getWebSubmit(),
@@ -240,7 +248,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Client copy(final String id) throws CalFacadeException {
-    final ROClientImpl cl = new ROClientImpl(id);
+    final ROClientImpl cl = new ROClientImpl(conf, id);
 
     cl.pars = (CalSvcIPars)pars.clone();
     cl.pars.setLogId(id);
@@ -333,6 +341,11 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
+  public ConfigCommon getConf() {
+    return conf;
+  }
+
+  @Override
   public void flushAll() throws CalFacadeException {
     svci.flushAll();
   }
@@ -360,6 +373,11 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public boolean getWebSubmit() {
     return BedeworkDefs.appTypeWebsubmit.equals(appType);
+  }
+
+  @Override
+  public boolean getPublicAuth() {
+    return BedeworkDefs.appTypeWebpublic.equals(appType) && !conf.getGuestMode();
   }
 
   @Override

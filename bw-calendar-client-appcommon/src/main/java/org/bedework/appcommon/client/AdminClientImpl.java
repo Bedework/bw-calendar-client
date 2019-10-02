@@ -25,6 +25,7 @@ import org.bedework.access.AceWho;
 import org.bedework.access.Privilege;
 import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.CalSuiteResource;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.BwCalendar;
@@ -73,39 +74,42 @@ public class AdminClientImpl extends ClientImpl {
   /** User's current group or null. */
   private String adminGroupName;
 
-  public AdminClientImpl(final String id,
+  public AdminClientImpl(final ConfigCommon conf,
+                         final String id,
                          final String authUser,
                          final String runAsUser,
-                         final String calSuiteName,
-                         final AdminConfig conf)
+                         final String calSuiteName)
           throws CalFacadeException {
-    super(id);
+    super(conf, id);
 
-    reinit(authUser, runAsUser, calSuiteName, conf);
+    reinit(authUser, runAsUser, calSuiteName);
   }
 
-  protected AdminClientImpl(final String id) {
-    super(id);
+  protected AdminClientImpl(final ConfigCommon conf,
+                            final String id) {
+    super(conf, id);
   }
 
   public void reinit(final String authUser,
                      final String runAsUser,
-                     final String calSuiteName,
-                     final AdminConfig conf)
+                     final String calSuiteName)
           throws CalFacadeException {
     currentPrincipal = null;
+
+    final AdminConfig admconf = (AdminConfig)conf;
 
     pars = new CalSvcIPars("admin-client-" + id,
                            authUser,
                            runAsUser,
                            calSuiteName,
                            true,
+                           false, // publicauth
                            false, // Allow non-admin super user
                            false, // service
                            false, // public submission
-                           conf.getAllowEditAllCategories(),
-                           conf.getAllowEditAllLocations(),
-                           conf.getAllowEditAllContacts(),
+                           admconf.getAllowEditAllCategories(),
+                           admconf.getAllowEditAllLocations(),
+                           admconf.getAllowEditAllContacts(),
                            false, // sessionless
                            false); // system
 
@@ -119,7 +123,7 @@ public class AdminClientImpl extends ClientImpl {
 
   @Override
   public Client copy(final String id) throws CalFacadeException {
-    final AdminClientImpl cl = new AdminClientImpl(id);
+    final AdminClientImpl cl = new AdminClientImpl(conf, id);
 
     cl.pars = (CalSvcIPars)pars.clone();
     cl.pars.setLogId(id);
@@ -392,7 +396,7 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public boolean isCalSuiteEntity(final BwShareableDbentity ent) throws CalFacadeException {
+  public boolean isCalSuiteEntity(final BwShareableDbentity ent) {
     if (ownerHrefs == null) {
       return false;
     }
@@ -512,8 +516,7 @@ public class AdminClientImpl extends ClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public void setGroupSet(final boolean val)
-          throws CalFacadeException {
+  public void setGroupSet(final boolean val) {
     groupSet = val;
   }
 
@@ -523,8 +526,7 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void setChoosingGroup(final boolean val)
-          throws CalFacadeException {
+  public void setChoosingGroup(final boolean val) {
     choosingGroup = val;
   }
 
@@ -534,8 +536,7 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void setOneGroup(final boolean val)
-          throws CalFacadeException {
+  public void setOneGroup(final boolean val) {
     oneGroup = val;
   }
 
@@ -545,8 +546,7 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void setAdminGroupName(final String val)
-          throws CalFacadeException {
+  public void setAdminGroupName(final String val) {
     adminGroupName = val;
   }
 

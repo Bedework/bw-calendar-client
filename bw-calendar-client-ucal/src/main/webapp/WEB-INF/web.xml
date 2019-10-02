@@ -17,11 +17,6 @@
     <param-value>${app.config.name}</param-value>
   </context-param>
 
-  <context-param>
-    <param-name>bwapptype</param-name>
-    <param-value>webuser</param-value>
-  </context-param>
-
   <!-- Do not alter or move  the following comment -->
   <!-- add context params here -->
 

@@ -38,6 +38,8 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
 
   private boolean publicAdmin;
 
+  private boolean readWrite;
+
   private boolean guestMode;
 
   private String publicAdminUri;
@@ -110,6 +112,16 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
   @Override
   public boolean getPublicAdmin() {
     return publicAdmin;
+  }
+
+  @Override
+  public void setReadWrite(final boolean val) {
+    readWrite = val;
+  }
+
+  @Override
+  public boolean getReadWrite() {
+    return readWrite;
   }
 
   @Override

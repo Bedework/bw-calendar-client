@@ -256,8 +256,7 @@ public class BwSessionImpl implements Logged, BwSession {
 //              (lastRefresh == null) || (now - lastRefresh > refreshRate)) {
         // Implant various objects for the pages.
 
-        final String appType = cl.getAppType();
-        if (!BedeworkDefs.appTypeFeeder.equals(appType)) {
+        if (!BedeworkDefs.appTypeFeeder.equals(cl.getAppType())) {
           embedFilters(req);
 
           if (cl.getPublicAdmin() || cl.getWebSubmit()) {

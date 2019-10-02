@@ -225,7 +225,8 @@ public class AdminUtil implements ForwardDefs {
         !((BwAbstractAction)request.getAction()).checkSvci(request,
                                                            request.getSess(),
                                                            p.getAccount(),
-                                                           isMember(adg, form))) {
+                                                           isMember(adg, form),
+                                                           cl.getConf())) {
       return forwardNoAccess;
     }
 

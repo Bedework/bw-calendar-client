@@ -92,6 +92,16 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
   }
 
   @Override
+  public void setReadWrite(final boolean val) {
+    getConfig().setReadWrite(val);
+  }
+
+  @Override
+  public boolean getReadWrite() {
+    return getConfig().getReadWrite();
+  }
+
+  @Override
   public void setGuestMode(final boolean val) {
     getConfig().setGuestMode(val);
   }

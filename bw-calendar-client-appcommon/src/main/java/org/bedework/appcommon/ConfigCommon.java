@@ -61,20 +61,31 @@ public interface ConfigCommon extends Serializable {
    */
   String getAppType();
 
-  /** True for a public admin client.
+  /**
    *
-   * @param val
+   * @param val True for a public admin client.
    */
   void setPublicAdmin(boolean val);
 
   /**
-   * @return boolean
+   * @return boolean True for a public admin client.
    */
   boolean getPublicAdmin();
 
-  /** True for a guest mode (non-auth) client.
+  /**
    *
-   * @param val
+   * @param val True for a read/write client.
+   */
+  void setReadWrite(boolean val);
+
+  /**
+   * @return boolean
+   */
+  boolean getReadWrite();
+
+  /**
+   *
+   * @param val True for a guest mode (non-auth) client.
    */
   void setGuestMode(boolean val);
 

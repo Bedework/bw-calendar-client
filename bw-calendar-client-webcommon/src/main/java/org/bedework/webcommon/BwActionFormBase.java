@@ -67,6 +67,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1212,14 +1213,7 @@ public class BwActionFormBase extends UtilActionForm
    * @return boolean
    */
   public String getAppType() {
-    return appType;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignAppType(final String val) {
-    appType = val;
+    return config.getAppType();
   }
 
   /** True for submitApp
@@ -1759,7 +1753,8 @@ public class BwActionFormBase extends UtilActionForm
       }
 
       try {
-        return URLEncoder.encode(getWorkflowRoot(), "UTF-8");
+        return URLEncoder.encode(getWorkflowRoot(),
+                                 StandardCharsets.UTF_8);
       } catch (final Throwable t) {
         getErr().emit(t);
       }
@@ -1800,7 +1795,7 @@ public class BwActionFormBase extends UtilActionForm
 
   /** Save the Path of a calendar
    *
-   * @param val
+   * @param val the Path of a calendar
    */
   public void setCalPath(final String val) {
     calPath = val;
@@ -1815,7 +1810,7 @@ public class BwActionFormBase extends UtilActionForm
 
   /** Save the Path of a calendar
    *
-   * @param val
+   * @param val the Path of a calendar
    */
   public void setCalendarPath(final String val) {
     calendarPath = val;

@@ -39,6 +39,19 @@
 
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-calauth</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
       <artifactId>bw-calendar-client-feeder</artifactId>
       <version>${project.version}</version>
       <type>war</type>
@@ -1113,6 +1126,11 @@
               <groupId>${project.groupId}</groupId>
               <artifactId>bw-calendar-client-caladmin</artifactId>
               <contextRoot>/caladmin</contextRoot>
+            </webModule>
+            <webModule>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>bw-calendar-client-calauth</artifactId>
+              <contextRoot>/calauth</contextRoot>
             </webModule>
             <webModule>
               <groupId>${project.groupId}</groupId>

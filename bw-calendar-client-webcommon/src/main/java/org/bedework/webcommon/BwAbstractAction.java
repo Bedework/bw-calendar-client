@@ -128,7 +128,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param request   For request pars and BwSession
    * @param frm       Action form
    * @return int      forward index
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public abstract int doAction(BwRequest request,
                                BwActionFormBase frm) throws Throwable;
@@ -158,9 +158,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardError];
     }
 
-    setConfig(request);
+    final ConfigCommon conf = setConfig(request);
 
-    if (form.getConfig().getGuestMode()) {
+    if (conf.getGuestMode()) {
       form.assignCurrentUser(null);
     } else {
       adminUserId = form.fetchCurrentAdminUser();
@@ -173,12 +173,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       debug("About to get state");
     }
 
-    final BwSession bsess = getState(request, form, messages, adminUserId);
-
-    if (bsess == null) {
-      /* An error should have been emitted.*/
-      return forwards[forwardError];
-    }
+    final BwSession bsess = getState(request, form, messages,
+                                     adminUserId, conf);
 
     if (debug()) {
       debug("About to get state");
@@ -219,7 +215,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (loc != null) {
       BwLocale.setLocale(loc);
       final Locale cloc = form.getCurrentLocale();
-      if ((cloc == null) | (!cloc.equals(loc))) {
+      if ((cloc == null) || (!cloc.equals(loc))) {
         mstate.setRefresh(true);
       }
       form.setCurrentLocale(loc);
@@ -241,7 +237,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final BwPreferences prefs = cl.getPreferences();
 
-    if (form.getGuest()) {
+    if (BedeworkDefs.appTypeWebpublic.equals(cl.getAppType())) {
       // force public view on - off by default
       form.setPublicView(true);
     } else {
@@ -317,6 +313,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         Timezones.setThreadDefaultTzid(tzid);
       }
     } catch (Throwable t) {
+      error("Unable to set default tzid");
+      error(t);
     }
 
     if (form.getDirInfo() == null) {
@@ -354,7 +352,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final String reqpar = request.getReqPar("cancelled");
 
     if (reqpar != null) {
-      /** Set the objects to null so we get new ones.
+      /* Set the objects to null so we get new ones.
        */
       form.getMsg().emit(ClientMessage.cancelled);
       return forwards[forwardCancelled];
@@ -418,10 +416,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /** Called just before action.
    *
-   * @param request
-   * @param form
+   * @param request wrapper
+   * @param form action form
    * @return int foward index
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public int actionSetup(final BwRequest request,
                          final BwActionFormBase form) throws Throwable {
@@ -475,14 +473,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /** Set the config object.
    *
-   * @param request
-   * @throws Throwable
+   * @param request wrapper
+   * @return config object
+   * @throws Throwable on fatal error
    */
-  public void setConfig(final Request request) throws Throwable {
+  public ConfigCommon setConfig(final Request request) throws Throwable {
     BwActionFormBase form = (BwActionFormBase)request.getForm();
 
     if (form.configSet()) {
-      return;
+      return form.getConfig();
     }
 
     HttpSession session = request.getRequest().getSession();
@@ -494,12 +493,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       appname = "unknown-app-name";
     }
 
-    String appType = sc.getInitParameter("bwapptype");
-
-    if ((appType == null) || (appType.length() == 0)) {
-      throw new Exception("No bwapptype context param");
-    }
-
     ConfigCommon conf = ClientConfigurations.getConfigs().getClientConfig(
             appname);
     if (conf == null) {
@@ -508,7 +501,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
 //    conf = (ConfigCommon)conf.clone();
     form.setConfig(conf); // So we can get an svci object and set defaults
-    form.assignAppType(appType);
+    return conf;
   }
 
   @Override
@@ -819,7 +812,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request     BwRequest for parameters
    * @return BwPrincipal     null if not found. Messages emitted
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   protected BwPrincipal findPrincipal(final BwRequest request) throws Throwable {
     String str = request.getReqPar("user");
@@ -1063,7 +1056,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param intunitStr
    * @param interval
    * @return int
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public int doFreeBusy(final BwRequest request,
                         final BwActionFormBase form,
@@ -1568,11 +1561,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
       try {
         cb.out(request);
-      } catch (Throwable t) {}
+      } catch (final Throwable ignored) {}
 
       try {
         cb.close(request, true);
-      } catch (Throwable t) {}
+      } catch (final Throwable ignored) {}
     }
 
     return true;
@@ -1583,7 +1576,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request    HttpServletRequest
    * @return null for continue, forwardLoggedOut to end session.
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   protected String checkLogOut(final Request request)
           throws Throwable {
@@ -1648,7 +1641,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param request       action form
    * @param date         String yyyymmdd date or null
    * @param newViewType  requested new view or null
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   protected void gotoDateView(final BwRequest request,
                               final String date,
@@ -1757,7 +1750,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final TimeView tv = request.getSess().getCurTimeView(request);
 
-    /** Set first day, month and year
+    /* Set first day, month and year
      */
 
     final Calendar firstDay = tv.getFirstDay();
@@ -1774,7 +1767,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request
    * @param date         String yyyymmdd date
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   protected void setViewDate(final BwRequest request,
                              final String date) throws Throwable {
@@ -1823,14 +1816,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param form          Action form
    * @param messages      MessageResources needed for the resources
    * @param adminUserId   id we want to administer
-   * @return BwSession null on failure
-   * @throws Throwable
+   * @return BwSession never null
+   * @throws Throwable on fatal error
    */
   private BwSession getState(final Request request,
                              final BwActionFormBase form,
                              final MessageResources messages,
-                             final String adminUserId) throws Throwable {
-    //noinspection SynchronizationOnLocalVariableOrMethodParameter
+                             final String adminUserId,
+                             final ConfigCommon conf) throws Throwable {
     //synchronized (form) {
       BwSession s = BwWebUtil.getState(request.getRequest());
       final HttpSession sess = request.getRequest().getSession(false);
@@ -1851,7 +1844,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
         form.assignNewSession(true);
 
-        s = new BwSessionImpl(form.getConfig(),
+        s = new BwSessionImpl(conf,
                               form.getCurrentUser(),
                               appName);
 
@@ -1883,7 +1876,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       /* Ensure we have a CalSvcI object
        */
-      checkSvci(request, s, adminUserId, false);
+      checkSvci(request, s, adminUserId, false, conf);
 
       return s;
     //}
@@ -1911,16 +1904,17 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *                      this allows a user to switch between and into
    *                      groups of which they are a member
    * @return boolean      false for problems.
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   boolean checkSvci(final Request request,
                     final BwSession sess,
                     final String user,
-                    boolean canSwitch) throws Throwable {
+                    boolean canSwitch,
+                    final ConfigCommon conf) throws Throwable {
     BwActionFormBase form = (BwActionFormBase)request.getForm();
-    final ConfigCommon conf = form.getConfig();
     boolean publicAdmin = conf.getPublicAdmin();
-    boolean guestMode = !publicAdmin && conf.getGuestMode();
+    boolean readWrite = conf.getReadWrite();
+    boolean guestMode = !publicAdmin && !readWrite && conf.getGuestMode();
     String calSuiteName = null;
 
 
@@ -2049,8 +2043,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
           ((AdminClientImpl)client).reinit(form.getCurrentUser(),
                                            user,
-                                           calSuiteName,
-                                           (AdminConfig)form.getConfig());
+                                           calSuiteName);
 
           cb.in(request);
           //client.requestIn(request.getConversationType());
@@ -2061,24 +2054,26 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           debug("Client-- getResource new object for user " + user);
         }
 
-        if (guestMode) {
-          client = new ROClientImpl(module.getModuleName(),
+        if (publicAdmin) {
+          client = new AdminClientImpl(conf,
+                                       module.getModuleName(),
+                                       form.getCurrentUser(),
+                                       user,
+                                       calSuiteName);
+        } else if (readWrite) {
+          client = new ClientImpl(conf,
+                                  module.getModuleName(),
+                                  form.getCurrentUser(),
+                                  user,
+                                  form.getAppType());
+        } else {
+          client = new ROClientImpl(conf,
+                                    module.getModuleName(),
                                     form.getCurrentUser(),
                                     user,
                                     calSuiteName,
                                     form.getAppType(),
                                     true);
-        } else if (publicAdmin) {
-          client = new AdminClientImpl(module.getModuleName(),
-                                       form.getCurrentUser(),
-                                       user,
-                                       calSuiteName,
-                                       (AdminConfig)form.getConfig());
-        } else {
-          client = new ClientImpl(module.getModuleName(),
-                                  form.getCurrentUser(),
-                                  user,
-                                  form.getAppType());
         }
 
         module.setClient(client);
@@ -2134,7 +2129,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request  Needed to locate session
    * @return true if no error found.
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   private boolean checkMvarReq(final BwRequest request) throws Throwable {
     Collection<String> mvs = request.getReqPars("setmvar");
@@ -2204,7 +2199,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   /** Return the value or a default if it's invalid
    *
-   * @param val
+   * @param val to check
    * @return String valid view period
    */
   public String validViewPeriod(String val) {

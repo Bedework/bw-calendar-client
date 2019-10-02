@@ -19,6 +19,7 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.access.Ace;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
@@ -51,7 +52,7 @@ import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SharingI;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.util.Collection;
 import java.util.List;
@@ -66,18 +67,20 @@ public class ClientImpl extends ROClientImpl {
   protected boolean defaultFilterContextSet;
   protected FilterBase defaultFilterContext;
 
-  public ClientImpl(final String id,
+  public ClientImpl(final ConfigCommon conf,
+                    final String id,
                     final String authUser,
                     final String runAsUser,
                     final String appType)
           throws CalFacadeException {
-    this(id);
+    this(conf, id);
 
     reinit(authUser, runAsUser, appType);
   }
 
-  protected ClientImpl(final String id) {
-    super(id);
+  protected ClientImpl(final ConfigCommon conf,
+                       final String id) {
+    super(conf, id);
   }
 
   public void reinit(final String authUser,
@@ -92,6 +95,7 @@ public class ClientImpl extends ROClientImpl {
                            runAsUser,
                            null,  // calSuiteName,
                            false, // publicAdmin,
+                           false, // publicauth
                            false, // Allow non-admin super user
                            false, // service
                            getWebSubmit(),
@@ -107,7 +111,7 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public Client copy(final String id) throws CalFacadeException {
-    final ClientImpl cl = new ClientImpl(id);
+    final ClientImpl cl = new ClientImpl(conf, id);
 
     cl.pars = (CalSvcIPars)pars.clone();
     cl.pars.setLogId(id);
@@ -532,11 +536,7 @@ public class ClientImpl extends ROClientImpl {
   public void setResourceValue(final BwResource val,
                                final String content) throws CalFacadeException {
     final byte[] bytes;
-    try {
-      bytes = content.getBytes("UTF-8");
-    } catch (final UnsupportedEncodingException e) {
-      throw new CalFacadeException(e);
-    }
+    bytes = content.getBytes(StandardCharsets.UTF_8);
 
     setResourceValue(val, bytes);
   }

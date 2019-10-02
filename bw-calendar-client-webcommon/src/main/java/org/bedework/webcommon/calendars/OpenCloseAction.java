@@ -75,10 +75,8 @@ public class OpenCloseAction extends BwAbstractAction {
     }
 
     if (open) {
-      if (!cos.contains(path)) {
-        cos.add(path);
-      }
-    } else if (cos.contains(path)) {
+      cos.add(path);
+    } else {
       cos.remove(path);
     }
 

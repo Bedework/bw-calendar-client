@@ -866,7 +866,12 @@ public class ROClientImpl implements Logged, Client {
   public BwCalendar getCollection(final String path)
           throws CalFacadeException {
     checkUpdate();
-    return svci.getCalendarsHandler().get(path);
+    BwCalendar col = svci.getCalendarsHandler().get(path);
+    if (col != null) {
+      col = (BwCalendar)svci.merge(col);
+    }
+
+    return col;
   }
 
   @Override

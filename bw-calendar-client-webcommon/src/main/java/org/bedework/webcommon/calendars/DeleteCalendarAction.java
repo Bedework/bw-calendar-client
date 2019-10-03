@@ -58,6 +58,8 @@ public class DeleteCalendarAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
+    final boolean publick = cal.getPublick();
+
     if (cal.equals(cl.getHome())) {
       form.getErr().emit(ClientError.cannotDeleteHome, calPath);
       return forwardInUse;
@@ -118,6 +120,10 @@ public class DeleteCalendarAction extends BwAbstractAction {
     }
 
     form.getMsg().emit(ClientMessage.deletedCalendar, calPath);
+
+    if (publick) {
+      request.getSess().flushPublicCache();
+    }
 
     return forwardContinue;
   }

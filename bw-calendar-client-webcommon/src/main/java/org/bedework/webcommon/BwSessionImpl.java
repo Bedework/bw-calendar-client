@@ -575,7 +575,7 @@ public class BwSessionImpl implements Logged, BwSession {
         return null;
       }
 
-      if (cl.isGuest()) {
+      if (cl.isGuest() || cl.getPublicAuth()) {
         final BwCalendar cloned = publicUserCollections.get(
                 col.getPath());
 

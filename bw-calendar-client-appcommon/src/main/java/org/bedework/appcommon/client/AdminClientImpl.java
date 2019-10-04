@@ -126,10 +126,7 @@ public class AdminClientImpl extends ClientImpl {
   public Client copy(final String id) throws CalFacadeException {
     final AdminClientImpl cl = new AdminClientImpl(conf, id);
 
-    cl.pars = (CalSvcIPars)pars.clone();
-    cl.pars.setLogId(id);
-
-    cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
+    copyCommon(id, cl);
 
     cl.superUser = svci.getSuperUser();
     cl.publicAdmin = true;

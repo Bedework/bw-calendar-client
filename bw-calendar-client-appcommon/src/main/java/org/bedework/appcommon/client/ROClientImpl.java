@@ -163,6 +163,10 @@ public class ROClientImpl implements Logged, Client {
 
   protected static Collection<BwGroup> calsuiteAdminGroupsInfo;
 
+  protected BwCalSuiteWrapper calSuite;
+  protected BwPrincipal calSuiteOwner;
+  protected String calSuiteName;
+
   /** Hrefs of owners for this calsuite
    */
   protected static List<String> ownerHrefs;
@@ -240,6 +244,7 @@ public class ROClientImpl implements Logged, Client {
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
     resetIndexers();
+    this.calSuiteName = calSuiteName;
   }
   
   protected void resetIndexers() {
@@ -247,17 +252,44 @@ public class ROClientImpl implements Logged, Client {
     userIndexers.clear();
   }
 
+  protected BwPrincipal getCurrentCalSuiteOwner() throws CalFacadeException {
+    if (calSuiteOwner != null) {
+      return calSuiteOwner;
+    }
+
+    if (calSuiteName == null) {
+      return null;
+    }
+
+    calSuite = getCalSuite(calSuiteName);
+    if (calSuite != null) {
+      final String owner = calSuite.getGroup().getOwnerHref();
+
+      calSuiteOwner = getPrincipal(owner);
+    }
+
+    return calSuiteOwner;
+  }
+
   @Override
   public Client copy(final String id) throws CalFacadeException {
     final ROClientImpl cl = new ROClientImpl(conf, id);
 
+    copyCommon(id, cl);
+
+    cl.publicView = publicView;
+
+    return cl;
+  }
+
+  protected void copyCommon(final String id,
+                            final ROClientImpl cl) throws CalFacadeException {
     cl.pars = (CalSvcIPars)pars.clone();
     cl.pars.setLogId(id);
 
     cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
-    cl.publicView = publicView;
-
-    return cl;
+    cl.appType = appType;
+    cl.calSuiteName = calSuiteName;
   }
 
   @Override
@@ -1688,6 +1720,9 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwView> getAllViews() throws CalFacadeException {
+    if (getPublicAuth() && (getCurrentCalSuiteOwner() != null)) {
+      return svci.getViewsHandler().getAll(getCurrentCalSuiteOwner());
+    }
     return svci.getViewsHandler().getAll();
   }
 

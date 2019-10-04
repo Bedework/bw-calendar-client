@@ -114,10 +114,7 @@ public class ClientImpl extends ROClientImpl {
   public Client copy(final String id) throws CalFacadeException {
     final ClientImpl cl = new ClientImpl(conf, id);
 
-    cl.pars = (CalSvcIPars)pars.clone();
-    cl.pars.setLogId(id);
-
-    cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
+    copyCommon(id, cl);
 
     return cl;
   }

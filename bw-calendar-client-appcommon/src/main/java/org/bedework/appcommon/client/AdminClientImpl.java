@@ -111,7 +111,8 @@ public class AdminClientImpl extends ClientImpl {
                            admconf.getAllowEditAllLocations(),
                            admconf.getAllowEditAllContacts(),
                            false, // sessionless
-                           false); // system
+                           false, // system
+                           false); // readonly
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
 

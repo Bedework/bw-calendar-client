@@ -64,10 +64,10 @@ public interface BedeworkDefs extends Serializable {
   /** Display using one or more collections */
   public static final String selectionTypeCollections = "collections";
 
-  /** Display using a search */
+  /* Display using a search */
   //public static final String selectionTypeSearch = "search";
 
-  /** Display using a 'filter' */
+  /* Display using a 'filter' */
   //public static final String selectionTypeFiltered = "filtered";
 
   /** */
@@ -76,6 +76,8 @@ public interface BedeworkDefs extends Serializable {
   public static final String appTypeWebsubmit = "websubmit";
   /** */
   public static final String appTypeWebpublic = "webpublic";
+  /** */
+  public static final String appTypeWebpublicauth = "webpublicauth";
   /** */
   public static final String appTypeFeeder = "feeder";
   /** */

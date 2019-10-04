@@ -235,7 +235,8 @@ public class ROClientImpl implements Logged, Client {
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
                            false, // sessionless
-                           false); // system
+                           false, // system
+                           true); // readonly
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
     resetIndexers();
@@ -377,7 +378,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public boolean getPublicAuth() {
-    return BedeworkDefs.appTypeWebpublic.equals(appType) && !conf.getGuestMode();
+    return BedeworkDefs.appTypeWebpublicauth.equals(appType);
   }
 
   @Override

@@ -237,7 +237,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final BwPreferences prefs = cl.getPreferences();
 
-    if (BedeworkDefs.appTypeWebpublic.equals(cl.getAppType())) {
+    if (BedeworkDefs.appTypeWebpublic.equals(cl.getAppType()) ||
+            cl.getPublicAuth()) {
       // force public view on - off by default
       form.setPublicView(true);
     } else {
@@ -1927,7 +1928,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (BedeworkDefs.appTypeFeeder.equals(conf.getAppType())) {
       calSuiteName = request.getReqPar("cs", conf.getCalSuite());
-    } else if (guestMode) {
+    } else if (guestMode ||
+            BedeworkDefs.appTypeWebpublicauth.equals(conf.getAppType())) {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
       calSuiteName = conf.getCalSuite();

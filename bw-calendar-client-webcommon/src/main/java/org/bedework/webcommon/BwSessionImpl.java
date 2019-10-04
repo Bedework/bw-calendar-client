@@ -524,7 +524,7 @@ public class BwSessionImpl implements Logged, BwSession {
     try {
       final BwPrincipal p;
 
-      if (cl.getWebSubmit()) {
+      if (cl.getWebSubmit() || cl.getPublicAuth()) {
         // Use calsuite in form or default
         String calSuiteName = form.getCalSuiteName();
         if (calSuiteName == null) {
@@ -685,7 +685,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
     if (kind == ownersEntity) {
       final String appType = cl.getAppType();
-      if (cl.getWebSubmit() ||
+      if (cl.getWebSubmit() || cl.getPublicAuth() ||
               BedeworkDefs.appTypeWebpublic.equals(appType) ||
               BedeworkDefs.appTypeFeeder.equals(appType)) {
         // Use public

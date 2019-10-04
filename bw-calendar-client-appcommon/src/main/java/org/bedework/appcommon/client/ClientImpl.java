@@ -103,7 +103,8 @@ public class ClientImpl extends ROClientImpl {
                            false, // adminCanEditAllPublicLocations,
                            false, // adminCanEditAllPublicSponsors,
                            false, // sessionless
-                           false); // system
+                           false, // system
+                           false); // readonly
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
     resetIndexers();

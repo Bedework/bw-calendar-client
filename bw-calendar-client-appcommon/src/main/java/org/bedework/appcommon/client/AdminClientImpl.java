@@ -233,6 +233,12 @@ public class AdminClientImpl extends ClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
+  public Collection<BwGroup> findGroupParents(final BwGroup group)
+          throws CalFacadeException {
+    return svci.getAdminDirectories().findGroupParents(group);
+  }
+
+  @Override
   public BwGroup getAdminGroup(final String href)
           throws CalFacadeException {
     return (BwGroup)svci.getAdminDirectories().getPrincipal(href);

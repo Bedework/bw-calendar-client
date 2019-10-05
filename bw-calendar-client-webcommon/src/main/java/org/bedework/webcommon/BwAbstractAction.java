@@ -873,8 +873,28 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final Set<String> defCatuids = cl.getPreferences().getDefaultCategoryUids();
 
+    /* allDefCatUids is used to preserve the default categories for
+       calendar suites. For example we migth have an event created by
+       Admissions with a default category of .admissions.
+
+       If it was suggested to and accepted by Payroll it might have
+       .payroll applied.
+
+       The assumption (and I think experience) was that .payroll would
+       not appear in the update request so would get lost on update.
+
+       This code was being applied to all categorised entities and resulted in
+       being unable to turn off a default category on an alias.
+
+       I believe it should only be applied to events.
+     */
     /* Get the uids of all public default categories */
-    final Set<String> allDefCatUids = cl.getDefaultPublicCategoryUids();
+    final Set<String> allDefCatUids;
+    if (ent instanceof BwEvent) {
+      allDefCatUids = cl.getDefaultPublicCategoryUids();
+    } else {
+      allDefCatUids = null;
+    }
 
     /* Get the uids */
     final Collection<String> strCatUids = request.getReqPars("catUid");

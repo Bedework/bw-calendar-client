@@ -29,7 +29,7 @@
 		<!-- Third Party Library Versions -->
     <dom4j-version>1.6.1</dom4j-version>
 		<portlet-api.version>1.0</portlet-api.version>
-    <jackson.version>2.9.8</jackson.version>
+    <jackson.version>2.10.0</jackson.version>
 		<jsp-api.version>2.3.1</jsp-api.version>
 		<gson.version>1.5</gson.version>
 		<portals-bridge.version>1.0.4</portals-bridge.version>

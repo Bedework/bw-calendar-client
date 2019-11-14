@@ -62,8 +62,11 @@ public class DeleteLocationAction extends BwAbstractAction {
 
     form.setPropRefs(null);
 
-    BwLocation loc = cl.getLocationByUid(uid);
-
+    var resp = cl.getLocationByUid(uid);
+    if (resp.isNotFound()) {
+      return forwardNotFound;
+    }
+    BwLocation loc = resp.getEntity();
     Client.DeleteReffedEntityResult delResult = cl.deleteLocation(loc);
 
     if (delResult == null) {

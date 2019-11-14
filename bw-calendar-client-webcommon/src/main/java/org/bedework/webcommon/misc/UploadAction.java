@@ -30,8 +30,8 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
-import org.bedework.icalendar.IcalTranslator;
-import org.bedework.icalendar.Icalendar;
+import org.bedework.convert.IcalTranslator;
+import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.AddEventResult;
@@ -133,7 +133,7 @@ public class UploadAction extends BwAbstractAction {
         return importScheduleMessage(request, ic, null, stripAlarms);
       }
 
-      Collection<AddEventResult> aers = new ArrayList<AddEventResult>();
+      Collection<AddEventResult> aers = new ArrayList<>();
       form.setAddEventResults(aers);
 
       Iterator it = ic.iterator();
@@ -172,6 +172,7 @@ public class UploadAction extends BwAbstractAction {
 
             if (col == null) {
               form.getErr().emit(ValidationError.missingCalendar);
+              return forwardRetry;
             }
           }
 
@@ -203,25 +204,26 @@ public class UploadAction extends BwAbstractAction {
         ev.setScheduleMethod(ScheduleMethods.methodTypeNone);
 
         if (ei.getNewEvent()) {
-          try {
-            UpdateResult eur = cl.addEvent(ei, true,
-                                           false);
+          UpdateResult eur = cl.addEvent(ei, true,
+                                         false);
 
-            AddEventResult aer = new AddEventResult(ev,
-                                                    eur.failedOverrides);
-            aers.add(aer);
+          AddEventResult aer = new AddEventResult(ev,
+                                                  eur.failedOverrides);
+          aers.add(aer);
 
-            if (eur.failedOverrides != null) {
-              numFailedOverrides += eur.failedOverrides.size();
-            }
+          if (eur.failedOverrides != null) {
+            numFailedOverrides += eur.failedOverrides.size();
+          }
 
-            numEventsAdded++;
+          numEventsAdded++;
+
+          /*TODO Used to catch exception here and watch for this:
           } catch (CalFacadeException cfe) {
             if (!cfe.getMessage().equals(CalFacadeException.noRecurrenceInstances)) {
               throw cfe;
             }
             form.getErr().emit(cfe.getMessage(), cfe.getExtra());
-          }
+          }*/
         } else {
           cl.updateEvent(ei, false, null);
           numEventsUpdated++;
@@ -251,7 +253,7 @@ public class UploadAction extends BwAbstractAction {
   private int importScheduleMessage(final BwRequest request,
                                     final Icalendar ic,
                                     final BwCalendar cal,
-                                    final boolean stripAlarms) throws Throwable {
+                                    final boolean stripAlarms) {
     Client cl = request.getClient();
 
     // Scheduling method - should contain a single entity

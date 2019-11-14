@@ -43,8 +43,8 @@ import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
-import org.bedework.icalendar.IcalTranslator;
-import org.bedework.icalendar.RecurRuleComponents;
+import org.bedework.convert.IcalTranslator;
+import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
@@ -343,7 +343,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       final Collection<EventInfo> evs =
               cl.getEventByUid(ekey.getColPath(),
                                ekey.getGuid(),
-                               rid, rrm);
+                               rid, rrm).getEntities();
       if (debug()) {
         debug("Get event by guid found " + evs.size());
       }
@@ -418,7 +418,7 @@ public abstract class EventActionBase extends BwAbstractAction {
       final Collection<EventInfo> evs =
               cl.getEventByUid(cal.getPath(),
                                uid, rid,
-                               RecurringRetrievalMode.overrides);
+                               RecurringRetrievalMode.overrides).getEntities();
       if (debug()) {
         debug("Get event by guid found " + evs.size());
       }

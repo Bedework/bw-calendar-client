@@ -55,7 +55,10 @@ public class FetchContactAction extends BwAbstractAction {
 
     BwContact contact = null;
     if (uid != null) {
-      contact = cl.getContactByUid(uid);
+      var resp = cl.getContactByUid(uid);
+      if (resp.isOk()) {
+        contact = resp.getEntity();
+      }
     }
 
     if (debug()) {

@@ -25,8 +25,8 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.icalendar.EventTimeZonesRegistry;
-import org.bedework.icalendar.IcalTranslator;
+import org.bedework.convert.EventTimeZonesRegistry;
+import org.bedework.convert.IcalTranslator;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
@@ -82,9 +82,9 @@ public class EventFormatter extends EventTimeZonesRegistry
     }
   }
 
-  /** =====================================================================
+  /* =====================================================================
    *                     Property methods
-   *  ===================================================================== */
+   * ===================================================================== */
 
   /**
    * @return EventInfo
@@ -100,9 +100,9 @@ public class EventFormatter extends EventTimeZonesRegistry
     return eventInfo.getEvent();
   }
 
-  /** ===================================================================
+  /* ===================================================================
                       Convenience methods
-      =================================================================== */
+     =================================================================== */
 
   /** Get the event's starting day and time
    *

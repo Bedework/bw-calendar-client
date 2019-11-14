@@ -23,11 +23,10 @@ import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwString;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.ifs.IcalCallback;
+import org.bedework.calfacade.responses.GetEntitiesResponse;
 import org.bedework.calfacade.responses.GetEntityResponse;
-import org.bedework.icalendar.IcalCallback;
-
-import java.util.Collection;
+import org.bedework.calfacade.svc.EventInfo;
 
 /**
  * User: douglm Date: 6/28/13 Time: 3:51 PM
@@ -44,63 +43,58 @@ public class IcalCallbackcb implements IcalCallback {
   }
 
   @Override
-  public void setStrictness(final int val) throws CalFacadeException {
+  public void setStrictness(final int val) {
     strictness = val;
   }
 
   @Override
-  public int getStrictness() throws CalFacadeException {
+  public int getStrictness() {
     return strictness;
   }
 
   @Override
-  public BwPrincipal getPrincipal() throws CalFacadeException {
+  public BwPrincipal getPrincipal() {
     return cl.getCurrentPrincipal();
   }
 
   @Override
-  public BwPrincipal getOwner() throws CalFacadeException {
+  public BwPrincipal getOwner() {
     return cl.getOwner();
   }
 
   @Override
-  public String getCaladdr(final String val) throws CalFacadeException {
+  public String getCaladdr(final String val) {
     return cl.uriToCaladdr(val);
   }
 
   @Override
-  public BwCategory findCategory(final BwString val) throws CalFacadeException {
+  public GetEntityResponse<BwCategory> findCategory(final BwString val) {
     return cl.getCategoryByName(val);
   }
 
   @Override
-  public void addCategory(final BwCategory val) throws CalFacadeException {
+  public void addCategory(final BwCategory val) {
     cl.addCategory(val);
   }
 
   @Override
-  public BwContact getContact(final String uid) throws CalFacadeException {
+  public GetEntityResponse<BwContact> getContact(final String uid) {
     return cl.getContactByUid(uid);
   }
 
   @Override
-  public BwContact findContact(final BwString val) throws CalFacadeException {
+  public GetEntityResponse<BwContact> findContact(final BwString val) {
     return cl.findContact(val);
   }
 
   @Override
-  public void addContact(final BwContact val) throws CalFacadeException {
+  public void addContact(final BwContact val) {
     cl.addContact(val);
   }
 
   @Override
-  public BwLocation getLocation(final String uid) throws CalFacadeException {
+  public GetEntityResponse<BwLocation> getLocation(final String uid) {
     return cl.getLocationByUid(uid);
-  }
-
-  @Override
-  public BwLocation getLocation(final BwString address) throws CalFacadeException {
-    return cl.findLocation(address);
   }
 
   @Override
@@ -111,7 +105,7 @@ public class IcalCallbackcb implements IcalCallback {
   }
 
   @Override
-  public BwLocation findLocation(final BwString address) throws CalFacadeException {
+  public GetEntityResponse<BwLocation> findLocation(final BwString address) {
     return cl.findLocation(address);
   }
 
@@ -122,20 +116,19 @@ public class IcalCallbackcb implements IcalCallback {
   }
 
   @Override
-  public void addLocation(final BwLocation val) throws CalFacadeException {
+  public void addLocation(final BwLocation val) {
     cl.addLocation(val);
   }
 
   @Override
-  public Collection getEvent(final String colPath,
-                             final String guid)
-          throws CalFacadeException {
+  public GetEntitiesResponse<EventInfo> getEvent(final String colPath,
+                                                 final String guid) {
     return cl.getEventByUid(colPath, guid,
                             null, null);
   }
 
   @Override
-  public boolean getTimezonesByReference() throws CalFacadeException {
+  public boolean getTimezonesByReference() {
     //return cl.getSystemProperties().getTimezonesByReference();
     // We use this for export - should always contain the timezone
     return false;

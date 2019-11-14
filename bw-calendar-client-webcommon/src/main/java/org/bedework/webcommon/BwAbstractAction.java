@@ -1266,9 +1266,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         rrm = new RecurringRetrievalMode(mode);
       }
 
-      final Collection<EventInfo> evs =
-              cl.getEventByUid(cal.getPath(),
-                               guid, rid, rrm);
+      final var evs = cl.getEventByUid(cal.getPath(),
+                                        guid, rid, rrm).getEntities();
       if (debug()) {
         debug("Get event by guid found " + evs.size());
       }

@@ -60,12 +60,8 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
       }
     }
 
-    public AccessPrincipal getPrincipal() throws AccessException {
-      try {
-        return cl.getCurrentPrincipal();
-      } catch (CalFacadeException cfe) {
-        throw new AccessException(cfe);
-      }
+    public AccessPrincipal getPrincipal() {
+      return cl.getCurrentPrincipal();
     }
 
     public AccessPrincipal getPrincipal(final String href) throws AccessException {

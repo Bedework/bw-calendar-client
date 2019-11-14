@@ -243,9 +243,8 @@ public interface Client extends Serializable {
   /** Get application visible directory information.
    *
    * @return DirectoryInfo
-   * @throws CalFacadeException
    */
-  DirectoryInfo getDirectoryInfo() throws CalFacadeException;
+  DirectoryInfo getDirectoryInfo();
 
   /**
    *
@@ -280,15 +279,14 @@ public interface Client extends Serializable {
    * @return caladdr for this system or null for an invalid uri
    * @throws CalFacadeException  for errors
    */
-  String uriToCaladdr(String val) throws CalFacadeException;
+  String uriToCaladdr(String val);
 
   /** Show whether admin group maintenance is available.
    * Some sites may use other mechanisms.
    *
    * @return boolean    true if admin group maintenance is implemented.
-   * @throws CalFacadeException  for errors
    */
-  boolean getAdminGroupMaintOK() throws CalFacadeException;
+  boolean getAdminGroupMaintOK();
 
   /** Show whether user entries can be displayed or modified with this
    * class. Some sites may use other mechanisms.
@@ -322,60 +320,52 @@ public interface Client extends Serializable {
    *
    * @param val
    * @return true if it's a (possible) principal
-   * @throws CalFacadeException
    */
-  boolean isPrincipal(String val) throws CalFacadeException;
+  boolean isPrincipal(String val);
 
   /** This may change as we switch groups.
    *
    * @return the current principal we are acting for
-   * @throws CalFacadeException
    */
-  BwPrincipal getCurrentPrincipal() throws CalFacadeException;
+  BwPrincipal getCurrentPrincipal();
 
   /** This will not change.
    *
    * @return the principal we authenticated as
-   * @throws CalFacadeException
    */
-  BwPrincipal getAuthPrincipal() throws CalFacadeException;
+  BwPrincipal getAuthPrincipal();
 
   /** Get the current principal to set as owner
    *
    * @return BwPrincipal object
-   * @throws CalFacadeException
    */
-  BwPrincipal getOwner() throws CalFacadeException;
+  BwPrincipal getOwner();
 
   /**
    *
    * @return href for current principal
-   * @throws CalFacadeException
    */
-  String getCurrentPrincipalHref() throws CalFacadeException;
+  String getCurrentPrincipalHref();
 
   /** Find the user with the given account name.
    *
    * @param val           String user id
    * @return User principal or null if not there
-   * @throws CalFacadeException
    */
-  BwPrincipal getUser(final String val) throws CalFacadeException;
+  BwPrincipal getUser(final String val);
 
   /** Find the user with the given account name. Create if not there.
    *
    * @param val           String user id
    * @return BwUser       representing the user
-   * @throws CalFacadeException
    */
-  BwPrincipal getUserAlways(String val) throws CalFacadeException;
+  BwPrincipal getUserAlways(String val);
 
   /**
    *
    * @return current calendar address
-   * @throws CalFacadeException
    */
-  String getCurrentCalendarAddress() throws CalFacadeException;
+  String getCurrentCalendarAddress();
 
   /**
    * @param id
@@ -457,9 +447,8 @@ public interface Client extends Serializable {
   /**
    * @return String used to prefix administrative group names to distinguish
    *         them from user group names.
-   * @throws CalFacadeException  for errors
    */
-  String getAdminGroupsIdPrefix() throws CalFacadeException;
+  String getAdminGroupsIdPrefix();
 
   /**
    * @param href  a principal href
@@ -522,9 +511,8 @@ public interface Client extends Serializable {
    *
    * @param  name           String group name
    * @return BwAdminGroup        group object
-   * @exception CalFacadeException If there's a problem
    */
-  BwAdminGroup findAdminGroup(String name) throws CalFacadeException;
+  BwAdminGroup findAdminGroup(String name);
 
   /** Populate the group with a (possibly empty) Collection of members. Does not
    * populate groups which are members.
@@ -560,9 +548,8 @@ public interface Client extends Serializable {
    *
    * @param  name           String group name
    * @return BwGroup        group object
-   * @exception CalFacadeException If there's a problem
    */
-  BwGroup findGroup(String name) throws CalFacadeException;
+  BwGroup findGroup(String name);
 
   /**
    * @param group the group
@@ -619,9 +606,8 @@ public interface Client extends Serializable {
    *
    * @param user - account
    * @return BwPreferences   prefs for the user - null for no access
-   * @throws CalFacadeException
    */
-  BwPreferences getPreferences(String user) throws CalFacadeException;
+  BwPreferences getPreferences(String user);
 
   /** Update the user preferences.
    *
@@ -852,9 +838,8 @@ public interface Client extends Serializable {
    * @param name unique (for current user) value for the category -
    *             possible language set.
    * @return category entity or null.
-   * @throws CalFacadeException
    */
-  BwCategory getCategoryByName(BwString name) throws CalFacadeException;
+  GetEntityResponse<BwCategory> getCategoryByName(BwString name);
 
   /**
    * @param uid of the category
@@ -925,11 +910,10 @@ public interface Client extends Serializable {
    *
    * @param val
    * @return false if not added because already exists
-   * @throws CalFacadeException
    */
-  boolean addCategory(BwCategory val) throws CalFacadeException;
+  boolean addCategory(BwCategory val);
 
-  public interface DeleteReffedEntityResult {
+  interface DeleteReffedEntityResult {
     boolean getDeleted();
 
     Collection<EventPropertiesReference> getReferences();
@@ -960,9 +944,8 @@ public interface Client extends Serializable {
    *
    * @param uid
    * @return contact object
-   * @throws CalFacadeException
    */
-  BwContact getContactByUid(String uid) throws CalFacadeException;
+  GetEntityResponse<BwContact> getContactByUid(String uid);
 
   /** Get the contact with the given uid.
    *
@@ -1029,15 +1012,13 @@ public interface Client extends Serializable {
    *
    * @param val
    * @return contact object
-   * @throws CalFacadeException
    */
-  BwContact findContact(BwString val) throws CalFacadeException;
+  GetEntityResponse<BwContact> findContact(BwString val);
 
   /** Add the contact
    * @param val
-   * @throws CalFacadeException
    */
-  void addContact(BwContact val) throws CalFacadeException;
+  void addContact(BwContact val);
 
   /** Update the contact
    * @param val
@@ -1090,9 +1071,8 @@ public interface Client extends Serializable {
    *
    * @param uid
    * @return Location object
-   * @throws CalFacadeException
    */
-  BwLocation getLocationByUid(String uid) throws CalFacadeException;
+  GetEntityResponse<BwLocation> getLocationByUid(String uid);
 
   /** Get the location with the given uid.
    *
@@ -1158,9 +1138,8 @@ public interface Client extends Serializable {
    *
    * @param address
    * @return Location object
-   * @throws CalFacadeException
    */
-  BwLocation findLocation(BwString address) throws CalFacadeException;
+  GetEntityResponse<BwLocation> findLocation(BwString address);
 
   /** Find the location given the combined address values.
    *
@@ -1184,9 +1163,8 @@ public interface Client extends Serializable {
   /** Add the location
    * @param val
    * @return true if added
-   * @throws CalFacadeException
    */
-  boolean addLocation(BwLocation val) throws CalFacadeException;
+  boolean addLocation(BwLocation val);
 
   /** Update the location
    * @param val
@@ -1239,14 +1217,12 @@ public interface Client extends Serializable {
    * @param guid uid we want
    * @param rid recurrence id
    * @param recurRetrieval How recurring event is returned.
-   * @return Collection of EventInfo
-   * @throws CalFacadeException on error
+   * @return response with status and Collection of EventInfo
    */
-  Collection<EventInfo> getEventByUid(String path,
-                                      String guid,
-                                      String rid,
-                                      RecurringRetrievalMode recurRetrieval)
-          throws CalFacadeException;
+  GetEntitiesResponse<EventInfo> getEventByUid(String path,
+                                               String guid,
+                                               String rid,
+                                               RecurringRetrievalMode recurRetrieval);
 
   /** Get events given the calendar and String name. Return null for not
    * found. There should be only one event or none. For recurring, the
@@ -1320,11 +1296,10 @@ public interface Client extends Serializable {
    * @param noInvites    True for don't send invitations.
    * @param rollbackOnError
    * @return UpdateResult Counts of changes.
-   * @throws CalFacadeException
    */
   UpdateResult addEvent(EventInfo ei,
                         boolean noInvites,
-                        boolean rollbackOnError) throws CalFacadeException;
+                        boolean rollbackOnError);
 
   /** Update an event in response to an attendee. Exactly as normal update if
    * fromAtt is null. Otherwise no status update is sent to the given attendee
@@ -1401,9 +1376,8 @@ public interface Client extends Serializable {
    * current calendar user.
    *
    * @param name of notification to remove
-   * @throws CalFacadeException
    */
-  void removeNotification(String name) throws CalFacadeException;
+  void removeNotification(String name);
 
   /** Remove the given notification from the notification collection for the
    * current calendar user.
@@ -1664,9 +1638,8 @@ public interface Client extends Serializable {
   /** Set the view mode
    *
    * @param val "list" or "grid" or null to revert to default
-   * @throws CalFacadeException
    */
-  void setViewMode(String val) throws CalFacadeException;
+  void setViewMode(String val);
 
   /**
    *
@@ -1737,7 +1710,7 @@ public interface Client extends Serializable {
    *
    * @throws CalFacadeException
    */
-  public void flushState() throws CalFacadeException;
+  public void flushState();
 
   /* ------------------------------------------------------------
    *                     State of current admin group
@@ -1911,7 +1884,7 @@ public interface Client extends Serializable {
    * @return BwCalSuiteWrapper null for unknown calendar suite
    * @throws CalFacadeException
    */
-  BwCalSuiteWrapper getCalSuite() throws CalFacadeException;
+  BwCalSuiteWrapper getCalSuite();
 
   /** Get a calendar suite given the 'owning' group
    *
@@ -1975,9 +1948,8 @@ public interface Client extends Serializable {
    *
    * @param ent the entity to test
    * @return true if so
-   * @throws CalFacadeException
    */
-  boolean isCalSuiteEntity(BwShareableDbentity ent) throws CalFacadeException;
+  boolean isCalSuiteEntity(BwShareableDbentity ent);
 
   /* ------------------------------------------------------------
    *                   Calendar Suite Resources

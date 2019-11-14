@@ -22,7 +22,7 @@ package org.bedework.appcommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.icalendar.IcalTranslator;
+import org.bedework.convert.IcalTranslator;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;

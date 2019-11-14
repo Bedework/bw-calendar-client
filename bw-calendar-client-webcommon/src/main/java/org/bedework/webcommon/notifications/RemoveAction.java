@@ -19,8 +19,6 @@
 package org.bedework.webcommon.notifications;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.exc.CalFacadeAccessException;
-import org.bedework.calfacade.exc.CalFacadeForbidden;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -58,11 +56,8 @@ public class RemoveAction extends BwAbstractAction {
     try {
       cl.removeNotification(request.getReqPar("name"));
       forward = forwardSuccess;
-    } catch (final CalFacadeAccessException ca) {
+    } catch (final RuntimeException ca) {
       form.getErr().emit(ca.getMessage());
-      forward = forwardNoAccess;
-    } catch (final CalFacadeForbidden cf) {
-      form.getErr().emit(cf.getMessage());
       forward = forwardNoAccess;
     }
 

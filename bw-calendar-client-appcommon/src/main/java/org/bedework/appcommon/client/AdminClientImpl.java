@@ -286,8 +286,7 @@ public class AdminClientImpl extends ClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwPreferences getPreferences(final String user)
-          throws CalFacadeException {
+  public BwPreferences getPreferences(final String user) {
     if (!superUser) {
       return null;
     }
@@ -340,11 +339,14 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public void removeNotification(final String name)
-          throws CalFacadeException {
-    svci.getNotificationsHandler().
-            remove(getCalSuite().getGroup().getOwnerHref(),
-                   name);
+  public void removeNotification(final String name) {
+    try {
+      svci.getNotificationsHandler().
+              remove(getCalSuite().getGroup().getOwnerHref(),
+                     name);
+    } catch (CalFacadeException e) {
+      throw new RuntimeException(e);
+    }
     updated();
   }
 

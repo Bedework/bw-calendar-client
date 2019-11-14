@@ -29,7 +29,7 @@ import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.icalendar.IcalTranslator;
+import org.bedework.convert.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;

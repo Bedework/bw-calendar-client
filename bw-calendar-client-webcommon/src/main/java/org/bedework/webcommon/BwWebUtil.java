@@ -33,7 +33,7 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.icalendar.IcalUtil;
+import org.bedework.convert.ical.IcalUtil;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.misc.Util;
 

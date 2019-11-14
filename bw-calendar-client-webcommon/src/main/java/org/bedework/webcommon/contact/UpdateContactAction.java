@@ -84,7 +84,7 @@ public class UpdateContactAction extends BwAbstractAction {
 
     if (add) {
       c.setPublick(cl.getPublicAdmin());
-      if (cl.findContact(c.getCn()) != null) {
+      if (!cl.findContact(c.getCn()).isNotFound()) {
         form.getErr().emit(ClientError.duplicateContact, c.getCn());
         return forwardDuplicate;
       }

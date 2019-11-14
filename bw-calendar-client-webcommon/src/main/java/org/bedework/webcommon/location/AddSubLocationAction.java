@@ -65,7 +65,10 @@ public class AddSubLocationAction extends BwAbstractAction {
 
     BwLocation location = null;
     if (uid != null) {
-      location = cl.getLocationByUid(uid);
+      var gresp = cl.getLocationByUid(uid);
+      if (gresp.isOk()) {
+        location = gresp.getEntity();
+      }
     }
 
     if (debug()) {

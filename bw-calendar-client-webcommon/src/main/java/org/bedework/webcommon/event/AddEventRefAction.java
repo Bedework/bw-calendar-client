@@ -48,9 +48,6 @@ import org.bedework.webcommon.BwRequest;
  * </ul>
  */
 public class AddEventRefAction extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -135,18 +132,18 @@ public class AddEventRefAction extends EventActionBase {
     try {
       cl.addEvent(eref, true, false);
       form.getMsg().emit(ClientMessage.addedEventrefs, 1);
-    } catch (CalFacadeException cfe) {
-      if (CalFacadeException.duplicateGuid.equals(cfe.getMessage())) {
+    } catch (RuntimeException rte) {
+      if (CalFacadeException.duplicateGuid.equals(rte.getMessage())) {
         form.getErr().emit(ClientError.duplicateUid);
         return forwardDuplicate;
       }
 
-      if (CalFacadeException.collectionNotFound.equals(cfe.getMessage())) {
+      if (CalFacadeException.collectionNotFound.equals(rte.getMessage())) {
         form.getErr().emit(ValidationError.missingCalendar);
         return forwardDuplicate;
       }
 
-      throw cfe;
+      throw rte;
     }
 
     return forwardSuccess;

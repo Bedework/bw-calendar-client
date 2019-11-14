@@ -39,6 +39,7 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.responses.Response;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
@@ -134,7 +135,7 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public BwPrincipal getOwner() throws CalFacadeException {
+  public BwPrincipal getOwner() {
     if (publicAdmin) {
       return svci.getUsersHandler().getPublicUser();
     }
@@ -222,9 +223,10 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public boolean addCategory(final BwCategory val)
-          throws CalFacadeException {
-    return update(svci.getCategoriesHandler().add(val));
+  public boolean addCategory(final BwCategory val) {
+    final Response resp = svci.getCategoriesHandler().add(val);
+    checkResponse(resp);
+    return update(resp.isOk());
   }
 
   @Override
@@ -297,8 +299,7 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public void addContact(final BwContact val)
-          throws CalFacadeException {
+  public void addContact(final BwContact val) {
     svci.getContactsHandler().add(val);
     updated();
   }
@@ -353,7 +354,7 @@ public class ClientImpl extends ROClientImpl {
 
     @Override
     public T getEntity() {
-      return eeer.entity;
+      return eeer.getEntity();
     }
   }
 
@@ -374,9 +375,10 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public boolean addLocation(final BwLocation val)
-          throws CalFacadeException {
-    return update(svci.getLocationsHandler().add(val));
+  public boolean addLocation(final BwLocation val) {
+    var resp = svci.getLocationsHandler().add(val);
+    checkResponse(resp);
+    return update(resp.isOk());
   }
 
   @Override
@@ -449,8 +451,7 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public UpdateResult addEvent(final EventInfo ei,
                                final boolean noInvites,
-                               final boolean rollbackOnError)
-          throws CalFacadeException {
+                               final boolean rollbackOnError) {
     return update(svci.getEventsHandler().add(ei, noInvites,
                                               false,
                                               false, rollbackOnError));

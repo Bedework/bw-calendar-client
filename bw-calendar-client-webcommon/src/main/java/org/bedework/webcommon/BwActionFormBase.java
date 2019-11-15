@@ -140,7 +140,7 @@ public class BwActionFormBase extends UtilActionForm
   private boolean authorisedUser;
   private boolean superUser;
 
-  private String appType;
+  //private String appType;
 
   /** true if we are showing the public face
    */
@@ -1221,7 +1221,7 @@ public class BwActionFormBase extends UtilActionForm
    * @return boolean
    */
   public boolean getSubmitApp() {
-    return BedeworkDefs.appTypeWebsubmit.equals(appType);
+    return BedeworkDefs.appTypeWebsubmit.equals(getAppType());
   }
 
   public void assignMarkDeleted(final boolean val) {

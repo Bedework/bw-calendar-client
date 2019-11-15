@@ -34,6 +34,7 @@
     <orderEntry type="module" module-name="bw-calendar-engine-ucaldav" />
     <orderEntry type="module" module-name="bw-calendar-engine-userws" />
     <orderEntry type="module" module-name="bw-calendar-client-appcommon" />
+    <orderEntry type="module" module-name="bw-calendar-client-util" />
     <orderEntry type="module" module-name="bw-calendar-client-webcommon" />
     <orderEntry type="module" module-name="bw-calendar-engine-annotations" />
     <orderEntry type="module" module-name="bw-calendar-engine-api" />
@@ -68,7 +69,6 @@
     <orderEntry type="library" name="Maven: org.bedework:bw-util-security:4.0.26" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-servlet:4.0.26" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-servlet-filters:4.0.26" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util-struts:4.0.26" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-timezones:4.0.26" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-xml:4.0.26" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util2-calendar:4.0.5" level="project" />

@@ -10,6 +10,10 @@
 
   <artifactId>bw-calendar-client-ear</artifactId>
 
+  <properties>
+    <struts.version>1.2.9</struts.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
@@ -168,6 +172,18 @@
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
       <artifactId>bw-calendar-client-appcommon</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-util</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
@@ -556,17 +572,6 @@
 
     <dependency>
       <groupId>org.bedework</groupId>
-      <artifactId>bw-util-struts</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.bedework</groupId>
       <artifactId>bw-util-timezones</artifactId>
       <exclusions>
         <exclusion>
@@ -714,6 +719,7 @@
     <dependency>
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
+      <version>${struts.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

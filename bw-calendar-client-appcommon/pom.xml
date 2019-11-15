@@ -11,7 +11,13 @@
   
 	<packaging>jar</packaging>
 	<dependencies>
-		<!-- Bedework -->
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Bedework -->
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-config</artifactId>
@@ -25,11 +31,6 @@
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-misc</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.bedework</groupId>
-      <artifactId>bw-util-struts</artifactId>
     </dependency>
 
     <dependency>

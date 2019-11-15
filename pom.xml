@@ -34,7 +34,6 @@
 		<gson.version>1.5</gson.version>
 		<portals-bridge.version>1.0.4</portals-bridge.version>
 		<imgscalr.version>4.2</imgscalr.version>
-		<struts.version>1.2.9</struts.version>
 		<servlet-api.version>4.0.0</servlet-api.version>
 		<junit.version>4.8.2</junit.version>
 
@@ -45,6 +44,7 @@
     <http-core.version>4.4.11</http-core.version>
 
     <apache-jdkim-library.version>0.4</apache-jdkim-library.version>
+    <apache.struts.version>1.3.10</apache.struts.version>
     <digester-version>1.8</digester-version>
     <elasticsearch.version>7.2.0</elasticsearch.version>
     <hibernate.version>5.2.5.Final</hibernate.version>
@@ -93,6 +93,7 @@
     <module>bw-calendar-client-submit</module>
     <module>bw-calendar-client-ucal</module>
     <module>bw-calendar-client-ear</module>
+    <module>bw-calendar-client-util</module>
     <!--
 		<module>bw-calendar-client-resources</module>
 		<module>bw-calendar-client-ucaldav</module>
@@ -218,12 +219,6 @@
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-util-servlet-filters</artifactId>
-        <version>${bw-util.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework</groupId>
-        <artifactId>bw-util-struts</artifactId>
         <version>${bw-util.version}</version>
       </dependency>
 
@@ -470,9 +465,9 @@
 			</dependency>
 
       <dependency>
-        <groupId>struts</groupId>
-        <artifactId>struts</artifactId>
-        <version>${struts.version}</version>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts-core</artifactId>
+        <version>${apache.struts.version}</version>
       </dependency>
 
       <!--

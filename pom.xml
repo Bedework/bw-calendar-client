@@ -17,8 +17,10 @@
 
 		<bw-xml.version>4.0.9</bw-xml.version>
 		<bw-util.version>4.0.26</bw-util.version>
+    <bw-util-conf.version>4.1.0-SNAPSHOT</bw-util-conf.version>
     <bw-util-deploy.version>4.0.25</bw-util-deploy.version>
     <bw-util-hibernate.version>4.0.22</bw-util-hibernate.version>
+    <bw-util-index.version>4.1.0-SNAPSHOT</bw-util-index.version>
     <bw-util-logging.version>4.0.4</bw-util-logging.version>
     <bw-util-network.version>4.1.0-SNAPSHOT</bw-util-network.version>
     <bw-util-security.version>4.1.0-SNAPSHOT</bw-util-security.version>
@@ -138,7 +140,7 @@
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-util-args</artifactId>
-        <version>${bw-util.version}</version>
+        <version>${bw-util-conf.version}</version>
       </dependency>
 
       <dependency>
@@ -150,7 +152,7 @@
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-util-config</artifactId>
-        <version>${bw-util.version}</version>
+        <version>${bw-util-conf.version}</version>
       </dependency>
 
       <dependency>
@@ -162,7 +164,7 @@
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-util-elasticsearch</artifactId>
-        <version>${bw-util.version}</version>
+        <version>${bw-util-index.version}</version>
       </dependency>
 
       <dependency>
@@ -180,13 +182,13 @@
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-util-indexing</artifactId>
-        <version>${bw-util.version}</version>
+        <version>${bw-util-index.version}</version>
       </dependency>
 
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-util-jmx</artifactId>
-        <version>${bw-util.version}</version>
+        <version>${bw-util-conf.version}</version>
       </dependency>
 
       <dependency>

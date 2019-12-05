@@ -28,7 +28,7 @@
     <bw-util2.version>4.0.5</bw-util2.version>
 		<bw-access.version>4.0.7</bw-access.version>
 		<bw-webdav.version>4.0.8</bw-webdav.version>
-		<bw-caldav.version>4.0.8</bw-caldav.version>
+		<bw-caldav.version>4.0.9-SNAPSHOT</bw-caldav.version>
 		<bw-calendar-engine.version>3.13.2-SNAPSHOT</bw-calendar-engine.version>
 
 		<!-- Third Party Library Versions -->
@@ -494,24 +494,6 @@
 				<version>${portlet-api.version}</version>
 			</dependency>
 
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>${java.jaxb.api.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.xml.soap</groupId>
-        <artifactId>javax.xml.soap-api</artifactId>
-        <version>${javax.xml.soap-api.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.xml.ws</groupId>
-        <artifactId>jaxws-api</artifactId>
-        <version>${jaxws-api.version}</version>
-      </dependency>
-
 			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>javax.servlet.jsp-api</artifactId>
@@ -667,7 +649,26 @@
         <version>${http-core.version}</version>
       </dependency>
 
-      <!-- The provider for soap services -->
+      <!-- Web Service (SOAP) Dependencies -->
+
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${java.jaxb.api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.xml.soap</groupId>
+        <artifactId>javax.xml.soap-api</artifactId>
+        <version>${javax.xml.soap-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.xml.ws</groupId>
+        <artifactId>jaxws-api</artifactId>
+        <version>${jaxws-api.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>rt</artifactId>

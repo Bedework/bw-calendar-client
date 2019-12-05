@@ -1105,6 +1105,12 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>
+
+    <!-- The provider for soap services -->
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>rt</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

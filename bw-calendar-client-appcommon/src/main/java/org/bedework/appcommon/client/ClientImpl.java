@@ -122,7 +122,7 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public void unindex(final String href) throws CalFacadeException {
-    getIndexer(docTypeEvent).unindexEntity(docTypeEvent, href);
+    getIndexer(docTypeEvent).unindexEntity(href);
   }
 
   /* ------------------------------------------------------------

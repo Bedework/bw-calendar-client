@@ -148,8 +148,7 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public void updatePreferences(final BwPreferences val)
-          throws CalFacadeException {
+  public void updatePreferences(final BwPreferences val) {
     svci.getPrefsHandler().update(val);
   }
 

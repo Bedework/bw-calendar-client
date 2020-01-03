@@ -16,7 +16,7 @@
 		<!-- Bedework Versions -->
 
 		<bw-xml.version>4.0.9</bw-xml.version>
-		<bw-util.version>4.0.26</bw-util.version>
+		<bw-util.version>4.0.27-SNAPSHOT</bw-util.version>
     <bw-util-conf.version>4.1.0-SNAPSHOT</bw-util-conf.version>
     <bw-util-deploy.version>4.0.25</bw-util-deploy.version>
     <bw-util-hibernate.version>4.0.22</bw-util-hibernate.version>

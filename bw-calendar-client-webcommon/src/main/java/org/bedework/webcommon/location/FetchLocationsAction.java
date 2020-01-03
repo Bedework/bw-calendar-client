@@ -22,7 +22,7 @@ package org.bedework.webcommon.location;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.configs.BasicSystemProperties;
-import org.bedework.calfacade.responses.GetEntitiesResponse;
+import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;

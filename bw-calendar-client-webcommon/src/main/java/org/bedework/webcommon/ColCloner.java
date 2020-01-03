@@ -7,7 +7,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwProperty;
-import org.bedework.calfacade.responses.Response;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.bedework.calfacade.responses.Response.Status.ok;
+import static org.bedework.util.misc.response.Response.Status.ok;
 
 /**
  * User: mike Date: 3/17/16 Time: 22:49

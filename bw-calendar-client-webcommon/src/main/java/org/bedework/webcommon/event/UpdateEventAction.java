@@ -76,7 +76,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.bedework.calfacade.responses.Response.Status.ok;
+import static org.bedework.util.misc.response.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
  * distinguish.

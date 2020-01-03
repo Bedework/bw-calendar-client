@@ -23,7 +23,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.responses.EventPropertiesResponse;
-import org.bedework.calfacade.responses.GetEntitiesResponse;
+import org.bedework.util.misc.response.GetEntitiesResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;

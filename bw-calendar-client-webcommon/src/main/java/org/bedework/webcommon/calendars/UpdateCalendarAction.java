@@ -28,7 +28,7 @@ import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.calfacade.responses.Response;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.misc.Util;
 import org.bedework.util.xml.tagdefs.WebdavTags;
 import org.bedework.webcommon.BwAbstractAction;

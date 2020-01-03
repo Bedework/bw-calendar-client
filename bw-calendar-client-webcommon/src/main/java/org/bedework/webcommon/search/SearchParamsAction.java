@@ -24,7 +24,7 @@ import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResultEntry;
-import org.bedework.calfacade.responses.Response;
+import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.util.calendar.ScheduleMethods;

@@ -63,7 +63,7 @@ import org.bedework.calfacade.filter.BwCreatorFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.calfacade.responses.Response;
+import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;

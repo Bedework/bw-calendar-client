@@ -19,7 +19,7 @@
 package org.bedework.webcommon.filter;
 
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.calfacade.responses.Response;
+import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;

@@ -23,7 +23,7 @@ import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.filter.SortTerm;
-import org.bedework.calfacade.responses.Response;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.misc.ToString;
 
 import java.io.Serializable;

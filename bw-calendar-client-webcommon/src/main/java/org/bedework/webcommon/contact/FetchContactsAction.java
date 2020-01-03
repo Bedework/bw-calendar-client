@@ -22,7 +22,7 @@ package org.bedework.webcommon.contact;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.responses.ContactsResponse;
 import org.bedework.calfacade.responses.EventPropertiesResponse;
-import org.bedework.calfacade.responses.GetEntitiesResponse;
+import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.FetchEventPropertiesAction;

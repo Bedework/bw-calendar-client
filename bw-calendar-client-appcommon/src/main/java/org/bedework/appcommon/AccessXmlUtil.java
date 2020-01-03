@@ -73,22 +73,22 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
     }
 
     @Override
-    public void setErrorTag(final QName tag) throws AccessException {
+    public void setErrorTag(final QName tag) {
       errorTag = tag;
     }
 
     @Override
-    public QName getErrorTag() throws AccessException {
+    public QName getErrorTag() {
       return errorTag;
     }
 
     @Override
-    public void setErrorMsg(final String val) throws AccessException {
+    public void setErrorMsg(final String val) {
       errorMsg = val;
     }
 
     @Override
-    public String getErrorMsg() throws AccessException {
+    public String getErrorMsg() {
       return errorMsg;
     }
   }
@@ -105,7 +105,7 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
 
   /** Represent the acl as an xml string
    *
-   * @param acl
+   * @param acl the acl
    * @param cl fo callbacks
    * @return String xml representation
    * @throws AccessException
@@ -118,7 +118,7 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
   /** Produce an xml representation of current user privileges from an array
    * of allowed/disallowed/unspecified flags indexed by a privilege index.
    *
-   * @param xml
+   * @param xml privs
    * @param privileges    char[] of allowed/disallowed
    * @throws AccessException
    */

@@ -717,7 +717,7 @@ public class UpdateEventAction extends EventActionBase {
           clearForm = ((AdminConfig)form.getConfig())
                   .getDefaultClearFormsOnSubmit();
         } else {
-          clearForm = Boolean.valueOf(clearFormPref);
+          clearForm = Boolean.parseBoolean(clearFormPref);
         }
 
         if (clearForm) {
@@ -867,7 +867,7 @@ public class UpdateEventAction extends EventActionBase {
   }
 
   private void restore(final BwEvent ev,
-                       final String preserveColPath) throws Throwable {
+                       final String preserveColPath) {
     if (preserveColPath == null) {
       return;
     }
@@ -969,7 +969,7 @@ public class UpdateEventAction extends EventActionBase {
   }
 
   private void changeOwner(final BwEvent ev,
-                           final Client cl) throws CalFacadeException {
+                           final Client cl) {
     cl.claimEvent(ev);
     ev.setCreatorHref(cl.getCurrentPrincipalHref());
   }
@@ -1108,7 +1108,7 @@ public class UpdateEventAction extends EventActionBase {
     final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.XPROP);
     final List<String> unparsedxps = request.getReqPars("xproperty");
 
-    List<BwXproperty> added = null;
+    List<BwXproperty> added;
     List<BwXproperty> removed = null;
 
     List<BwXproperty> xprops = null;

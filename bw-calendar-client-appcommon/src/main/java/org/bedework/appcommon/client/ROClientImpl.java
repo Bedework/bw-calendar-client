@@ -382,7 +382,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void postNotification(final SysEventBase ev) throws CalFacadeException {
+  public void postNotification(final SysEventBase ev) {
     svci.postNotification(ev);
   }
 
@@ -453,7 +453,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public long getUserMaxEntitySize() throws CalFacadeException {
+  public long getUserMaxEntitySize() {
     return svci.getUserMaxEntitySize();
   }
 
@@ -1033,7 +1033,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public String getPublicCalendarsRootPath() throws CalFacadeException {
+  public String getPublicCalendarsRootPath() {
     return svci.getCalendarsHandler().getPublicCalendarsRootPath();
   }
 
@@ -1345,7 +1345,7 @@ public class ROClientImpl implements Logged, Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public void claimEvent(final BwEvent ev) throws CalFacadeException {
+  public void claimEvent(final BwEvent ev) {
     throw new RuntimeException("org.bedework.read.only.client");
   }
 

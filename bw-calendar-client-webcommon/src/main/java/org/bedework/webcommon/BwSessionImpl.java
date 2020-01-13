@@ -40,6 +40,7 @@ import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.AuthProperties;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
@@ -450,8 +451,8 @@ public class BwSessionImpl implements Logged, BwSession {
       }
       
       return cloned;
-    } catch (final Throwable t) {
-      request.getErr().emit(t);
+    } catch (final CalFacadeException cfe) {
+      request.getErr().emit(cfe);
       return null;
     }
   }
@@ -504,8 +505,8 @@ public class BwSessionImpl implements Logged, BwSession {
       publicCollectionsChangeToken[accessIndex] = changeToken;
 
       return clonedPublicCollections[accessIndex];
-    } catch (final Throwable t) {
-      request.getErr().emit(t);
+    } catch (final CalFacadeException cfe) {
+      request.getErr().emit(cfe);
       return null;
     }
   }
@@ -604,8 +605,8 @@ public class BwSessionImpl implements Logged, BwSession {
       }
 
       return cloned;
-    } catch (final Throwable t) {
-      request.getErr().emit(t);
+    } catch (final CalFacadeException cfe) {
+      request.getErr().emit(cfe);
       return null;
     }
   }
@@ -668,7 +669,7 @@ public class BwSessionImpl implements Logged, BwSession {
         }
       }
     } else {
-      throw new Exception("Software error - bad kind " + kind);
+      throw new RuntimeException("Software error - bad kind " + kind);
     }
 
     request.setSessionAttr(attrName, vals);
@@ -757,13 +758,13 @@ public class BwSessionImpl implements Logged, BwSession {
 
       if (vals == null) {
         // Won't need this with 1.5
-        throw new Exception("Software error - bad kind " + kind);
+        throw new RuntimeException("Software error - bad kind " + kind);
       }
 
       return getContactCollator().getCollatedCollection(vals);
-    } catch (final Throwable t) {
-      t.printStackTrace();
-      request.getErr().emit(t);
+    } catch (final CalFacadeException cfe) {
+      request.getErr().emit(cfe);
+      cfe.printStackTrace();
       return new ArrayList<>();
     }
   }
@@ -1073,18 +1074,10 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   private void setSessionNum(final String name) {
-    try {
-      Counts c = countsMap.get(name);
+    Counts c = countsMap.computeIfAbsent(name, k -> new Counts());
 
-      if (c == null) {
-        c = new Counts();
-        c = countsMap.putIfAbsent(name, c);
-      }
-
-      sessionNum = c.totalSessions;
-      c.totalSessions++;
-    } catch (final Throwable ignored) {
-    }
+    sessionNum = c.totalSessions;
+    c.totalSessions++;
   }
 
   private CollectionCollator<BwCategory> getCategoryCollator() {

@@ -148,9 +148,8 @@ public interface Client extends Serializable {
   /** Send a notification event
    *
    * @param ev - system event
-   * @throws CalFacadeException
    */
-  void postNotification(SysEventBase ev) throws CalFacadeException;
+  void postNotification(SysEventBase ev);
 
   /** End a (possibly long-running) transaction. In the web environment
    * this should in some way check version numbers to detect concurrent updates
@@ -224,9 +223,8 @@ public interface Client extends Serializable {
 
   /**
    * @return System limit or user overrride - bytes.
-   * @throws CalFacadeException
    */
-  long getUserMaxEntitySize() throws CalFacadeException;
+  long getUserMaxEntitySize();
 
   boolean isDefaultIndexPublic();
 
@@ -798,9 +796,8 @@ public interface Client extends Serializable {
   /** Returns the href of the root of the public calendars tree.
    *
    * @return String   root path
-   * @throws CalFacadeException
    */
-  String getPublicCalendarsRootPath() throws CalFacadeException;
+  String getPublicCalendarsRootPath();
 
   /** Returns the cloned root of the tree of public calendars.
    *
@@ -1199,9 +1196,8 @@ public interface Client extends Serializable {
   /** Claim ownership of this event
    *
    * @param ev  event
-   * @throws CalFacadeException on error
    */
-  void claimEvent(final BwEvent ev) throws CalFacadeException;
+  void claimEvent(final BwEvent ev);
 
   /** Realias the event - set categories according to the set of aliases
    *

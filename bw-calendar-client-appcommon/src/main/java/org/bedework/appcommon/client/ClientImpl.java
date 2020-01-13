@@ -438,7 +438,7 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public void claimEvent(final BwEvent ev) throws CalFacadeException {
+  public void claimEvent(final BwEvent ev) {
     svci.getEventsHandler().claim(ev);
   }
 

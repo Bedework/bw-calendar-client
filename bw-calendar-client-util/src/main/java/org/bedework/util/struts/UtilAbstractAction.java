@@ -872,7 +872,7 @@ public abstract class UtilAbstractAction extends Action
    * @param request
    * @return PresentationState
    */
-  public PresentationState getPresentationState(final Request request) throws Throwable {
+  public PresentationState getPresentationState(final Request request) {
     String attrName = getPresentationAttrName();
 
     if ((attrName == null) || (attrName.equals("NONE"))) {

@@ -506,7 +506,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   @Override
-  public PresentationState getPresentationState(final Request req) throws Throwable {
+  public PresentationState getPresentationState(final Request req) {
     /* First try to get it from the module. */
 
     BwActionFormBase form = (BwActionFormBase)req.getForm();
@@ -551,7 +551,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     params.setPublicIndexRequested(request.present("public"));
 
-    String startStr = request.getReqPar("start");
+    String icalStart = XcalUtil.getIcalFormatDateTime(request.getReqPar("start"));
     String endStr = request.getReqPar("end");
 
     filterAndQuery(request, params);
@@ -565,7 +565,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       // Ignore any end date
-      if (startStr == null) {
+      if (icalStart == null) {
         params.setFromDate(tv.getViewStart());
         params.setToDate(tv.getViewEnd());
         return forwardSuccess;
@@ -574,7 +574,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       // Set current timeview to given date - rounded approopriately
 
       final BwDateTime bdt = BwDateTimeUtil.getDateTime(
-              XcalUtil.getIcalFormatDateTime(startStr),
+              icalStart,
               true,
               false, null);
       gotoDateView(request,
@@ -588,13 +588,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwardSuccess;
     }
 
-    if (startStr == null) {
+    if (icalStart == null) {
       final String lim = mstate.getSearchLimits();
       if ((lim != null) && (!"none".equals(lim))) {  // there are limits
         if ("beforeToday".equals(lim)) {
           endStr = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
         } else if ("fromToday".equals(lim)) {
-          startStr = DateTimeUtil.isoDate(new java.util.Date());
+          icalStart = DateTimeUtil.isoDate(new java.util.Date());
         }
       }
     }
@@ -607,7 +607,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       //    days = authp.getDefaultWebCalPeriod();
       //}
 
-      if ((startStr == null) && (endStr == null)) {
+      if ((icalStart == null) && (endStr == null)) {
         if (!cl.getWebSubmit() && !cl.getPublicAdmin()) {
           if (!request.getBooleanReqPar("listAllEvents", false)) {
             params.setFromDate(todaysDateTime());
@@ -632,7 +632,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
 
         final BwTimeRange tr =
-                BwDateTimeUtil.getPeriod(startStr,
+                BwDateTimeUtil.getPeriod(icalStart,
                                          endStr,
                                          java.util.Calendar.DATE,
                                          days,
@@ -648,7 +648,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         params.setToDate(tr.getEnd());
       } else {
         params.setFromDate(BwDateTimeUtil.getDateTime(
-                XcalUtil.getIcalFormatDateTime(startStr),
+                icalStart,
                 true,
                 false, null));
         params.setToDate(params.getFromDate().addDur(
@@ -815,7 +815,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @return BwPrincipal     null if not found. Messages emitted
    * @throws Throwable on fatal error
    */
-  protected BwPrincipal findPrincipal(final BwRequest request) throws Throwable {
+  protected BwPrincipal findPrincipal(final BwRequest request) {
     String str = request.getReqPar("user");
     if (str == null) {
       request.getErr().emit(ClientError.unknownUser, "null");
@@ -1397,7 +1397,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
        * try to create a folder called "Images"
        */
 
-      BwCalendar imageCol = null;
+      BwCalendar imageCol;
 
       String imagecolPath = cl.getPreferences().getDefaultImageDirectory();
       if (imagecolPath == null) {

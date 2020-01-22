@@ -113,7 +113,6 @@ public class SetAlarmAction extends BwAbstractAction {
 
     alarm.addAttendee(att);
 
-    alarm.setEvent(ev);
     alarm.setOwnerHref(cl.getCurrentPrincipalHref());
 
     ev.addAlarm(alarm);

@@ -19,6 +19,7 @@
 
 package org.bedework.webcommon.resources;
 
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
@@ -82,27 +83,32 @@ public class UpdateResourceAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    // Update the resource content
-    if (update != null) {
-      final String content = request.getReqPar("content");
-      final FormFile formFile = form.getUploadFile();
-
-      if (content != null) {
-        cl.setResourceValue(r, content);
-      } else if (formFile != null) {
-        cl.setResourceValue(r, formFile.getFileData());
-      } else {
-        form.getErr().emit(ClientError.unknownResource, name);
-        return forwardNotFound;
-      }
-      
-      cl.updateResource(r, true);
-    }
-
     // Remove the resource
     if (remove != null) {
       return forwardDelete;
     }
+
+    if (update == null) {
+      return forwardSuccess;
+    }
+
+    // Update the resource content
+    final String content = request.getReqPar("content");
+    final FormFile formFile = form.getUploadFile();
+
+    if (content != null) {
+      cl.setResourceValue(r, content);
+    } else if (formFile != null) {
+      cl.setResourceValue(r, formFile.getFileData());
+    } else {
+      form.getErr().emit(ClientError.unknownResource, name);
+      return forwardNotFound;
+    }
+      
+    cl.updateResource(r, true);
+    final CalSuiteResource fres = form.getCalSuiteResource();
+    form.setCalSuiteResource(new CalSuiteResource(r,
+                                                  fres.getRclass()));
 
     return forwardSuccess;
   }

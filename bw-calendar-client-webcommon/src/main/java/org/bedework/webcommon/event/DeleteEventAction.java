@@ -28,6 +28,7 @@ import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
+import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -113,10 +114,16 @@ public class DeleteEventAction extends EventActionBase {
                         ev.getDeleted(),
                         true);
         ev.setDeleted(true);
-        try {
-          cl.updateEvent(ei, true, null);
-        } catch (final CalFacadeAccessException cfe1) {
-          form.getErr().emit(ClientError.noAccess);
+
+        var ueres = cl.updateEvent(ei, true, null);
+        if (!ueres.isOk()) {
+          if (ueres.getStatus() == Response.Status.noAccess) {
+            form.getErr().emit(ClientError.noAccess);
+          } else if (ueres.getException() != null) {
+            form.getErr().emit(ClientError.exc, ueres.getException());
+          } else {
+            form.getErr().emit(ueres.getMessage());
+          }
           return forwardNoAction;
         }
       } else {

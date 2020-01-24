@@ -116,7 +116,11 @@ public class SetAlarmAction extends BwAbstractAction {
     alarm.setOwnerHref(cl.getCurrentPrincipalHref());
 
     ev.addAlarm(alarm);
-    cl.updateEvent(new EventInfo(ev), true, null);
+    var ueres = cl.updateEvent(new EventInfo(ev), true, null);
+    if (!ueres.isOk()) {
+      form.getErr().emit(ueres.getMessage());
+      return forwardError;
+    }
 
     form.getMsg().emit(ClientMessage.setAlarm);
 

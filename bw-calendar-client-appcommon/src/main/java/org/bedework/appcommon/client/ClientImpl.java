@@ -39,7 +39,6 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
@@ -48,10 +47,11 @@ import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.Contacts;
-import org.bedework.calsvci.EventProperties;
+import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
 import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SharingI;
+import org.bedework.util.misc.response.Response;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
@@ -112,7 +112,7 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public Client copy(final String id) throws CalFacadeException {
+  public Client copy(final String id) {
     final ClientImpl cl = new ClientImpl(conf, id);
 
     copyCommon(id, cl);
@@ -122,7 +122,8 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public void unindex(final String href) throws CalFacadeException {
-    getIndexer(docTypeEvent).unindexEntity(href);
+    getIndexer(isDefaultIndexPublic(),
+               docTypeEvent).unindexEntity(href);
   }
 
   /* ------------------------------------------------------------
@@ -343,30 +344,14 @@ public class ClientImpl extends ROClientImpl {
     return new ClDeleteReffedEntityResult(true);
   }
 
-  private static class ClCheckEntityResult<T> implements CheckEntityResult<T> {
-    private EventProperties.EnsureEntityExistsResult<T> eeer;
-
-    @Override
-    public boolean getAdded() {
-      return eeer.added;
-    }
-
-    @Override
-    public T getEntity() {
-      return eeer.getEntity();
-    }
-  }
-
   @Override
-  public CheckEntityResult<BwContact> ensureContactExists(final BwContact val,
-                                                          final String ownerHref)
-          throws CalFacadeException {
-    final ClCheckEntityResult<BwContact> cer = new ClCheckEntityResult<>();
-
-    cer.eeer = svci.getContactsHandler().ensureExists(val, ownerHref);
+  public EnsureEntityExistsResult<BwContact> ensureContactExists(final BwContact val,
+                                                                 final String ownerHref) {
+    final EnsureEntityExistsResult<BwContact> eer =
+            svci.getContactsHandler().ensureExists(val, ownerHref);
     updated();
 
-    return cer;
+    return eer;
   }
 
   /* ------------------------------------------------------------
@@ -421,16 +406,14 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public CheckEntityResult<BwLocation> ensureLocationExists(final BwLocation val,
-                                                            final String ownerHref)
-          throws CalFacadeException {
-    final ClCheckEntityResult<BwLocation> cer = new ClCheckEntityResult<>();
-
-    cer.eeer = svci.getLocationsHandler().ensureExists(val, ownerHref);
+  public EnsureEntityExistsResult<BwLocation> ensureLocationExists(final BwLocation val,
+                                                            final String ownerHref) {
+    final EnsureEntityExistsResult<BwLocation> eer =
+            svci.getLocationsHandler().ensureExists(val, ownerHref);
 
     updated();
 
-    return cer;
+    return eer;
   }
 
   /* ------------------------------------------------------------
@@ -459,8 +442,7 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public UpdateResult updateEvent(final EventInfo ei,
                                   final boolean noInvites,
-                                  final String fromAttUri)
-          throws CalFacadeException {
+                                  final String fromAttUri) {
     return update(svci.getEventsHandler().update(ei,
                                                  noInvites,
                                                  fromAttUri));
@@ -470,8 +452,7 @@ public class ClientImpl extends ROClientImpl {
   public UpdateResult updateEvent(final EventInfo ei,
                                   final boolean noInvites,
                                   final String fromAttUri,
-                                  final boolean alwaysWrite)
-          throws CalFacadeException {
+                                  final boolean alwaysWrite) {
     return update(svci.getEventsHandler().update(ei,
                                                  noInvites,
                                                  fromAttUri,
@@ -709,7 +690,7 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public void changeAccess(final BwShareableDbentity ent,
+  public void changeAccess(final BwShareableDbentity<?> ent,
                            final Collection<Ace> aces,
                            final boolean replaceAll)
           throws CalFacadeException {

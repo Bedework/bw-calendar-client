@@ -88,7 +88,11 @@ public class UpdateContactAction extends BwAbstractAction {
         form.getErr().emit(ClientError.duplicateContact, c.getCn());
         return forwardDuplicate;
       }
-      c = cl.ensureContactExists(c, null).getEntity();
+
+      var cres = cl.ensureContactExists(c, null);
+      if (!cres.isOk()) {
+        return forwardRetry;
+      }
     } else { // CHGTBL if (vr.changed) {
       cl.updateContact(c);
     }

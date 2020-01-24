@@ -93,7 +93,7 @@ public class AttendeeRespond extends EventActionBase {
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
@@ -222,6 +222,10 @@ public class AttendeeRespond extends EventActionBase {
                          request.getBooleanReqPar("rsvp", false));
 
     UpdateResult ur = cl.updateEvent(ei, false, null);
+    if (!ur.isOk()) {
+      form.getErr().emit(ur.getMessage());
+      return forwardError;
+    }
 
     emitScheduleStatus(form, ur.schedulingResult, false);
 
@@ -248,7 +252,7 @@ public class AttendeeRespond extends EventActionBase {
                                       final String meth,
                                       final String partStat,
                                       final String orgComment,
-                                      final boolean rsvp) throws CalFacadeException {
+                                      final boolean rsvp) {
     BwEvent ev = ei.getEvent();
     BwEventProxy proxy = null;
     if (ev instanceof BwEventProxy) {
@@ -341,8 +345,7 @@ public class AttendeeRespond extends EventActionBase {
       }
 
       att.setPartstat(partStat);
-    } else if (method == ScheduleMethods.methodTypeCounter) {
-    } else {
+    } else if (method != ScheduleMethods.methodTypeCounter) {
       throw new RuntimeException("Never get here");
     }
 

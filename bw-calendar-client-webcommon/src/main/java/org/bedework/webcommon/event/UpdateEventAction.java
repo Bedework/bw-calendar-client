@@ -378,14 +378,8 @@ public class UpdateEventAction extends EventActionBase {
     /* -------------------------- Contact ------------------------------ */
 
 
-    try {
-      if (!setEventContact(request, submitApp)) {
-        restore(ev, preserveColPath);
-        return forwardRetry;
-      }
-    } catch (final CalFacadeException cfe) {
-      cl.rollback();
-      request.getErr().emit(ClientError.badRequest, cfe.getExtra());
+    if (!setEventContact(request, submitApp)) {
+      restore(ev, preserveColPath);
       return forwardRetry;
     }
 
@@ -702,8 +696,12 @@ public class UpdateEventAction extends EventActionBase {
       } else {
         ur = cl.updateEvent(ei, !sendInvitations, null);
       }
+      if (!ur.isOk()) {
+        form.getErr().emit(ur.getMessage());
+        return forwardError;
+      }
 
-      if ((ur != null) && (ur.schedulingResult != null)) {
+      if (ur.schedulingResult != null) {
         emitScheduleStatus(form, ur.schedulingResult, false);
       }
 
@@ -974,7 +972,7 @@ public class UpdateEventAction extends EventActionBase {
     ev.setCreatorHref(cl.getCurrentPrincipalHref());
   }
 
-  private void copyEntities(final BwEvent ev) throws CalFacadeException {
+  private void copyEntities(final BwEvent ev) {
     /* Copy event entities */
     BwLocation loc = ev.getLocation();
     if ((loc != null) && !loc.getPublick()) {

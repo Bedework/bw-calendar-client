@@ -52,8 +52,6 @@ import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.mail.Message;
-import org.bedework.util.misc.response.GetEntitiesResponse;
-import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
@@ -65,10 +63,13 @@ import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
+import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
 import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
 import org.bedework.sysevents.events.SysEventBase;
+import org.bedework.util.misc.response.GetEntitiesResponse;
+import org.bedework.util.misc.response.GetEntityResponse;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -90,9 +91,8 @@ public interface Client extends Serializable {
    * @return a copy of this client which can be used for an asynchronous
    * action. Client copies should be discarded on completion of the request
    * cycle.
-   * @throws CalFacadeException on error
    */
-  Client copy(final String id) throws CalFacadeException;
+  Client copy(final String id);
 
   /** Call on the way in once we have a client object.
    *
@@ -248,9 +248,8 @@ public interface Client extends Serializable {
    *
    * @param cua   calendar user address
    * @return principal corresponding or null for unknown
-   * @throws CalFacadeException
    */
-  BwPrincipal calAddrToPrincipal(String cua) throws CalFacadeException;
+  BwPrincipal calAddrToPrincipal(String cua);
 
   /**
    *
@@ -596,9 +595,8 @@ public interface Client extends Serializable {
   /** Returns the current calsuite preferences.
    *
    * @return BwPreferences   prefs for the current calsuite
-   * @throws CalFacadeException
    */
-  BwPreferences getCalsuitePreferences() throws CalFacadeException;
+  BwPreferences getCalsuitePreferences();
 
   /** Returns the given user's preferences. Only valid for superuser
    *
@@ -1031,34 +1029,15 @@ public interface Client extends Serializable {
    */
   DeleteReffedEntityResult deleteContact(BwContact val) throws CalFacadeException;
 
-  /** Returned to show if an entity was added. entity is set to retrieved entity
-   *
-   * @param <T>
-   */
-  public interface CheckEntityResult<T> {
-    /**
-     *
-     * @return true if was added
-     */
-    boolean getAdded();
-
-    /**
-     * @return the entity
-     */
-    T getEntity();
-  }
-
   /** Ensure a contact exists. If it already does returns the object.
    * If not creates the entity.
    *
    * @param val     contact object.
    * @param ownerHref   String principal href, null for current user
-   * @return contact object.
-   * @throws CalFacadeException
+   * @return response object.
    */
-  CheckEntityResult<BwContact> ensureContactExists(final BwContact val,
-                                                   final String ownerHref)
-          throws CalFacadeException;
+  EnsureEntityExistsResult<BwContact> ensureContactExists(final BwContact val,
+                                                          final String ownerHref);
 
   /* ------------------------------------------------------------
    *                     Locations
@@ -1133,7 +1112,7 @@ public interface Client extends Serializable {
 
   /** Find the location given the address.
    *
-   * @param address
+   * @param address to be found
    * @return Location object
    */
   GetEntityResponse<BwLocation> findLocation(BwString address);
@@ -1158,13 +1137,13 @@ public interface Client extends Serializable {
                                                    String val);
 
   /** Add the location
-   * @param val
+   * @param val a location
    * @return true if added
    */
   boolean addLocation(BwLocation val);
 
   /** Update the location
-   * @param val
+   * @param val a location
    * @throws CalFacadeException on error
    */
   void updateLocation(BwLocation val) throws CalFacadeException;
@@ -1182,12 +1161,10 @@ public interface Client extends Serializable {
    *
    * @param val     location object.
    * @param ownerHref   String principal href, null for current user
-   * @return location object.
-   * @throws CalFacadeException on error
+   * @return response object.
    */
-  CheckEntityResult<BwLocation> ensureLocationExists(final BwLocation val,
-                                                     final String ownerHref)
-          throws CalFacadeException;
+  EnsureEntityExistsResult<BwLocation> ensureLocationExists(final BwLocation val,
+                                                            final String ownerHref);
 
   /* ------------------------------------------------------------
    *                     Events
@@ -1306,11 +1283,10 @@ public interface Client extends Serializable {
    * @param noInvites    True for don't send invitations.
    * @param fromAttUri   attendee responding
    * @return UpdateResult Counts of changes.
-   * @throws CalFacadeException
    */
   UpdateResult updateEvent(final EventInfo ei,
                            final boolean noInvites,
-                           String fromAttUri) throws CalFacadeException;
+                           String fromAttUri);
 
   /** Update an event in response to an attendee. Exactly as normal update if
    * fromAtt is null. Otherwise no status update is sent to the given attendee
@@ -1322,12 +1298,11 @@ public interface Client extends Serializable {
    * @param fromAttUri   attendee responding
    * @param alwaysWrite  write and reindex whatever changetable says
    * @return UpdateResult Counts of changes.
-   * @throws CalFacadeException on error
    */
   UpdateResult updateEvent(final EventInfo ei,
                            final boolean noInvites,
                            String fromAttUri,
-                           boolean alwaysWrite) throws CalFacadeException;
+                           boolean alwaysWrite);
 
   /** Delete an event.
    *
@@ -1640,9 +1615,8 @@ public interface Client extends Serializable {
   /**
    *
    * @return  "list" or "grid"
-   * @throws CalFacadeException
    */
-  String getViewMode() throws CalFacadeException;
+  String getViewMode();
 
   /** Find the named view.
    *
@@ -1860,7 +1834,7 @@ public interface Client extends Serializable {
    * @param replaceAll true to replace the entire access list.
    * @throws CalFacadeException
    */
-  void changeAccess(BwShareableDbentity ent,
+  void changeAccess(BwShareableDbentity<?> ent,
                     Collection<Ace> aces,
                     boolean replaceAll) throws CalFacadeException;
 
@@ -1907,10 +1881,10 @@ public interface Client extends Serializable {
 
   /** Create a new calendar suite
    *
-   * @param name
+   * @param name ofsuite
    * @param adminGroupName - name of the admin group
    * @param rootCollectionPath
-   * @param submissionsPath
+   * @param submissionsPath where submitted events go
    * @return BwCalSuiteWrapper for new object
    * @throws CalFacadeException
    */
@@ -1925,7 +1899,7 @@ public interface Client extends Serializable {
    * @param cs     BwCalSuiteWrapper object
    * @param adminGroupName - name of the admin group
    * @param rootCollectionPath
-   * @param submissionsPath
+   * @param submissionsPath where submitted events go
    * @throws CalFacadeException
    */
   void updateCalSuite(BwCalSuiteWrapper cs,
@@ -1945,7 +1919,7 @@ public interface Client extends Serializable {
    * @param ent the entity to test
    * @return true if so
    */
-  boolean isCalSuiteEntity(BwShareableDbentity ent);
+  boolean isCalSuiteEntity(BwShareableDbentity<?> ent);
 
   /* ------------------------------------------------------------
    *                   Calendar Suite Resources

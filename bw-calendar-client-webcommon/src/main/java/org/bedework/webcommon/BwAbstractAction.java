@@ -813,7 +813,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request     BwRequest for parameters
    * @return BwPrincipal     null if not found. Messages emitted
-   * @throws Throwable on fatal error
    */
   protected BwPrincipal findPrincipal(final BwRequest request) {
     String str = request.getReqPar("user");
@@ -850,7 +849,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * <p>We build a list of categories then update the membership of the entity
    * category collection to correspond.
    *
-   * @param request
+   * @param request     BwRequest for parameters
    * @param extraCats Categories to add as a result of other operations
    * @param changes
    * @param ent
@@ -1069,8 +1068,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   /**
-   * @param request
-   * @param form
+   * @param request     BwRequest for parameters
+   * @param form        action form
    * @param atts
    * @param st
    * @param et
@@ -1158,17 +1157,22 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (intunitStr != null) {
-      if ("minutes".equals(intunitStr)) {
-        dur.setMinutes(interval);
-      } else if ("hours".equals(intunitStr)) {
-        dur.setHours(interval);
-      } else if ("days".equals(intunitStr)) {
-        dur.setDays(interval);
-      } else if ("weeks".equals(intunitStr)) {
-        dur.setWeeks(interval);
-      } else {
-        form.getErr().emit(ClientError.badIntervalUnit, interval);
-        return forwardError;
+      switch (intunitStr) {
+        case "minutes":
+          dur.setMinutes(interval);
+          break;
+        case "hours":
+          dur.setHours(interval);
+          break;
+        case "days":
+          dur.setDays(interval);
+          break;
+        case "weeks":
+          dur.setWeeks(interval);
+          break;
+        default:
+          form.getErr().emit(ClientError.badIntervalUnit, interval);
+          return forwardError;
       }
     } else {
       dur.setHours(interval);
@@ -1331,12 +1335,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         ownerHref = cl.getCurrentPrincipalHref();
       }
 
-      Client.CheckEntityResult<BwLocation> cer =
-        cl.ensureLocationExists(loc, ownerHref);
+      var cer = cl.ensureLocationExists(loc, ownerHref);
 
       loc = cer.getEntity();
 
-      if (cer.getAdded()) {
+      if (cer.added) {
         form.getMsg().emit(ClientMessage.addedLocations, 1);
       }
     }
@@ -1596,10 +1599,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request    HttpServletRequest
    * @return null for continue, forwardLoggedOut to end session.
-   * @throws Throwable on fatal error
    */
-  protected String checkLogOut(final Request request)
-          throws Throwable {
+  protected String checkLogOut(final Request request) {
     String temp = request.getReqPar(requestLogout);
     if (temp != null) {
       HttpSession sess = request.getRequest().getSession(false);
@@ -1813,7 +1814,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
      ******************************************************************** */
 
   private boolean checkDateInRange(final BwRequest req,
-                                   final int year) throws Throwable {
+                                   final int year) {
     BwActionFormBase form = req.getBwForm();
 
     // XXX make system parameters for allowable start/end year
@@ -2120,7 +2121,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   private BwCallback getCb(final Request request,
-                           final BwActionFormBase form) throws Throwable {
+                           final BwActionFormBase form) {
     HttpSession hsess = request.getRequest().getSession();
     BwCallback cb = (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
     if (cb == null) {
@@ -2191,7 +2192,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   private String suffixRoot(final Request req,
-                            final String val) throws Throwable {
+                            final String val) {
     BwActionFormBase form = (BwActionFormBase)req.getForm();
 
     StringBuilder sb = new StringBuilder(val);

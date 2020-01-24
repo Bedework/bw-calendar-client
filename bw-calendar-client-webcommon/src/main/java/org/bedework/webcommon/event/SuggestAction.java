@@ -24,7 +24,6 @@ import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
@@ -170,12 +169,10 @@ public class SuggestAction extends EventActionBase {
       }
     }
 
-    try {
-      cl.updateEvent(ei, true, null,
-                     true); // TODO - set this back to false after data is fixed
-    } catch (final CalFacadeException cfe) {
+    if (!cl.updateEvent(ei, true, null,
+                        true).isOk()) {
       cl.rollback();
-      throw cfe;
+      return forwardError;
     }
 
     final BwAdminGroup grp =

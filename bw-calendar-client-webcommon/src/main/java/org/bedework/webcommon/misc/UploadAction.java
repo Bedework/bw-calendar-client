@@ -225,7 +225,11 @@ public class UploadAction extends BwAbstractAction {
             form.getErr().emit(cfe.getMessage(), cfe.getExtra());
           }*/
         } else {
-          cl.updateEvent(ei, false, null);
+          var ueres = cl.updateEvent(ei, false, null);
+          if (!ueres.isOk()) {
+            form.getErr().emit(ueres.getMessage());
+            return forwardError;
+          }
           numEventsUpdated++;
         }
       }

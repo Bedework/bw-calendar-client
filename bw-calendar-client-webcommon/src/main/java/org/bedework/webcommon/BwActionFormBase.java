@@ -42,7 +42,6 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -498,11 +497,7 @@ public class BwActionFormBase extends UtilActionForm
       if (modules.size() > 0) {
         for (BwModule from: modules.values()) {
           if (from.getClient() != null) {
-            try {
-              m.setClient(from.getClient().copy(m.getModuleName()));
-            } catch (CalFacadeException e) {
-              err.emit(e);
-            }
+            m.setClient(from.getClient().copy(m.getModuleName()));
           }
         }
       }

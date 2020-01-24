@@ -61,10 +61,7 @@ import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
-import org.bedework.util.misc.response.GetEntitiesResponse;
-import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -78,6 +75,7 @@ import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalSvcIPars;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
+import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
 import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.calsvci.SharingI;
@@ -89,6 +87,9 @@ import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
+import org.bedework.util.misc.response.GetEntitiesResponse;
+import org.bedework.util.misc.response.GetEntityResponse;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.struts.Request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -270,7 +271,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public Client copy(final String id) throws CalFacadeException {
+  public Client copy(final String id) {
     final ROClientImpl cl = new ROClientImpl(conf, id);
 
     copyCommon(id, cl);
@@ -393,7 +394,8 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public String getCurrentChangeToken() throws CalFacadeException {
-    return getIndexer(docTypeEvent).currentChangeToken();
+    return getIndexer(isDefaultIndexPublic(),
+                      docTypeEvent).currentChangeToken();
   }
 
   @Override
@@ -498,8 +500,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwPrincipal calAddrToPrincipal(final String cua)
-          throws CalFacadeException {
+  public BwPrincipal calAddrToPrincipal(final String cua) {
     return svci.getDirectories().caladdrToPrincipal(cua);
   }
 
@@ -753,7 +754,7 @@ public class ROClientImpl implements Logged, Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwPreferences getPreferences() throws CalFacadeException {
+  public BwPreferences getPreferences() {
     if (publicAdmin | publicView) {
       final BwPreferences prefs = getCalsuitePreferences();
       if (prefs != null) {
@@ -764,7 +765,7 @@ public class ROClientImpl implements Logged, Client {
     return svci.getPrefsHandler().get();
   }
 
-  public BwPreferences getCalsuitePreferences() throws CalFacadeException {
+  public BwPreferences getCalsuitePreferences() {
     return getCalsuitePreferences(getCalSuite());
   }
 
@@ -1146,13 +1147,13 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public void updateCategory(final BwCategory val)
           throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
   public DeleteReffedEntityResult deleteCategory(final BwCategory val)
           throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
@@ -1242,9 +1243,8 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public CheckEntityResult<BwContact> ensureContactExists(final BwContact val,
-                                                          final String ownerHref)
-          throws CalFacadeException {
+  public EnsureEntityExistsResult<BwContact> ensureContactExists(final BwContact val,
+                                                                 final String ownerHref) {
     throw new RuntimeException("org.bedework.read.only.client");
   }
 
@@ -1334,9 +1334,8 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public CheckEntityResult<BwLocation> ensureLocationExists(final BwLocation val,
-                                                            final String ownerHref)
-          throws CalFacadeException {
+  public EnsureEntityExistsResult<BwLocation> ensureLocationExists(final BwLocation val,
+                                                                   final String ownerHref) {
     throw new RuntimeException("org.bedework.read.only.client");
   }
 
@@ -1445,31 +1444,29 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public UpdateResult updateEvent(final EventInfo ei,
                                             final boolean noInvites,
-                                            final String fromAttUri)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+                                            final String fromAttUri) {
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
   public UpdateResult updateEvent(final EventInfo ei,
                                   final boolean noInvites,
                                   final String fromAttUri,
-                                  final boolean alwaysWrite)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+                                  final boolean alwaysWrite) {
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
   public boolean deleteEvent(final EventInfo ei,
                              final boolean sendSchedulingMessage)
           throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
   public void markDeleted(final BwEvent event)
           throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   /* ------------------------------------------------------------
@@ -1699,7 +1696,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public String getViewMode() throws CalFacadeException {
+  public String getViewMode() {
     if (viewMode != null) {
       return viewMode;
     }
@@ -1927,7 +1924,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void changeAccess(final BwShareableDbentity ent,
+  public void changeAccess(final BwShareableDbentity<?> ent,
                            final Collection<Ace> aces,
                            final boolean replaceAll)
           throws CalFacadeException {
@@ -2021,7 +2018,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public boolean isCalSuiteEntity(final BwShareableDbentity ent) {
+  public boolean isCalSuiteEntity(final BwShareableDbentity<?> ent) {
     return false;
   }
 
@@ -2296,11 +2293,6 @@ public class ROClientImpl implements Logged, Client {
     }
 
     return calendarCollator;
-  }
-
-  protected BwIndexer getIndexer(final String docType) {
-    return getIndexer(isDefaultIndexPublic(),
-                      docType);
   }
 
   protected BwIndexer getIndexer(final boolean publick,

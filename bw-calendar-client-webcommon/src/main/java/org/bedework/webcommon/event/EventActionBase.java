@@ -586,10 +586,9 @@ public abstract class EventActionBase extends BwAbstractAction {
    * @param req the request
    * @param ei event object
    * @return boolean  true OK, false not OK and message(s) emitted.
-   * @throws Throwable
    */
   protected boolean adminEventLocation(final BwRequest req,
-                                       final EventInfo ei) throws Throwable {
+                                       final EventInfo ei) {
     BwActionFormBase form = req.getBwForm();
     Client cl = req.getClient();
     BwEvent event = ei.getEvent();
@@ -607,8 +606,13 @@ public abstract class EventActionBase extends BwAbstractAction {
           return false;
         }
 
-        l = cl.ensureLocationExists(l,
-                                    cl.getCurrentPrincipalHref()).getEntity();
+        var lres = cl.ensureLocationExists(l,
+                                           cl.getCurrentPrincipalHref());
+        if (!lres.isOk()) {
+          return false;
+        }
+
+        l = lres.getEntity();
 
         if (changes.changed(PropertyInfoIndex.LOCATION,
                             event.getLocation(), l)) {
@@ -681,10 +685,9 @@ public abstract class EventActionBase extends BwAbstractAction {
    * @param svci
    * @param event
    * @return boolean  true OK, false not OK and message(s) emitted.
-   * @throws Throwable
    */
   protected boolean setEventContact(final BwRequest request,
-                                    final boolean webSubmit) throws Throwable {
+                                    final boolean webSubmit) {
     Client cl = request.getClient();
     BwActionFormBase form = request.getBwForm();
     EventInfo ei = form.getEventInfo();
@@ -708,7 +711,12 @@ public abstract class EventActionBase extends BwAbstractAction {
           return false;
         }
 
-        c = cl.ensureContactExists(c, owner).getEntity();
+        var cres = cl.ensureContactExists(c, owner);
+        if (!cres.isOk()) {
+          return false;
+        }
+
+        c = cres.getEntity();
 
         if (changes.changed(PropertyInfoIndex.CONTACT,
                             event.getContact(), c)) {

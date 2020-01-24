@@ -123,7 +123,7 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public Client copy(final String id) throws CalFacadeException {
+  public Client copy(final String id) {
     final AdminClientImpl cl = new AdminClientImpl(conf, id);
 
     copyCommon(id, cl);
@@ -402,7 +402,7 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
-  public boolean isCalSuiteEntity(final BwShareableDbentity ent) {
+  public boolean isCalSuiteEntity(final BwShareableDbentity<?> ent) {
     if (ownerHrefs == null) {
       return false;
     }

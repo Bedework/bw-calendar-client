@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.util.CalFacadeUtil;
-import org.bedework.calfacade.util.Granulator.EventPeriod;
+import org.bedework.calfacade.util.EventPeriod;
 import org.bedework.calsvci.SchedulingI.FbGranulatedResponse;
 
 import java.io.Serializable;

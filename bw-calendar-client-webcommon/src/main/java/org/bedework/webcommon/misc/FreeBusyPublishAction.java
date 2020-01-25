@@ -117,7 +117,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
                                             request.getReqPar("end"),
                                             Calendar.DATE,
                                             authp.getDefaultFBPeriod(),
-                                            java.util.Calendar.DATE,
+                                            Calendar.DATE,
                                             max);
 
     if (tr == null) {

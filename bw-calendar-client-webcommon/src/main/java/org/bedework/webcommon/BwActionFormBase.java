@@ -1530,12 +1530,9 @@ public class BwActionFormBase extends UtilActionForm
       return today;
     }
 
-    try {
-      today = new DateTimeFormatter(BwDateTimeUtil.getDateTime(
-                                   new Date(System.currentTimeMillis())));
-    } catch (Throwable t) {
-      getErr().emit(t);
-    }
+      today = new DateTimeFormatter(
+              BwDateTimeUtil.getDateTime(
+                      new Date(System.currentTimeMillis())));
 
     return today;
   }

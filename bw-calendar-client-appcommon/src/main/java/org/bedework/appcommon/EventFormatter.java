@@ -157,13 +157,9 @@ public class EventFormatter extends EventTimeZonesRegistry
    */
   @SuppressWarnings("unused")
   public DateTimeFormatter getDtstamp() {
-    try {
-      if (dtstamp == null) {
-        BwDateTime dt = BwDateTimeUtil.getDateTimeUTC(getEvent().getDtstamp());
-        dtstamp = new DateTimeFormatter(dt);
-      }
-    } catch (Throwable t) {
-      error(t);
+    if (dtstamp == null) {
+      BwDateTime dt = BwDateTimeUtil.getDateTimeUTC(getEvent().getDtstamp());
+      dtstamp = new DateTimeFormatter(dt);
     }
 
     return dtstamp;

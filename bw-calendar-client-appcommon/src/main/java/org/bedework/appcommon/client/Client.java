@@ -368,10 +368,9 @@ public interface Client extends Serializable {
    * @param id
    * @param whoType - from WhoDefs
    * @return String principal uri
-   * @throws CalFacadeException
    */
   String makePrincipalUri(String id,
-                          int whoType) throws CalFacadeException;
+                          int whoType);
 
   /** Return principal for the given href.
    *

@@ -479,8 +479,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public String getCalendarAddress(final String user)
-          throws CalFacadeException {
+  public String getCalendarAddress(final String user) {
     final BwPrincipal u = svci.getUsersHandler().getUser(user);
     if (u == null) {
       return null;
@@ -558,11 +557,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public BwPrincipal getUser(final String val) {
-    try {
-      return svci.getUsersHandler().getUser(val);
-    } catch (CalFacadeException cfe) {
-      throw new RuntimeException(cfe);
-    }
+    return svci.getUsersHandler().getUser(val);
   }
 
   @Override
@@ -576,8 +571,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public String makePrincipalUri(final String id,
-                                 final int whoType)
-          throws CalFacadeException {
+                                 final int whoType) {
     return svci.getDirectories().makePrincipalUri(id, whoType);
   }
 

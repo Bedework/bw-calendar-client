@@ -51,7 +51,7 @@ public class UpdateResourceAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     final Client cl = request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence

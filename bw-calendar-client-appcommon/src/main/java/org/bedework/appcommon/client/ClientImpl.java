@@ -456,7 +456,8 @@ public class ClientImpl extends ROClientImpl {
     return update(svci.getEventsHandler().update(ei,
                                                  noInvites,
                                                  fromAttUri,
-                                                 alwaysWrite));
+                                                 alwaysWrite,
+                                                 true));
   }
 
   @Override

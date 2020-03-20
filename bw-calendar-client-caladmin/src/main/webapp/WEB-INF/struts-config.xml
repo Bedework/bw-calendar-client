@@ -1263,7 +1263,7 @@
                type="org.bedework.webcommon.resources.RenderResourceAction"
                name="calForm"
                scope="session"
-               parameter="actionType=render"
+               parameter="actionType=render;conversation=end"
                validate="false">
       <forward name="success" path="/docs/resource/modResource.jsp"/>
     </action>
@@ -1279,7 +1279,7 @@
                type="org.bedework.webcommon.resources.AddResourceAction"
                name="calForm"
                scope="session"
-               parameter="actionType=action"
+               parameter="actionType=action;conversation=start"
                validate="false">
       <forward name="notAdded" path="/resource/showResources.rdo" redirect="true" />
       <forward name="duplicate" path="/resource/showResources.rdo" redirect="true" />

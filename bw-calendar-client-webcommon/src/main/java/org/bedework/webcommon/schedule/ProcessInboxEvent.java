@@ -28,14 +28,16 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.IcalDefs;
+import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.event.EventActionBase;
 
-import java.util.Collection;
 import java.util.Date;
+
+import static org.bedework.util.misc.response.Response.Status.notFound;
 
 /**
  * Fetches the inbox copy:
@@ -140,12 +142,16 @@ public class ProcessInboxEvent extends EventActionBase {
 
     // Not export - just set up for display
 
-    if (ev.getRrules() != null) {
-      final Collection<RecurRuleComponents> rrcs = RecurRuleComponents.fromEventRrules(ev);
+    final GetEntitiesResponse<RecurRuleComponents> rrcs =
+            RecurRuleComponents.fromEventRrules(ev);
 
-      form.setRruleComponents(rrcs);
-    } else {
+    if (rrcs.getStatus() == notFound) {
       form.setRruleComponents(null);
+    } else if (!rrcs.isOk()) {
+      request.getErr().emit(rrcs.getMessage());
+      return forwardNoAction;
+    } else {
+      form.setRruleComponents(rrcs.getEntities());
     }
 
     final EventFormatter ef = new EventFormatter(cl,

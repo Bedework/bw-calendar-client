@@ -29,7 +29,7 @@
 		<bw-access.version>4.0.8</bw-access.version>
 		<bw-webdav.version>4.0.9</bw-webdav.version>
 		<bw-caldav.version>4.0.9</bw-caldav.version>
-		<bw-calendar-engine.version>3.13.2</bw-calendar-engine.version>
+		<bw-calendar-engine.version>3.13.3-SNAPSHOT</bw-calendar-engine.version>
 
 		<!-- Third Party Library Versions -->
     <dom4j-version>1.6.1</dom4j-version>

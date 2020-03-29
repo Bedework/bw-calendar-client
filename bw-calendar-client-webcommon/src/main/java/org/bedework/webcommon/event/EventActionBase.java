@@ -52,6 +52,7 @@ import org.bedework.util.http.PooledHttpClient;
 import org.bedework.util.http.PooledHttpClient.ResponseHolder;
 import org.bedework.util.http.RequestBuilder;
 import org.bedework.util.misc.Util;
+import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -69,6 +70,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
+
+import static org.bedework.util.misc.response.Response.Status.notFound;
 
 /** Common base class fro some or all event actions.
  *
@@ -141,12 +144,17 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     // Not export - just set up for display
 
-    if (ev.getRrules() != null) {
-      Collection<RecurRuleComponents> rrcs = RecurRuleComponents.fromEventRrules(ev);
 
-      form.setRruleComponents(rrcs);
-    } else {
+    final GetEntitiesResponse<RecurRuleComponents> rrcs =
+            RecurRuleComponents.fromEventRrules(ev);
+
+    if (rrcs.getStatus() == notFound) {
       form.setRruleComponents(null);
+    } else if (!rrcs.isOk()) {
+      request.getErr().emit(rrcs.getMessage());
+      return forwardNoAction;
+    } else {
+      form.setRruleComponents(rrcs.getEntities());
     }
 
     EventFormatter ef = new EventFormatter(cl,

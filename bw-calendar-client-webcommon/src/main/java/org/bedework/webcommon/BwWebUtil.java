@@ -144,7 +144,7 @@ public class BwWebUtil {
         request.getErr().emit(ValidationError.startAfterEnd);
         ok = false;
       } else {
-        end = evend.makeDtEnd();
+        end = IcalUtil.makeDtEnd(evend);
       }
     } else if (endType == StartEndComponent.endTypeDuration) {
       dur = new Duration(new Dur(ev.getDuration()));

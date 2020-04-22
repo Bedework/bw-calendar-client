@@ -63,7 +63,6 @@ import org.bedework.calfacade.filter.BwCreatorFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
@@ -75,6 +74,7 @@ import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleStates;
 import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.servlet.filters.ConfiguredXSLTFilter.XSLTConfig;
 import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.struts.Request;
@@ -84,7 +84,6 @@ import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.config.ClientConfigurations;
 
-import net.fortuna.ical4j.model.Dur;
 import org.apache.struts.upload.FormFile;
 import org.apache.struts.util.MessageResources;
 
@@ -620,8 +619,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             }
 
             params.setToDate(
-                    params.getFromDate().addDur(new Dur(days, 0,
-                                                        0, 0)));
+                    params.getFromDate().addDur("P" + days + "D"));
           }
         }
       } else if ((endStr != null) || (days > 0)) {
@@ -651,9 +649,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                 icalStart,
                 true,
                 false, null));
-        params.setToDate(params.getFromDate().addDur(
-                new Dur(authp.getMaxWebCalPeriod(),
-                        0, 0, 0)));
+        params.setToDate(params.getFromDate()
+                               .addDur("P" + authp.getMaxWebCalPeriod()
+                                               + "D"));
       }
     }
 

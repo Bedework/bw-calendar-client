@@ -63,7 +63,6 @@ import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.TimeDateComponents;
 
-import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Recur;
 import org.apache.struts.upload.FormFile;
 
@@ -215,7 +214,7 @@ public class UpdateEventAction extends EventActionBase {
       ev.setDtstart(request.getDateTime("meetingStartdt",
                                         "meetingStartTzid"));
       ev.setDuration("P" + request.getReqPar("meetingDuration") + "M");
-      ev.setDtend(ev.getDtstart().addDur(new Dur(ev.getDuration())));
+      ev.setDtend(ev.getDtstart().addDur(ev.getDuration()));
       ev.setEndType(StartEndComponent.endTypeDuration);
 
       form.getEventDates().setFromEvent(ev);

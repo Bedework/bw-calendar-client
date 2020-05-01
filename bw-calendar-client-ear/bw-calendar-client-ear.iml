@@ -68,7 +68,7 @@
     <orderEntry type="library" name="Maven: org.bedework:bw-util-security:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-servlet:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-servlet-filters:4.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util-tz:4.1.0" level="project" />
+    <orderEntry type="module" module-name="bw-util-tz" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-xml:4.0.27" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util2-calendar:4.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util2-vcard:4.0.6" level="project" />

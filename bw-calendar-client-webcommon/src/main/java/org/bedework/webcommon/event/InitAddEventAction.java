@@ -24,8 +24,6 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.base.StartEndComponent;
-import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
@@ -101,23 +99,14 @@ public class InitAddEventAction extends EventActionBase {
 
     EventDates evdates = form.getEventDates();
 
-    try {
-      if (date != null) {
-        evdates.setFromDate(date);
-      }
+    if (date != null) {
+      evdates.setFromDate(date);
+    }
 
-      date = request.getReqPar("enddate");
+    date = request.getReqPar("enddate");
 
-      if (date != null) {
-        evdates.getEndDate().setDateTime(date);
-      }
-    } catch (CalFacadeException cfe) {
-      if (CalFacadeException.badDate.equals(cfe.getMessage())) {
-        form.getErr().emit(ValidationError.invalidDate, date);
-        return forwardBadDate;
-      } else {
-        throw cfe;
-      }
+    if (date != null) {
+      evdates.getEndDate().setDateTime(date);
     }
 
     int minutes = request.getIntReqPar("minutes", -1);

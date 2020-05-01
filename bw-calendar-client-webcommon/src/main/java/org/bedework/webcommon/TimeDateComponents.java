@@ -20,11 +20,9 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.exc.CalFacadeBadDateException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.timezones.DateTimeUtil;
-import org.bedework.util.timezones.DateTimeUtil.BadDateException;
 import org.bedework.util.timezones.TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 
@@ -151,7 +149,7 @@ public class TimeDateComponents implements Serializable {
    * @return Collection of timezone names
    */
   public Collection<TimeZoneName> getTimeZoneNames() {
-    Collection<TimeZoneName> nms = new TreeSet<TimeZoneName>();
+    Collection<TimeZoneName> nms = new TreeSet<>();
 
     try {
       nms.addAll(Timezones.getTzNames());
@@ -268,7 +266,7 @@ public class TimeDateComponents implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val true for floating
    */
   public void setFloating(final boolean val) {
     floating = val;
@@ -281,9 +279,9 @@ public class TimeDateComponents implements Serializable {
     return floating;
   }
 
-  /** If true we should store a UTC value only
+  /**
    *
-   * @param val
+   * @param val If true we should store a UTC value only
    */
   public void setStoreUTC(final boolean val) {
     storeUTC = val;
@@ -298,25 +296,23 @@ public class TimeDateComponents implements Serializable {
 
   /** Sets this object's current date to now.
    *
-   * @throws CalFacadeException
    */
-  public void setNow() throws CalFacadeException {
+  public void setNow() {
     setDateTime(DateTimeUtil.isoDateTime(new Date(System.currentTimeMillis())));
   }
 
   /** Set this object's date.
    *
    * @param val   String date to use as yyyyMMdd or yyyyMMddThhmmss
-   * @throws CalFacadeException for bad date
    */
-  public void setDateTime(final String val) throws CalFacadeException {
-    try {
+  public void setDateTime(final String val) {
       if (DateTimeUtil.isISODateTime(val)) {
         setDateOnly(false);
       } else if (DateTimeUtil.isISODate(val)) {
         setDateOnly(true);
       } else {
-        throw new CalFacadeException(CalFacadeException.badDate, val);
+        throw new RuntimeException(CalFacadeException.badDate +
+                                           ": " + val);
       }
 
       setTzid(null);
@@ -324,19 +320,13 @@ public class TimeDateComponents implements Serializable {
       floating = false;
 
       initTimeParts(val);
-    } catch (CalFacadeException cfe) {
-      throw cfe;
-    } catch (BadDateException bde) {
-      throw new CalFacadeBadDateException();
-    }
   }
 
   /** Sets this object's current time from the given BwDateTime value.
    *
    * @param val    BwDateTime value.
-   * @throws CalFacadeException
    */
-  public void setDateTime(final BwDateTime val) throws CalFacadeException {
+  public void setDateTime(final BwDateTime val) {
     setTzid(val.getTzid());
 
     storeUTC = val.isUTC();
@@ -349,9 +339,8 @@ public class TimeDateComponents implements Serializable {
   /** Get a date object representing the date of the event
    *
    * @return Date object representing the date
-   * @throws CalFacadeException
    */
-  public BwDateTime getDateTime() throws CalFacadeException {
+  public BwDateTime getDateTime() {
     /*
     Calendar c = Calendar.getInstance(getCalInfo().getLocale());
 
@@ -560,29 +549,25 @@ public class TimeDateComponents implements Serializable {
    *                Private methods
    * ==================================================================== */
 
-  private void initTimeParts(final String iso) throws CalFacadeException {
-    try {
-      year = getInt(iso.substring(0, 4));
-      month = getInt(iso.substring(4, 6));
-      day = getInt(iso.substring(6, 8));
-      if (getDateOnly()) {
-        hour = 0;
-        minute = 0;
-      } else {
-        hour = getInt(iso.substring(9, 11));
-        minute = getInt(iso.substring(11, 13));
-      }
-      isAm = hour < 12;
+  private void initTimeParts(final String iso) {
+    year = getInt(iso.substring(0, 4));
+    month = getInt(iso.substring(4, 6));
+    day = getInt(iso.substring(6, 8));
+    if (getDateOnly()) {
+      hour = 0;
+      minute = 0;
+    } else {
+      hour = getInt(iso.substring(9, 11));
+      minute = getInt(iso.substring(11, 13));
+    }
+    isAm = hour < 12;
 
-      if (!hour24 && (hour > 11)) {
-        hour -= 12;
-      }
-    } catch (Throwable t) {
-      throw new CalFacadeException(CalFacadeException.badDate, iso);
+    if (!hour24 && (hour > 11)) {
+      hour -= 12;
     }
   }
 
-  private int getInt(final String val) throws Throwable {
+  private int getInt(final String val) {
     return Integer.parseInt(val);
   }
 
@@ -631,8 +616,8 @@ public class TimeDateComponents implements Serializable {
     @exception TimeDateException If either of the arrays given is not
        the proper length
    */
-  private void setMinutes(final int increment) throws TimeDateException {
-    minuteIncrement = (increment <= 1) ? 1: increment;
+  private void setMinutes(final int increment) {
+    minuteIncrement = Math.max(increment, 1);
 
     String[] labels = getCalInfo().getMinuteLabels();
     String[] vals = getCalInfo().getMinuteVals();

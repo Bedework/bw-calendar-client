@@ -293,21 +293,24 @@ public class UpdateCalendarAction extends BwAbstractAction {
       cal.setRefreshRate(refreshRate);
     }
 
-    final String remoteId = request.getReqPar("remoteId");
-    if (!Util.equalsString(remoteId, cal.getRemoteId())) {
-      cal.setRemoteId(remoteId);
-    }
+    // Mozilla auto-fills hidden fields. Don't do this for public subscriptions.
+    if (!"public".equals(request.getReqPar("subType"))) {
+      final String remoteId = request.getReqPar("remoteId");
+      if (!Util.equalsString(remoteId, cal.getRemoteId())) {
+        cal.setRemoteId(remoteId);
+      }
 
-    String remotePw = request.getReqPar("remotePw");
+      String remotePw = request.getReqPar("remotePw");
 
-    if (remotePw != null) {
+      if (remotePw != null) {
       /* I really want to do this
       remotePw = form.fetchSvci().getEncrypter().encrypt(remotePw);
       */
-      cal.setRemotePw(remotePw);
-      cal.setPwNeedsEncrypt(true);
-      //noinspection UnusedAssignment
-      remotePw = null;
+        cal.setRemotePw(remotePw);
+        cal.setPwNeedsEncrypt(true);
+        //noinspection UnusedAssignment
+        remotePw = null;
+      }
     }
 
     final boolean orgSyncV2 = request.present("orgSyncV2");

@@ -52,6 +52,7 @@
     <orderEntry type="module" module-name="bw-calendar-engine-sysevents-common" />
     <orderEntry type="module" module-name="bw-calendar-engine-sysevents-msgs" />
     <orderEntry type="module" module-name="bw-calendar-engine-tools" />
+    <orderEntry type="module" module-name="bw-jsforj" />
     <orderEntry type="library" name="Maven: org.bedework:bw-access:4.0.8" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-args:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-caching:4.0.27" level="project" />

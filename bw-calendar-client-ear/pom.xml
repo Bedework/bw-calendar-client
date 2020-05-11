@@ -396,6 +396,17 @@
 
     <dependency>
       <groupId>org.bedework</groupId>
+      <artifactId>bw-jsforj</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework</groupId>
       <artifactId>bw-access</artifactId>
       <exclusions>
         <exclusion>

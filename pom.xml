@@ -16,6 +16,7 @@
 		<!-- Bedework Versions -->
 
 		<bw-xml.version>4.0.10</bw-xml.version>
+    <bw-jsforj.version>1.0.1-SNAPSHOT</bw-jsforj.version>
 		<bw-util.version>4.0.27</bw-util.version>
     <bw-util-conf.version>4.1.0</bw-util-conf.version>
     <bw-util-deploy.version>4.0.26</bw-util-deploy.version>
@@ -137,6 +138,13 @@
   <dependencyManagement>
 		<dependencies>
 			<!-- Bedework Project Dependencies -->
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-jsforj</artifactId>
+        <version>${bw-jsforj.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.bedework</groupId>
         <artifactId>bw-util-args</artifactId>

@@ -30,6 +30,8 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
+import org.bedework.convert.jscal.JSCalTranslator;
+import org.bedework.jsforj.model.JSGroup;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -38,8 +40,11 @@ import org.bedework.webcommon.BwRequest;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.DateTime;
 
+import java.io.Writer;
 import java.util.Collection;
 import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Action to export an icalendar file. This might be better done as a custom tag which
@@ -155,17 +160,35 @@ public class ExportAction extends BwAbstractAction {
       evs.add(ev);
     }
 
-    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
+    final HttpServletResponse resp = request.getResponse();
 
-    Calendar ical = trans.toIcal(evs, method);
+    resp.setHeader("Content-Disposition",
+                   "Attachment; Filename=\"" +
+                           form.getContentName() + "\"");
 
-    request.getResponse().setHeader("Content-Disposition",
-                                    "Attachment; Filename=\"" +
-                                    form.getContentName() + "\"");
-    request.getResponse().setContentType("text/calendar; charset=UTF-8");
+    try (Writer wtr = resp.getWriter()) {
+      String ct = request.getReqPar("content-type");
 
-    IcalTranslator.writeCalendar(ical, request.getResponse().getWriter());
-    request.getResponse().getWriter().close();
+      if ("application/jscalendar+json".equals(ct)) {
+        JSCalTranslator trans = new JSCalTranslator(
+                new IcalCallbackcb(cl));
+
+        JSGroup grp = trans.toJScal(evs, method);
+
+        resp.setContentType(ct + "; charset=UTF-8");
+
+        JSCalTranslator.writeJSCalendar(grp, wtr);
+      } else {
+        IcalTranslator trans = new IcalTranslator(
+                new IcalCallbackcb(cl));
+
+        Calendar ical = trans.toIcal(evs, method);
+
+        resp.setContentType("text/calendar; charset=UTF-8");
+
+        IcalTranslator.writeCalendar(ical, wtr);
+      }
+    }
 
     return forwardNull;
   }

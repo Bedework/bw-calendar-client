@@ -24,10 +24,14 @@ import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResultEntry;
-import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.convert.IcalTranslator;
+import org.bedework.convert.jcal.JcalTranslator;
+import org.bedework.convert.jscal.JSCalTranslator;
+import org.bedework.convert.xcal.XmlTranslator;
+import org.bedework.jsforj.model.JSGroup;
 import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.xml.XmlEmit;
 import org.bedework.util.xml.XmlEmit.NameSpace;
 import org.bedework.util.xml.tagdefs.XcalTags;
@@ -100,6 +104,7 @@ public class SearchParamsAction extends EventActionBase {
     final String outFormat = params.getFormat();
     boolean generateCalendarContent = false;
     boolean generateIcal = false;
+    boolean generateJscal = false;
     boolean generateXcal = false;
 
     if (outFormat != null) {
@@ -111,6 +116,10 @@ public class SearchParamsAction extends EventActionBase {
         case "application/calendar+xml":
           generateCalendarContent = true;
           generateXcal = true;
+          break;
+        case "application/jscalendar+json":
+          generateCalendarContent = true;
+          generateJscal = true;
           break;
         case "application/calendar+json":
           generateCalendarContent = true;
@@ -172,6 +181,8 @@ public class SearchParamsAction extends EventActionBase {
           contentName = "calendar.ics";
         } else if (generateXcal) {
           contentName = "calendar.xcs";
+        } else if (generateJscal) {
+          contentName = "calendar.json";
         } else {
           contentName = "calendar.jcs";
         }
@@ -192,17 +203,31 @@ public class SearchParamsAction extends EventActionBase {
 
           IcalTranslator.writeCalendar(ical, wtr);
         } else if (generateXcal) {
+          final XmlTranslator xmlTrans =
+                  new XmlTranslator(new IcalCallbackcb(request.getClient()));
+
           final XmlEmit xml = new XmlEmit();
 
           xml.addNs(new NameSpace(XcalTags.namespace, "X"), true);
 
           xml.startEmit(wtr);
 
-          trans.writeXmlCalendar(eis, ScheduleMethods.methodTypePublish,
+          xmlTrans.writeXmlCalendar(eis, ScheduleMethods.methodTypePublish,
                                  xml);
+        } else if (generateJscal) {
+          final JSCalTranslator jscalTrans =
+                  new JSCalTranslator(new IcalCallbackcb(request.getClient()));
+
+          JSGroup grp = jscalTrans.toJScal(eis,
+                                           ScheduleMethods.methodTypePublish);
+
+          JSCalTranslator.writeJSCalendar(grp, wtr);
         } else {
-          trans.writeJcal(eis, ScheduleMethods.methodTypePublish,
-                          wtr);
+          final JcalTranslator jcalTrans =
+                  new JcalTranslator(new IcalCallbackcb(request.getClient()));
+
+          jcalTrans.writeJcal(eis, ScheduleMethods.methodTypePublish,
+                              wtr);
         }
       }
 

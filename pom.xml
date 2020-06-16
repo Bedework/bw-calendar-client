@@ -54,7 +54,7 @@
     <digester-version>1.8</digester-version>
     <elasticsearch.version>7.2.0</elasticsearch.version>
     <hibernate.version>5.2.5.Final</hibernate.version>
-    <hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
+    <hibernate-validator.version>5.3.5.Final</hibernate-validator.version>
     <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>
     <ical4j.artifactId>ical4j</ical4j.artifactId>
     <ical4j.version>2.0.12</ical4j.version>

@@ -360,7 +360,7 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public boolean addLocation(final BwLocation val) {
-    var resp = svci.getLocationsHandler().add(val);
+    final var resp = svci.getLocationsHandler().add(val);
     checkResponse(resp);
     return update(resp.isOk());
   }
@@ -445,7 +445,8 @@ public class ClientImpl extends ROClientImpl {
                                   final String fromAttUri) {
     return update(svci.getEventsHandler().update(ei,
                                                  noInvites,
-                                                 fromAttUri));
+                                                 fromAttUri,
+                                                 false)); // autocreate
   }
 
   @Override
@@ -457,7 +458,8 @@ public class ClientImpl extends ROClientImpl {
                                                  noInvites,
                                                  fromAttUri,
                                                  alwaysWrite,
-                                                 true));
+                                                 true,
+                                                 false)); // autocreate
   }
 
   @Override
@@ -543,7 +545,7 @@ public class ClientImpl extends ROClientImpl {
       val.setContent(resContent);
     }
 
-    Blob blob = svci.getBlob(content);
+    final Blob blob = svci.getBlob(content);
     resContent.setValue(blob);
     val.setContentLength(content.length);
   }
@@ -677,7 +679,8 @@ public class ClientImpl extends ROClientImpl {
 
       ev.setColPath(newCal.getPath());
 
-      svci.getEventsHandler().update(ei, false, null);
+      svci.getEventsHandler().update(ei, false, null,
+                                     false); // autocreate
     }
 
     final Collection<BwCalendar> cals =

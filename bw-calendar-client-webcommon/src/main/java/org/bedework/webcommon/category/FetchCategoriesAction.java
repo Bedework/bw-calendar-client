@@ -20,7 +20,6 @@ package org.bedework.webcommon.category;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.responses.CategoriesResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -66,20 +65,6 @@ public class FetchCategoriesAction extends BwAbstractAction {
     final Client cl = request.getClient();
     final CategoriesResponse cats = new CategoriesResponse();
     cats.setCategories(vals);
-
-    if (vals != null) {
-      /* All this fixing of names is only required because we don't
-         have any real paths built into the category objects.
-
-         In 4.0 the schema should include all this info and we won't
-         need this.
-       */
-      final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
-
-      for (final BwCategory cat: vals) {
-        cat.fixNames(basicSysprops);
-      }
-    }
 
     okReturn(cats);
 

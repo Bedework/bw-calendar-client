@@ -44,7 +44,6 @@ import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
@@ -209,12 +208,6 @@ public interface Client extends Serializable {
    * @return SystemProperties object - never null.
    */
   SystemProperties getSystemProperties();
-
-  /** Return basic (mostly immutable) properties about the system.
-   *
-   * @return BasicSystemProperties object - never null.
-   */
-  BasicSystemProperties getBasicSystemProperties();
 
   /**
    * If possible roll back the changes.

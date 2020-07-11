@@ -21,9 +21,8 @@ package org.bedework.webcommon.location;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
-import org.bedework.calfacade.configs.BasicSystemProperties;
-import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.calfacade.responses.LocationsResponse;
+import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -107,11 +106,6 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     final LocationsResponse locs = new LocationsResponse();
     locs.setLocations(vals);
-    final BasicSystemProperties props = cl.getBasicSystemProperties();
-
-    for (final BwLocation loc: vals) {
-      loc.fixNames(props);
-    }
 
     if (cl.getPublicAdmin()) {
       // Add the preferred locations
@@ -123,7 +117,6 @@ public class FetchLocationsAction extends BwAbstractAction {
       final List<String> preferred = new ArrayList<>();
 
       for (final BwLocation prefLoc: prefs) {
-        prefLoc.fixNames(props);
         preferred.add(prefLoc.getHref());
       }
 
@@ -150,9 +143,10 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     final LocationsResponse locs = new LocationsResponse();
 
-    GetEntitiesResponse<BwLocation> ges = cl.getLocations(fexpr,
-                                                          request.getIntReqPar("from", 0),
-                                                          request.getIntReqPar("size", 10));
+    final GetEntitiesResponse<BwLocation> ges =
+            cl.getLocations(fexpr,
+                            request.getIntReqPar("from", 0),
+                            request.getIntReqPar("size", 10));
 
     if (ges.isOk()) {
       okReturn(locs);

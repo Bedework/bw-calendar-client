@@ -21,7 +21,6 @@ package org.bedework.webcommon.calendars;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.util.misc.Util;
@@ -166,12 +165,8 @@ public class FetchCollectionsAction extends BwAbstractAction {
 
     if (!Util.isEmpty(col.getCategoryHrefs())) {
       try {
-        final BasicSystemProperties basicSysprops = cl.getBasicSystemProperties();
-
         for (final String href: col.getCategoryHrefs()) {
           final BwCategory cat = cl.getCategory(href);
-
-          cat.fixNames(basicSysprops);
 
           pw.print(" category=\"" + cat.getHref() + "\"");
 

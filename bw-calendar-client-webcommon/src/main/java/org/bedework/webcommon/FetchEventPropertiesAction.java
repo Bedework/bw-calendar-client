@@ -21,7 +21,6 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEventProperty;
-import org.bedework.calfacade.configs.BasicSystemProperties;
 import org.bedework.calfacade.responses.EventPropertiesResponse;
 import org.bedework.util.misc.response.GetEntitiesResponse;
 
@@ -47,7 +46,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass   douglm   rpi.edu
  */
-public abstract class FetchEventPropertiesAction<T extends BwEventProperty>
+public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
         extends BwAbstractAction {
   protected abstract Collection<T> getEProps(BwRequest request,
                                              int kind);
@@ -120,12 +119,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty>
 
     final EventPropertiesResponse epresp = makeResponse(vals);
 
-    final BasicSystemProperties props = cl.getBasicSystemProperties();
-
-    for (final T ent: vals) {
-      ent.fixNames(props);
-    }
-
     if (cl.getPublicAdmin()) {
       // Add the preferred locations
       final Collection<T> prefs =
@@ -134,7 +127,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty>
       final List<String> preferred = new ArrayList<>();
 
       for (final T pref: prefs) {
-        pref.fixNames(props);
         preferred.add(pref.getHref());
       }
 

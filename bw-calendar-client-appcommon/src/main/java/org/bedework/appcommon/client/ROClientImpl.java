@@ -1353,7 +1353,7 @@ public class ROClientImpl implements Logged, Client {
               svci.getEventsHandler()
                   .getByUid(path, guid,
                             rid,
-                            RecurringRetrievalMode.overrides);
+                            recurRetrieval);
       if (Util.isEmpty(ents)) {
         resp.setStatus(Response.Status.notFound);
       } else {

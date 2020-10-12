@@ -41,7 +41,7 @@
 		<portals-bridge.version>1.0.4</portals-bridge.version>
 		<imgscalr.version>4.2</imgscalr.version>
 		<servlet-api.version>4.0.0</servlet-api.version>
-		<junit.version>4.8.2</junit.version>
+		<junit.version>4.13.1</junit.version>
 
     <commons-lang.version>2.3</commons-lang.version>
     <commons.text.version>1.7</commons.text.version>

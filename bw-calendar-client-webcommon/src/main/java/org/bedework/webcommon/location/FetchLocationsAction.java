@@ -23,6 +23,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.util.misc.response.GetEntitiesResponse;
+import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -122,8 +123,8 @@ public class FetchLocationsAction extends BwAbstractAction {
 
       locs.setPreferred(preferred);
     }
-    
-    okReturn(locs);
+
+    Response.ok(locs);
 
     cl.writeJson(resp, locs);
     resp.getOutputStream().close();
@@ -149,7 +150,7 @@ public class FetchLocationsAction extends BwAbstractAction {
                             request.getIntReqPar("size", 10));
 
     if (ges.isOk()) {
-      okReturn(locs);
+      Response.ok(locs);
       locs.setLocations(ges.getEntities());
     } else {
       locs.setStatus(ges.getStatus());

@@ -23,6 +23,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.responses.EventPropertiesResponse;
 import org.bedework.util.misc.response.GetEntitiesResponse;
+import org.bedework.util.misc.response.Response;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -132,8 +133,8 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
 
       epresp.setPreferred(preferred);
     }
-    
-    okReturn(epresp);
+
+    Response.ok(epresp);
 
     cl.writeJson(resp, epresp);
     resp.getOutputStream().close();
@@ -157,7 +158,7 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
     final EventPropertiesResponse epresp = makeResponse(ges.getEntities());
 
     if (ges.isOk()) {
-      okReturn(epresp);
+      Response.ok(epresp);
     } else {
       epresp.setStatus(ges.getStatus());
       epresp.setMessage(ges.getMessage());

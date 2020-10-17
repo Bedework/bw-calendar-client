@@ -197,7 +197,7 @@ public class SearchParamsAction extends EventActionBase {
       response.addHeader("etag", cl.getCurrentChangeToken());
       response.setContentLength(-1);
 
-      try (Writer wtr = response.getWriter()) {
+      try (final Writer wtr = response.getWriter()) {
         if (generateIcal) {
           final Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
 
@@ -218,8 +218,8 @@ public class SearchParamsAction extends EventActionBase {
           final JSCalTranslator jscalTrans =
                   new JSCalTranslator(new IcalCallbackcb(request.getClient()));
 
-          JSGroup grp = jscalTrans.toJScal(eis,
-                                           ScheduleMethods.methodTypePublish);
+          final JSGroup grp = jscalTrans.toJScal(eis,
+                                                 ScheduleMethods.methodTypePublish);
 
           JSCalTranslator.writeJSCalendar(grp, wtr);
         } else {

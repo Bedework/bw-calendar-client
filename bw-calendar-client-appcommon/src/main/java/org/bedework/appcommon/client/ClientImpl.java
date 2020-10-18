@@ -72,8 +72,7 @@ public class ClientImpl extends ROClientImpl {
                     final String id,
                     final String authUser,
                     final String runAsUser,
-                    final String appType)
-          throws CalFacadeException {
+                    final String appType) {
     this(conf, id);
 
     reinit(authUser, runAsUser, appType);
@@ -86,8 +85,7 @@ public class ClientImpl extends ROClientImpl {
 
   public void reinit(final String authUser,
                      final String runAsUser,
-                     final String appType)
-          throws CalFacadeException {
+                     final String appType) {
     currentPrincipal = null;
     this.appType = appType;
 

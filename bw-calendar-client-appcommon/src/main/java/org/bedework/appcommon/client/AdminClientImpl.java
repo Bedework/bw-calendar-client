@@ -78,8 +78,7 @@ public class AdminClientImpl extends ClientImpl {
                          final String id,
                          final String authUser,
                          final String runAsUser,
-                         final String calSuiteName)
-          throws CalFacadeException {
+                         final String calSuiteName) {
     super(conf, id);
 
     reinit(authUser, runAsUser, calSuiteName);
@@ -92,8 +91,7 @@ public class AdminClientImpl extends ClientImpl {
 
   public void reinit(final String authUser,
                      final String runAsUser,
-                     final String calSuiteName)
-          throws CalFacadeException {
+                     final String calSuiteName) {
     currentPrincipal = null;
 
     final AdminConfig admconf = (AdminConfig)conf;
@@ -198,7 +196,7 @@ public class AdminClientImpl extends ClientImpl {
      */
 
     final BwAuthUserPrefs prefs = au.getPrefs();
-    int totalSize = // to avoid intellij messages and being optimized out
+    final int totalSize = // to avoid intellij messages and being optimized out
             prefs.getCalendarPrefs().getPreferred().size() +
                     prefs.getCategoryPrefs().getPreferred().size() +
                     prefs.getContactPrefs().getPreferred().size() +
@@ -344,7 +342,7 @@ public class AdminClientImpl extends ClientImpl {
       svci.getNotificationsHandler().
               remove(getCalSuite().getGroup().getOwnerHref(),
                      name);
-    } catch (CalFacadeException e) {
+    } catch (final CalFacadeException e) {
       throw new RuntimeException(e);
     }
     updated();

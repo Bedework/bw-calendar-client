@@ -143,8 +143,8 @@ public class ROClientImpl implements Logged, Client {
   private transient CollectionCollator<BwCalendar> calendarCollator;
   protected String appType;
 
-  private Map<String, BwIndexer> publicIndexers = new HashMap<>();
-  private Map<String, BwIndexer> userIndexers = new HashMap<>();
+  private final Map<String, BwIndexer> publicIndexers = new HashMap<>();
+  private final Map<String, BwIndexer> userIndexers = new HashMap<>();
   private SearchResult lastSearch;
   private List<SearchResultEntry> lastSearchEntries;
 
@@ -558,7 +558,7 @@ public class ROClientImpl implements Logged, Client {
   public BwPrincipal getUserAlways(final String val) {
     try {
       return svci.getUsersHandler().getAlways(val);
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       throw new RuntimeException(cfe);
     }
   }
@@ -1088,7 +1088,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public BwCategory getCategoryByUid(final String uid) {
     checkUpdate();
-    var resp = svci.getCategoriesHandler().getByUid(uid);
+    final var resp = svci.getCategoriesHandler().getByUid(uid);
     checkResponse(resp);
     return resp.getEntity();
   }
@@ -1167,7 +1167,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public GetEntityResponse<BwContact> getContactByUid(final String uid) {
     checkUpdate();
-    var resp = svci.getContactsHandler().getByUid(uid);
+    final var resp = svci.getContactsHandler().getByUid(uid);
     checkResponse(resp);
     return resp;
   }
@@ -1208,7 +1208,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public GetEntityResponse<BwContact> findContact(final BwString val) {
-    var resp = svci.getContactsHandler().findPersistent(val);
+    final var resp = svci.getContactsHandler().findPersistent(val);
     checkResponse(resp);
     return resp;
   }
@@ -1243,7 +1243,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public GetEntityResponse<BwLocation> getLocationByUid(final String uid) {
     checkUpdate();
-    var resp = svci.getLocationsHandler().getByUid(uid);
+    final var resp = svci.getLocationsHandler().getByUid(uid);
     checkResponse(resp);
     return resp;
   }
@@ -1284,7 +1284,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public GetEntityResponse<BwLocation> findLocation(final BwString address) {
-    var resp = svci.getLocationsHandler().findPersistent(address);
+    final var resp = svci.getLocationsHandler().findPersistent(address);
     checkResponse(resp);
     return resp;
   }
@@ -1349,7 +1349,7 @@ public class ROClientImpl implements Logged, Client {
     final GetEntitiesResponse<EventInfo> resp = new GetEntitiesResponse<>();
 
     try {
-      var ents =
+      final var ents =
               svci.getEventsHandler()
                   .getByUid(path, guid,
                             rid,
@@ -1954,7 +1954,7 @@ public class ROClientImpl implements Logged, Client {
   public BwCalSuiteWrapper getCalSuite() {
     try {
       return svci.getCalSuitesHandler().get();
-    } catch (CalFacadeException e) {
+    } catch (final CalFacadeException e) {
       throw new RuntimeException(e);
     }
   }
@@ -2200,12 +2200,12 @@ public class ROClientImpl implements Logged, Client {
     cg = g.shallowClone();
     cloned.put(g.getPrincipalRef(), cg);
 
-    Collection<BwPrincipal> ms = g.getGroupMembers();
+    final Collection<BwPrincipal> ms = g.getGroupMembers();
     if (ms == null) {
       return cg;
     }
 
-    for (BwPrincipal mbr: ms) {
+    for (final BwPrincipal mbr: ms) {
       BwPrincipal cmbr = cloned.get(mbr.getPrincipalRef());
 
       if (cmbr == null) {
@@ -2471,7 +2471,7 @@ public class ROClientImpl implements Logged, Client {
       return;
     }
 
-    var exc = resp.getException();
+    final var exc = resp.getException();
     if (exc instanceof RuntimeException) {
       throw (RuntimeException)exc;
     }
@@ -2487,7 +2487,7 @@ public class ROClientImpl implements Logged, Client {
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

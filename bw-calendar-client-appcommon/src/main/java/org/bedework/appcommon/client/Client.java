@@ -91,7 +91,7 @@ public interface Client extends Serializable {
    * action. Client copies should be discarded on completion of the request
    * cycle.
    */
-  Client copy(final String id);
+  Client copy(String id);
 
   /** Call on the way in once we have a client object.
    *
@@ -140,7 +140,7 @@ public interface Client extends Serializable {
    * <p>This method should be called before calling open (or after calling
    * close).
    *
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void flushAll() throws CalFacadeException;
 
@@ -154,13 +154,13 @@ public interface Client extends Serializable {
    * this should in some way check version numbers to detect concurrent updates
    * and fail with an exception.
    *
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void endTransaction() throws CalFacadeException;
 
   /**
    * @return a change token for the current indexed data
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   String getCurrentChangeToken() throws CalFacadeException;
 
@@ -192,10 +192,10 @@ public interface Client extends Serializable {
    *
    * @param resp to write to
    * @param val to output
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  void writeJson(final HttpServletResponse resp,
-                 final Object val) throws CalFacadeException;
+  void writeJson(HttpServletResponse resp,
+                 Object val) throws CalFacadeException;
 
   /** Return authentication relevant properties.
    *
@@ -223,7 +223,7 @@ public interface Client extends Serializable {
 
   /**
    * @param href to be unindexed
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void unindex(String href) throws CalFacadeException;
 
@@ -248,7 +248,7 @@ public interface Client extends Serializable {
    *
    * @param user          String user id
    * @return calendar address or null for unknown user
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   String getCalendarAddress(String user) throws CalFacadeException;
 
@@ -267,7 +267,6 @@ public interface Client extends Serializable {
    *
    * @param val        uri
    * @return caladdr for this system or null for an invalid uri
-   * @throws CalFacadeException  for errors
    */
   String uriToCaladdr(String val);
 
@@ -308,7 +307,7 @@ public interface Client extends Serializable {
 
   /** Does the value appear to represent a valid principal?
    *
-   * @param val
+   * @param val to test
    * @return true if it's a (possible) principal
    */
   boolean isPrincipal(String val);
@@ -342,7 +341,7 @@ public interface Client extends Serializable {
    * @param val           String user id
    * @return User principal or null if not there
    */
-  BwPrincipal getUser(final String val);
+  BwPrincipal getUser(String val);
 
   /** Find the user with the given account name. Create if not there.
    *
@@ -358,7 +357,7 @@ public interface Client extends Serializable {
   String getCurrentCalendarAddress();
 
   /**
-   * @param id
+   * @param id of account
    * @param whoType - from WhoDefs
    * @return String principal uri
    */
@@ -367,9 +366,9 @@ public interface Client extends Serializable {
 
   /** Return principal for the given href.
    *
-   * @param href
+   * @param href of principal
    * @return Principal
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwPrincipal getPrincipal(String href) throws CalFacadeException;
 
@@ -383,14 +382,14 @@ public interface Client extends Serializable {
    *
    * @param href of the principal
    * @return true if it's a valid principal
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   boolean validPrincipal(String href) throws CalFacadeException;
 
   /** Add an entry for the user.
    *
-   * @param account
-   * @throws CalFacadeException
+   * @param account for user
+   * @throws CalFacadeException on fatal error
    */
   void addUser(String account) throws CalFacadeException;
 
@@ -401,7 +400,7 @@ public interface Client extends Serializable {
   /** Add the user entry
    *
    * @param  val      AuthUser users entry
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void addAuthUser(BwAuthUser val) throws CalFacadeException;
 
@@ -411,21 +410,21 @@ public interface Client extends Serializable {
    *
    * @param  pr the principal
    * @return BwAuthUser    users entry
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwAuthUser getAuthUser(BwPrincipal pr) throws CalFacadeException;
 
   /** Update the user entry
    *
    * @param  val      AuthUser users entry
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void updateAuthUser(BwAuthUser val) throws CalFacadeException;
 
   /** Return a collection of all authorised users
    *
    * @return Collection      of BwAuthUser for users with any special authorisation.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwAuthUser> getAllAuthUsers() throws CalFacadeException;
 
@@ -471,7 +470,7 @@ public interface Client extends Serializable {
    *
    * @param val            a principal
    * @return Collection    of BwGroup
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwGroup> getAllAdminGroups(BwPrincipal val) throws CalFacadeException;
 
@@ -507,7 +506,7 @@ public interface Client extends Serializable {
    * populate groups which are members.
    *
    * @param  group           BwGroup group object to add
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void getAdminGroupMembers(BwAdminGroup group) throws CalFacadeException;
 
@@ -543,7 +542,7 @@ public interface Client extends Serializable {
   /**
    * @param group the group
    * @return Collection of groups of which this is a member
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwGroup> findGroupParents(BwGroup group) throws CalFacadeException;
 
@@ -553,7 +552,7 @@ public interface Client extends Serializable {
    *
    * @param val            a principal
    * @return Collection    of BwGroup
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwGroup> getGroups(BwPrincipal val) throws CalFacadeException;
 
@@ -561,7 +560,7 @@ public interface Client extends Serializable {
    *
    * @param  populate      boolean populate with members
    * @return Collection    of BwGroup
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwGroup> getAllGroups(boolean populate) throws CalFacadeException;
 
@@ -569,7 +568,7 @@ public interface Client extends Serializable {
    * populate groups which are members.
    *
    * @param  group           BwGroup group object to add
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void getMembers(BwGroup group) throws CalFacadeException;
 
@@ -580,7 +579,7 @@ public interface Client extends Serializable {
   /** Returns the current user preferences.
    *
    * @return BwPreferences   prefs for the current user
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwPreferences getPreferences() throws CalFacadeException;
 
@@ -600,7 +599,7 @@ public interface Client extends Serializable {
   /** Update the user preferences.
    *
    * @param  val     BwPreferences prefs for a user
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void updatePreferences(BwPreferences val) throws CalFacadeException;
 
@@ -608,9 +607,9 @@ public interface Client extends Serializable {
    *
    * @param compName - name of component - "VEVENT" etc
    * @return String path or null for no preference
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  public String getPreferredCollectionPath(String compName) throws CalFacadeException;
+  String getPreferredCollectionPath(String compName) throws CalFacadeException;
 
   /** Given a (possibly null) list of locales, and/or an explicitly requested locale,
    * figure out what locale to use based on user preferences and system defaults.
@@ -622,19 +621,19 @@ public interface Client extends Serializable {
    * <li>System default</li>
    * </ol>
    *
-   * <p>The locale parameter is a possibly null explicily requested locale.
+   * <p>The locale parameter is a possibly null explicitly requested locale.
    *
    * <p>Matching locales is first attempted using Locale equality. If that fails
    * we try to match languages on the assumption that somebody requesting fr_FR
    * is likely to be happier with fr_CA than en_US.
    *
    * @param locales
-   * @param locale
+   * @param locale possibly null explicitly requested locale
    * @return Collection of locales.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  public Locale getUserLocale(Collection<Locale> locales,
-                              Locale locale) throws CalFacadeException;
+  Locale getUserLocale(Collection<Locale> locales,
+                       Locale locale) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                     Collections
@@ -642,21 +641,21 @@ public interface Client extends Serializable {
 
   /**
    * @return home for current principal
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalendar getHome() throws CalFacadeException;
 
   /**
    * @param path for collection
    * @return collection object or null.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalendar getCollection(String path) throws CalFacadeException;
 
   /**
    * @param path for collection
    * @return true if it exists and user has access.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   boolean collectionExists(String path) throws CalFacadeException;
 
@@ -666,7 +665,7 @@ public interface Client extends Serializable {
    * @param  calType   int special calendar type.
    * @param  create    true if we should create it if non-existent.
    * @return BwCalendar null for unknown calendar
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalendar getSpecial(int calType,
                         boolean create) throws CalFacadeException;
@@ -687,7 +686,7 @@ public interface Client extends Serializable {
    * @param  val     BwCalendar new object
    * @param  parentPath  String path to parent.
    * @return BwCalendar object as added. Parameter val MUST be discarded
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalendar addCollection(BwCalendar val,
                            String parentPath) throws CalFacadeException;
@@ -695,7 +694,7 @@ public interface Client extends Serializable {
   /** Update the given collection
    *
    * @param col the collection
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void updateCollection(BwCalendar col) throws CalFacadeException;
 
@@ -716,9 +715,9 @@ public interface Client extends Serializable {
    * @param val collection
    * @param resolveSubAlias - if true and the alias points to an alias, resolve
    *                  down to a non-alias.
-   * @param freeBusy
+   * @param freeBusy true for a freebusy request
    * @return BwCalendar
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalendar resolveAlias(BwCalendar val,
                           boolean resolveSubAlias,
@@ -730,7 +729,7 @@ public interface Client extends Serializable {
    *
    * @param  col          parent collection
    * @return Collection   of BwCalendar
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwCalendar> getChildren(BwCalendar col)
           throws CalFacadeException;
@@ -739,7 +738,7 @@ public interface Client extends Serializable {
    *
    * @param  val         BwCalendar object
    * @param  newParent   BwCalendar potential parent
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void moveCollection(BwCalendar val,
                       BwCalendar newParent) throws CalFacadeException;
@@ -748,7 +747,7 @@ public interface Client extends Serializable {
    *
    * @param path to collection
    * @return never null - requestStatus set for not an external subscription.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   SynchStatusResponse getSynchStatus(String path) throws CalFacadeException;
 
@@ -762,9 +761,9 @@ public interface Client extends Serializable {
    * "/public/aliases/Lectures" which is a folder containing the alias
    * "/public/aliases/Lectures/Lectures" which is aliased to the single calendar.
    *
-   * @param vpath
+   * @param vpath A virtual path
    * @return collection of collection objects - null for bad vpath
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwCalendar> decomposeVirtualPath(String vpath) throws CalFacadeException;
 
@@ -778,7 +777,7 @@ public interface Client extends Serializable {
    * @param includeAliases - true to include aliases - for public admin we don't
    *                    want aliases
    * @return Set   of BwCalendar
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwCalendar> getAddContentCollections(boolean includeAliases)
           throws CalFacadeException;
@@ -792,7 +791,7 @@ public interface Client extends Serializable {
   /** Returns the cloned root of the tree of public calendars.
    *
    * @return BwCalendar   root
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalendar getPublicCalendars() throws CalFacadeException;
 
@@ -807,7 +806,7 @@ public interface Client extends Serializable {
    * @param  principal whose home we want
    * @param freeBusy      true if this is for freebusy access
    * @return BwCalendar   user home.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalendar getHome(BwPrincipal principal,
                      boolean freeBusy) throws CalFacadeException;
@@ -831,21 +830,21 @@ public interface Client extends Serializable {
   /**
    * @param uid of the category
    * @return category entity or null.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCategory getCategoryByUid(String uid) throws CalFacadeException;
 
   /**
    * @param href of the category
    * @return category entity or null.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCategory getCategory(String href) throws CalFacadeException;
 
   /**
    * @param uid of the category
    * @return category entity or null.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCategory getPersistentCategory(String uid) throws CalFacadeException;
 
@@ -857,7 +856,7 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwCategory> getCategories() throws CalFacadeException;
 
@@ -869,7 +868,7 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwCategory> getPublicCategories() throws CalFacadeException;
 
@@ -882,20 +881,20 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwCategory> getEditableCategories() throws CalFacadeException;
 
   /** Update a category.
    *
    * @param val   category object to be updated
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void updateCategory(BwCategory val) throws CalFacadeException;
 
   /** Add the given category.
    *
-   * @param val
+   * @param val category
    * @return false if not added because already exists
    */
   boolean addCategory(BwCategory val);
@@ -910,7 +909,7 @@ public interface Client extends Serializable {
    *
    * @param val      BwEventProperty object to be deleted
    * @return result indicating what happened - null for not there
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   DeleteReffedEntityResult deleteCategory(BwCategory val) throws CalFacadeException;
 
@@ -919,7 +918,7 @@ public interface Client extends Serializable {
    * <p>Returns an empty collection for none.
    *
    * @return Collection     of uids
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Set<String> getDefaultPublicCategoryUids() throws CalFacadeException;
 
@@ -929,16 +928,16 @@ public interface Client extends Serializable {
 
   /** Get the contact with the given uid.
    *
-   * @param uid
+   * @param uid of contact
    * @return contact object
    */
   GetEntityResponse<BwContact> getContactByUid(String uid);
 
   /** Get the contact with the given uid.
    *
-   * @param uid
+   * @param uid of contact
    * @return contact object
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwContact getPersistentContact(String uid) throws CalFacadeException;
 
@@ -950,7 +949,7 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwContact> getContacts() throws CalFacadeException;
 
@@ -966,8 +965,8 @@ public interface Client extends Serializable {
    * @throws CalFacadeException on fatal error
    */
   GetEntitiesResponse<BwContact> getContacts(String fexpr,
-                                             final int from,
-                                             final int size)
+                                             int from,
+                                             int size)
           throws CalFacadeException;
 
   /** Return all public entities.
@@ -978,7 +977,7 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwContact> getPublicContacts() throws CalFacadeException;
 
@@ -991,25 +990,25 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwContact> getEditableContacts() throws CalFacadeException;
 
   /** Find the contact.
    *
-   * @param val
+   * @param val to match
    * @return contact object
    */
   GetEntityResponse<BwContact> findContact(BwString val);
 
   /** Add the contact
-   * @param val
+   * @param val contact
    */
   void addContact(BwContact val);
 
   /** Update the contact
-   * @param val
-   * @throws CalFacadeException
+   * @param val contact
+   * @throws CalFacadeException on fatal error
    */
   void updateContact(BwContact val) throws CalFacadeException;
 
@@ -1017,7 +1016,7 @@ public interface Client extends Serializable {
    *
    * @param val      contact to be deleted
    * @return result indicating what happened - null for not there
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   DeleteReffedEntityResult deleteContact(BwContact val) throws CalFacadeException;
 
@@ -1028,8 +1027,8 @@ public interface Client extends Serializable {
    * @param ownerHref   String principal href, null for current user
    * @return response object.
    */
-  EnsureEntityExistsResult<BwContact> ensureContactExists(final BwContact val,
-                                                          final String ownerHref);
+  EnsureEntityExistsResult<BwContact> ensureContactExists(BwContact val,
+                                                          String ownerHref);
 
   /* ------------------------------------------------------------
    *                     Locations
@@ -1037,16 +1036,16 @@ public interface Client extends Serializable {
 
   /** Get the location with the given uid.
    *
-   * @param uid
+   * @param uid of location
    * @return Location object
    */
   GetEntityResponse<BwLocation> getLocationByUid(String uid);
 
   /** Get the location with the given uid.
    *
-   * @param uid
+   * @param uid of location
    * @return Location object
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwLocation getPersistentLocation(String uid) throws CalFacadeException;
 
@@ -1058,7 +1057,7 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwLocation> getLocations() throws CalFacadeException;
 
@@ -1071,11 +1070,11 @@ public interface Client extends Serializable {
    *
    * @param fexpr filter expression
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   GetEntitiesResponse<BwLocation> getLocations(String fexpr,
-                                               final int from,
-                                               final int size) throws CalFacadeException;
+                                               int from,
+                                               int size) throws CalFacadeException;
 
   /** Return all public entiities.
    *
@@ -1085,7 +1084,7 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwLocation> getPublicLocations() throws CalFacadeException;
 
@@ -1098,7 +1097,7 @@ public interface Client extends Serializable {
    * report query.
    *
    * @return Collection     of objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwLocation> getEditableLocations() throws CalFacadeException;
 
@@ -1155,8 +1154,8 @@ public interface Client extends Serializable {
    * @param ownerHref   String principal href, null for current user
    * @return response object.
    */
-  EnsureEntityExistsResult<BwLocation> ensureLocationExists(final BwLocation val,
-                                                            final String ownerHref);
+  EnsureEntityExistsResult<BwLocation> ensureLocationExists(BwLocation val,
+                                                            String ownerHref);
 
   /* ------------------------------------------------------------
    *                     Events
@@ -1166,7 +1165,7 @@ public interface Client extends Serializable {
    *
    * @param ev  event
    */
-  void claimEvent(final BwEvent ev);
+  void claimEvent(BwEvent ev);
 
   /** Realias the event - set categories according to the set of aliases
    *
@@ -1197,7 +1196,7 @@ public interface Client extends Serializable {
    * @param name       String possible name
    * @param recurrenceId null for entire event + overrides.
    * @return EventInfo or null
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   EventInfo getEvent(String colPath,
                      String name,
@@ -1210,7 +1209,7 @@ public interface Client extends Serializable {
    *
    * @param href   String collection path / name [ # recurrenceid ]
    * @return EventInfo or null
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   EventInfo getEvent(String href) throws CalFacadeException;
 
@@ -1225,7 +1224,7 @@ public interface Client extends Serializable {
    *                     expand all instances to full form. Otherwise
    *                     just return overrides.
    * @return Collection  populated event value objects
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<EventInfo> getEvents(String filter,
                                   BwDateTime startDate,
@@ -1259,7 +1258,7 @@ public interface Client extends Serializable {
    *
    * @param ei           EventInfo object to be added
    * @param noInvites    True for don't send invitations.
-   * @param rollbackOnError
+   * @param rollbackOnError rollback transaction if true
    * @return UpdateResult Counts of changes.
    */
   UpdateResult addEvent(EventInfo ei,
@@ -1276,8 +1275,8 @@ public interface Client extends Serializable {
    * @param fromAttUri   attendee responding
    * @return UpdateResult Counts of changes.
    */
-  UpdateResult updateEvent(final EventInfo ei,
-                           final boolean noInvites,
+  UpdateResult updateEvent(EventInfo ei,
+                           boolean noInvites,
                            String fromAttUri);
 
   /** Update an event in response to an attendee. Exactly as normal update if
@@ -1291,8 +1290,8 @@ public interface Client extends Serializable {
    * @param alwaysWrite  write and reindex whatever changetable says
    * @return UpdateResult Counts of changes.
    */
-  UpdateResult updateEvent(final EventInfo ei,
-                           final boolean noInvites,
+  UpdateResult updateEvent(EventInfo ei,
+                           boolean noInvites,
                            String fromAttUri,
                            boolean alwaysWrite);
 
@@ -1301,7 +1300,7 @@ public interface Client extends Serializable {
    * @param ei                 BwEvent object to be deleted
    * @param sendSchedulingMessage   Send a declined or cancel scheduling message
    * @return true if event deleted
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   boolean deleteEvent(EventInfo ei,
                       boolean sendSchedulingMessage) throws CalFacadeException;
@@ -1311,7 +1310,7 @@ public interface Client extends Serializable {
    * <p>Otherwise we add an annotation maarking the event as deleted.
    *
    * @param event to delete
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void markDeleted(BwEvent event) throws CalFacadeException;
 
@@ -1324,14 +1323,14 @@ public interface Client extends Serializable {
    *
    * @param name - of the notification
    * @return null for no notification or the notification with that name
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   NotificationType findNotification(String name) throws CalFacadeException;
 
   /** Return all notifications for this user
    *
    * @return all notifications for this user
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   List<NotificationType> allNotifications() throws CalFacadeException;
 
@@ -1346,7 +1345,7 @@ public interface Client extends Serializable {
    * current calendar user.
    *
    * @param val notification to remove
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void removeNotification(NotificationType val) throws CalFacadeException;
 
@@ -1355,13 +1354,13 @@ public interface Client extends Serializable {
    * @param principalHref principal to clean
    * @throws CalFacadeException on fatal error
    */
-  void removeAllNotifications(final String principalHref) throws CalFacadeException;
+  void removeAllNotifications(String principalHref) throws CalFacadeException;
 
-  void subscribe(final String principalHref,
-                 final List<String> emails) throws CalFacadeException;
+  void subscribe(String principalHref,
+                 List<String> emails) throws CalFacadeException;
 
-  void unsubscribe(final String principalHref,
-                   final List<String> emails) throws CalFacadeException;
+  void unsubscribe(String principalHref,
+                   List<String> emails) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                     Resources
@@ -1404,7 +1403,7 @@ public interface Client extends Serializable {
    * @param  path           String path to containing collection
    * @param count this many
    * @return List     of BwResource
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   List<BwResource> getResources(String path,
                                 int count) throws CalFacadeException;
@@ -1453,28 +1452,29 @@ public interface Client extends Serializable {
    * @param uid - uid of requesting component or null for no request
    * @param exceptUid if non-null omit this uid from the freebusy calculation
    * @return BwEvent
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  BwEvent getFreeBusy(final Collection<BwCalendar> fbset,
-                      final BwPrincipal who,
-                      final BwDateTime start,
-                      final BwDateTime end,
-                      final BwOrganizer org,
-                      final String uid,
-                      final String exceptUid)
+  BwEvent getFreeBusy(Collection<BwCalendar> fbset,
+                      BwPrincipal who,
+                      BwDateTime start,
+                      BwDateTime end,
+                      BwOrganizer org,
+                      String uid,
+                      String exceptUid)
           throws CalFacadeException;
 
   /** Get aggregated free busy for a ScheduleResult.
    *
    * @param sr ScheduleResult
-   * @param start
-   * @param end
-   * @param granularity
+   * @param start of period
+   * @param end of period
+   * @param granularity of result - eg 1 hour
    * @return FbResponses
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   SchedulingI.FbResponses aggregateFreeBusy(ScheduleResult sr,
-                                            BwDateTime start, BwDateTime end,
+                                            BwDateTime start,
+                                            BwDateTime end,
                                             BwDuration granularity) throws CalFacadeException;
 
   /** Schedule a meeting or publish an event. The event object must have the organizer
@@ -1491,19 +1491,19 @@ public interface Client extends Serializable {
    * @param fromAttUri
    * @param iSchedule  true if it's an iSchedule request.
    * @return ScheduleResult
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  public ScheduleResult schedule(EventInfo ei,
-                                 String recipient,
-                                 String fromAttUri,
-                                 boolean iSchedule) throws CalFacadeException;
+  ScheduleResult schedule(EventInfo ei,
+                          String recipient,
+                          String fromAttUri,
+                          boolean iSchedule) throws CalFacadeException;
 
   /** Return the users copy of the active meeting with the
    * same uid as that given.
    *
    * @param ev the event to search for
    * @return possibly null meeting
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   EventInfo getStoredMeeting(BwEvent ev) throws CalFacadeException;
 
@@ -1512,7 +1512,7 @@ public interface Client extends Serializable {
    * @param ei event which is probably in a calendar.
    * @param comment - optional comment
    * @return   ScheduleResult
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   ScheduleResult requestRefresh(EventInfo ei,
                                 String comment) throws CalFacadeException;
@@ -1525,54 +1525,54 @@ public interface Client extends Serializable {
    * @param col MUST be a sharable collection
    * @param share the request
    * @return list of ok and !ok sharees
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  ShareResultType share(final String principalHref,
-                        final BwCalendar col,
-                        final ShareType share) throws CalFacadeException;
+  ShareResultType share(String principalHref,
+                        BwCalendar col,
+                        ShareType share) throws CalFacadeException;
 
 
   /** Publish the collection - that is make it available for subscriptions.
    *
-   * @param col
-   * @throws CalFacadeException
+   * @param col collection object
+   * @throws CalFacadeException on fatal error
    */
   void publish(BwCalendar col) throws CalFacadeException;
 
   /** Unpublish the collection - that is make it unavailable for subscriptions
    * and remove any existing subscriptions.
    *
-   * @param col
-   * @throws CalFacadeException
+   * @param col collection object
+   * @throws CalFacadeException on fatal error
    */
   void unpublish(BwCalendar col) throws CalFacadeException;
 
   /**
    * @param reply the request
    * @return a ReplyResult object.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  SharingI.ReplyResult sharingReply(final InviteReplyType reply) throws CalFacadeException;
+  SharingI.ReplyResult sharingReply(InviteReplyType reply) throws CalFacadeException;
 
   /** Subscribe to the collection - must be a published collection.
    *
-   * @param colPath
+   * @param colPath  collection path
    * @param subscribedName name for new alias
    * @return path of new alias and flag
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   SharingI.SubscribeResult subscribe(String colPath,
                                      String subscribedName) throws CalFacadeException;
 
   /** Subscribe to an external url.
    *
-   * @param extUrl
+   * @param extUrl the url
    * @param subscribedName name for new alias
    * @param refresh - refresh rate in minutes <= 0 for default
    * @param remoteId - may be null
    * @param remotePw  - may be null
    * @return path of new alias and flag
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   SharingI.SubscribeResult subscribeExternal(String extUrl,
                                              String subscribedName,
@@ -1587,7 +1587,7 @@ public interface Client extends Serializable {
   /** Returns the synch service information.
    *
    * @return full synch info
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwSynchInfo getSynchInfo() throws CalFacadeException;
 
@@ -1595,8 +1595,8 @@ public interface Client extends Serializable {
    *                     Views
    * ------------------------------------------------------------ */
 
-  static final String listViewMode = "list";
-  static final String gridViewMode = "grid";
+  String listViewMode = "list";
+  String gridViewMode = "grid";
 
   /** Set the view mode
    *
@@ -1614,7 +1614,7 @@ public interface Client extends Serializable {
    *
    * @param  val     String view name - null means default
    * @return BwView  null view not found.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwView getView(String val) throws CalFacadeException;
 
@@ -1623,7 +1623,7 @@ public interface Client extends Serializable {
    * @param  val           BwView to add
    * @param  makeDefault   boolean true for make this the default.
    * @return boolean false view not added, true - added.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   boolean addView(BwView val,
                   boolean makeDefault) throws CalFacadeException;
@@ -1631,7 +1631,7 @@ public interface Client extends Serializable {
   /** Return the collection of views - named collections of collections
    *
    * @return collection of views
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwView> getAllViews() throws CalFacadeException;
 
@@ -1640,7 +1640,7 @@ public interface Client extends Serializable {
    * @param  name    String view name - null means default
    * @param  path     collection path to add
    * @return boolean false view not found, true - collection path added.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   boolean addViewCollection(String name,
                             String path) throws CalFacadeException;
@@ -1650,7 +1650,7 @@ public interface Client extends Serializable {
    * @param  name    String view name - null means default
    * @param  path    collection path to remove
    * @return boolean false view not found, true - collection path removed.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   boolean removeViewCollection(String name,
                                String path) throws CalFacadeException;
@@ -1659,7 +1659,7 @@ public interface Client extends Serializable {
    *
    * @param  val     BwView
    * @return boolean false - view not found.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   boolean removeView(BwView val) throws CalFacadeException;
 
@@ -1669,20 +1669,18 @@ public interface Client extends Serializable {
 
   /** Called if anything is changed which affects the state of the client, e.g
    * switching display flags, deleting collections.
-   *
-   * @throws CalFacadeException
    */
-  public void flushState();
+  void flushState();
 
   /* ------------------------------------------------------------
    *                     State of current admin group
    * ------------------------------------------------------------ */
 
   /**
-   * @param val
-   * @throws CalFacadeException
+   * @param val true if group is set
+   * @throws CalFacadeException on fatal error
    */
-  void setGroupSet(final boolean val) throws CalFacadeException;
+  void setGroupSet(boolean val) throws CalFacadeException;
 
   /**
    * @return true for group set
@@ -1690,21 +1688,21 @@ public interface Client extends Serializable {
   boolean getGroupSet();
 
   /**
-   * @param val
-   * @throws CalFacadeException
+   * @param val true if choosing group
+   * @throws CalFacadeException on fatal error
    */
-  void setChoosingGroup(final boolean val) throws CalFacadeException;
+  void setChoosingGroup(boolean val) throws CalFacadeException;
 
   /**
    * @return true for choosing group
    */
-  public boolean getChoosingGroup();
+  boolean getChoosingGroup();
 
   /**
-   * @param val
-   * @throws CalFacadeException
+   * @param val true if only 1 group available
+   * @throws CalFacadeException on fatal error
    */
-  void setOneGroup(final boolean val) throws CalFacadeException;
+  void setOneGroup(boolean val) throws CalFacadeException;
 
   /**
    * @return true if there is only one group
@@ -1714,9 +1712,9 @@ public interface Client extends Serializable {
   /** Current admin group name, or null for none
    *
    * @param val      BwAdminGroup representing users group or null
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  void setAdminGroupName(final String val) throws CalFacadeException;
+  void setAdminGroupName(String val) throws CalFacadeException;
 
   /**
    * @return String admin group name
@@ -1731,11 +1729,10 @@ public interface Client extends Serializable {
    *
    * @param cal where from
    * @param newCal where to
-   * @return
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  void moveContents(final BwCalendar cal,
-                    final BwCalendar newCal) throws CalFacadeException;
+  void moveContents(BwCalendar cal,
+                    BwCalendar newCal) throws CalFacadeException;
 
   /** Update the system after changes to timezones. This is a lengthy process
    * so the method allows the caller to specify how many updates are to take place
@@ -1752,17 +1749,17 @@ public interface Client extends Serializable {
    * @param checkOnly  don't update if true.
    * @param info    null on first call, returned object from previous calls.
    * @return UpdateFromTimeZonesInfo staus of the update
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref, 
+  UpdateFromTimeZonesInfo updateFromTimeZones(String colHref,
                                               int limit,
                                               boolean checkOnly,
                                               UpdateFromTimeZonesInfo info)
           throws CalFacadeException;
 
   /**
-   * @param val
-   * @throws CalFacadeException
+   * @param val mail message
+   * @throws CalFacadeException on fatal error
    */
   void postMessage(Message val) throws CalFacadeException;
 
@@ -1786,9 +1783,9 @@ public interface Client extends Serializable {
    *
    * @param params  defining search
    * @return  SearchResult   never null
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  SearchResult search(final SearchParams params) throws CalFacadeException;
+  SearchResult search(SearchParams params) throws CalFacadeException;
 
   /**
    * @return SearchParams
@@ -1800,7 +1797,7 @@ public interface Client extends Serializable {
    *
    * @param pos - specify movement in result set
    * @return  list of SearchResultEntry
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   List<SearchResultEntry> getSearchResult(Position pos) throws CalFacadeException;
 
@@ -1810,7 +1807,7 @@ public interface Client extends Serializable {
    * @param start in result set
    * @param num of entries
    * @return  list of SearchResultEntry
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   List<SearchResultEntry> getSearchResult(int start,
                                           int num) throws CalFacadeException;
@@ -1824,7 +1821,7 @@ public interface Client extends Serializable {
    * @param ent      BwShareableDbentity
    * @param aces     Collection of ace
    * @param replaceAll true to replace the entire access list.
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void changeAccess(BwShareableDbentity<?> ent,
                     Collection<Ace> aces,
@@ -1837,14 +1834,13 @@ public interface Client extends Serializable {
   /** Set the calendar suite we are running as. Must be running as an
    * unauthenticated user.
    *
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void setCalSuite(BwCalSuite cs) throws CalFacadeException;
 
   /** Get the current calendar suite.
    *
    * @return BwCalSuiteWrapper null for unknown calendar suite
-   * @throws CalFacadeException
    */
   BwCalSuiteWrapper getCalSuite();
 
@@ -1852,7 +1848,7 @@ public interface Client extends Serializable {
    *
    * @param  group     BwAdminGroup
    * @return BwCalSuiteWrapper null for unknown calendar suite
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalSuiteWrapper getCalSuite(BwAdminGroup group)
           throws CalFacadeException;
@@ -1867,7 +1863,7 @@ public interface Client extends Serializable {
    *
    * @param  name     String name of calendar suite
    * @return BwCalSuiteWrapper null for unknown calendar suite
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalSuiteWrapper getCalSuite(String name) throws CalFacadeException;
 
@@ -1875,10 +1871,10 @@ public interface Client extends Serializable {
    *
    * @param name ofsuite
    * @param adminGroupName - name of the admin group
-   * @param rootCollectionPath
+   * @param rootCollectionPath - root for suite
    * @param submissionsPath where submitted events go
    * @return BwCalSuiteWrapper for new object
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwCalSuiteWrapper addCalSuite(String name,
                                 String adminGroupName,
@@ -1890,9 +1886,9 @@ public interface Client extends Serializable {
    *
    * @param cs     BwCalSuiteWrapper object
    * @param adminGroupName - name of the admin group
-   * @param rootCollectionPath
+   * @param rootCollectionPath - root for suite
    * @param submissionsPath where submitted events go
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void updateCalSuite(BwCalSuiteWrapper cs,
                       String adminGroupName,
@@ -1902,7 +1898,7 @@ public interface Client extends Serializable {
   /** Delete a calendar suite object
    *
    * @param  val     BwCalSuiteWrapper object
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void deleteCalSuite(BwCalSuiteWrapper val) throws CalFacadeException;
 
@@ -1922,7 +1918,7 @@ public interface Client extends Serializable {
    * @param suite - calendar suite
    * @param rc - define class of resource "calsuite", "admin"or "global"
    * @return list
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   List<BwResource> getCSResources(BwCalSuite suite,
                                   String rc) throws CalFacadeException;
@@ -1930,10 +1926,10 @@ public interface Client extends Serializable {
   /** Get named resource. The content is fetched.
    *
    * @param suite - calendar suite
-   * @param name
+   * @param name of resource
    * @param rc - define class of resource "calsuite", "admin"or "global"
    * @return resource or null
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   BwResource getCSResource(BwCalSuite suite,
                            String name,
@@ -1945,9 +1941,9 @@ public interface Client extends Serializable {
    * <p>The parent collection will be created if necessary.
    *
    * @param suite - calendar suite
-   * @param res
+   * @param res resource to add
    * @param rc - define class of resource "calsuite", "admin"or "global"
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void addCSResource(BwCalSuite suite,
                      BwResource res,
@@ -1956,9 +1952,9 @@ public interface Client extends Serializable {
   /** Delete named resource
    *
    * @param suite - calendar suite
-   * @param name
+   * @param name of resource
    * @param rc - define class of resource "calsuite", "admin"or "global"
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void deleteCSResource(BwCalSuite suite,
                         String name,
@@ -1991,28 +1987,28 @@ public interface Client extends Serializable {
   /** Get filter definitions to which this user has access
    *
    * @return Collection     of BwCalSuiteWrapper
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   Collection<BwFilterDef> getAllFilters() throws CalFacadeException;
 
   /** Validate a filter definition.
    *
    * @param  val       String xml filter definition
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
-  public void validateFilter(String val) throws CalFacadeException;
+  void validateFilter(String val) throws CalFacadeException;
 
   /** Validate and persist a new filter definition
    *
    * @param  val       filter definition
    * @throws CalFacadeException for errrors including duplicate name
    */
-  public void saveFilter(BwFilterDef val) throws CalFacadeException;
+  void saveFilter(BwFilterDef val) throws CalFacadeException;
 
   /** Delete a filter given the name
    *
    * @param  name     String name of filter
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal error
    */
   void deleteFilter(String name) throws CalFacadeException;
 }

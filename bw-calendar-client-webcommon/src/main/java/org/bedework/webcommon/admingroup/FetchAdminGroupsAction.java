@@ -26,7 +26,6 @@ import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwSession;
 
 import java.util.Collection;
 
@@ -58,8 +57,6 @@ public class FetchAdminGroupsAction extends BwAbstractAction {
 
     /* Add an etag */
     resp.addHeader("etag", changeToken);
-
-    final BwSession sess = request.getSess();
 
     final Collection<BwGroup> vals = cl.getAdminGroups();
 

@@ -26,7 +26,7 @@
     <bw-util-network.version>4.1.0</bw-util-network.version>
     <bw-util-security.version>4.1.0</bw-util-security.version>
     <bw-util-tz.version>4.1.1-SNAPSHOT</bw-util-tz.version>
-    <bw-util2.version>4.0.6</bw-util2.version>
+    <bw-util2.version>4.0.7-SNAPSHOT</bw-util2.version>
 		<bw-access.version>4.0.8</bw-access.version>
 		<bw-webdav.version>4.0.10-SNAPSHOT</bw-webdav.version>
 		<bw-caldav.version>4.0.10-SNAPSHOT</bw-caldav.version>
@@ -49,6 +49,7 @@
 
     <commons-lang.version>2.3</commons-lang.version>
     <commons.text.version>1.7</commons.text.version>
+    <commons.codec.version>1.15</commons.codec.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <http-client.version>4.5.8</http-client.version>
     <http-core.version>4.4.11</http-core.version>
@@ -555,6 +556,32 @@
         <groupId>${ical4j.groupId}</groupId>
         <artifactId>${ical4j.artifactId}</artifactId>
         <version>${ical4j.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- ical4j dependencies -->
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.8.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>4.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons.codec.version}</version>
       </dependency>
 
       <dependency>

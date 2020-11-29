@@ -74,7 +74,7 @@
     <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-xml:2.5.4" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-dateutil:2.5.4" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-access:4.0.8" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util2-calendar:4.0.6" level="project" />
+    <orderEntry type="module" module-name="bw-util2-calendar" />
     <orderEntry type="library" name="Maven: org.bedework:bw-xml-calws-soap:4.0.10" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:2.3.2" level="project" />
@@ -89,7 +89,7 @@
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.0" level="project" />
     <orderEntry type="module" module-name="bw-calendar-engine-facade" />
     <orderEntry type="module" module-name="bw-calendar-engine-annotations" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-util2-vcard:4.0.6" level="project" />
+    <orderEntry type="module" module-name="bw-util2-vcard" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-security:4.1.0" level="project" />
     <orderEntry type="module" module-name="bw-webdav" />
     <orderEntry type="module" module-name="bw-caldav-util" />

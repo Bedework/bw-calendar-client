@@ -377,17 +377,28 @@ public class TimeView implements Logged, Serializable {
    *
    * @param   date    MyCalendar object defining day
    * @return  Collection of EventFormatter being one days events or empty for no events.
-   * @throws Throwable
    */
-  public Collection<EventFormatter> getDaysEvents(final MyCalendarVO date) throws Throwable {
-    ArrayList<EventFormatter> al = new ArrayList<>();
+  public Collection<EventFormatter> getDaysEvents(final MyCalendarVO date) {
+    final ArrayList<EventFormatter> al = new ArrayList<>();
 
-    BwDateTime startDt = getBwDate(date.getDateDigits());
-    BwDateTime endDt = startDt.getNextDay();
+    //BwDateTime startDt = getBwDate(date.getDateDigits());
+    //BwDateTime endDt = startDt.getNextDay();
+    final String tzid;
+    try {
+      tzid = Timezones.getDefaultTz().getID();
+    } catch (final TimezonesException tze) {
+      throw new RuntimeException(tze);
+    }
+    final BwDateTime startDt =
+            BwDateTimeUtil.getDateTime(date.getDateDigits() + "T000000",
+                                       false,
+                                       false,
+                                       tzid);
+    final BwDateTime endDt = startDt.addDur("P1D");
 
     // UTC times
-    String start = startDt.getDate();
-    String end = endDt.getDate();
+    final String start = startDt.getDate();
+    final String end = endDt.getDate();
 
     // local times - for floating check
     //String startLocal = startDt.getDtval();
@@ -401,11 +412,11 @@ public class TimeView implements Logged, Serializable {
      * of todos with no start date. These should only appear in the current day,
      * i.e today
      */
-    boolean today = date.isToday();
+    final boolean today = date.isToday();
 
-    for (EventFormatter ef: events.values()) {
-      EventInfo ei = ef.getEventInfo();
-      BwEvent ev = ei.getEvent();
+    for (final EventFormatter ef: events.values()) {
+      final EventInfo ei = ef.getEventInfo();
+      final BwEvent ev = ei.getEvent();
 
       if ((ev.getEntityType() == IcalDefs.entityTypeTodo)  &&
            ev.getNoStart()) {

@@ -76,9 +76,11 @@ public class TimeView implements Logged, Serializable {
   protected String nextDate;
   protected boolean showData;
 
-  private static DateFormat fullDf = DateFormat.getDateInstance(DateFormat.FULL);
+  private static final DateFormat fullDf =
+          DateFormat.getDateInstance(DateFormat.FULL);
 
-  private static DateFormat shortDf = DateFormat.getDateInstance(DateFormat.SHORT);
+  private static final DateFormat shortDf =
+          DateFormat.getDateInstance(DateFormat.SHORT);
 
   private IndexKeys keys = new IndexKeys();
 
@@ -134,7 +136,7 @@ public class TimeView implements Logged, Serializable {
       synchronized (fullDf) {
         try {
           fullDf.setTimeZone(Timezones.getDefaultTz());
-        } catch (TimezonesException tze) {
+        } catch (final TimezonesException tze) {
           throw new RuntimeException(tze);
         }
         return fullDf.format(getTime());
@@ -149,7 +151,7 @@ public class TimeView implements Logged, Serializable {
       synchronized (shortDf) {
         try {
           shortDf.setTimeZone(Timezones.getDefaultTz());
-        } catch (TimezonesException tze) {
+        } catch (final TimezonesException tze) {
           throw new RuntimeException(tze);
         }
         return shortDf.format(getTime());
@@ -161,15 +163,15 @@ public class TimeView implements Logged, Serializable {
      * @return String
      */
     public String getMonthName() {
-      FieldPosition f = new FieldPosition(DateFormat.MONTH_FIELD);
+      final FieldPosition f = new FieldPosition(DateFormat.MONTH_FIELD);
 
-      DateFormat df = DateFormat.
+      final DateFormat df = DateFormat.
           getDateTimeInstance(DateFormat.LONG,
                               DateFormat.LONG,
                               BwLocale.getLocale());
       try {
         df.setTimeZone(Timezones.getDefaultTz());
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         throw new RuntimeException(t);
       }
 
@@ -251,7 +253,7 @@ public class TimeView implements Logged, Serializable {
    * @param cl
    * @return translator for ical
    */
-  public IcalTranslator getTrans(Client cl) {
+  public IcalTranslator getTrans(final Client cl) {
     if (trans == null) {
       trans = new IcalTranslator(new IcalCallbackcb(cl));
     }
@@ -584,10 +586,10 @@ public class TimeView implements Logged, Serializable {
     }
 
     try {
-      GtpiData gtpi = new GtpiData();
+      final GtpiData gtpi = new GtpiData();
 
-      ArrayList<TimeViewDailyInfo> months = new ArrayList<TimeViewDailyInfo>();
-      ArrayList<TimeViewDailyInfo> weeks = new ArrayList<TimeViewDailyInfo>();
+      final ArrayList<TimeViewDailyInfo> months = new ArrayList<>();
+      ArrayList<TimeViewDailyInfo> weeks = new ArrayList<>();
 
       //gtpi.first = getFirstDay();
       gtpi.last = getLastDay();
@@ -611,7 +613,7 @@ public class TimeView implements Logged, Serializable {
       initTvdi(monthTvdi, gtpi);
 
       /* Create a year entry */
-      TimeViewDailyInfo yearTvdi = new TimeViewDailyInfo(err);
+      final TimeViewDailyInfo yearTvdi = new TimeViewDailyInfo(err);
       yearTvdi.setCal(gtpi.currentDay);
       yearTvdi.setYear(gtpi.year);
       yearTvdi.setDate(gtpi.currentDay.getDateDigits());
@@ -619,7 +621,7 @@ public class TimeView implements Logged, Serializable {
       yearTvdi.setDateLong(gtpi.currentDay.getLongDateString());
 
       for (;;) {
-        TimeViewDailyInfo weekTvdi = new TimeViewDailyInfo(err);
+        final TimeViewDailyInfo weekTvdi = new TimeViewDailyInfo(err);
 
         initTvdi(weekTvdi, gtpi);
 
@@ -631,7 +633,7 @@ public class TimeView implements Logged, Serializable {
         }
 
         if (gtpi.isLast || gtpi.newMonth) {
-          /** First add all the weeks to this month
+          /* First add all the weeks to this month
            */
 
           if (gtpi.prevTvdi != null) {
@@ -647,7 +649,7 @@ public class TimeView implements Logged, Serializable {
             break;
           }
 
-          /** Set up for a new month.
+          /* Set up for a new month.
            */
 
           initGtpiForMonth(gtpi);
@@ -698,9 +700,9 @@ public class TimeView implements Logged, Serializable {
     final Collection<SearchResultEntry> sres = cl.getSearchResult(0, -1);
     events = new HashMap<>(sres.size());
 
-    for (SearchResultEntry sre: sres) {
+    for (final SearchResultEntry sre: sres) {
       if (sre.getEntity() instanceof EventFormatter) {
-        EventFormatter ef = (EventFormatter)sre.getEntity();
+        final EventFormatter ef = (EventFormatter)sre.getEntity();
 
         events.put(makeKey(ef.getEvent()), ef);
       }
@@ -715,9 +717,10 @@ public class TimeView implements Logged, Serializable {
    */
   public void putEvent(final Client cl,
                        final EventInfo ei) throws CalFacadeException {
-    EventFormatter ef = new EventFormatter(cl,
-                                           new IcalTranslator(new IcalCallbackcb(cl)),
-                                           ei);
+    final EventFormatter ef =
+            new EventFormatter(cl,
+                               new IcalTranslator(new IcalCallbackcb(cl)),
+                               ei);
 
     events.put(makeKey(ef.getEvent()), ef);
   }
@@ -769,13 +772,12 @@ public class TimeView implements Logged, Serializable {
    *
    * @param gtpi     GtpiData object supplying many parameters
    * @return TimeViewDailyInfo[] array of entries for this week.
-   * @throws Throwable
    */
-  private TimeViewDailyInfo[] getOneWeekTvdi(final GtpiData gtpi) throws Throwable {
-    ArrayList<TimeViewDailyInfo> days = new ArrayList<TimeViewDailyInfo>();
+  private TimeViewDailyInfo[] getOneWeekTvdi(final GtpiData gtpi) {
+    final ArrayList<TimeViewDailyInfo> days = new ArrayList<>();
     TimeViewDailyInfo tvdi;
 
-    /** First see if we need to insert leading fillers */
+    /* First see if we need to insert leading fillers */
     int dayOfWeek = gtpi.currentDay.getDayOfWeek();
     int dayNum = getFirstDayOfWeek();
 
@@ -800,7 +802,7 @@ public class TimeView implements Logged, Serializable {
 
       // Check we got this right
       if (days.size() > 7) {
-        throw new Exception("Programming error in getOneWeekTvdi");
+        throw new RuntimeException("Programming error in getOneWeekTvdi");
       }
     }
 
@@ -827,7 +829,7 @@ public class TimeView implements Logged, Serializable {
       tvdi.setDayOfMonth(gtpi.currentDay.getDay());
       tvdi.setDayOfWeek(dayOfWeek);
 
-      /** Is this correct? The days of the week are rotated to adjust for
+      /* Is this correct? The days of the week are rotated to adjust for
        *   first day differences. */
       tvdi.setDayName(getCalInfo().getDayName(dayOfWeek));
       tvdi.setFirstDayOfMonth(gtpi.newMonth);
@@ -853,7 +855,7 @@ public class TimeView implements Logged, Serializable {
       }
     }
 
-    /** Pad it out to seven days
+    /* Pad it out to seven days
      */
     while (days.size() < 7) {
       tvdi = new TimeViewDailyInfo(err);
@@ -881,7 +883,7 @@ public class TimeView implements Logged, Serializable {
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

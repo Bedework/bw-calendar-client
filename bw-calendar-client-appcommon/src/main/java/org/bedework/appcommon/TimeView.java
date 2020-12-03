@@ -65,7 +65,7 @@ import java.util.Map;
  * @author  Mike Douglass douglm  rpi.edu
  */
 public class TimeView implements Logged, Serializable {
-  private MessageEmit err;
+  private final MessageEmit err;
 
   protected IcalTranslator trans;
   protected String periodName;
@@ -82,7 +82,7 @@ public class TimeView implements Logged, Serializable {
   private static final DateFormat shortDf =
           DateFormat.getDateInstance(DateFormat.SHORT);
 
-  private IndexKeys keys = new IndexKeys();
+  private final IndexKeys keys = new IndexKeys();
 
   protected BwDateTime viewStart;
   protected BwDateTime viewEnd;
@@ -95,11 +95,11 @@ public class TimeView implements Logged, Serializable {
    */
   private TimeViewDailyInfo[] tvdis;
 
-  private CalFmt curDayFmt;
-  private CalFmt firstDayFmt;
-  private CalFmt lastDayFmt;
+  private final CalFmt curDayFmt;
+  private final CalFmt firstDayFmt;
+  private final CalFmt lastDayFmt;
 
-  private FilterBase filter;
+  private final FilterBase filter;
 
   /**
    *
@@ -213,7 +213,6 @@ public class TimeView implements Logged, Serializable {
    *                   For example we may use the year for navigation only
    *                   to reduce the amount of data retrieved.
    * @param  filter    non-null to filter the results.
-   * @throws CalFacadeException
    */
   public TimeView(final MessageEmit err,
                   final Calendar curDay,
@@ -223,7 +222,7 @@ public class TimeView implements Logged, Serializable {
                   final String prevDate,
                   final String nextDate,
                   final boolean showData,
-                  final FilterBase filter) throws CalFacadeException {
+                  final FilterBase filter) {
     this.err = err;
 
     curDayFmt = new CalFmt(curDay);
@@ -731,13 +730,13 @@ public class TimeView implements Logged, Serializable {
                            ev.getRecurrenceId());
   }
 
-  private BwDateTime getBwDate(final Calendar date) throws CalFacadeException {
+  private BwDateTime getBwDate(final Calendar date) {
     final String dateStr = new MyCalendarVO(date.getTime()).getDateDigits();
 
     return getBwDate(dateStr);
   }
 
-  private BwDateTime getBwDate(final String date) throws CalFacadeException {
+  private BwDateTime getBwDate(final String date) {
     return BwDateTimeUtil.getDateTime(date,
                                       true,
                                       false,

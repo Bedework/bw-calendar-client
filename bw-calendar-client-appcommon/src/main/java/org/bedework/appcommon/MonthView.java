@@ -20,7 +20,6 @@
 package org.bedework.appcommon;
 
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.servlet.MessageEmit;
 
 /** This class represents a month of events. The firstDay and lastDay are set
@@ -34,11 +33,10 @@ public class MonthView extends TimeView {
    * @param err - for error messages
    * @param  curDay    MyCalendarVO representing current day.
    * @param  filter    non-null to filter the results.
-   * @throws CalFacadeException
    */
   public MonthView(final MessageEmit err,
                    final MyCalendarVO curDay,
-                   final FilterBase filter) throws CalFacadeException {
+                   final FilterBase filter) {
     super(err,
           curDay.getCalendar(), "Month",
           CalendarInfo.getInstance().getFirstDayOfThisMonth(curDay.getCalendar().getTimeZone(),

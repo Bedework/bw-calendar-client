@@ -20,7 +20,6 @@
 package org.bedework.appcommon;
 
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.servlet.MessageEmit;
 
 /** This class represents a year of events. The firstDay and lastDay are set
@@ -38,12 +37,11 @@ public class YearView extends TimeView {
    *                   For example we may use the year for navigation only
    *                   to reduce the amount of data retrieved.
    * @param  filter    non-null to filter the results.
-   * @throws CalFacadeException
    */
   public YearView(final MessageEmit err,
                   final MyCalendarVO curDay,
                   final boolean showData,
-                  final FilterBase filter) throws CalFacadeException {
+                  final FilterBase filter) {
     super(err,
           curDay.getCalendar(), "Year",
           CalendarInfo.getInstance().getFirstDayOfThisYear(curDay.getCalendar().getTimeZone(),

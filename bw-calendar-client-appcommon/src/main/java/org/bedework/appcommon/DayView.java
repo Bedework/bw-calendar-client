@@ -38,7 +38,7 @@ public class DayView extends TimeView {
    */
   public DayView(final MessageEmit err,
                  final MyCalendarVO curDay,
-                 final FilterBase filter) throws CalFacadeException {
+                 final FilterBase filter) {
     super(err,
           curDay.getCalendar(), "Day",
           curDay.getCalendar(),

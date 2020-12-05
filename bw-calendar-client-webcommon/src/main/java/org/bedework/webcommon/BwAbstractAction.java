@@ -56,6 +56,7 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.calfacade.filter.BwCollectionFilter;
 import org.bedework.calfacade.filter.BwCreatorFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.locale.BwLocale;
@@ -394,16 +395,25 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 //      bsess.prepareRender(bwreq);
     } catch (final CalFacadeAccessException cfae) {
       form.getErr().emit(ClientError.noAccess);
+      if (debug()) {
+        error(cfae);
+      }
       forward = forwards[forwardNoAccess];
       cl.rollback();
     } catch (final CalFacadeException cfe) {
       form.getErr().emit(cfe.getMessage(), cfe.getExtra());
       form.getErr().emit(cfe);
+      if (debug()) {
+        error(cfe);
+      }
 
       forward = forwards[forwardError];
       cl.rollback();
     } catch (final Throwable t) {
       form.getErr().emit(t);
+      if (debug()) {
+        error(t);
+      }
       forward = forwards[forwardError];
       cl.rollback();
     }
@@ -723,6 +733,21 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         crefilter.setEntity(cl.getCurrentPrincipalHref());
 
         filter = FilterBase.addAndChild(filter, crefilter);
+      }
+    }
+
+    /*
+       Not sure this is the best place...
+       If the filter is null for a user calendar - add a filter to
+       exclude the inbox.
+     */
+
+    if (cl.getWebUser() && (filter == null)) {
+      final var inBoxInfo = form.getInBoxInfo();
+      if ((inBoxInfo != null) && (inBoxInfo.getColPath() != null)) {
+        filter = new BwCollectionFilter(null,
+                                        inBoxInfo.getColPath());
+        filter.setNot(true);
       }
     }
 

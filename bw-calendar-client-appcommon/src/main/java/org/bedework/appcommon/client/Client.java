@@ -178,6 +178,12 @@ public interface Client extends Serializable {
 
   /**
    *
+   * @return true if we are the web user client.
+   */
+  boolean getWebUser();
+
+  /**
+   *
    * @return true if we are the authenticated public client.
    */
   boolean getPublicAuth();

@@ -36,6 +36,8 @@ import java.util.Collection;
 public class InOutBoxInfo implements Serializable {
   private boolean inbox; // false for outbox.
 
+  private String colPath;
+
   private boolean changed; // Set true whenever the status changes.
 
   private String tagVal;
@@ -53,7 +55,7 @@ public class InOutBoxInfo implements Serializable {
 
   /** Constructor
    *
-   * @param cl
+   * @param cl client
    * @param inbox  boolean
    * @throws CalFacadeException
    */
@@ -66,52 +68,55 @@ public class InOutBoxInfo implements Serializable {
 
   /** Refresh the information
    *
-   * @param cl
-   * @param all
+   * @param cl client
+   * @param all true to fetch all events.
    * @throws CalFacadeException
    */
   public void refresh(final Client cl,
-                      boolean all) throws CalFacadeException {
-    int calType;
+                      final boolean all) throws CalFacadeException {
+    final int calType;
     if (inbox) {
       calType = BwCalendar.calTypeInbox;
     } else {
       calType = BwCalendar.calTypeOutbox;
     }
 
-    BwCalendar cal = cl.getSpecial(calType, false);
+    final BwCalendar col = cl.getSpecial(calType, false);
 
-    if (cal == null) {
+    if (col == null) {
       // Cannot go away - never existed - no change.
       changed = false;
       return;
     }
 
+    colPath = col.getPath();
+
     if (!all) {
       synchronized (this) {
-        currentAccess = cal.getCurrentAccess();
+        currentAccess = col.getCurrentAccess();
 
-        if ((tagVal != null) && (tagVal.equals(cal.getLastmod().getTagValue()))) {
+        if ((tagVal != null) &&
+                (tagVal.equals(col.getLastmod().getTagValue()))) {
           changed = false;
           return;
         }
 
-        tagVal = cal.getLastmod().getTagValue();
+        tagVal = col.getLastmod().getTagValue();
       }
     }
 
     // XXX need to be able to store and retrieve other types of info.
 
-    String fexpr = "(colPath='" + cal.getPath() + "')";
+    final String fexpr = "(colPath='" + colPath + "')";
 
-    Collection<EventInfo> evs = cl.getEvents(fexpr,
-                                             null, null,
-                                             false);
+    final Collection<EventInfo> evs = cl.getEvents(fexpr,
+                                                   null, null,
+                                                   false);
     numActive = 0;
     numProcessed = 0;
 
-    for (EventInfo ei: evs) {
-      BwEvent ev = ei.getEvent();
+    for (final EventInfo ei: evs) {
+      final BwEvent ev = ei.getEvent();
 
       if (ev.getScheduleState() == BwEvent.scheduleStateNotProcessed) {
         numActive++;
@@ -125,7 +130,7 @@ public class InOutBoxInfo implements Serializable {
   /**
    * @param val boolean
    */
-  public void setInbox(boolean val) {
+  public void setInbox(final boolean val) {
     inbox = val;
   }
 
@@ -137,9 +142,17 @@ public class InOutBoxInfo implements Serializable {
   }
 
   /**
+   *
+   * @return path of collection
+   */
+  public String getColPath() {
+    return colPath;
+  }
+
+  /**
    * @param val boolean
    */
-  public void setChanged(boolean val) {
+  public void setChanged(final boolean val) {
     changed = val;
   }
 
@@ -154,7 +167,7 @@ public class InOutBoxInfo implements Serializable {
    *
    * @param val     numactive
    */
-  public void setNumActive(int val) {
+  public void setNumActive(final int val) {
     numActive = val;
   }
 
@@ -170,7 +183,7 @@ public class InOutBoxInfo implements Serializable {
    *
    * @param val     numProcessed
    */
-  public void setNumProcessed(int val) {
+  public void setNumProcessed(final int val) {
     numProcessed = val;
   }
 

@@ -42,8 +42,8 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
   /**
    */
   public static class Cb implements AccessXmlCb, Serializable {
-    private Client cl;
-    private TagUtils tagUtil = TagUtils.getInstance();
+    private final Client cl;
+    private final TagUtils tagUtil = TagUtils.getInstance();
 
     QName errorTag;
     String errorMsg;
@@ -52,12 +52,8 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
       this.cl = cl;
     }
 
-    public String makeHref(final String id, final int whoType) throws AccessException {
-      try {
-        return tagUtil.filter(cl.makePrincipalUri(id, whoType));
-      } catch (Throwable t) {
-        throw new AccessException(t);
-      }
+    public String makeHref(final String id, final int whoType) {
+      return tagUtil.filter(cl.makePrincipalUri(id, whoType));
     }
 
     public AccessPrincipal getPrincipal() {
@@ -67,7 +63,7 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
     public AccessPrincipal getPrincipal(final String href) throws AccessException {
       try {
         return cl.getPrincipal(href);
-      } catch (CalFacadeException cfe) {
+      } catch (final CalFacadeException cfe) {
         throw new AccessException(cfe);
       }
     }
@@ -138,19 +134,19 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
   public static String getCurrentPrivSetString(final PrivilegeSet ps)
           throws AccessException {
     try {
-      char[] privileges = ps.getPrivileges();
+      final char[] privileges = ps.getPrivileges();
 
-      XmlEmit xml = new XmlEmit(true);  // no headers
-      StringWriter su = new StringWriter();
+      final XmlEmit xml = new XmlEmit(true);  // no headers
+      final StringWriter su = new StringWriter();
       xml.startEmit(su);
       emitCurrentPrivSet(xml, caldavPrivTags, privileges);
 
       su.close();
 
       return su.toString();
-    } catch (AccessException ae) {
+    } catch (final AccessException ae) {
       throw ae;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       throw new AccessException(t);
     }
   }

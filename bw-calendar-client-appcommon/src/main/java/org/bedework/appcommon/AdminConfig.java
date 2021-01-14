@@ -48,9 +48,9 @@ public interface AdminConfig extends ConfigCommon {
    */
   boolean getDefaultClearFormsOnSubmit();
 
-  /** True if categories are optional.
+  /**
    *
-   * @param val
+   * @param val True if categories are optional.
    */
   void setCategoryOptional(boolean val);
 
@@ -60,7 +60,7 @@ public interface AdminConfig extends ConfigCommon {
   boolean getCategoryOptional();
 
   /**
-   *  @param val
+   *  @param val True if all categories can be edited.
    */
   void setAllowEditAllCategories(boolean val);
 
@@ -70,7 +70,7 @@ public interface AdminConfig extends ConfigCommon {
   boolean getAllowEditAllCategories();
 
   /**
-   *  @param val
+   *  @param val True if all locations can be edited.
    */
   void setAllowEditAllLocations(boolean val);
 
@@ -80,7 +80,7 @@ public interface AdminConfig extends ConfigCommon {
   boolean getAllowEditAllLocations();
 
   /**
-   *  @param val
+   *  @param val True if all contacts can be edited.
    */
   void setAllowEditAllContacts(boolean val);
 
@@ -90,7 +90,7 @@ public interface AdminConfig extends ConfigCommon {
   boolean getAllowEditAllContacts();
 
   /**
-   *  @param val
+   *  @param val false if we require that all users be in a group
    */
   void setNoGroupAllowed(boolean val);
 
@@ -110,7 +110,7 @@ public interface AdminConfig extends ConfigCommon {
   boolean getAdminGroupApprovers();
 
   /**
-   *  @param val
+   *  @param val a prefix to distinguish admin groups from others.
    */
   void setAdminGroupsIdPrefix(String val);
 

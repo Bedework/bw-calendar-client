@@ -37,7 +37,7 @@ import java.util.TimeZone;
  *  @version 1.0
  */
 public class CalendarInfo implements Serializable {
-  private static HashMap<Locale, CalendarInfo> infoMap = new HashMap<>();
+  private static final HashMap<Locale, CalendarInfo> infoMap = new HashMap<>();
 
   /** Current locale
    */
@@ -47,44 +47,44 @@ public class CalendarInfo implements Serializable {
 
   /** Days of the week indexed by day of the week number - 1
    */
-  private String[] dayNames = new String[7]; // indexed from 0
-  private String[] shortDayNames = new String[7]; // indexed from 0
-  private String[] recurDayNames = new String[7]; // indexed from 0
+  private final String[] dayNames = new String[7]; // indexed from 0
+  private final String[] shortDayNames = new String[7]; // indexed from 0
+  private final String[] recurDayNames; // indexed from 0
 
   /** Days of week adjusted with the first day of the week at index 0
    * This is used for presentation.
    */
-  private String[] dayNamesAdjusted; // indexed from 0
-  private String[] shortDayNamesAdjusted = new String[7]; // indexed from 0
-  private String[] recurDayNamesAdjusted; // indexed from 0
+  private final String[] dayNamesAdjusted; // indexed from 0
+  private String[] shortDayNamesAdjusted; // indexed from 0
+  private final String[] recurDayNamesAdjusted; // indexed from 0
 
-  private int firstDayOfWeek;
+  private final int firstDayOfWeek;
   private int lastDayOfWeek;
-  private int numberDaysInWeek;
+  private final int numberDaysInWeek;
 
   /** labels for the dates in a month */
-  private String[] dayLabels;
+  private final String[] dayLabels;
   /** internal values for the dates in a month */
-  private String[] dayVals;
+  private final String[] dayVals;
 
   /** labels for the months of the year */
-  private String[] monthLabels;
+  private final String[] monthLabels;
   /** internal values for the months of the year */
-  private String[] monthVals;
+  private final String[] monthVals;
 
   /** labels for the hours of the day */
-  private String[] hourLabels;
+  private final String[] hourLabels;
   /** internal values for the hours of the day */
-  private String[] hourVals;
+  private final String[] hourVals;
   /** labels for the hours of the day (24-hour clock) */
-  private String[] hour24Labels;
+  private final String[] hour24Labels;
   /** internal values for the hours of the day (24-hour clock) */
-  private String[] hour24Vals;
+  private final String[] hour24Vals;
 
   /** labels for the minutes of the hour */
-  private String[] minuteLabels;
+  private final String[] minuteLabels;
   /** internal values for the minutes of the hour */
-  private String[] minuteVals;
+  private final String[] minuteVals;
 
   /* What we store in the formtters table */
   private static class Formatters implements Serializable {
@@ -131,22 +131,22 @@ public class CalendarInfo implements Serializable {
   private CalendarInfo(final Locale locale) {
     this.locale = locale;
 
-    /** Set the localized names
+    /* Set the localized names
      */
 
 //    SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", getLocale());
 //    SimpleDateFormat shortDayFormat = new SimpleDateFormat("E", getLocale());
 
-    Calendar c = Calendar.getInstance(getLocale());
-    ArrayList<String> dow = new ArrayList<String>();
-    ArrayList<String> sdow = new ArrayList<String>();
-    ArrayList<String> rdow = new ArrayList<String>();
+    final Calendar c = Calendar.getInstance(getLocale());
+    final ArrayList<String> dow = new ArrayList<>();
+    final ArrayList<String> sdow = new ArrayList<>();
+    final ArrayList<String> rdow = new ArrayList<>();
 
     /* ********************* Day of Week ************************* */
 
     firstDayOfWeek = c.getFirstDayOfWeek();
 
-    /** Get the number of days in a week. Is this ever anything other than 7?
+    /* Get the number of days in a week. Is this ever anything other than 7?
      */
     numberDaysInWeek = getRangeSize(c, Calendar.DAY_OF_WEEK);
 
@@ -160,7 +160,7 @@ public class CalendarInfo implements Serializable {
     for (int i = 0; i < 7; i++) {
       c.set(Calendar.DAY_OF_WEEK, i + 1);
 
-      Date dt = c.getTime();
+      final Date dt = c.getTime();
       dayNames[i] = getDayName(dt);
       shortDayNames[i] = getShortDayName(dt);
       dow.add(dayNames[i]);
@@ -186,9 +186,9 @@ public class CalendarInfo implements Serializable {
         fdow--;
       }
 
-      dayNamesAdjusted = dow.toArray(new String[dow.size()]);
-      shortDayNamesAdjusted = sdow.toArray(new String[sdow.size()]);
-      recurDayNamesAdjusted = rdow.toArray(new String[rdow.size()]);
+      dayNamesAdjusted = dow.toArray(new String[0]);
+      shortDayNamesAdjusted = sdow.toArray(new String[0]);
+      recurDayNamesAdjusted = rdow.toArray(new String[0]);
     } else {
       dayNamesAdjusted = dayNames;
       shortDayNamesAdjusted = shortDayNames;
@@ -218,8 +218,8 @@ public class CalendarInfo implements Serializable {
 
     for (int i = 0; i < monthLabels.length; i++) {
       // this gives abbreviated form of month name
-      monthLabels[i] = String.valueOf(getComponent(c, DateFormat.MONTH_FIELD,
-                                                   DateFormat.MEDIUM));
+      monthLabels[i] = getComponent(c, DateFormat.MONTH_FIELD,
+                                    DateFormat.MEDIUM);
       /* Calendar class month numbers start at 0 */
       monthVals[i] = String.valueOf(c.get(Calendar.MONTH) + 1);//twoDigit(c.get(Calendar.MONTH) + 1);
       c.add(Calendar.MONTH, 1);
@@ -441,7 +441,7 @@ public class CalendarInfo implements Serializable {
    */
   public Calendar getFirstDayOfThisWeek(final TimeZone tz,
                                         final Date jdt) {
-    Calendar c = getCalendar(tz);
+    final Calendar c = getCalendar(tz);
 
     c.setTime(jdt);
     c.set(Calendar.DAY_OF_WEEK, getFirstDayOfWeek());
@@ -462,7 +462,7 @@ public class CalendarInfo implements Serializable {
    */
   public Calendar getLastDayOfThisWeek(final TimeZone tz,
                                        final Date jdt) {
-    Calendar c = getCalendar(tz);
+    final Calendar c = getCalendar(tz);
 
     c.setTime(jdt);
     c.set(Calendar.DAY_OF_WEEK, getFirstDayOfWeek());
@@ -486,7 +486,7 @@ public class CalendarInfo implements Serializable {
    */
   public Calendar getFirstDayOfThisMonth(final TimeZone tz,
                                          final Date jdt) {
-    Calendar c = getCalendar(tz);
+    final Calendar c = getCalendar(tz);
 
     c.setTime(jdt);
     c.set(Calendar.DAY_OF_MONTH,
@@ -509,7 +509,7 @@ public class CalendarInfo implements Serializable {
    */
   public Calendar getLastDayOfThisMonth(final TimeZone tz,
                                         final Date jdt) {
-    Calendar c = getCalendar(tz);
+    final Calendar c = getCalendar(tz);
 
     c.setTime(jdt);
     c.set(Calendar.DAY_OF_MONTH, c.getMinimum(Calendar.DAY_OF_MONTH));
@@ -533,7 +533,7 @@ public class CalendarInfo implements Serializable {
    */
   public Calendar getFirstDayOfThisYear(final TimeZone tz,
                                         final Date jdt) {
-    Calendar c = getCalendar(tz);
+    final Calendar c = getCalendar(tz);
 
     c.setTime(jdt);
     c.set(Calendar.DAY_OF_YEAR, c.getMinimum(Calendar.DAY_OF_YEAR));
@@ -555,7 +555,7 @@ public class CalendarInfo implements Serializable {
    */
   public Calendar getLastDayOfThisYear(final TimeZone tz,
                                        final Date jdt) {
-    Calendar c = getCalendar(tz);
+    final Calendar c = getCalendar(tz);
 
     c.setTime(jdt);
     c.set(Calendar.DAY_OF_YEAR, c.getMinimum(Calendar.DAY_OF_YEAR));
@@ -588,9 +588,11 @@ public class CalendarInfo implements Serializable {
    * @return A <code>String</code> representation of a particular time
    *             field of the object.
    */
-  private String getComponent(final Calendar cal, final int field, final int dateFormat) {
-    FieldPosition f = new FieldPosition(field);
-    StringBuffer s = DateFormat.
+  private String getComponent(final Calendar cal,
+                              final int field,
+                              final int dateFormat) {
+    final FieldPosition f = new FieldPosition(field);
+    final StringBuffer s = DateFormat.
         getDateTimeInstance(dateFormat, dateFormat, getLocale()).
         format(cal.getTime(), new StringBuffer(), f);
 
@@ -621,7 +623,7 @@ public class CalendarInfo implements Serializable {
    *                       represented by this object.
    */
   private String getShortDayName(final Date val) {
-    Formatters fmt = getFormatter();
+    final Formatters fmt = getFormatter();
 
     synchronized (fmt) {
       return fmt.shortDayFormatter.format(val);
@@ -634,7 +636,7 @@ public class CalendarInfo implements Serializable {
    * @return String        Representation of the day represented by this object.
    */
   private String getDayName(final Date val) {
-    Formatters fmt = getFormatter();
+    final Formatters fmt = getFormatter();
 
     synchronized (fmt) {
       return fmt.dayFormatter.format(val);

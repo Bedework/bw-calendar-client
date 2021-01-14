@@ -254,12 +254,8 @@ public class TimeDateComponents implements Serializable {
    * @return current tzid
    */
   public String getTzid() {
-    try {
-      if (tzid == null) {
-        tzid = Timezones.getThreadDefaultTzid();
-      }
-    } catch (Throwable t) {
-      fieldInError = "Tzid";
+    if (tzid == null) {
+      tzid = Timezones.getThreadDefaultTzid();
     }
 
     return tzid;

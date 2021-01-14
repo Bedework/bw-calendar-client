@@ -621,11 +621,7 @@ public class BwActionFormBase extends UtilActionForm
    * @return default timezoneid
    */
   public String getDefaultTzid() {
-    try {
-      return Timezones.getThreadDefaultTzid();
-    } catch (Throwable t) {
-      return "Exception: " + t.getLocalizedMessage();
-    }
+    return Timezones.getThreadDefaultTzid();
   }
 
   /**

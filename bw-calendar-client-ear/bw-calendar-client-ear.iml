@@ -26,12 +26,12 @@
     <orderEntry type="module" module-name="bw-calendar-client-feeder" />
     <orderEntry type="module" module-name="bw-calendar-client-submit" />
     <orderEntry type="module" module-name="bw-calendar-client-ucal" />
-    <orderEntry type="module" module-name="bw-calendar-engine-notifyws" />
-    <orderEntry type="module" module-name="bw-calendar-engine-pubcaldav" />
-    <orderEntry type="module" module-name="bw-calendar-engine-publicws" />
-    <orderEntry type="module" module-name="bw-calendar-engine-synchws" />
-    <orderEntry type="module" module-name="bw-calendar-engine-ucaldav" />
-    <orderEntry type="module" module-name="bw-calendar-engine-userws" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-notifyws:war:3.13.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-pubcaldav:war:3.13.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-publicws:war:3.13.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-synchws:war:3.13.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-ucaldav:war:3.13.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-userws:war:3.13.3-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="bw-calendar-client-appcommon" />
     <orderEntry type="module" module-name="bw-calendar-client-util" />
     <orderEntry type="module" module-name="bw-calendar-client-webcommon" />
@@ -50,7 +50,7 @@
     <orderEntry type="module" module-name="bw-calendar-engine-interfaces" />
     <orderEntry type="module" module-name="bw-calendar-engine-mail" />
     <orderEntry type="module" module-name="bw-calendar-engine-sysevents-common" />
-    <orderEntry type="module" module-name="bw-calendar-engine-sysevents-msgs" />
+    <orderEntry type="library" name="Maven: org.bedework.caleng:bw-calendar-engine-sysevents-msgs:3.13.3-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="bw-calendar-engine-tools" />
     <orderEntry type="module" module-name="bw-jsforj" />
     <orderEntry type="library" name="Maven: org.bedework:bw-access:4.0.8" level="project" />

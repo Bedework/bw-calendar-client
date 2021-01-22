@@ -30,7 +30,7 @@
 		<bw-access.version>4.0.8</bw-access.version>
 		<bw-webdav.version>4.0.10-SNAPSHOT</bw-webdav.version>
 		<bw-caldav.version>4.0.10-SNAPSHOT</bw-caldav.version>
-		<bw-calendar-engine.version>3.13.3-SNAPSHOT</bw-calendar-engine.version>
+		<bw-calendar-engine.version>3.14-SNAPSHOT</bw-calendar-engine.version>
 
     <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>
     <ical4j.artifactId>ical4j</ical4j.artifactId>

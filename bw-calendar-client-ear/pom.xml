@@ -427,6 +427,7 @@
       </exclusions>
     </dependency>
 
+    <!-- module
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-caching</artifactId>
@@ -437,6 +438,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -515,6 +517,7 @@
       </exclusions>
     </dependency>
 
+    <!-- module
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-json</artifactId>
@@ -547,6 +550,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -592,6 +596,7 @@
       </exclusions>
     </dependency>
 
+    <!-- module
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-xml</artifactId>
@@ -602,6 +607,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -739,30 +745,6 @@
       </exclusions>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.apache.struts</groupId>
-      <artifactId>struts-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.struts</groupId>
-      <artifactId>struts-taglib</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    -->
-
     <!-- Third Party Libraries for engine -->
 
     <dependency>
@@ -826,16 +808,12 @@
       <version>4.1</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.8.1</version>
-    </dependency>
-
+    <!-- module
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -881,6 +859,12 @@
     <dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>elasticsearch-rest-high-level-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -974,102 +958,16 @@
       <version>1.1.2</version>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers-common</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-expressions</artifactId>
-      <version>4.10.4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-highlighter</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-join</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-memory</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queries</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queryparser</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-sandbox</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-spatial</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-suggest</artifactId>
-      <version>4.10.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>serializer</artifactId>
-      <version>2.7.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>com.spatial4j</groupId>
-      <artifactId>spatial4j</artifactId>
-      <version>0.3</version>
-    </dependency>
-    -->
-
     <dependency>
       <groupId>org.jasig.cas.client</groupId>
       <artifactId>cas-client-core</artifactId>
       <version>3.3.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -1077,11 +975,6 @@
       <artifactId>xalan</artifactId>
       <version>2.7.1</version>
     </dependency>
-
-    <!-- These dependencies were modules in wildfly 10.
-         For the moment just load them. Figure out how to install
-         modules later
-      -->
 
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -1106,6 +999,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -1121,12 +1020,20 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
+    <!-- module
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>
+    -->
 
     <!-- The provider for soap services -->
     <dependency>

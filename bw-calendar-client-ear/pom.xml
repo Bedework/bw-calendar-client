@@ -15,196 +15,135 @@
   </properties>
 
   <!--
-[INFO] org.bedework.bwwebcl:bw-calendar-client-ear:ear:3.14-SNAPSHOT
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-cal:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-caladmin:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-calauth:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-feeder:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-submit:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-ucal:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-notifyws:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-pubcaldav:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-publicws:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-synchws:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-ucaldav:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-userws:war:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-appcommon:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-util:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.bwwebcl:bw-calendar-client-webcommon:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-annotations:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-api:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-caldav:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-chgnote:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-core:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-core-common:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-dumprestore:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-facade:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-convert:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-impl:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-indexer:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-inoutsched:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-interfaces:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-mail:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-sysevents-common:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-sysevents-msgs:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework.caleng:bw-calendar-engine-tools:jar:3.14-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-jsforj:jar:1.0.1-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-access:jar:4.0.8:compile
-[INFO] +- org.bedework:bw-util-elasticsearch:jar:4.1.0:compile
-[INFO] +- org.bedework:bw-util-hibernate:jar:4.0.23:compile
-[INFO] +- org.bedework:bw-util-indexing:jar:4.1.0:compile
-[INFO] +- org.bedework:bw-util-security:jar:4.1.0:compile
-[INFO] +- org.bedework:bw-util-tz:jar:4.1.1-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-util2-calendar:jar:4.0.7-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-util2-vcard:jar:4.0.7-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-xml-caldav:jar:4.0.10:compile
-[INFO] +- org.bedework:bw-xml-calws-soap:jar:4.0.10:compile
-[INFO] +- org.bedework:bw-xml-icalendar:jar:4.0.10:compile
-[INFO] +- org.bedework:bw-xml-synchws:jar:4.0.10:compile
-[INFO] +- org.bedework:bw-xml-tzsvr:jar:4.0.10:compile
-[INFO] +- org.bedework:bw-webdav:jar:4.0.10-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-caldav-server:jar:4.0.10-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-caldav-util:jar:4.0.10-SNAPSHOT:compile
-[INFO] +- com.google.code.gson:gson:jar:1.5:compile
-[INFO] +- org.imgscalr:imgscalr-lib:jar:4.2:compile
-[INFO] +- struts:struts:jar:1.2.9:compile
-[INFO] +- org.bedework:apache-jdkim-library:jar:0.4:compile
-[INFO] |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
-[INFO] |  +- org.apache.geronimo.javamail:geronimo-javamail_1.4_mail:jar:1.6:compile
-[INFO] |  +- org.apache.james:apache-mailet-base:jar:1.1:compile
-[INFO] |  +- org.apache.james:apache-mailet:jar:2.4:compile
-[INFO] |  +- org.apache.james:apache-mime4j-core:jar:0.7:compile
-[INFO] |  \- org.apache.james:apache-mime4j-dom:jar:0.7:compile
-[INFO] +- commons-digester:commons-digester:jar:1.8:compile
-[INFO] +- org.apache.commons:commons-text:jar:1.7:compile
-[INFO] +- org.bedework.ical4j:ical4j:jar:3.0.13-SNAPSHOT:compile
-[INFO] +- org.bedework:bw-ical4j-vcard:jar:1.0.5:compile
-[INFO] +- org.apache.commons:commons-collections4:jar:4.1:compile
-[INFO] +- org.apache.commons:commons-csv:jar:1.2:compile
-[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.3:compile
-[INFO] |  \- commons-io:commons-io:jar:2.2:compile
-[INFO] +- org.apache.commons:commons-lang3:jar:3.3.2:compile
-[INFO] +- commons-validator:commons-validator:jar:1.3.0:compile
-[INFO] +- dnsjava:dnsjava:jar:2.1.1:compile
-[INFO] |  \- junit:junit:jar:4.13.1:test
-[INFO] |     \- org.hamcrest:hamcrest-core:jar:1.3:test
-[INFO] +- org.elasticsearch:elasticsearch:jar:7.2.0:compile
-[INFO] |  +- org.elasticsearch:elasticsearch-core:jar:7.2.0:compile
-[INFO] |  +- org.elasticsearch:elasticsearch-secure-sm:jar:7.2.0:compile
-[INFO] |  +- org.elasticsearch:elasticsearch-x-content:jar:7.2.0:compile
-[INFO] |  |  +- org.yaml:snakeyaml:jar:1.17:compile
-[INFO] |  |  +- com.fasterxml.jackson.core:jackson-core:jar:2.10.0:compile
-[INFO] |  |  +- com.fasterxml.jackson.dataformat:jackson-dataformat-smile:jar:2.8.11:compile
-[INFO] |  |  +- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.8.11:compile
-[INFO] |  |  \- com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:jar:2.8.11:compile
-[INFO] |  +- org.elasticsearch:elasticsearch-geo:jar:7.2.0:compile
-[INFO] |  +- org.apache.lucene:lucene-core:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-analyzers-common:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-backward-codecs:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-grouping:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-highlighter:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-join:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-memory:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-misc:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-queries:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-queryparser:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-sandbox:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-spatial:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-spatial-extras:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-spatial3d:jar:8.0.0:compile
-[INFO] |  +- org.apache.lucene:lucene-suggest:jar:8.0.0:compile
-[INFO] |  +- org.elasticsearch:elasticsearch-cli:jar:7.2.0:compile
-[INFO] |  |  \- net.sf.jopt-simple:jopt-simple:jar:5.0.2:compile
-[INFO] |  +- com.carrotsearch:hppc:jar:0.7.1:compile
-[INFO] |  +- joda-time:joda-time:jar:2.10.2:compile
-[INFO] |  +- com.tdunning:t-digest:jar:3.2:compile
-[INFO] |  +- org.hdrhistogram:HdrHistogram:jar:2.1.9:compile
-[INFO] |  +- org.apache.logging.log4j:log4j-api:jar:2.11.1:compile
-[INFO] |  \- org.elasticsearch:jna:jar:4.5.1:compile
-[INFO] +- org.elasticsearch.client:elasticsearch-rest-high-level-client:jar:7.2.0:compile
-[INFO] |  +- org.elasticsearch.client:elasticsearch-rest-client:jar:7.2.0:compile
-[INFO] |  |  +- org.apache.httpcomponents:httpclient:jar:4.5.8:compile
-[INFO] |  |  +- org.apache.httpcomponents:httpcore:jar:4.4.11:compile
-[INFO] |  |  +- org.apache.httpcomponents:httpasyncclient:jar:4.1.4:compile
-[INFO] |  |  \- org.apache.httpcomponents:httpcore-nio:jar:4.4.11:compile
-[INFO] |  +- org.elasticsearch.plugin:parent-join-client:jar:7.2.0:compile
-[INFO] |  +- org.elasticsearch.plugin:aggs-matrix-stats-client:jar:7.2.0:compile
-[INFO] |  +- org.elasticsearch.plugin:rank-eval-client:jar:7.2.0:compile
-[INFO] |  \- org.elasticsearch.plugin:lang-mustache-client:jar:7.2.0:compile
-[INFO] |     \- com.github.spullara.mustache.java:compiler:jar:0.9.3:compile
-[INFO] +- com.google.collections:google-collections:jar:1.0:compile
-[INFO] +- com.sun.xml.messaging.saaj:saaj-impl:jar:1.4.0:compile
-[INFO] |  +- org.jvnet.mimepull:mimepull:jar:1.9.7:compile
-[INFO] |  \- org.jvnet.staxex:stax-ex:jar:1.7.8:compile
-[INFO] |     +- javax.xml.stream:stax-api:jar:1.0-2:compile
-[INFO] |     \- javax.activation:activation:jar:1.1:compile
-[INFO] +- org.codehaus.groovy:groovy-all:jar:2.4.0:compile
-[INFO] +- net.sf.ehcache:ehcache:jar:2.10.3:compile
-[INFO] +- org.hibernate:hibernate-ehcache:jar:5.2.5.Final:compile
-[INFO] +- com.sun.mail:javax.mail:jar:1.5.4:compile
-[INFO] +- javax.mail:javax.mail-api:jar:1.5.4:compile
-[INFO] +- javax.xml.bind:jaxb-api:jar:2.3.0:compile
-[INFO] +- javax.xml.soap:javax.xml.soap-api:jar:1.4.0:compile
-[INFO] +- javax.xml.ws:jaxws-api:jar:2.3.1:compile
-[INFO] |  \- javax.annotation:javax.annotation-api:jar:1.3.2:compile
-[INFO] +- javax.servlet:jstl:jar:1.1.2:compile
-[INFO] +- taglibs:standard:jar:1.1.2:compile
-[INFO] +- org.jasig.cas.client:cas-client-core:jar:3.3.3:compile
-[INFO] |  +- org.opensaml:opensaml:jar:2.5.1-1:compile
-[INFO] |  |  +- org.opensaml:openws:jar:1.4.2-1:compile
-[INFO] |  |  |  +- org.opensaml:xmltooling:jar:1.3.2-1:compile
-[INFO] |  |  |  |  +- org.slf4j:log4j-over-slf4j:jar:1.6.1:compile
-[INFO] |  |  |  |  +- org.slf4j:jul-to-slf4j:jar:1.6.1:compile
-[INFO] |  |  |  |  +- org.bouncycastle:bcprov-jdk15:jar:1.45:compile
-[INFO] |  |  |  |  +- org.apache.santuario:xmlsec:jar:1.4.4:compile
-[INFO] |  |  |  |  +- ca.juliusdavies:not-yet-commons-ssl:jar:0.3.9:compile
-[INFO] |  |  |  |  \- net.jcip:jcip-annotations:jar:1.0:compile
-[INFO] |  |  |  \- commons-httpclient:commons-httpclient:jar:3.1:compile
-[INFO] |  |  +- velocity:velocity:jar:1.5:compile
-[INFO] |  |  +- org.owasp.esapi:esapi:jar:2.0GA:compile
-[INFO] |  |  +- xml-apis:xml-apis:jar:1.4.01:compile
-[INFO] |  |  +- xerces:xercesImpl:jar:2.10.0:runtime
-[INFO] |  |  \- xml-resolver:xml-resolver:jar:1.2:runtime
-[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.1:compile
-[INFO] +- xalan:xalan:jar:2.7.1:compile
-[INFO] |  \- xalan:serializer:jar:2.7.1:compile
-[INFO] +- org.hibernate:hibernate-core:jar:5.2.5.Final:compile
-[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.3.0.Final:compile
-[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:compile
-[INFO] |  +- org.javassist:javassist:jar:3.20.0-GA:compile
-[INFO] |  +- antlr:antlr:jar:2.7.7:compile
-[INFO] |  +- org.apache.geronimo.specs:geronimo-jta_1.1_spec:jar:1.1.1:compile
-[INFO] |  +- org.jboss:jandex:jar:2.0.3.Final:compile
-[INFO] |  +- com.fasterxml:classmate:jar:1.3.0:compile
-[INFO] |  +- dom4j:dom4j:jar:1.6.1:compile
-[INFO] |  +- org.hibernate.common:hibernate-commons-annotations:jar:5.0.1.Final:compile
-[INFO] |  \- javax.enterprise:cdi-api:jar:1.1:compile
-[INFO] |     +- javax.el:el-api:jar:2.2:compile
-[INFO] |     +- org.jboss.spec.javax.interceptor:jboss-interceptors-api_1.1_spec:jar:1.0.0.Beta1:compile
-[INFO] |     +- javax.annotation:jsr250-api:jar:1.0:compile
-[INFO] |     \- javax.inject:javax.inject:jar:1:compile
-[INFO] +- org.hibernate:hibernate-validator:jar:5.3.6.Final:compile
-[INFO] |  \- javax.validation:validation-api:jar:1.1.0.Final:compile
-[INFO] +- commons-beanutils:commons-beanutils:jar:1.9.4:compile
-[INFO] |  +- commons-logging:commons-logging:jar:1.2:compile
-[INFO] |  \- commons-collections:commons-collections:jar:3.2.2:compile
-[INFO] +- commons-lang:commons-lang:jar:2.3:compile
-[INFO] \- com.sun.xml.ws:rt:jar:2.3.1:compile
-[INFO]    +- javax.activation:javax.activation-api:jar:1.2.0:compile
-[INFO]    +- com.sun.xml.ws:policy:jar:2.7.5:compile
-[INFO]    |  +- org.glassfish.jaxb:txw2:jar:2.4.0-b180608.0325:compile
-[INFO]    |  \- com.sun.activation:javax.activation:jar:1.2.0:compile
-[INFO]    +- org.glassfish.jaxb:jaxb-runtime:jar:2.3.1:compile
-[INFO]    |  +- com.sun.istack:istack-commons-runtime:jar:3.0.7:compile
-[INFO]    |  \- com.sun.xml.fastinfoset:FastInfoset:jar:1.2.15:compile
-[INFO]    +- org.glassfish.gmbal:gmbal-api-only:jar:3.1.0-b001:compile
-[INFO]    |  \- org.glassfish.external:management-api:jar:3.0.0-b012:compile
-[INFO]    +- com.sun.xml.stream.buffer:streambuffer:jar:1.5.6:compile
-[INFO]    +- com.fasterxml.woodstox:woodstox-core:jar:5.1.0:compile
-[INFO]    +- org.codehaus.woodstox:stax2-api:jar:4.1:compile
-[INFO]    +- org.glassfish.ha:ha-api:jar:3.1.9:compile
-[INFO]    \- javax.jws:javax.jws-api:jar:1.1:compile
-[   -->
+ org.bedework.bwwebcl:bw-calendar-client-ear:ear:3.14-SNAPSHOT
+ +- org.bedework.bwwebcl:bw-calendar-client-cal:war:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-caladmin:war:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-calauth:war:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-feeder:war:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-submit:war:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-ucal:war:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-notifyws:war:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-pubcaldav:war:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-publicws:war:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-synchws:war:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-ucaldav:war:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-userws:war:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-appcommon:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-util:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.bwwebcl:bw-calendar-client-webcommon:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-annotations:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-api:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-caldav:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-chgnote:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-core:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-core-common:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-dumprestore:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-facade:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-convert:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-impl:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-indexer:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-inoutsched:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-interfaces:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-mail:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-sysevents-common:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-sysevents-msgs:jar:3.14-SNAPSHOT:compile
+ +- org.bedework.caleng:bw-calendar-engine-tools:jar:3.14-SNAPSHOT:compile
+ +- org.bedework:bw-jsforj:jar:1.0.1-SNAPSHOT:compile
+ +- org.bedework:bw-access:jar:4.0.8:compile
+ +- org.bedework:bw-util-elasticsearch:jar:4.1.0:compile
+ +- org.bedework:bw-util-hibernate:jar:4.0.23:compile
+ +- org.bedework:bw-util-indexing:jar:4.1.0:compile
+ +- org.bedework:bw-util-security:jar:4.1.0:compile
+ +- org.bedework:bw-util2-calendar:jar:4.0.7-SNAPSHOT:compile
+ +- org.bedework:bw-util2-vcard:jar:4.0.7-SNAPSHOT:compile
+ +- org.bedework:bw-xml-caldav:jar:4.0.10:compile
+ +- org.bedework:bw-xml-calws-soap:jar:4.0.10:compile
+ +- org.bedework:bw-xml-icalendar:jar:4.0.10:compile
+ +- org.bedework:bw-xml-synchws:jar:4.0.10:compile
+ +- org.bedework:bw-xml-tzsvr:jar:4.0.10:compile
+ +- org.bedework:bw-webdav:jar:4.0.10-SNAPSHOT:compile
+ +- org.bedework:bw-caldav-server:jar:4.0.10-SNAPSHOT:compile
+ +- org.bedework:bw-caldav-util:jar:4.0.10-SNAPSHOT:compile
+ +- com.google.code.gson:gson:jar:1.5:compile
+ +- org.imgscalr:imgscalr-lib:jar:4.2:compile
+ +- struts:struts:jar:1.2.9:compile
+ +- org.bedework:apache-jdkim-library:jar:0.4:compile
+ |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+ |  +- org.apache.geronimo.javamail:geronimo-javamail_1.4_mail:jar:1.6:compile
+ |  +- org.apache.james:apache-mailet-base:jar:1.1:compile
+ |  +- org.apache.james:apache-mailet:jar:2.4:compile
+ |  +- org.apache.james:apache-mime4j-core:jar:0.7:compile
+ |  \- org.apache.james:apache-mime4j-dom:jar:0.7:compile
+ +- commons-digester:commons-digester:jar:1.8:compile
+ +- org.apache.commons:commons-text:jar:1.7:compile
+ +- org.bedework:bw-ical4j-vcard:jar:1.0.5:compile
+ +- org.apache.commons:commons-collections4:jar:4.1:compile
+ +- org.apache.commons:commons-csv:jar:1.2:compile
+ +- commons-fileupload:commons-fileupload:jar:1.3.3:compile
+ |  \- commons-io:commons-io:jar:2.2:compile
+ +- org.apache.commons:commons-lang3:jar:3.3.2:compile
+ +- commons-validator:commons-validator:jar:1.3.0:compile
+ +- dnsjava:dnsjava:jar:2.1.1:compile
+ |  \- junit:junit:jar:4.13.1:test
+ |     \- org.hamcrest:hamcrest-core:jar:1.3:test
+ +- com.google.collections:google-collections:jar:1.0:compile
+ +- com.sun.xml.messaging.saaj:saaj-impl:jar:1.4.0:compile
+ |  +- org.jvnet.mimepull:mimepull:jar:1.9.7:compile
+ |  \- org.jvnet.staxex:stax-ex:jar:1.7.8:compile
+ |     +- javax.xml.stream:stax-api:jar:1.0-2:compile
+ |     \- javax.activation:activation:jar:1.1:compile
+ +- net.sf.ehcache:ehcache:jar:2.10.3:compile
+ +- org.hibernate:hibernate-ehcache:jar:5.2.5.Final:compile
+ +- com.sun.mail:javax.mail:jar:1.5.4:compile
+ +- javax.mail:javax.mail-api:jar:1.5.4:compile
+ +- javax.xml.bind:jaxb-api:jar:2.3.0:compile
+ +- javax.xml.soap:javax.xml.soap-api:jar:1.4.0:compile
+ +- javax.xml.ws:jaxws-api:jar:2.3.1:compile
+ |  \- javax.annotation:javax.annotation-api:jar:1.3.2:compile
+ +- javax.servlet:jstl:jar:1.1.2:compile
+ +- taglibs:standard:jar:1.1.2:compile
+ +- org.jasig.cas.client:cas-client-core:jar:3.4.1:compile
+ |  \- org.slf4j:slf4j-api:jar:1.7.1:compile
+ +- xalan:xalan:jar:2.7.1:compile
+ |  \- xalan:serializer:jar:2.7.1:compile
+ |     \- xml-apis:xml-apis:jar:1.3.04:compile
+ +- org.hibernate:hibernate-core:jar:5.2.5.Final:compile
+ |  +- org.jboss.logging:jboss-logging:jar:3.3.0.Final:compile
+ |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:compile
+ |  +- org.javassist:javassist:jar:3.20.0-GA:compile
+ |  +- antlr:antlr:jar:2.7.7:compile
+ |  +- org.apache.geronimo.specs:geronimo-jta_1.1_spec:jar:1.1.1:compile
+ |  +- org.jboss:jandex:jar:2.0.3.Final:compile
+ |  +- com.fasterxml:classmate:jar:1.3.0:compile
+ |  +- dom4j:dom4j:jar:1.6.1:compile
+ |  +- org.hibernate.common:hibernate-commons-annotations:jar:5.0.1.Final:compile
+ |  \- javax.enterprise:cdi-api:jar:1.1:compile
+ |     +- javax.el:el-api:jar:2.2:compile
+ |     +- org.jboss.spec.javax.interceptor:jboss-interceptors-api_1.1_spec:jar:1.0.0.Beta1:compile
+ |     +- javax.annotation:jsr250-api:jar:1.0:compile
+ |     \- javax.inject:javax.inject:jar:1:compile
+ +- org.hibernate:hibernate-validator:jar:5.3.6.Final:compile
+ |  \- javax.validation:validation-api:jar:1.1.0.Final:compile
+ +- commons-beanutils:commons-beanutils:jar:1.9.4:compile
+ |  +- commons-logging:commons-logging:jar:1.2:compile
+ |  \- commons-collections:commons-collections:jar:3.2.2:compile
+ +- commons-lang:commons-lang:jar:2.3:compile
+ \- com.sun.xml.ws:rt:jar:2.3.1:compile
+    +- javax.activation:javax.activation-api:jar:1.2.0:compile
+    +- com.sun.xml.ws:policy:jar:2.7.5:compile
+    |  +- org.glassfish.jaxb:txw2:jar:2.4.0-b180608.0325:compile
+    |  \- com.sun.activation:javax.activation:jar:1.2.0:compile
+    +- org.glassfish.jaxb:jaxb-runtime:jar:2.3.1:compile
+    |  +- com.sun.istack:istack-commons-runtime:jar:3.0.7:compile
+    |  \- com.sun.xml.fastinfoset:FastInfoset:jar:1.2.15:compile
+    +- org.glassfish.gmbal:gmbal-api-only:jar:3.1.0-b001:compile
+    |  \- org.glassfish.external:management-api:jar:3.0.0-b012:compile
+    +- com.sun.xml.stream.buffer:streambuffer:jar:1.5.6:compile
+    +- com.fasterxml.woodstox:woodstox-core:jar:5.1.0:compile
+    +- org.codehaus.woodstox:stax2-api:jar:4.1:compile
+    +- org.glassfish.ha:ha-api:jar:3.1.9:compile
+    \- javax.jws:javax.jws-api:jar:1.1:compile
+   -->
 
   <dependencies>
     <dependency>
@@ -781,7 +720,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -794,7 +732,6 @@
       </exclusions>
     </dependency>
 
-    <!-- module
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-xml</artifactId>
@@ -976,6 +913,7 @@
       <artifactId>commons-text</artifactId>
     </dependency>
 
+    <!-- Modules
     <dependency>
       <groupId>${ical4j.groupId}</groupId>
       <artifactId>${ical4j.artifactId}</artifactId>
@@ -986,6 +924,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -1062,6 +1001,16 @@
           <groupId>commons-codec</groupId>
           <artifactId>commons-codec</artifactId>
         </exclusion>
+
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -1077,11 +1026,13 @@
       <version>1.4.0</version>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>2.4.0</version>
     </dependency>
+    -->
 
     <dependency>
       <groupId>net.sf.ehcache</groupId>
@@ -1156,10 +1107,11 @@
       <version>1.1.2</version>
     </dependency>
 
+    <!-- Modules
     <dependency>
       <groupId>org.jasig.cas.client</groupId>
       <artifactId>cas-client-core</artifactId>
-      <version>3.3.3</version>
+      <version>3.4.1</version>
       <exclusions>
         <exclusion>
           <groupId>commons-codec</groupId>
@@ -1167,6 +1119,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <dependency>
       <groupId>xalan</groupId>

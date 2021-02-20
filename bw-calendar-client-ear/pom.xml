@@ -394,6 +394,7 @@
       </exclusions>
     </dependency>
 
+    <!-- module
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-jsforj</artifactId>
@@ -415,6 +416,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <!-- Not needed?
     <dependency>
@@ -605,7 +607,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -628,9 +629,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <!-- Bedework: Web Services -->
 
+    <!-- Module
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-xml-caldav</artifactId>
@@ -685,6 +688,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -789,7 +793,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    -->
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -801,6 +804,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <!-- Extras for ear -->
 

@@ -1469,13 +1469,13 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public NotificationType findNotification(final String name)
           throws CalFacadeException {
-    return svci.getNotificationsHandler().find(name);
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
   public List<NotificationType> allNotifications()
           throws CalFacadeException {
-    return svci.getNotificationsHandler().getAll();
+    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override

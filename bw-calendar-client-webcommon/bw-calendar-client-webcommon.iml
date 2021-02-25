@@ -26,6 +26,7 @@
     <orderEntry type="library" name="Maven: org.bedework:bw-util-indexing:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.bedework:bw-access:4.0.8" level="project" />
     <orderEntry type="module" module-name="bw-calendar-engine-api" />
+    <orderEntry type="module" module-name="bw-calendar-engine-api-ro" />
     <orderEntry type="library" name="Maven: dom4j:dom4j:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.10.0" level="project" />

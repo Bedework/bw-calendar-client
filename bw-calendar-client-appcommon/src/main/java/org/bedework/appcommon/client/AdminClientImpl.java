@@ -44,7 +44,7 @@ import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcFactoryDefault;
-import org.bedework.calsvci.CalSvcIPars;
+import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.util.misc.Util;
 
 import java.util.ArrayList;

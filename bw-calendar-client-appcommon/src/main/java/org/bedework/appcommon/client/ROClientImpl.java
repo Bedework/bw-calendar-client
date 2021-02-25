@@ -72,7 +72,7 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.CalSvcIPars;
+import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
 import org.bedework.calsvci.EventsI.RealiasResult;

@@ -44,7 +44,7 @@ import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calsvci.CalSvcFactoryDefault;
-import org.bedework.calsvci.CalSvcIPars;
+import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.Contacts;
 import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;

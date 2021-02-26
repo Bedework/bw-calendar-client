@@ -30,6 +30,7 @@ import org.bedework.convert.jcal.JcalTranslator;
 import org.bedework.convert.jscal.JSCalTranslator;
 import org.bedework.convert.xcal.XmlTranslator;
 import org.bedework.jsforj.model.JSGroup;
+import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.response.Response;
 import org.bedework.util.xml.XmlEmit;
@@ -201,7 +202,7 @@ public class SearchParamsAction extends EventActionBase {
         if (generateIcal) {
           final Calendar ical = trans.toIcal(eis, ScheduleMethods.methodTypePublish);
 
-          IcalTranslator.writeCalendar(ical, wtr);
+          IcalendarUtil.writeCalendar(ical, wtr);
         } else if (generateXcal) {
           final XmlTranslator xmlTrans =
                   new XmlTranslator(new IcalCallbackcb(request.getClient()));

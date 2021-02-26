@@ -20,7 +20,6 @@
 package org.bedework.webcommon.taglib;
 
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.wrappers.CalendarWrapper;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.taglib.TagUtils;
@@ -113,10 +112,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
         if (getForm() == null) {
           // Assume always open
           for (final BwCalendar c: cs) {
-            if (c instanceof CalendarWrapper) {
-              final CalendarWrapper ccw = (CalendarWrapper)c;
-              ccw.setOpen(true);
-            }
+            c.setOpen(true);
           }
         } else {
           //noinspection unchecked
@@ -127,10 +123,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
 
           if (cos != null) {
             for (final BwCalendar c: cs) {
-              if (c instanceof CalendarWrapper) {
-                final CalendarWrapper ccw = (CalendarWrapper)c;
-                ccw.setOpen(cos.contains(c.getPath()));
-              }
+              c.setOpen(cos.contains(c.getPath()));
             }
           }
         }

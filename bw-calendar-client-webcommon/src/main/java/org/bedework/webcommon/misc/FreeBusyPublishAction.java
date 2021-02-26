@@ -23,13 +23,14 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.BwVersion;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.convert.ical.VFreeUtil;
+import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
@@ -138,22 +139,23 @@ public class FreeBusyPublishAction extends BwAbstractAction {
         cals.add(cal);
       }
 
-      String orgUri = cl.getCurrentCalendarAddress();
-      BwOrganizer org = new BwOrganizer();
+      final String orgUri = cl.getCurrentCalendarAddress();
+      final BwOrganizer org = new BwOrganizer();
       org.setOrganizerUri(orgUri);
 
-      BwEvent fb = cl.getFreeBusy(cals,
-                                  principal,
-                                  tr.getStart(),
-                                  tr.getEnd(),
-                                  org,
-                                  null, // uid
-                                  null);
+      final BwEvent fb = cl.getFreeBusy(cals,
+                                        principal,
+                                        tr.getStart(),
+                                        tr.getEnd(),
+                                        org,
+                                        null, // uid
+                                        null);
 
-      VFreeBusy vfreeBusy = VFreeUtil.toVFreeBusy(fb);
+      final VFreeBusy vfreeBusy = VFreeUtil.toVFreeBusy(fb);
       net.fortuna.ical4j.model.Calendar ical = null;
       if (vfreeBusy != null) {
-        ical = IcalTranslator.newIcal(Icalendar.methodTypePublish);
+        ical = IcalendarUtil.newIcal(Icalendar.methodTypePublish,
+                                     BwVersion.prodId);
         ical.getComponents().add(vfreeBusy);
       }
 
@@ -162,8 +164,8 @@ public class FreeBusyPublishAction extends BwAbstractAction {
                                       "Attachment; Filename=\"freebusy.ics\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");
 
-      IcalTranslator.writeCalendar(ical, request.getResponse().getWriter());
-    } catch (CalFacadeAccessException cfae) {
+      IcalendarUtil.writeCalendar(ical, request.getResponse().getWriter());
+    } catch (final CalFacadeAccessException cfae) {
       request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 

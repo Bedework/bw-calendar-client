@@ -27,6 +27,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
+import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -166,7 +167,7 @@ public class WebCalendarAction extends BwAbstractAction {
                                       name + "\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");
 
-      IcalTranslator.writeCalendar(c, request.getResponse().getWriter());
+      IcalendarUtil.writeCalendar(c, request.getResponse().getWriter());
     } catch (CalFacadeAccessException cfae) {
       request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
     }

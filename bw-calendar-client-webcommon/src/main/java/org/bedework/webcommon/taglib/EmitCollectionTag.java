@@ -19,11 +19,11 @@
 package org.bedework.webcommon.taglib;
 
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.wrappers.CalendarWrapper;
 import org.bedework.util.xml.tagdefs.AppleServerTags;
 import org.bedework.util.xml.tagdefs.NamespaceAbbrevs;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -58,7 +58,7 @@ public class EmitCollectionTag extends EmitTextTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the object */
-      BwCalendar col = (BwCalendar)getObject(false);
+      final BwCalendar col = (BwCalendar)getObject(false);
 
       String outerTag = null;
 
@@ -73,7 +73,7 @@ public class EmitCollectionTag extends EmitTextTag {
         }
       }
 
-      JspWriter out = pageContext.getOut();
+      final JspWriter out = pageContext.getOut();
 
       String indent = getIndent();
       if (indent == null) {
@@ -85,10 +85,9 @@ public class EmitCollectionTag extends EmitTextTag {
       emitCollection(col, out, indent);
 
       outerTagEnd(out, outerTag, indent);
-    } catch(Throwable t) {
+    } catch(final Throwable t) {
       t.printStackTrace();
       throw new JspTagException("Error: " + t.getMessage());
-    } finally {
     }
 
     return EVAL_PAGE;
@@ -142,7 +141,7 @@ public class EmitCollectionTag extends EmitTextTag {
     emitElement(out, indent, "path", val);
 
     if (val != null) {
-      val = URLEncoder.encode(val, "UTF-8");
+      val = URLEncoder.encode(val, StandardCharsets.UTF_8);
     }
 
     emitElement(out, indent, "encodedPath", val);
@@ -160,8 +159,7 @@ public class EmitCollectionTag extends EmitTextTag {
     emitElement(out, indent, "actualCalType", val);
 
     if ((col != null) && (col.getCalType() == BwCalendar.calTypeAlias)) {
-      CalendarWrapper cw = (CalendarWrapper)col;
-      BwCalendar target = cw.getAliasedEntity();
+      final BwCalendar target = col.getAliasedEntity();
       if (target == null) {
         val = String.valueOf(BwCalendar.calTypeUnknown);
       } else {
@@ -243,7 +241,7 @@ public class EmitCollectionTag extends EmitTextTag {
       return;
     }
 
-    String prefPath = getPreferences().getDefaultCalendarPath();
+    final String prefPath = getPreferences().getDefaultCalendarPath();
 
     if ((prefPath != null) && prefPath.equals(col.getPath())) {
       emitElement(out, indent, "default-scheduling-collection", null);
@@ -306,7 +304,8 @@ public class EmitCollectionTag extends EmitTextTag {
 
   private void emitCdataElement(final JspWriter out,
                                 final String indent,
-                                final String name, final String val) throws Throwable {
+                                final String name,
+                                final String val) throws Throwable {
     emitElement(out, indent, name, val, true);
   }
 
@@ -323,7 +322,7 @@ public class EmitCollectionTag extends EmitTextTag {
       boolean cdata = alwaysCdata ||
           (val.indexOf('&') >= 0) ||
           (val.indexOf('<') >= 0) ||
-          (val.indexOf("<![CDATA[") >= 0);
+          (val.contains("<![CDATA["));
 
       if (!cdata) {
         out.print(val);
@@ -333,9 +332,9 @@ public class EmitCollectionTag extends EmitTextTag {
         int start = 0;
 
         while (start < val.length()) {
-          int end = val.indexOf("]]", start);
-          boolean lastSeg = end < 0;
-          String seg;
+          final int end = val.indexOf("]]", start);
+          final boolean lastSeg = end < 0;
+          final String seg;
 
           if (lastSeg) {
             seg = val.substring(start);
@@ -346,7 +345,7 @@ public class EmitCollectionTag extends EmitTextTag {
           cdata = alwaysCdata ||
               (seg.indexOf('&') >= 0) ||
               (seg.indexOf('<') >= 0) ||
-              (seg.indexOf("<![CDATA[") >= 0) ||
+              (seg.contains("<![CDATA[")) ||
               ((start > 0) && seg.startsWith(">")); // Don't rebuild "]]>"
 
           if (!cdata) {
@@ -374,7 +373,7 @@ public class EmitCollectionTag extends EmitTextTag {
 
   /** Sets the full value.
    *
-   * @param val
+   * @param val tru for full
    */
   public void setFull(final boolean val) {
     full = val;
@@ -390,7 +389,7 @@ public class EmitCollectionTag extends EmitTextTag {
 
   /** Sets the noTag value.
    *
-   * @param val
+   * @param val the noTag value.
    */
   public void setNoTag(final boolean val) {
     noTag = val;

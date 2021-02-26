@@ -32,6 +32,7 @@ import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.convert.jscal.JSCalTranslator;
 import org.bedework.jsforj.model.JSGroup;
+import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -186,7 +187,7 @@ public class ExportAction extends BwAbstractAction {
 
         resp.setContentType("text/calendar; charset=UTF-8");
 
-        IcalTranslator.writeCalendar(ical, wtr);
+        IcalendarUtil.writeCalendar(ical, wtr);
       }
     }
 

@@ -21,7 +21,6 @@ package org.bedework.webcommon.calendars;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.wrappers.CalendarWrapper;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -67,9 +66,8 @@ public class RenderCalendarAction extends BwAbstractAction {
 
         final Set<String> cos = form.getCalendarsOpenState();
 
-        if ((cos != null) && (calendar instanceof CalendarWrapper)) {
-          final CalendarWrapper ccw = (CalendarWrapper)calendar;
-          ccw.setOpen(cos.contains(calendar.getPath()));
+        if (cos != null) {
+          calendar.setOpen(cos.contains(calendar.getPath()));
         }
       }
     }

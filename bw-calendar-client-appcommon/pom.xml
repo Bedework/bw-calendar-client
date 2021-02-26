@@ -48,9 +48,14 @@
       <artifactId>bw-util2-calendar</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-calendar-convert</artifactId>
+    </dependency>
+
 		<dependency>
-			<groupId>org.bedework.caleng</groupId>
-			<artifactId>bw-calendar-engine-facade</artifactId>
+			<groupId>org.bedework</groupId>
+			<artifactId>bw-calendar-facade</artifactId>
 		</dependency>
 
     <dependency>
@@ -58,11 +63,6 @@
       <artifactId>bw-calendar-engine-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.bedework.caleng</groupId>
-      <artifactId>bw-calendar-engine-convert</artifactId>
-    </dependency>
-    
     <dependency>
       <groupId>org.bedework.caleng</groupId>
       <artifactId>bw-calendar-engine-sysevents-msgs</artifactId>

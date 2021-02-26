@@ -30,6 +30,7 @@
 		<bw-access.version>4.0.8</bw-access.version>
 		<bw-webdav.version>4.0.10-SNAPSHOT</bw-webdav.version>
 		<bw-caldav.version>4.0.10-SNAPSHOT</bw-caldav.version>
+		<bw-calendar-common.version>4.0.0-SNAPSHOT</bw-calendar-common.version>
 		<bw-calendar-engine.version>3.14-SNAPSHOT</bw-calendar-engine.version>
 
     <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>
@@ -317,6 +318,20 @@
 				<version>${bw-xml.version}</version>
 			</dependency>
 
+      <!-- Bedework Calendar common-->
+
+			<dependency>
+				<groupId>org.bedework</groupId>
+        <artifactId>bw-calendar-convert</artifactId>
+				<version>${bw-calendar-common.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bedework</groupId>
+        <artifactId>bw-calendar-facade</artifactId>
+				<version>${bw-calendar-common.version}</version>
+			</dependency>
+
       <!-- Bedework Calendar Engine wars-->
 
       <dependency>
@@ -365,12 +380,6 @@
 
       <dependency>
         <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-annotations</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
         <artifactId>bw-calendar-engine-api</artifactId>
         <version>${bw-calendar-engine.version}</version>
       </dependency>
@@ -404,18 +413,6 @@
         <artifactId>bw-calendar-engine-dumprestore</artifactId>
         <version>${bw-calendar-engine.version}</version>
       </dependency>
-
-			<dependency>
-				<groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-facade</artifactId>
-				<version>${bw-calendar-engine.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-convert</artifactId>
-				<version>${bw-calendar-engine.version}</version>
-			</dependency>
 
       <dependency>
         <groupId>org.bedework.caleng</groupId>

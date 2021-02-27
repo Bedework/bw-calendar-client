@@ -66,8 +66,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.bedework.caleng</groupId>
-      <artifactId>bw-calendar-engine-sysevents-msgs</artifactId>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-calendar-sysevents-msgs</artifactId>
     </dependency>
 
     <!-- Third Party -->
@@ -81,21 +81,25 @@
 			<artifactId>portlet-api</artifactId>
 			<version>1.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>javax.servlet.jsp-api</artifactId>
 			<version>2.3.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>1.5</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.portals.bridges</groupId>
 			<artifactId>portals-bridges-common</artifactId>
 			<version>1.0.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.portals.bridges</groupId>
 			<artifactId>portals-bridges-struts-1.2.7</artifactId>

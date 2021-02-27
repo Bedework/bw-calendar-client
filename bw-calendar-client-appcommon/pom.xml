@@ -50,6 +50,11 @@
 
     <dependency>
       <groupId>org.bedework</groupId>
+      <artifactId>bw-calendar-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework</groupId>
       <artifactId>bw-calendar-convert</artifactId>
     </dependency>
 
@@ -59,14 +64,10 @@
 		</dependency>
 
     <dependency>
-      <groupId>org.bedework.caleng</groupId>
-      <artifactId>bw-calendar-engine-api</artifactId>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-calendar-sysevents-msgs</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.bedework.caleng</groupId>
-      <artifactId>bw-calendar-engine-sysevents-msgs</artifactId>
-    </dependency>
 		<!-- Third Party -->
 
     <!--

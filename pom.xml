@@ -320,6 +320,12 @@
 
       <!-- Bedework Calendar common-->
 
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-calendar-api</artifactId>
+        <version>${bw-calendar-common.version}</version>
+      </dependency>
+
 			<dependency>
 				<groupId>org.bedework</groupId>
         <artifactId>bw-calendar-convert</artifactId>
@@ -331,6 +337,12 @@
         <artifactId>bw-calendar-facade</artifactId>
 				<version>${bw-calendar-common.version}</version>
 			</dependency>
+
+      <dependency>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-calendar-sysevents-msgs</artifactId>
+        <version>${bw-calendar-common.version}</version>
+      </dependency>
 
       <!-- Bedework Calendar Engine wars-->
 
@@ -374,92 +386,6 @@
         <artifactId>bw-calendar-engine-userws</artifactId>
         <version>${bw-calendar-engine.version}</version>
         <type>war</type>
-      </dependency>
-
-      <!-- Bedework Calendar Engine -->
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-api</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-caldav</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-chgnote</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-core</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-core-common</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-dumprestore</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-impl</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-indexer</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-inoutsched</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-interfaces</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-mail</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-sysevents-common</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-sysevents-msgs</artifactId>
-        <version>${bw-calendar-engine.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bedework.caleng</groupId>
-        <artifactId>bw-calendar-engine-tools</artifactId>
-        <version>${bw-calendar-engine.version}</version>
       </dependency>
 
 			<!-- Third Party Libraries -->

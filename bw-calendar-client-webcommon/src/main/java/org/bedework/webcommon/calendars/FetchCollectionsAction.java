@@ -33,7 +33,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
+import static org.bedework.util.misc.Util.escapeJava;
 
 /** This action fetches all categories and embeds them in the session.
  *

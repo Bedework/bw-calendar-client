@@ -18,38 +18,63 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.util.misc.ToString;
+
 /**
  * Represent attendees passed in request as json.
  */
 public class JsonAttendee {
-  String uri;
-  String role;
-  String cn;
-  String cutype;
+  private String uri;
+  private String role;
+  private String cn;
+  private String cutype;
 
   /**
    *
    */
   public JsonAttendee() {}
 
+  public String getUri() {
+    return uri;
+  }
+
+  public void setUri(final String val) {
+    uri = val;
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setRole(final String val) {
+    role = val;
+  }
+
+  public String getCn() {
+    return cn;
+  }
+
+  public void setCn(final String val) {
+    cn = val;
+  }
+
+  public String getCutype() {
+    return cutype;
+  }
+
+  public void setCutype(final String val) {
+    cutype = val;
+  }
+
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("JsonAttendee{");
+    final ToString ts = new ToString(this);
 
-    sb.append("uri=");
-    sb.append(uri);
+    ts.append("uri", getUri())
+      .append("role", getRole())
+      .append("cn", getCn())
+      .append("cutype", getCutype());
 
-    sb.append(", role=");
-    sb.append(role);
-
-    sb.append(", cn=");
-    sb.append(cn);
-
-    sb.append(", cutype=");
-    sb.append(cutype);
-
-    sb.append("}");
-
-    return sb.toString();
+    return ts.toString();
   }
 }

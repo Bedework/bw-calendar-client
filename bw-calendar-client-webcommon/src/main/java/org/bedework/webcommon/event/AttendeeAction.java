@@ -23,7 +23,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collection;
 
@@ -61,10 +61,11 @@ public class AttendeeAction extends EventActionBase {
       return forwardNoAccess; // First line of defence
     }
 
-    BwModuleState mstate = request.getModule().getState();
+    final BwModuleState mstate = request.getModule().getState();
 
-    boolean listResponseOnly = "yes".equals(request.getReqPar("list"));
-    boolean noFb = "no".equals(request.getReqPar("getfb"));
+    final boolean listResponseOnly =
+            "yes".equals(request.getReqPar("list"));
+    final boolean noFb = "no".equals(request.getReqPar("getfb"));
 
     if (!listResponseOnly && !noFb) {
       /* Select appropriate view for freebusy display */
@@ -75,17 +76,19 @@ public class AttendeeAction extends EventActionBase {
 
     int res = forwardSuccess;
 
-    Collection<String> attjson = request.getReqPars("attjson");
+    final Collection<String> attjson =
+            request.getReqPars("attjson");
     if (attjson != null) {
-      Gson gson = new Gson();
+      final ObjectMapper mapper = new ObjectMapper();
 
-      for (String s: attjson) {
+      for (final String s: attjson) {
         if (debug()) {
           debug("json=" + s);
         }
 
         try {
-          JsonAttendee att = gson.fromJson(s, JsonAttendee.class);
+          final JsonAttendee att =
+                  mapper.readValue(s, JsonAttendee.class);
 
           if (debug()) {
             debug(att.toString());
@@ -98,23 +101,23 @@ public class AttendeeAction extends EventActionBase {
                            false,
                            request.getReqPar("partstat"),
                            request.getReqPar("role"),
-                           att.uri,
-                           att.cn,
+                           att.getUri(),
+                           att.getCn(),
                            null,             // lang
-                           att.cutype,
+                           att.getCutype(),
                            null);             // dir
 
           if (res != forwardSuccess) {
             return res;
           }
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
           form.getErr().emit(ClientError.unknownAttendee, s);
           return forwardNoAction;
         }
       }
     } else {
       /* Try for a uri */
-      String uri = request.getReqPar("uri");
+      final String uri = request.getReqPar("uri");
 
       if (uri != null) {
         res = doAttendee(request,
@@ -142,10 +145,10 @@ public class AttendeeAction extends EventActionBase {
       return forwardListAttendees;
     }
 
-    String st = request.getReqPar("start");
-    String et = request.getReqPar("end");
-    String intunitStr = request.getReqPar("intunit");
-    int interval = request.getIntReqPar("interval", 1);
+    final String st = request.getReqPar("start");
+    final String et = request.getReqPar("end");
+    final String intunitStr = request.getReqPar("intunit");
+    final int interval = request.getIntReqPar("interval", 1);
 
     return doFreeBusy(request,
                       form,

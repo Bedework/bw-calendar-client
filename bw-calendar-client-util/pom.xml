@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.bedework.bwwebcl</groupId>
     <artifactId>bw-calendar-client</artifactId>
-    <version>3.14-SNAPSHOT</version>
+    <version>3.14.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>bw-calendar-client-util</artifactId>
@@ -18,11 +18,6 @@
     <dependency>
       <groupId>org.bedework</groupId>
       <artifactId>bw-util-logging</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.bedework</groupId>
-      <artifactId>bw-util-http</artifactId>
     </dependency>
 
     <dependency>
@@ -51,4 +46,39 @@
       <artifactId>struts-core</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.bedework</groupId>
+        <artifactId>bw-util-maven-deploy-wfmodule</artifactId>
+
+        <configuration>
+          <moduleName>org.bedework.calendar.client.util</moduleName>
+
+          <moduleDependencies>
+            <moduleDependency>
+              <name>org.bedework.logging</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.util.misc</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.util.servlet</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.util.servlet-filters</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.org.apache.struts.core</name>
+            </moduleDependency>
+          </moduleDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

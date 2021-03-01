@@ -22,8 +22,6 @@ package org.bedework.webcommon;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
-import java.io.IOException;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -47,17 +45,22 @@ import javax.servlet.http.HttpSession;
 public class BwSvciFilter implements Filter, Logged {
   protected ServletContext ctx;
 
-  public void init(final FilterConfig cnfg) throws ServletException {
+  protected boolean headDisallowed;
+
+  public void init(final FilterConfig cnfg) {
     ctx = cnfg.getServletContext();
+
+    headDisallowed =
+            Boolean.parseBoolean(cnfg.getInitParameter("headDisallowed"));
   }
 
   public void doFilter(final ServletRequest req,
                        final ServletResponse resp,
                        final FilterChain chain)
-          throws IOException, ServletException {
-    HttpServletRequest hreq = (HttpServletRequest)req;
-    HttpServletResponse hresp = (HttpServletResponse)resp;
-    HttpSession sess = hreq.getSession();
+          throws ServletException {
+    final HttpServletRequest hreq = (HttpServletRequest)req;
+    final HttpServletResponse hresp = (HttpServletResponse)resp;
+    final HttpSession sess = hreq.getSession();
     BwCallback cb = null;
 
     Throwable thr = null;
@@ -76,6 +79,12 @@ public class BwSvciFilter implements Filter, Logged {
       }
       */
 
+      if (headDisallowed &&
+              "HEAD".equals(hreq.getMethod())) {
+        ((HttpServletResponse)resp).setStatus(HttpServletResponse.SC_OK);
+        return;
+      }
+
       /* We need this to force utf encoding.
        * Not sure whether this is always correct
        */
@@ -83,12 +92,12 @@ public class BwSvciFilter implements Filter, Logged {
 
       try {
         chain.doFilter(req, resp);
-      } catch (Throwable dft) {
+      } catch (final Throwable dft) {
         error("Exception in filter: ", dft);
         thr = dft;
         try {
           cb.error(hreq, hresp, dft);
-        } catch (Throwable t1) {
+        } catch (final Throwable t1) {
           error("Callback exception: ", t1);
         }
       }
@@ -97,12 +106,12 @@ public class BwSvciFilter implements Filter, Logged {
       if (cb != null) {
         cb.out(hreq);
       }
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error("Callback exception: ", t);
       thr = t;
       try {
         cb.error(hreq, hresp, t);
-      } catch (Throwable t1) {
+      } catch (final Throwable t1) {
         error("Callback exception: ", t1);
       }
     } finally {
@@ -112,7 +121,7 @@ public class BwSvciFilter implements Filter, Logged {
         if (cb != null) {
           cb.close(hreq, false);
         }
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         error("Callback exception: ", t);
         thr = t;
       }
@@ -130,7 +139,7 @@ public class BwSvciFilter implements Filter, Logged {
   }
 
   private BwCallback getCb(final HttpSession sess,
-                              final String tracer) throws Throwable {
+                              final String tracer) {
     if (sess == null) {
       if (debug()) {
         debug(tracer + " no session object");
@@ -139,7 +148,8 @@ public class BwSvciFilter implements Filter, Logged {
     }
 
     try {
-      BwCallback cb = (BwCallback)sess.getAttribute(BwCallback.cbAttrName);
+      final BwCallback cb =
+              (BwCallback)sess.getAttribute(BwCallback.cbAttrName);
       if (debug()) {
         if (cb != null) {
           debug(tracer + " Obtained BwCallback object");
@@ -149,7 +159,7 @@ public class BwSvciFilter implements Filter, Logged {
       }
 
       return cb;
-    } catch (IllegalStateException ise) {
+    } catch (final IllegalStateException ise) {
       // Invalidated session - assume logged out
       if (debug()) {
         debug(tracer + " Invalidated session - assume logged out");
@@ -162,7 +172,7 @@ public class BwSvciFilter implements Filter, Logged {
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

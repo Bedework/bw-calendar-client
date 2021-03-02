@@ -49,6 +49,18 @@
             </jarResource>
 
             <jarResource>
+              <groupId>commons-fileupload</groupId>
+              <artifactId>commons-fileupload</artifactId>
+              <version>1.3.3</version>
+            </jarResource>
+
+            <jarResource>
+              <groupId>commons-io</groupId>
+              <artifactId>commons-io</artifactId>
+              <version>2.2</version>
+            </jarResource>
+
+            <jarResource>
               <groupId>commons-validator</groupId>
               <artifactId>commons-validator</artifactId>
               <version>1.3.1</version>

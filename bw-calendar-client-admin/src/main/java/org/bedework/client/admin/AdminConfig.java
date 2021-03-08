@@ -17,8 +17,9 @@
     under the License.
 */
 
-package org.bedework.appcommon;
+package org.bedework.client.admin;
 
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.util.jmx.MBeanInfo;
 
 /**

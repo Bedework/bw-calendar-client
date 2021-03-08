@@ -28,6 +28,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.webcommon.AdminUtil;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -136,22 +137,22 @@ public class InitAddEventAction extends EventActionBase {
       ev.setColPath(cal.getPath());
     }
 
-    BwSession sess = request.getSess();
+    final BwSession sess = request.getSess();
 
     sess.embedAddContentCalendarCollections(request);
     sess.embedUserCollections(request);
 
     sess.embedContactCollection(request, BwSession.ownersEntity);
 
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     if (cl.getPublicAdmin()) {
       sess.embedContactCollection(request, BwSession.preferredEntity);
       sess.embedLocations(request, BwSession.preferredEntity);
 
       if (form.getSuggestionEnabled()) {
-        embedPreferredAdminGroups(request);
-        request.embedCalsuiteAdminGroups();
+        AdminUtil.embedPreferredAdminGroups(request);
+        AdminUtil.embedCalsuiteAdminGroups(request);
       }
     }
 

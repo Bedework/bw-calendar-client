@@ -19,13 +19,14 @@
 package org.bedework.webcommon.authuser;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwAuthUser;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches an authorised user
+ * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardNoAccess     user not authorised.</li>
@@ -39,7 +40,7 @@ public class FetchAuthAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     /* Check access
      */

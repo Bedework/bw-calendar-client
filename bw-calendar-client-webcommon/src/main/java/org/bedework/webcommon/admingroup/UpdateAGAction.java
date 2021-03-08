@@ -20,7 +20,6 @@ package org.bedework.webcommon.admingroup;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.exc.CalFacadeException;
@@ -28,6 +27,7 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.UserAuth;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -35,6 +35,7 @@ import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 
 /** This action updates an admin group
+ * ADMIN ONLY
  *
  * <p>Parameters are:<ul>
  *      <li>"delete"           Delete current admin group</li>
@@ -57,7 +58,7 @@ public class UpdateAGAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     /* Check access
      */
@@ -139,7 +140,7 @@ public class UpdateAGAction extends BwAbstractAction {
         cl.addAdminGroupMember(updgrp, newMbr);
         updgrp.addGroupMember(newMbr);
       } else if (request.getReqPar("removeGroupMember") != null) {
-        /** Remove a user or group from the group we are updating.
+        /* Remove a user or group from the group we are updating.
          */
         final String mbr = request.getReqPar("removeGroupMember");
 
@@ -198,7 +199,7 @@ public class UpdateAGAction extends BwAbstractAction {
       }
     }
 
-    /** Refetch the group
+    /* Refetch the group
      * /
 
     updgrp = (BwAdminGroup)adgrps.findGroup(updgrp.getAccount());
@@ -212,8 +213,8 @@ public class UpdateAGAction extends BwAbstractAction {
     return forwardContinue;
   }
 
-  private boolean validateNewAdminGroup(final Client cl,
-                                        final BwActionFormBase form) throws Throwable {
+  private boolean validateNewAdminGroup(final AdminClient cl,
+                                        final BwActionFormBase form) {
     boolean ok = true;
 
     final BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
@@ -278,7 +279,7 @@ public class UpdateAGAction extends BwAbstractAction {
     return ok;
   }
 
-  private boolean validateAdminGroup(final Client cl,
+  private boolean validateAdminGroup(final AdminClient cl,
                                      final BwActionFormBase form) throws Throwable {
     boolean ok = true;
 

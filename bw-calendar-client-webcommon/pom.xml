@@ -19,6 +19,12 @@
 
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-admin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
       <artifactId>bw-calendar-client-appcommon</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -119,18 +125,13 @@
         <configuration>
           <moduleName>org.bedework.calendar.client.webcommon</moduleName>
 
-          <jarDependencies>
-            <jarDependency>
-              <moduleName>org.bedework.javax.servlet.jsp-api</moduleName>
-              <groupId>javax.servlet.jsp</groupId>
-              <artifactId>javax.servlet.jsp-api</artifactId>
-              <version>2.3.1</version>
-            </jarDependency>
-          </jarDependencies>
-
           <moduleDependencies>
             <moduleDependency>
               <name>org.bedework.calendar.client.appcommon</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.calendar.client.admin</name>
             </moduleDependency>
 
             <moduleDependency>
@@ -167,6 +168,10 @@
 
             <moduleDependency>
               <name>org.bedework.calendar.common.sysevents.msgs</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>javax.servlet.jsp.api</name>
             </moduleDependency>
           </moduleDependencies>
         </configuration>

@@ -19,10 +19,10 @@
 package org.bedework.webcommon.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwCalSuite;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
@@ -30,8 +30,8 @@ import org.bedework.webcommon.RenderAction;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Render action used to display the list of resources for a calendar suite.
+/** Render action used to display the list of resources for a calendar suite.
+ * ADMIN ONLY
  *
  * @author eric.wittmann@redhat.com
  */
@@ -44,8 +44,9 @@ public class RenderResourcesAction extends RenderAction {
       return forwardGotomain;
     }
 
-    final List<CalSuiteResource> resources = getResources(request.getClient(),
-                                                          form.getCurrentCalSuite());
+    final List<CalSuiteResource> resources =
+            getResources(((AdminClient)request.getClient()),
+                         form.getCurrentCalSuite());
 
     // TODO: add admin-only suite resources if logged-in user is a superadmin
     form.setCalSuiteResources(resources);
@@ -59,7 +60,7 @@ public class RenderResourcesAction extends RenderAction {
    * @param currentCalSuite calendar suite
    * @throws CalFacadeException on errors
    */
-  protected List<CalSuiteResource> getResources(final Client cl,
+  protected List<CalSuiteResource> getResources(final AdminClient cl,
                                                 final BwCalSuite currentCalSuite)
       throws CalFacadeException {
     final List<CalSuiteResource> resources = new ArrayList<>();

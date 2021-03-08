@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon.config;
 
-import org.bedework.appcommon.AdminConfig;
+import org.bedework.client.admin.AdminConfig;
 import org.bedework.util.misc.ToString;
 
 /**

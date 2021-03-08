@@ -23,6 +23,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches all admin groups
+ * READ-ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardSuccess     OK.</li>

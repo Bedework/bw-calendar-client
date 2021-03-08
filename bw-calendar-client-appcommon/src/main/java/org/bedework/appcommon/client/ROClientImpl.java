@@ -48,7 +48,6 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
-import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
@@ -61,18 +60,16 @@ import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.calfacade.svc.BwAdminGroup;
-import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
+import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
-import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
 import org.bedework.calsvci.EventsI.RealiasResult;
@@ -168,11 +165,7 @@ public class ROClientImpl implements Logged, Client {
   protected BwPrincipal calSuiteOwner;
   protected String calSuiteName;
 
-  /** Hrefs of owners for this calsuite
-   */
-  protected static List<String> ownerHrefs;
-
-  private static long lastAdminGroupsInfoRefresh;
+  protected static long lastAdminGroupsInfoRefresh;
   static long adminGroupsInfoRefreshInterval = 1000 * 60 * 5;
 
   private static final Object adminGroupLocker = new Object();
@@ -586,53 +579,8 @@ public class ROClientImpl implements Logged, Client {
   }
 
   /* ------------------------------------------------------------
-   *                     Admin users
-   * ------------------------------------------------------------ */
-
-  @Override
-  public void addUser(final String account)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void addAuthUser(final BwAuthUser val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public BwAuthUser getAuthUser(final BwPrincipal pr)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void updateAuthUser(final BwAuthUser val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public Collection<BwAuthUser> getAllAuthUsers()
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  /* ------------------------------------------------------------
    *                     Admin Groups
    * ------------------------------------------------------------ */
-
-  @Override
-  public String getAdminGroupsIdPrefix() {
-    return svci.getAdminDirectories().getAdminGroupsIdPrefix();
-  }
-
-  @Override
-  public BwGroup getAdminGroup(final String href)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
 
   @Override
   public Collection<BwGroup> getAdminGroups()
@@ -642,113 +590,13 @@ public class ROClientImpl implements Logged, Client {
     return adminGroupsInfo;
   }
 
-  @Override
-  public Collection<BwGroup> getCalsuiteAdminGroups()
-          throws CalFacadeException {
-    refreshAdminGroupInfo();
-
-    return calsuiteAdminGroupsInfo;
-  }
-
-  @Override
-  public void refreshAdminGroups() {
-    lastAdminGroupsInfoRefresh = 0;
-  }
-
-  @Override
-  public Collection<BwGroup> getAllAdminGroups(final BwPrincipal val)
-          throws CalFacadeException {
-    return svci.getAdminDirectories().getAllGroups(val);
-  }
-
-  @Override
-  public void addAdminGroup(final BwAdminGroup group)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void removeAdminGroup(final BwAdminGroup group)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void updateAdminGroup(final BwAdminGroup group)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean getAdminGroupMaintOK() {
-    return svci.getAdminDirectories().getGroupMaintOK();
-  }
-
-  @Override
-  public BwAdminGroup findAdminGroup(final String name) {
-    return (BwAdminGroup)svci.getAdminDirectories().findGroup(name);
-  }
-
-  @Override
-  public void getAdminGroupMembers(final BwAdminGroup group)
-          throws CalFacadeException {
-    svci.getAdminDirectories().getMembers(group);
-  }
-
-  @Override
-  public void addAdminGroupMember(final BwAdminGroup group,
-                                  final BwPrincipal val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void removeAdminGroupMember(final BwAdminGroup group,
-                                     final BwPrincipal val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  /* ------------------------------------------------------------
-   *                     Groups
-   * ------------------------------------------------------------ */
-
-  @Override
-  public BwGroup findGroup(final String name) {
-    return svci.getDirectories().findGroup(name);
-  }
-
-  @Override
-  public Collection<BwGroup> findGroupParents(final BwGroup group)
-          throws CalFacadeException {
-    return svci.getDirectories().findGroupParents(group);
-  }
-
-  @Override
-  public Collection<BwGroup> getGroups(final BwPrincipal val)
-          throws CalFacadeException {
-    return svci.getDirectories().getGroups(val);
-  }
-
-  @Override
-  public Collection<BwGroup> getAllGroups(final boolean populate)
-          throws CalFacadeException {
-    return svci.getDirectories().getAll(populate);
-  }
-
-  @Override
-  public void getMembers(final BwGroup group)
-          throws CalFacadeException {
-    svci.getDirectories().getMembers(group);
-  }
-
   /* ------------------------------------------------------------
    *                     Preferences
    * ------------------------------------------------------------ */
 
   @Override
   public BwPreferences getPreferences() {
-    if (publicAdmin | publicView) {
+    if (publicView) {
       final BwPreferences prefs = getCalsuitePreferences();
       if (prefs != null) {
         return prefs;
@@ -1756,65 +1604,12 @@ public class ROClientImpl implements Logged, Client {
   }
 
   /* ------------------------------------------------------------
-   *                     State of current admin group
-   * ------------------------------------------------------------ */
-
-  @Override
-  public void setGroupSet(final boolean val) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean getGroupSet() {
-    return false;
-  }
-
-  @Override
-  public void setChoosingGroup(final boolean val) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean getChoosingGroup() {
-    return false;
-  }
-
-  @Override
-  public void setOneGroup(final boolean val) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean getOneGroup() {
-    return false;
-  }
-
-  @Override
-  public void setAdminGroupName(final String val) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public String getAdminGroupName() {
-    return null;
-  }
-
-  /* ------------------------------------------------------------
    *                     Misc
    * ------------------------------------------------------------ */
 
   @Override
   public void moveContents(final BwCalendar cal,
                            final BwCalendar newCal)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref,
-                                                     final int limit,
-                                                     final boolean checkOnly,
-                                                     final UpdateFromTimeZonesInfo info)
           throws CalFacadeException {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
@@ -1928,33 +1723,6 @@ public class ROClientImpl implements Logged, Client {
    *                   Calendar Suites
    * ------------------------------------------------------------ */
 
-
-  @Override
-  public void setCalSuite(final BwCalSuite cs)
-          throws CalFacadeException {
-    ownerHrefs = new ArrayList<>();
-
-    final BwAdminGroup ag = cs.getGroup();
-    addOwnerHrefs(ag);
-
-    svci.setCalSuite(cs.getName());
-  }
-
-  private void addOwnerHrefs(final BwAdminGroup ag) throws CalFacadeException {
-    ownerHrefs.add(ag.getOwnerHref());
-
-    getAdminGroupMembers(ag);
-    if (ag.getGroupMembers() == null) {
-      return;
-    }
-
-    for (final BwPrincipal pr: ag.getGroupMembers()) {
-      if (pr instanceof BwAdminGroup) {
-        addOwnerHrefs((BwAdminGroup)pr);
-      }
-    }
-  }
-
   @Override
   public BwCalSuiteWrapper getCalSuite() {
     try {
@@ -1962,12 +1730,6 @@ public class ROClientImpl implements Logged, Client {
     } catch (final CalFacadeException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @Override
-  public BwCalSuiteWrapper getCalSuite(final BwAdminGroup group)
-          throws CalFacadeException {
-    return svci.getCalSuitesHandler().get(group);
   }
 
   private static Collection<BwCalSuite> suites;
@@ -1984,90 +1746,6 @@ public class ROClientImpl implements Logged, Client {
   public BwCalSuiteWrapper getCalSuite(final String name)
           throws CalFacadeException {
     return svci.getCalSuitesHandler().get(name);
-  }
-
-  @Override
-  public BwCalSuiteWrapper addCalSuite(final String name,
-                                       final String adminGroupName,
-                                       final String rootCollectionPath,
-                                       final String submissionsPath)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void updateCalSuite(final BwCalSuiteWrapper cs,
-                             final String adminGroupName,
-                             final String rootCollectionPath,
-                             final String submissionsPath)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void deleteCalSuite(final BwCalSuiteWrapper val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean isCalSuiteEntity(final BwShareableDbentity<?> ent) {
-    return false;
-  }
-
-  /* ------------------------------------------------------------
-   *                   Calendar Suite Resources
-   * ------------------------------------------------------------ */
-
-  @Override
-  public List<BwResource> getCSResources(final BwCalSuite suite,
-                                         final String rc)
-          throws CalFacadeException {
-    return svci.getResourcesHandler().getAll(getCSResourcesPath(suite,
-                                                                rc));
-  }
-
-  @Override
-  public BwResource getCSResource(final BwCalSuite suite,
-                                  final String name,
-                                  final String rc)
-          throws CalFacadeException {
-    try {
-      final BwResource r = svci.getResourcesHandler().
-              get(Util.buildPath(false,
-                                 getCSResourcesPath(suite, rc),
-                                 "/",
-                                 name));
-      if (r != null) {
-        svci.getResourcesHandler().getContent(r);
-      }
-
-      return r;
-    } catch (final CalFacadeException cfe) {
-      if (CalFacadeException.collectionNotFound.equals(cfe.getMessage())) {
-        // Collection does not exist (yet)
-
-        return null;
-      }
-
-      throw cfe;
-    }
-  }
-
-  @Override
-  public void addCSResource(final BwCalSuite suite,
-                            final BwResource res,
-                            final String rc)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void deleteCSResource(final BwCalSuite suite,
-                               final String name,
-                               final String rc)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   /* ------------------------------------------------------------
@@ -2193,7 +1871,22 @@ public class ROClientImpl implements Logged, Client {
       lastAdminGroupsInfoRefresh = System.currentTimeMillis();
     }
   }
-  
+
+  /** Return all groups of which the given principal is a member. Never returns null.
+   *
+   * <p>This does check the groups for membership of other groups so the
+   * returned collection gives the groups of which the principal is
+   * directly or indirectly a member.
+   *
+   * @param val            a principal
+   * @return Collection    of BwGroup
+   * @throws CalFacadeException on fatal error
+   */
+  private Collection<BwGroup> getAllAdminGroups(final BwPrincipal val)
+          throws CalFacadeException {
+    return svci.getAdminDirectories().getAllGroups(val);
+  }
+
   private BwGroup cloneGroup(final BwGroup g,
                              final Map<String, BwPrincipal> cloned) {
     BwGroup cg = (BwGroup)cloned.get(g.getPrincipalRef());

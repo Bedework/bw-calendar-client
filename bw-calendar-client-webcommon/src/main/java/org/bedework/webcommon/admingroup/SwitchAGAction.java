@@ -19,13 +19,14 @@
 package org.bedework.webcommon.admingroup;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.AdminUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action switches the users Admin Groups.
+ * ADMIN ONLY
  *
  * @author Mike Douglass   douglm rpi.edu
  */
@@ -33,18 +34,18 @@ public class SwitchAGAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    /** =================================================================
-     *                   Selecting a group - any access if no group set
-     *  ================================================================= */
+    /* ============================================================
+     *              Selecting a group - any access if no group set
+     * ============================================================ */
 
-    /** Check access - no don't
+    /* Check access - no don't
 
     if (!form.getCurUserContentAdminUser()) {
       return forwardNoAccess;
     }
     */
 
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     cl.setGroupSet(false);
     cl.setChoosingGroup(false);

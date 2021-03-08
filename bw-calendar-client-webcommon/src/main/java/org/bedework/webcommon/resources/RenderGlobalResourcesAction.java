@@ -19,22 +19,22 @@
 package org.bedework.webcommon.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwCalSuite;
+import org.bedework.client.admin.AdminClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Render action used to display the list of global resources.
+/** Render action used to display the list of global resources.
+ * ADMIN ONLY
  *
  * @author eric.wittmann@redhat.com
  */
 public class RenderGlobalResourcesAction extends RenderResourcesAction {
   @Override
-  protected List<CalSuiteResource> getResources(final Client cl,
+  protected List<CalSuiteResource> getResources(final AdminClient cl,
                                                 final BwCalSuite currentCalSuite)
       throws CalFacadeException {
     final List<CalSuiteResource> resources = new ArrayList<>();

@@ -21,16 +21,17 @@ package org.bedework.webcommon.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import org.apache.struts.upload.FormFile;
 
-/** Update a view for a user - add/remove subscription.
+/** Update a resource - add/remove subscription.
+ * ADMIN ONLY
  *
  * <p>Parameters are:<ul>
  *      <li>"name"            Name of view to update</li>
@@ -49,7 +50,7 @@ public class UpdateResourceAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     /* Check access
      */

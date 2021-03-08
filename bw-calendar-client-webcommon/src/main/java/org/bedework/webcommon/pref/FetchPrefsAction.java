@@ -26,7 +26,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
-/** Delete a view.
+/** Fetch preferences.
  *
  * <p>Parameters are:<ul>
  *      <li>"user"            User whos prefs we're changing - superuser only</li>
@@ -42,15 +42,12 @@ import org.bedework.webcommon.BwSession;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class FetchPrefsAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
-    BwSession sess = request.getSess();
+    final BwSession sess = request.getSess();
 
     sess.embedCategories(request, false,
                          BwSession.ownersEntity);
@@ -59,14 +56,14 @@ public class FetchPrefsAction extends BwAbstractAction {
     sess.embedAddContentCalendarCollections(request);
     sess.embedLocations(request, BwSession.editableEntity);
 
-    String str = request.getReqPar("user");
+    final String str = request.getReqPar("user");
     if (str != null) {
       /* Fetch a given users preferences */
       if (!form.getCurUserSuperUser()) {
         return forwardNoAccess; // First line of defence
       }
 
-      BwPreferences prefs = cl.getPreferences(str);
+      final BwPreferences prefs = cl.getPreferences(str);
       if (prefs == null) {
         return forwardNoAccess;
       }

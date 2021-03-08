@@ -44,6 +44,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
@@ -207,11 +208,12 @@ public class BwSessionImpl implements Logged, BwSession {
 
         final BwPrincipal p = cl.getAuthPrincipal();
         if (p != null) {
+          final AdminClient adcl = (AdminClient)cl;
           if (!cl.isSuperUser()) {
             // Always restrict to groups of which we are a member
-            adgs = cl.getGroups(p);
+            adgs = adcl.getGroups(p);
           } else {
-            adgs = cl.getAllGroups(false);
+            adgs = adcl.getAllGroups(false);
           }
 
           req.setSessionAttr(BwRequest.bwUserSearchableAdminGroups,

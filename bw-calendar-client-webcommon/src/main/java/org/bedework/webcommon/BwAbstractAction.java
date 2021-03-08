@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ClientError;
@@ -30,7 +29,6 @@ import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.NotificationInfo;
 import org.bedework.appcommon.TimeView;
-import org.bedework.appcommon.client.AdminClientImpl;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ClientImpl;
 import org.bedework.appcommon.client.ROClientImpl;
@@ -68,6 +66,9 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.SchedulingI.FbResponses;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.admin.AdminClientImpl;
+import org.bedework.client.admin.AdminConfig;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleStates;
 import org.bedework.util.calendar.XcalUtil;
@@ -222,10 +223,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     form.assignWorkflowEnabled(cl.getSystemProperties().getWorkflowEnabled());
     form.assignWorkflowRoot(cl.getSystemProperties().getWorkflowRoot());
     form.assignCurUserSuperUser(cl.isSuperUser());
-    form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
     form.assignUserMaintOK(cl.getUserMaintOK());
-    form.assignOneGroup(cl.getOneGroup());
     form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
+
+    if (cl.getPublicAdmin()) {
+      final AdminClient adcl = (AdminClient)cl;
+
+      form.assignOneGroup(adcl.getOneGroup());
+      form.assignAdminGroupMaintOK(adcl.getAdminGroupMaintOK());
+    }
 
     // We need to have set the current locale before we do this.
     mstate.setCalInfo(CalendarInfo.getInstance());
@@ -367,7 +373,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (!form.getGuest() &&
-            (!cl.getPublicAdmin() || cl.getGroupSet())) {
+            (!cl.getPublicAdmin() || ((AdminClient)cl).getGroupSet())) {
       NotificationInfo ni = form.getNotificationInfo();
       if (ni == null) {
         ni = new NotificationInfo();
@@ -1959,22 +1965,23 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       /* Calendar suite we are administering is the one we find attached to a
        * group as we proceed up the tree
        */
+      final AdminClient adcl = (AdminClient)client;
 
       /* Note that we redo this once we have a group set. The first call
          (before we have any client) has no group name set in the form
        */
       final BwCalSuiteWrapper cs =
               AdminUtil.findCalSuite(request,
-                                     client);
+                                     adcl);
       form.setCurrentCalSuite(cs);
 
       if (cs != null) {
         calSuiteName = cs.getName();
-        client.setCalSuite(cs);
+        adcl.setCalSuite(cs);
 
         // Use preferences to set approver
         final List<String> approvers =
-                client.getCalsuitePreferences().getCalsuiteApproversList();
+                adcl.getCalsuitePreferences().getCalsuiteApproversList();
 
         if (approvers.contains(form.getCurrentUser())) {
           form.assignCurUserApproverUser(true);

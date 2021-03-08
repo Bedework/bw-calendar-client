@@ -32,6 +32,7 @@ import org.bedework.webcommon.BwRequest;
 import java.util.List;
 
 /** This action moves a calendar or the contents.
+ * READ-WRITE
  *
  * <p>Parameters are:<ul>
  *      <li>"calPath"       Path of the collection to move</li>
@@ -47,22 +48,19 @@ import java.util.List;
  * @author Mike Douglass   douglm rpi.edu
  */
 public class MoveCalendarAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final Client cl = request.getClient();
 
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
 
-    boolean contents = request.present("contents");
+    final boolean contents = request.present("contents");
 
-    BwCalendar cal = request.getCalendar(true);
-    BwCalendar newCal = request.getNewCal(true);
+    final BwCalendar cal = request.getCalendar(true);
+    final BwCalendar newCal = request.getNewCal(true);
 
     if (cal == null) {
       return forwardNotFound;
@@ -99,11 +97,11 @@ public class MoveCalendarAction extends BwAbstractAction {
      */
 
     boolean reffed = false;
-    boolean autoRemove = !cl.getPublicAdmin() &&
+    final boolean autoRemove = !cl.getPublicAdmin() &&
       (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
 
-    for (BwView v:  cl.getAllViews()) {
-      List<String> paths = v.getCollectionPaths();
+    for (final BwView v:  cl.getAllViews()) {
+      final List<String> paths = v.getCollectionPaths();
 
       if ((paths != null) && paths.contains(cal.getPath())) {
         if (autoRemove) {
@@ -124,7 +122,7 @@ public class MoveCalendarAction extends BwAbstractAction {
 
     try {
       cl.moveCollection(cal, newCal);
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       if (CalFacadeException.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
         form.getErr().emit(ClientError.referencedCalendar, "default calendar");
         return forwardInUse;

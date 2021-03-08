@@ -20,14 +20,15 @@ package org.bedework.webcommon.admingroup;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action deletes an admin group
+ * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardNoAccess     user not authorised.</li>
@@ -38,28 +39,26 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm rpi.edu
  */
 public class DeleteAGAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    /** Check access
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    /* Check access
      */
     if (!form.getCurUserSuperUser()) {
       return forwardNoAccess;
     }
 
-    BwAdminGroup updgrp = form.getUpdAdminGroup();
+    final BwAdminGroup updgrp = form.getUpdAdminGroup();
 
     if (updgrp == null) {
       // That's not right
       return forwardNotFound;
     }
 
-    Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     // Ensure group is not a calendar suite admin group.
-    BwCalSuiteWrapper csw = cl.getCalSuite(updgrp);
+    final BwCalSuiteWrapper csw = cl.getCalSuite(updgrp);
 
     if (csw != null) {
       // Group already assigned to another cal suite

@@ -128,13 +128,6 @@
 
           <jarDependencies>
             <jarDependency>
-              <moduleName>org.bedework.javax.servlet.jsp-api</moduleName>
-              <groupId>javax.servlet.jsp</groupId>
-              <artifactId>javax.servlet.jsp-api</artifactId>
-              <version>2.3.1</version>
-            </jarDependency>
-
-            <jarDependency>
               <moduleName>org.bedework.org.apache.struts.taglib</moduleName>
               <groupId>org.apache.struts</groupId>
               <artifactId>struts-taglib</artifactId>
@@ -146,7 +139,7 @@
                 </moduleDependency>
 
                 <moduleDependency>
-                  <name>org.bedework.javax.servlet.jsp-api</name>
+                  <name>javax.servlet.jsp.api</name>
                 </moduleDependency>
               </moduleDependencies>
             </jarDependency>

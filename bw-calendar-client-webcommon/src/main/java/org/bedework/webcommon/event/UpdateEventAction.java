@@ -20,7 +20,6 @@ package org.bedework.webcommon.event;
 
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
-import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.TimeView;
@@ -46,6 +45,8 @@ import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.EventsI.RealiasResult;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.admin.AdminConfig;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.sysevents.events.SysEventBase;
@@ -153,7 +154,8 @@ public class UpdateEventAction extends EventActionBase {
     if (!publicAdmin) {
       eventOwner = true;
     } else {
-      eventOwner = form.getAddingEvent() || cl.isCalSuiteEntity(ev);
+      eventOwner = form.getAddingEvent() ||
+              ((AdminClient)cl).isCalSuiteEntity(ev);
     }
 
     if ((publishEvent || approveEvent) && (ev.getRecurrenceId() != null)) {
@@ -798,29 +800,31 @@ public class UpdateEventAction extends EventActionBase {
       cl.postNotification(sev);
     }
 
-    if (!Util.isEmpty(suggestedTo)) {
-      for (final SuggestedTo st: suggestedTo) {
-        final BwAdminGroup grp =
-                (BwAdminGroup)cl.getAdminGroup(st.getGroupHref());
-
-        if (grp == null) {
-          warn("Unable to locate group " + st.getGroupHref());
-          continue;
-        }
-
-        final EntitySuggestedEvent ese =
-                new EntitySuggestedEvent(
-                        SysEventBase.SysCode.SUGGESTED,
-                        cl.getCurrentPrincipalHref(),
-                        ev.getCreatorHref(),
-                        ev.getHref(),
-                        null,
-                        grp.getOwnerHref());
-        cl.postNotification(ese);
-      }
-    }
-
     if (publicAdmin) {
+      final AdminClient adcl = (AdminClient)cl;
+
+      if (!Util.isEmpty(suggestedTo)) {
+        for (final SuggestedTo st: suggestedTo) {
+          final BwAdminGroup grp =
+                  (BwAdminGroup)adcl.getAdminGroup(st.getGroupHref());
+
+          if (grp == null) {
+            warn("Unable to locate group " + st.getGroupHref());
+            continue;
+          }
+
+          final EntitySuggestedEvent ese =
+                  new EntitySuggestedEvent(
+                          SysEventBase.SysCode.SUGGESTED,
+                          cl.getCurrentPrincipalHref(),
+                          ev.getCreatorHref(),
+                          ev.getHref(),
+                          null,
+                          grp.getOwnerHref());
+          cl.postNotification(ese);
+        }
+      }
+
       /* See if we need to notify event registration system for add/update */
       final BwXproperty evregprop =
               ev.findXproperty(BwXproperty.bedeworkEventRegStart);
@@ -1089,10 +1093,10 @@ public class UpdateEventAction extends EventActionBase {
   }
 
   private static final String alwaysRemove1 =
-      "BEGIN:VEVENT\r\nUID:123456\r\nDTSTART;TYPE=DATE:20080212T000000\r\n";
+      "BEGIN:VEVENT\r\nUID:123456\r\nDTSTART;VALUE=DATE:20080212\r\n";
 
   private static final String alwaysRemove2 =
-      "BEGIN:VEVENT\nUID:123456\nDTSTART;TYPE=DATE:20080212T000000\n";
+      "BEGIN:VEVENT\nUID:123456\nDTSTART;VALUE=DATE:20080212\n";
 
   /* return forwardNoAction for no change
    * forward success for change otherwise error.
@@ -1241,7 +1245,7 @@ public class UpdateEventAction extends EventActionBase {
               "PRODID:-//xyz.com//EN\n" +
               "BEGIN:VEVENT\n" +
               "UID:123456\n" +
-              "DTSTART;TYPE=DATE:20080212\n");
+              "DTSTART;VALUE=DATE:20080212\n");
 
     for (String unparsedxp: unparsedxps) {
       /* Probably not the most efficient way */

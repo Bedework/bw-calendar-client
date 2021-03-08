@@ -709,11 +709,6 @@ public class BwRequest extends Request {
     return ekey;
   }
 
-  public void embedCalsuiteAdminGroups() throws Throwable {
-    setSessionAttr(bwCsAdminGroupsInfoName,
-                   getClient().getCalsuiteAdminGroups());
-  }
-
   public void embedAdminGroups() throws Throwable {
     setSessionAttr(bwAdminGroupsInfoName,
                    getClient().getAdminGroups());

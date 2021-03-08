@@ -21,6 +21,7 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.webcommon.AdminUtil;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -48,8 +49,8 @@ public class FetchEventAction extends EventActionBase {
       }
 
       if (form.getSuggestionEnabled()) {
-        embedPreferredAdminGroups(request);
-        request.embedCalsuiteAdminGroups();
+        AdminUtil.embedPreferredAdminGroups(request);
+        AdminUtil.embedCalsuiteAdminGroups(request);
       }
     }
 

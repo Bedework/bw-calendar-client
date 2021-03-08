@@ -18,9 +18,7 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
@@ -28,17 +26,22 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.admin.AdminConfig;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.struts.Request;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Mike Douglass
  *
  */
 public class AdminUtil implements ForwardDefs {
-  private static BwLogger logger =
+  private static final BwLogger logger =
           new BwLogger().setLoggedClass(AdminUtil.class);
 
   /** Called just before action.
@@ -49,7 +52,7 @@ public class AdminUtil implements ForwardDefs {
    */
   public static int actionSetup(final BwRequest request) throws Throwable {
     final BwActionFormBase form = request.getBwForm();
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     final BwAuthUser au = cl.getAuthUser(cl.getAuthPrincipal());
 
@@ -100,13 +103,12 @@ public class AdminUtil implements ForwardDefs {
    * @param initCheck true if this is a check to see if we're initialised,
    *                  otherwise this is an explicit request to change group.
    * @return int   forward index
-   * @throws Throwable on fatal error
    */
   public static int checkGroup(final BwRequest request,
-                               final boolean initCheck) throws Throwable {
+                               final boolean initCheck) {
     final BwActionFormBase form = (BwActionFormBase)request.getForm();
 
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     if (cl.getGroupSet()) {
       return forwardNoAction;
@@ -202,10 +204,38 @@ public class AdminUtil implements ForwardDefs {
     }
   }
 
+  public static void embedPreferredAdminGroups(final BwRequest request) throws Throwable {
+    final AdminClient cl = (AdminClient)request.getClient();
+
+    final Set<String> prefGroupHrefs = cl.getPreferences().getPreferredGroups();
+
+    final List<BwGroup> prefGroups = new ArrayList<>(prefGroupHrefs.size());
+
+    for (final String href: prefGroupHrefs) {
+      final BwGroup group = cl.getAdminGroup(href);
+
+      if (group == null) {
+        continue;
+      }
+
+      prefGroups.add(group);
+    }
+
+    request.setSessionAttr(BwRequest.bwPreferredAdminGroupsInfoName,
+                           prefGroups);
+  }
+
+  public static void embedCalsuiteAdminGroups(final BwRequest request) throws Throwable {
+    final AdminClient cl = (AdminClient)request.getClient();
+
+    request.setSessionAttr(BwRequest.bwCsAdminGroupsInfoName,
+                           cl.getCalsuiteAdminGroups());
+  }
+
   private static int setGroup(final BwRequest request,
                               final BwAdminGroup adg) throws Throwable {
     final BwActionFormBase form = request.getBwForm();
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     cl.getMembers(adg);
 
@@ -234,7 +264,7 @@ public class AdminUtil implements ForwardDefs {
   }
 
   private static boolean isMember(final BwAdminGroup ag,
-                                  final BwActionFormBase form) throws Throwable {
+                                  final BwActionFormBase form) {
     return ag.isMember(String.valueOf(form.getCurrentUser()), false);
   }
 
@@ -252,7 +282,7 @@ public class AdminUtil implements ForwardDefs {
    * @throws Throwable on fatal error
    */
   public static BwCalSuiteWrapper findCalSuite(final Request request,
-                                               final Client cl) throws Throwable {
+                                               final AdminClient cl) throws Throwable {
     final String groupName = cl.getAdminGroupName();
     if (groupName == null) {
       return null;
@@ -278,7 +308,7 @@ public class AdminUtil implements ForwardDefs {
    * @throws Throwable on fatal error
    */
   private static BwCalSuiteWrapper findCalSuite(final Request request,
-                                                final Client cl,
+                                                final AdminClient cl,
                                                 final BwAdminGroup adg) throws Throwable {
     if (adg == null) {
       return null;

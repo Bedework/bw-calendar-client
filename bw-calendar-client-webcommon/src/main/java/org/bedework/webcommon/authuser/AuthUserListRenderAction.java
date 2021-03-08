@@ -18,22 +18,24 @@
 */
 package org.bedework.webcommon.authuser;
 
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-/** This is a no-op action
+/** Store auth users in session
+ * ADMIN ONLY
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
 public class AuthUserListRenderAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final AdminClient cl = (AdminClient)request.getClient();
+
     request.setSessionAttr(BwRequest.bwAuthUsersListName,
-                           request.getClient().getAllAuthUsers());
+                           cl.getAllAuthUsers());
 
     return forwardSuccess;
   }

@@ -18,13 +18,14 @@
 */
 package org.bedework.webcommon.admingroup;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwAdminGroup;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches an admin group
+ * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardNoAccess     user not authorised.</li>
@@ -35,14 +36,12 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class FetchAGAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final AdminClient cl = (AdminClient)request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (!cl.isSuperUser()) {
       return forwardNoAccess;
@@ -50,14 +49,14 @@ public class FetchAGAction extends BwAbstractAction {
 
     cl.setChoosingGroup(false); // reset
 
-    /** User requested an admin group from the list or by entering the name.
+    /* User requested an admin group from the list or by entering the name.
      */
-    String account = request.getReqPar("adminGroupName");
+    final String account = request.getReqPar("adminGroupName");
     if (account == null) {
       return forwardNotFound;
     }
 
-    BwAdminGroup ag = cl.findAdminGroup(account);
+    final BwAdminGroup ag = cl.findAdminGroup(account);
 
     if (debug()) {
       if (ag == null) {

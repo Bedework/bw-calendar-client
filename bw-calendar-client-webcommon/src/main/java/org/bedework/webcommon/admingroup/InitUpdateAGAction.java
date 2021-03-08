@@ -18,12 +18,13 @@
 */
 package org.bedework.webcommon.admingroup;
 
-import org.bedework.appcommon.client.Client;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action sets the state ready for updating an admingroup.
+ * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardNoAccess     user not authorised.</li>
@@ -42,7 +43,7 @@ public class InitUpdateAGAction extends BwAbstractAction {
       return forwardNoAccess;
     }
 
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
     cl.refreshAdminGroups();
     request.embedAdminGroups();
 

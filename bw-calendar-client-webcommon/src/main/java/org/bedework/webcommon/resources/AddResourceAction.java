@@ -20,15 +20,16 @@
 package org.bedework.webcommon.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Add a new resource for a calendar suite.
+ * ADMIN ONLY
  *
  * <p>Parameters are:<ul>
  *      <li>"class"             Class of resource (e.g. calsuite)</li>
@@ -51,7 +52,7 @@ public class AddResourceAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     /* Check access
      */

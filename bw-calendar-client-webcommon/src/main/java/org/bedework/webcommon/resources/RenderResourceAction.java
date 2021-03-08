@@ -21,15 +21,15 @@ package org.bedework.webcommon.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
 
-/**
- * Shows a single resource, for editing purposes.
+/** Shows a single resource, for editing purposes.
+ * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>"success"      show edit form.</li>
@@ -42,7 +42,7 @@ public class RenderResourceAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     final String name = form.getResourceName();
     if (name == null) {
@@ -63,7 +63,8 @@ public class RenderResourceAction extends RenderAction {
     }
 
     final String mod = request.getReqPar("mod");
-    final BwResource resource = cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
+    final BwResource resource =
+            cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
 
     if (resource == null) {
       request.getErr().emit(ClientError.unknownResource, name);

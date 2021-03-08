@@ -19,7 +19,6 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwXproperty;
@@ -28,6 +27,7 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedResponseEvent;
 import org.bedework.util.calendar.PropertyIndex;
@@ -40,8 +40,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Action to update suggest status for an event
+/**Action to update suggest status for an event
+ * ADMIN ONLY
+ *
  * <p>Request parameters:<ul>
  *      <li>  colPath    - collection href</li>.
  *      <li>  eventName  - name for event</li>.
@@ -57,7 +58,7 @@ public class SuggestAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
     final HttpServletResponse response = request.getResponse();
 
     /* Check access

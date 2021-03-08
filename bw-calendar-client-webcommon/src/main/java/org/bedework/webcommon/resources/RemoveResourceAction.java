@@ -21,14 +21,15 @@ package org.bedework.webcommon.resources;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Delete a resource.
+ * ADMIN ONLY
  *
  * <p>Parameters are:<ul>
  *      <li>"name"             Name of resource</li>
@@ -47,33 +48,34 @@ import org.bedework.webcommon.BwRequest;
  */
 public class RemoveResourceAction extends BwAbstractAction {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final AdminClient cl = (AdminClient)request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    String cancel = request.getReqPar("cancel");
+    final String cancel = request.getReqPar("cancel");
     if (cancel != null) {
       return forwardCancelled;
     }
 
-    String name = request.getReqPar("name");
+    final String name = request.getReqPar("name");
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
-    String rclass = request.getReqPar("class");
+    final String rclass = request.getReqPar("class");
     if (rclass == null) {
       form.getErr().emit(ValidationError.missingClass);
       return forwardRetry;
     }
 
-    BwResource r = cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
+    final BwResource r =
+            cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
     if (r == null) {
       form.getErr().emit(ClientError.unknownResource, name);
       return forwardNotFound;

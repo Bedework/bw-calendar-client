@@ -32,6 +32,7 @@ import java.util.Collection;
 import javax.servlet.http.HttpServletResponse;
 
 /** This action fetches admin groups and writes them as a json object.
+ * READ-ONLY + ADMIN
  *
  * <p>Forwards to:<ul>
  *      <li>null     always.</li>

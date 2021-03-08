@@ -20,13 +20,14 @@ package org.bedework.webcommon.calsuite;
 
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Update a calendar suite for a user.
+ * ADMIN ONLY
  *
  * <p>Parameters are:<ul>
  *      <li>"delete"                   delete current calsuite</li>
@@ -47,19 +48,16 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class UpdateCalSuiteAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    BwCalSuiteWrapper csw = form.getCalSuite();
+    final BwCalSuiteWrapper csw = form.getCalSuite();
 
     if (csw == null) {
       return forwardError;
@@ -78,9 +76,9 @@ public class UpdateCalSuiteAction extends BwAbstractAction {
 
     /* -------------------------- Access ------------------------------ */
 
-    String aclStr = request.getReqPar("acl");
+    final String aclStr = request.getReqPar("acl");
     if (aclStr != null) {
-      Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
+      final Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
 
       cl.changeAccess(csw, acl.getAces(), true);
     }

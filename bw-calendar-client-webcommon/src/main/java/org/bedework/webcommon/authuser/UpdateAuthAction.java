@@ -19,13 +19,14 @@
 package org.bedework.webcommon.authuser;
 
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwAuthUser;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action updates an authorised user
+ * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardNoAccess     user not authorised.</li>
@@ -39,15 +40,15 @@ public class UpdateAuthAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
 
-    /** We are just updating from the current form values.
+    /* We are just updating from the current form values.
      */
     final BwAuthUser au = form.getEditAuthUser();
 

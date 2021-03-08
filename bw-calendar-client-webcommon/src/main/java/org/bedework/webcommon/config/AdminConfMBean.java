@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon.config;
 
-import org.bedework.appcommon.AdminConfig;
+import org.bedework.client.admin.AdminConfig;
 
 /** Properties for Admin client
  *

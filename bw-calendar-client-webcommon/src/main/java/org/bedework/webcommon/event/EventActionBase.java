@@ -30,7 +30,6 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
@@ -63,10 +62,8 @@ import org.bedework.webcommon.BwWebUtil.ValidateResult;
 import net.fortuna.ical4j.model.parameter.Role;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
@@ -195,27 +192,6 @@ public abstract class EventActionBase extends BwAbstractAction {
     return forwardContinue;
   }
 
-  protected void embedPreferredAdminGroups(final BwRequest request) throws Throwable {
-    final Client cl = request.getClient();
-
-    final Set<String> prefGroupHrefs = cl.getPreferences().getPreferredGroups();
-
-    final List<BwGroup> prefGroups = new ArrayList<>(prefGroupHrefs.size());
-
-    for (final String href: prefGroupHrefs) {
-      final BwGroup group = cl.getAdminGroup(href);
-
-      if (group == null) {
-        continue;
-      }
-
-      prefGroups.add(group);
-    }
-
-    request.setSessionAttr(BwRequest.bwPreferredAdminGroupsInfoName,
-                           prefGroups);
-  }
-
   /* Create a copy of the event.
    *
    * @return false for not found
@@ -242,7 +218,6 @@ public abstract class EventActionBase extends BwAbstractAction {
       /* For a public event remove all the suggested information and
        * any topical areas not owned by this suite
        */
-
       evcopy.removeXproperties(BwXproperty.bedeworkSuggestedTo);
       final BwPrincipal p = cl.getPrincipal(
               form.getCurrentCalSuite().getGroup().getOwnerHref());

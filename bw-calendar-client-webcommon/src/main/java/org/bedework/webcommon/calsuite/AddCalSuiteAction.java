@@ -19,15 +19,16 @@
 package org.bedework.webcommon.calsuite;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Add a new calendar suite.
+ * ADMIN ONLY
  *
  * <p>Parameters are:<ul>
  *      <li>"name"             Name of suite</li>
@@ -45,19 +46,16 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class AddCalSuiteAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    String name = request.getReqPar("name");
+    final String name = request.getReqPar("name");
 
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
@@ -69,7 +67,7 @@ public class AddCalSuiteAction extends BwAbstractAction {
       return forwardNotAdded;
     }
 
-    String groupName = request.getReqPar("groupName");
+    final String groupName = request.getReqPar("groupName");
 
     if (groupName == null) {
       form.getErr().emit(ValidationError.missingGroupName);
@@ -77,9 +75,10 @@ public class AddCalSuiteAction extends BwAbstractAction {
       return forwardNotAdded;
     }
 
-    BwCalSuiteWrapper suite = cl.addCalSuite(name, groupName,
-                                      request.getReqPar("calPath"),
-                                      request.getReqPar("subroot"));
+    final BwCalSuiteWrapper suite =
+            cl.addCalSuite(name, groupName,
+                           request.getReqPar("calPath"),
+                           request.getReqPar("subroot"));
     if (suite == null) {
       form.getErr().emit(ClientError.calsuiteNotAdded);
       return forwardNotAdded;

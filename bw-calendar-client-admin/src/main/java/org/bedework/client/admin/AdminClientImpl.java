@@ -16,16 +16,17 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.appcommon.client;
+package org.bedework.client.admin;
 
 import org.bedework.access.Access;
 import org.bedework.access.AccessException;
 import org.bedework.access.Ace;
 import org.bedework.access.AceWho;
 import org.bedework.access.Privilege;
-import org.bedework.appcommon.AdminConfig;
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.ConfigCommon;
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.ClientImpl;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.BwCalendar;
@@ -54,7 +55,8 @@ import java.util.List;
 /**
  * User: douglm Date: 7/3/13 Time: 10:37 AM
  */
-public class AdminClientImpl extends ClientImpl {
+public class AdminClientImpl extends ClientImpl
+        implements AdminClient {
   /** Auth users for list or mod
    */
   private Collection<BwAuthUser> authUsers;
@@ -73,6 +75,10 @@ public class AdminClientImpl extends ClientImpl {
 
   /** User's current group or null. */
   private String adminGroupName;
+
+  /** Hrefs of owners for this calsuite
+   */
+  private static List<String> ownerHrefs;
 
   public AdminClientImpl(final ConfigCommon conf,
                          final String id,
@@ -144,6 +150,11 @@ public class AdminClientImpl extends ClientImpl {
   @Override
   public boolean isGuest() {
     return false;
+  }
+
+  @Override
+  public boolean getAdminGroupMaintOK() {
+    return svci.getAdminDirectories().getGroupMaintOK();
   }
 
   /* ------------------------------------------------------------
@@ -231,15 +242,27 @@ public class AdminClientImpl extends ClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
-  public Collection<BwGroup> findGroupParents(final BwGroup group)
-          throws CalFacadeException {
-    return svci.getAdminDirectories().findGroupParents(group);
+  public String getAdminGroupsIdPrefix() {
+    return svci.getAdminDirectories().getAdminGroupsIdPrefix();
   }
 
   @Override
   public BwGroup getAdminGroup(final String href)
           throws CalFacadeException {
     return (BwGroup)svci.getAdminDirectories().getPrincipal(href);
+  }
+
+  @Override
+  public Collection<BwGroup> getCalsuiteAdminGroups()
+          throws CalFacadeException {
+    refreshAdminGroupInfo();
+
+    return calsuiteAdminGroupsInfo;
+  }
+
+  @Override
+  public void refreshAdminGroups() {
+    lastAdminGroupsInfoRefresh = 0;
   }
 
   @Override
@@ -264,6 +287,17 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   @Override
+  public BwAdminGroup findAdminGroup(final String name) {
+    return (BwAdminGroup)svci.getAdminDirectories().findGroup(name);
+  }
+
+  @Override
+  public void getAdminGroupMembers(final BwAdminGroup group)
+          throws CalFacadeException {
+    svci.getAdminDirectories().getMembers(group);
+  }
+
+  @Override
   public void addAdminGroupMember(final BwAdminGroup group,
                                   final BwPrincipal val)
           throws CalFacadeException {
@@ -280,8 +314,51 @@ public class AdminClientImpl extends ClientImpl {
   }
 
   /* ------------------------------------------------------------
+   *                     Groups
+   * ------------------------------------------------------------ */
+
+  @Override
+  public BwGroup findGroup(final String name) {
+    return svci.getDirectories().findGroup(name);
+  }
+
+  @Override
+  public Collection<BwGroup> findGroupParents(final BwGroup group)
+          throws CalFacadeException {
+    return svci.getDirectories().findGroupParents(group);
+  }
+
+  @Override
+  public Collection<BwGroup> getGroups(final BwPrincipal val)
+          throws CalFacadeException {
+    return svci.getDirectories().getGroups(val);
+  }
+
+  @Override
+  public Collection<BwGroup> getAllGroups(final boolean populate)
+          throws CalFacadeException {
+    return svci.getDirectories().getAll(populate);
+  }
+
+  @Override
+  public void getMembers(final BwGroup group)
+          throws CalFacadeException {
+    svci.getDirectories().getMembers(group);
+  }
+
+  /* ------------------------------------------------------------
    *                     Preferences
    * ------------------------------------------------------------ */
+
+  @Override
+  public BwPreferences getPreferences() {
+    final BwPreferences prefs = getCalsuitePreferences();
+    if (prefs != null) {
+      return prefs;
+    }
+
+    return svci.getPrefsHandler().get();
+  }
 
   @Override
   public BwPreferences getPreferences(final String user) {
@@ -368,6 +445,23 @@ public class AdminClientImpl extends ClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
+  public void setCalSuite(final BwCalSuite cs)
+          throws CalFacadeException {
+    ownerHrefs = new ArrayList<>();
+
+    final BwAdminGroup ag = cs.getGroup();
+    addOwnerHrefs(ag);
+
+    svci.setCalSuite(cs.getName());
+  }
+
+  @Override
+  public BwCalSuiteWrapper getCalSuite(final BwAdminGroup group)
+          throws CalFacadeException {
+    return svci.getCalSuitesHandler().get(group);
+  }
+
+  @Override
   public BwCalSuiteWrapper addCalSuite(final String name,
                                        final String adminGroupName,
                                        final String rootCollectionPath,
@@ -408,18 +502,44 @@ public class AdminClientImpl extends ClientImpl {
     return ownerHrefs.contains(ent.getCreatorHref());
   }
 
-  @Override
-  public UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref,
-                                                     final int limit,
-                                                     final boolean checkOnly,
-                                                     final UpdateFromTimeZonesInfo info)
-          throws CalFacadeException {
-    return svci.updateFromTimeZones(colHref, limit, checkOnly, info);
-  }
-
   /* ------------------------------------------------------------
    *                   Calendar Suite Resources
    * ------------------------------------------------------------ */
+
+  @Override
+  public List<BwResource> getCSResources(final BwCalSuite suite,
+                                         final String rc)
+          throws CalFacadeException {
+    return svci.getResourcesHandler().getAll(getCSResourcesPath(suite,
+                                                                rc));
+  }
+
+  @Override
+  public BwResource getCSResource(final BwCalSuite suite,
+                                  final String name,
+                                  final String rc)
+          throws CalFacadeException {
+    try {
+      final BwResource r = svci.getResourcesHandler().
+              get(Util.buildPath(false,
+                                 getCSResourcesPath(suite, rc),
+                                 "/",
+                                 name));
+      if (r != null) {
+        svci.getResourcesHandler().getContent(r);
+      }
+
+      return r;
+    } catch (final CalFacadeException cfe) {
+      if (CalFacadeException.collectionNotFound.equals(cfe.getMessage())) {
+        // Collection does not exist (yet)
+
+        return null;
+      }
+
+      throw cfe;
+    }
+  }
 
   @Override
   public void addCSResource(final BwCalSuite suite,
@@ -595,5 +715,33 @@ public class AdminClientImpl extends ClientImpl {
     defaultFilterContext = fd.getFilters();
 
     return defaultFilterContext;
+  }
+
+  /* ------------------------------------------------------------
+   *                     Misc
+   * ------------------------------------------------------------ */
+
+  @Override
+  public UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref,
+                                                     final int limit,
+                                                     final boolean checkOnly,
+                                                     final UpdateFromTimeZonesInfo info)
+          throws CalFacadeException {
+    return svci.updateFromTimeZones(colHref, limit, checkOnly, info);
+  }
+
+  private void addOwnerHrefs(final BwAdminGroup ag) throws CalFacadeException {
+    ownerHrefs.add(ag.getOwnerHref());
+
+    getAdminGroupMembers(ag);
+    if (ag.getGroupMembers() == null) {
+      return;
+    }
+
+    for (final BwPrincipal pr: ag.getGroupMembers()) {
+      if (pr instanceof BwAdminGroup) {
+        addOwnerHrefs((BwAdminGroup)pr);
+      }
+    }
   }
 }

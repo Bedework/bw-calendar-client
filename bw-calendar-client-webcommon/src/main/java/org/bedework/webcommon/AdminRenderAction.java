@@ -19,6 +19,7 @@
 package org.bedework.webcommon;
 
 /** This is a no-op action
+ * ADMIN ONLY
  *
  * @author Mike Douglass  douglm - rpi.edu
  */

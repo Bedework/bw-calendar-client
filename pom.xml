@@ -87,6 +87,7 @@
     <module>bw-calendar-client-util</module>
     <module>bw-calendar-client-strutsmodule</module>
     <module>bw-calendar-client-admin</module>
+    <module>bw-calendar-client-rw</module>
   </modules>
 
   <developers>

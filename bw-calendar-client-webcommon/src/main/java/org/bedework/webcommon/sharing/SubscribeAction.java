@@ -19,8 +19,8 @@
 package org.bedework.webcommon.sharing;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
-import org.bedework.calsvci.SharingI;
+import org.bedework.calfacade.svc.SubscribeResult;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -67,7 +67,7 @@ public class SubscribeAction extends BwAbstractAction {
       return forwardError;
     }
 
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     String href = request.getReqPar("colHref");
     String extUrl = null;
@@ -83,7 +83,7 @@ public class SubscribeAction extends BwAbstractAction {
       return forwardError;
     }
 
-    SharingI.SubscribeResult sr;
+    SubscribeResult sr;
 
     if (href != null) {
       sr = cl.subscribe(href, colName);
@@ -95,8 +95,8 @@ public class SubscribeAction extends BwAbstractAction {
                                 request.getReqPar("remotePw"));
     }
 
-    if (sr.alreadySubscribed) {
-      form.getErr().emit(ClientError.alreadySubscribed, sr.path);
+    if (sr.isAlreadySubscribed()) {
+      form.getErr().emit(ClientError.alreadySubscribed, sr.getPath());
     }
 
     cl.flushState();

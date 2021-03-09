@@ -20,9 +20,9 @@ package org.bedework.webcommon.contact;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEventProperty;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -43,7 +43,7 @@ public class UpdateContactAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
      */
@@ -72,7 +72,7 @@ public class UpdateContactAction extends BwAbstractAction {
        category to the database and then retrieve its categoryid.
      */
 
-    BwContact c = form.getContact();
+    final BwContact c = form.getContact();
 
     if (cl.isSuperUser()) {
       final String deleted = request.getReqPar("deleted");
@@ -89,7 +89,7 @@ public class UpdateContactAction extends BwAbstractAction {
         return forwardDuplicate;
       }
 
-      var cres = cl.ensureContactExists(c, null);
+      final var cres = cl.ensureContactExists(c, null);
       if (!cres.isOk()) {
         return forwardRetry;
       }

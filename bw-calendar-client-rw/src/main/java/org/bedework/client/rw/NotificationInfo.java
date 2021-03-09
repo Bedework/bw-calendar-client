@@ -16,9 +16,9 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.appcommon;
+package org.bedework.client.rw;
 
-import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.NotifyResource;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
@@ -59,7 +59,7 @@ public class NotificationInfo implements Logged, Serializable {
    * @param force - get it whatever the tag says
    * @throws CalFacadeException
    */
-  public void refresh(final Client cl,
+  public void refresh(final RWClient cl,
                       final boolean force) throws CalFacadeException {
     if ((lastRefresh != 0) &&
         ((System.currentTimeMillis() - lastRefresh) < minRefresh)) {

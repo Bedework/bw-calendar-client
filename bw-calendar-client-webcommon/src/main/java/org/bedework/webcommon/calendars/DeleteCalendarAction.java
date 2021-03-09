@@ -20,11 +20,11 @@ package org.bedework.webcommon.calendars;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -45,11 +45,11 @@ public class DeleteCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
-    if (cl.isGuest()) {
+    if (request.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
+
+    final RWClient cl = (RWClient)request.getClient();
 
     final String calPath = form.getCalendarPath();
     final BwCalendar cal = cl.getCollection(calPath);

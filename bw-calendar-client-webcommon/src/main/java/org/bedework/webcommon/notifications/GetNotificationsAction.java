@@ -18,8 +18,8 @@
 */
 package org.bedework.webcommon.notifications;
 
-import org.bedework.appcommon.NotificationInfo;
-import org.bedework.appcommon.client.Client;
+import org.bedework.client.rw.NotificationInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -35,14 +35,11 @@ public class GetNotificationsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-    //final HttpServletResponse response = request.getResponse();
-
-    /** Check access
-     */
-    if (cl.isGuest()) {
-      return forwardNoAccess;
+    if (request.isGuest()) {
+      return forwardNoAccess; // First line of defense
     }
+
+    final RWClient cl = (RWClient)request.getClient();
 
     NotificationInfo ni = form.getNotificationInfo();
     if (ni == null) {

@@ -26,7 +26,7 @@ import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.InOutBoxInfo;
-import org.bedework.appcommon.NotificationInfo;
+import org.bedework.client.rw.NotificationInfo;
 import org.bedework.appcommon.SelectId;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;

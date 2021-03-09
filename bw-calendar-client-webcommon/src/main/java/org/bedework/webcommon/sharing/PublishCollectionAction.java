@@ -18,8 +18,8 @@
 */
 package org.bedework.webcommon.sharing;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -46,24 +46,21 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class PublishCollectionAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-//    if (form.getGuest()) {
-  //    return forwardNoAccess; // First line of defence
-    //}
+    if (request.isGuest()) {
+      return forwardNoAccess; // First line of defense
+    }
 
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    BwCalendar col = request.getCollection(false);
+    final BwCalendar col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;
     }
 
-    boolean remove = request.present("remove");
+    final boolean remove = request.present("remove");
 
     if (remove) {
       cl.unpublish(col);

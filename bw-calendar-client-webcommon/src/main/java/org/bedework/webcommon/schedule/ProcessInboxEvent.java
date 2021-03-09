@@ -20,11 +20,11 @@ package org.bedework.webcommon.schedule;
 
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.EventFormatter;
-import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.IcalDefs;
@@ -71,7 +71,7 @@ public class ProcessInboxEvent extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     if (!request.present("calPath")) {
       // Just continue

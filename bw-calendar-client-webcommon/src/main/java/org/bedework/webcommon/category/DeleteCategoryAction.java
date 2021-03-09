@@ -20,8 +20,9 @@ package org.bedework.webcommon.category;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.rw.RWClient.DeleteReffedEntityResult;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -37,15 +38,12 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class DeleteCategoryAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest() ||
         (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
@@ -56,7 +54,7 @@ public class DeleteCategoryAction extends BwAbstractAction {
 
     final BwCategory key = form.getCategory();
 
-    final Client.DeleteReffedEntityResult drer = cl.deleteCategory(key);
+    final DeleteReffedEntityResult drer = cl.deleteCategory(key);
 
     if (drer == null) {
       form.getErr().emit(ClientError.unknownCategory, key);

@@ -74,7 +74,8 @@ public class IcalCallbackcb implements IcalCallback {
 
   @Override
   public void addCategory(final BwCategory val) {
-    cl.addCategory(val);
+    throw new RuntimeException("Read-only");
+    //cl.addCategory(val);
   }
 
   @Override
@@ -89,7 +90,8 @@ public class IcalCallbackcb implements IcalCallback {
 
   @Override
   public void addContact(final BwContact val) {
-    cl.addContact(val);
+    throw new RuntimeException("Read-only");
+    //cl.addContact(val);
   }
 
   @Override
@@ -117,7 +119,8 @@ public class IcalCallbackcb implements IcalCallback {
 
   @Override
   public void addLocation(final BwLocation val) {
-    cl.addLocation(val);
+    throw new RuntimeException("Read-only");
+    //cl.addLocation(val);
   }
 
   @Override

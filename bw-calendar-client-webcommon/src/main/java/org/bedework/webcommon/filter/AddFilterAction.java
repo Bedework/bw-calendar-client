@@ -19,9 +19,9 @@
 package org.bedework.webcommon.filter;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -44,20 +44,16 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class AddFilterAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    /** Check access
-     */
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    if (request.isGuest()) {
+      return forwardNoAccess; // First line of defense
     }
 
-    BwFilterDef fd = new BwFilterDef();
+    final RWClient cl = (RWClient)request.getClient();
+
+    final BwFilterDef fd = new BwFilterDef();
     fd.setName(request.getReqPar("name"));
 
     if (fd.getName() == null) {
@@ -82,7 +78,7 @@ public class AddFilterAction extends BwAbstractAction {
     try {
       cl.validateFilter(fd.getDefinition());
       cl.saveFilter(fd);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       form.getErr().emit(ClientError.badFilter, t.getMessage());
       return forwardNotAdded;
     }

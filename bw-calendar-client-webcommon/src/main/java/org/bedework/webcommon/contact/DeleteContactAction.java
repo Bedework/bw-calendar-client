@@ -21,6 +21,7 @@ package org.bedework.webcommon.contact;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.Client;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -36,15 +37,12 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class DeleteContactAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest() ||
             (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
@@ -55,7 +53,7 @@ public class DeleteContactAction extends BwAbstractAction {
 
     String uid = form.getContact().getUid();
 
-    Client.DeleteReffedEntityResult drer = cl.deleteContact(form.getContact());
+    RWClient.DeleteReffedEntityResult drer = cl.deleteContact(form.getContact());
 
     if (drer == null) {
       form.getErr().emit(ClientError.unknownContact, uid);

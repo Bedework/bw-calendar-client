@@ -19,9 +19,9 @@
 package org.bedework.webcommon.filter;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -42,20 +42,16 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass
  */
 public class DeleteFilterAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    /** Check access
-     */
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    if (request.isGuest()) {
+      return forwardNoAccess; // First line of defense
     }
 
-    String name = request.getReqPar("name");
+    final RWClient cl = (RWClient)request.getClient();
+
+    final String name = request.getReqPar("name");
 
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
@@ -64,7 +60,7 @@ public class DeleteFilterAction extends BwAbstractAction {
 
     try {
       cl.deleteFilter(name);
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       if (cfe.getMessage().equals(CalFacadeException.unknownFilter)) {
         form.getErr().emit(ClientError.unknownFilter, name);
         return forwardNotFound;
@@ -72,7 +68,7 @@ public class DeleteFilterAction extends BwAbstractAction {
 
       form.getErr().emit(cfe);
       return forwardNoAction;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       form.getErr().emit(t);
       return forwardNoAction;
     }

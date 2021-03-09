@@ -20,9 +20,9 @@
 package org.bedework.webcommon.views;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -47,13 +47,13 @@ public class AddViewAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
-    /** Check access
+    /* Check access
      */
-    if (cl.isGuest()) {
+    if (request.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
+
+    final RWClient cl = (RWClient)request.getClient();
 
     final String name = request.getReqPar("name");
 

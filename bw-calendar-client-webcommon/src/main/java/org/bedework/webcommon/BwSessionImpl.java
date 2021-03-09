@@ -44,13 +44,14 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.client.admin.AdminClient;
-import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.struts.Request;
 
 import java.util.ArrayList;
@@ -374,8 +375,9 @@ public class BwSessionImpl implements Logged, BwSession {
 
   @Override
   public void embedAddContentCalendarCollections(final BwRequest request) throws Throwable {
+    final RWClient cl = (RWClient)request.getClient();
     request.setSessionAttr(BwRequest.bwAddContentCollectionListName,
-                       request.getClient().getAddContentCollections(!publicAdmin));
+                       cl.getAddContentCollections(!publicAdmin));
   }
 
   @Override

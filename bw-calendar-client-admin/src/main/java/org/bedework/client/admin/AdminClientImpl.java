@@ -26,7 +26,6 @@ import org.bedework.access.Privilege;
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.ClientImpl;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.BwCalendar;
@@ -41,11 +40,12 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
+import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcFactoryDefault;
-import org.bedework.calfacade.svc.CalSvcIPars;
+import org.bedework.client.rw.RWClientImpl;
 import org.bedework.util.misc.Util;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import java.util.List;
 /**
  * User: douglm Date: 7/3/13 Time: 10:37 AM
  */
-public class AdminClientImpl extends ClientImpl
+public class AdminClientImpl extends RWClientImpl
         implements AdminClient {
   /** Auth users for list or mod
    */
@@ -398,20 +398,6 @@ public class AdminClientImpl extends ClientImpl
   /* ------------------------------------------------------------
    *                     Notifications
    * ------------------------------------------------------------ */
-
-  @Override
-  public NotificationType findNotification(final String name)
-          throws CalFacadeException {
-    return svci.getNotificationsHandler().
-            find(getCalSuite().getGroup().getOwnerHref(),
-                 name);
-  }
-
-  @Override
-  public List<NotificationType> allNotifications()
-          throws CalFacadeException {
-    return svci.getNotificationsHandler().getAll();
-  }
 
   @Override
   public void removeNotification(final String name) {

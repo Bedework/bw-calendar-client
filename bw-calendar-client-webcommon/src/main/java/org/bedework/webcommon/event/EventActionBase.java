@@ -19,6 +19,7 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
@@ -33,6 +34,7 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.RecurringRetrievalMode;
@@ -42,6 +44,8 @@ import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.rw.RWClient;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.IcalDefs;
@@ -218,10 +222,11 @@ public abstract class EventActionBase extends BwAbstractAction {
       /* For a public event remove all the suggested information and
        * any topical areas not owned by this suite
        */
+      final AdminClient adcl = (AdminClient)cl;
       evcopy.removeXproperties(BwXproperty.bedeworkSuggestedTo);
       final BwPrincipal p = cl.getPrincipal(
               form.getCurrentCalSuite().getGroup().getOwnerHref());
-      final BwCalSuite cs = cl.getCalSuite();
+      final BwCalSuite cs = adcl.getCalSuite();
 
       final BwCalendar col = cl.getHome(p, false);
 
@@ -484,8 +489,8 @@ public abstract class EventActionBase extends BwAbstractAction {
 
     vals = request.getReqPars("localizedDescription");
     if (!Util.isEmpty(vals)) {
-      for (String s: vals) {
-        int pos = s.indexOf(":");
+      for (final String s: vals) {
+        final int pos = s.indexOf(":");
 
         String text = null;
         String lang = null;
@@ -510,7 +515,7 @@ public abstract class EventActionBase extends BwAbstractAction {
                                final BwEvent ev,
                                final boolean skipNull,
                                final ChangeTable changes) {
-    BwStringBase evText = ev.findSummary(lang);
+    final BwStringBase<?> evText = ev.findSummary(lang);
 
     if (!eventTextChanged(lang, text, evText, skipNull)) {
       return;
@@ -530,7 +535,7 @@ public abstract class EventActionBase extends BwAbstractAction {
                                    final BwEvent ev,
                                    final boolean skipNull,
                                    final ChangeTable changes) {
-    BwStringBase evText = ev.findDescription(lang);
+    final BwStringBase<?> evText = ev.findDescription(lang);
 
     if (!eventTextChanged(lang, text, evText, skipNull)) {
       return;
@@ -546,7 +551,7 @@ public abstract class EventActionBase extends BwAbstractAction {
   }
 
   private boolean eventTextChanged(final String lang, final String text,
-                                   final BwStringBase evText,
+                                   final BwStringBase<?> evText,
                                    final boolean skipNull) {
     if ((text == null) && skipNull) {
       return false;
@@ -572,10 +577,10 @@ public abstract class EventActionBase extends BwAbstractAction {
    */
   protected boolean adminEventLocation(final BwRequest req,
                                        final EventInfo ei) {
-    BwActionFormBase form = req.getBwForm();
-    Client cl = req.getClient();
-    BwEvent event = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
+    final BwActionFormBase form = req.getBwForm();
+    final RWClient cl = (RWClient)req.getClient();
+    final BwEvent event = ei.getEvent();
+    final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     if (!form.retrieveLocId().getChanged()) {
       /* The location id from the form didn't change so they didn't select from
@@ -584,13 +589,14 @@ public abstract class EventActionBase extends BwAbstractAction {
       if (form.getConfig().getAutoCreateLocations()) {
         BwLocation l = form.getLocation();
 
-        ValidateResult vr = BwWebUtil.validateLocation(form);
+        final ValidateResult vr = BwWebUtil.validateLocation(form);
         if (!vr.ok) {
           return false;
         }
 
-        var lres = cl.ensureLocationExists(l,
-                                           cl.getCurrentPrincipalHref());
+        final var lres =
+                cl.ensureLocationExists(l,
+                                        cl.getCurrentPrincipalHref());
         if (!lres.isOk()) {
           return false;
         }
@@ -637,13 +643,14 @@ public abstract class EventActionBase extends BwAbstractAction {
                                      final EventInfo ei,
                                      final BwActionFormBase form,
                                      final boolean webSubmit) throws Throwable {
-    Client cl = request.getClient();
-    BwEvent ev = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
+    final RWClient cl = (RWClient)request.getClient();
+    final BwEvent ev = ei.getEvent();
+    final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
-    BwLocation loc = getLocation(cl,
-                                 form, ev.getOwnerHref(), webSubmit);
-    BwLocation eloc = ev.getLocation();
+    final BwLocation loc = getLocation(cl,
+                                       form,
+                                       ev.getOwnerHref(), webSubmit);
+    final BwLocation eloc = ev.getLocation();
 
     if ((eloc == null) && (loc == null)) {
       return false;
@@ -659,6 +666,52 @@ public abstract class EventActionBase extends BwAbstractAction {
     return false;
   }
 
+  protected BwLocation getLocation(final RWClient cl,
+                                   final BwActionFormBase form,
+                                   final String owner,
+                                   final boolean webSubmit) throws Throwable {
+    BwLocation loc = null;
+
+    if (!webSubmit) {
+      /* Check for user typing a new location into a text area.
+       */
+      final String a =
+              Util.checkNull(form.getLocationAddress().getValue());
+      if (a != null) {
+        // explicitly provided location overrides all others
+        loc = BwLocation.makeLocation();
+        loc.setAddress(new BwString(null, a));
+      }
+    }
+
+    /* No new location supplied - try to retrieve by uid
+     */
+    if (loc == null) {
+      if (form.getLocationUid() != null) {
+        loc = cl.getPersistentLocation(form.getLocationUid());
+      }
+    }
+
+    if (loc != null) {
+      loc.setLink(Util.checkNull(loc.getLink()));
+      String ownerHref = owner;
+
+      if (ownerHref == null) {
+        ownerHref = cl.getCurrentPrincipalHref();
+      }
+
+      final var cer = cl.ensureLocationExists(loc, ownerHref);
+
+      loc = cer.getEntity();
+
+      if (cer.isAdded()) {
+        form.getMsg().emit(ClientMessage.addedLocations, 1);
+      }
+    }
+
+    return loc;
+  }
+
   /* Validate the contact(s) provided for an event and embed it in the event and
    * the form.
    *
@@ -671,11 +724,11 @@ public abstract class EventActionBase extends BwAbstractAction {
    */
   protected boolean setEventContact(final BwRequest request,
                                     final boolean webSubmit) {
-    Client cl = request.getClient();
-    BwActionFormBase form = request.getBwForm();
-    EventInfo ei = form.getEventInfo();
-    BwEvent event = ei.getEvent();
-    ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
+    final RWClient cl = (RWClient)request.getClient();
+    final BwActionFormBase form = request.getBwForm();
+    final EventInfo ei = form.getEventInfo();
+    final BwEvent event = ei.getEvent();
+    final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
     BwContact c = null;
     String owner = event.getOwnerHref();
@@ -995,7 +1048,8 @@ public abstract class EventActionBase extends BwAbstractAction {
     emsg.setSubject(form.getSnsubject());
     emsg.setContent(form.getSntext());
 
-    request.getClient().postMessage(emsg);
+    final RWClient cl = (RWClient)request.getClient();
+    cl.postMessage(emsg);
 
     return true;
   }

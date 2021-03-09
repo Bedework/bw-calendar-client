@@ -19,8 +19,8 @@
 package org.bedework.webcommon.notifications;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -41,10 +41,10 @@ public class SubscribeAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
     final HttpServletResponse response = request.getResponse();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest()) {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);

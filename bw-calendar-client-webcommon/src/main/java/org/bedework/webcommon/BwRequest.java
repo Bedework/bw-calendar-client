@@ -211,6 +211,10 @@ public class BwRequest extends Request {
     return cl;
   }
 
+  public boolean isGuest() {
+    return getClient().isGuest();
+  }
+
   /**
    * @return BwActionFormBase
    */

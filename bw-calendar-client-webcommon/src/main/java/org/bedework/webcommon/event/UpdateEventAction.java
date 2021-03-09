@@ -41,12 +41,13 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
+import org.bedework.calfacade.svc.RealiasResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
-import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminConfig;
+import org.bedework.client.rw.RWClient;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.sysevents.events.SysEventBase;
@@ -109,7 +110,7 @@ public class UpdateEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     final boolean publicAdmin = cl.getPublicAdmin();
     final boolean submitApp = form.getSubmitApp();
@@ -342,7 +343,7 @@ public class UpdateEventAction extends EventActionBase {
 
     List<SuggestedTo> suggestedTo = null;
 
-    if (eventOwner) {
+    if (publicAdmin && eventOwner) {
       suggestedTo = doSuggested(request, ev, changes);
     }
 
@@ -695,7 +696,7 @@ public class UpdateEventAction extends EventActionBase {
                          !sendInvitations,
                          true);
       } else {
-        ur = cl.updateEvent(ei, !sendInvitations, null);
+        ur = cl.updateEvent(ei, !sendInvitations, null, false);
       }
       if (!ur.isOk()) {
         form.getErr().emit(ur.getMessage());
@@ -709,7 +710,8 @@ public class UpdateEventAction extends EventActionBase {
       form.assignAddingEvent(false);
 
       if (cl.getPublicAdmin()) {
-        final String clearFormPref = cl.getCalsuitePreferences().
+        final AdminClient adcl = (AdminClient)cl;
+        final String clearFormPref = adcl.getCalsuitePreferences().
                 getClearFormsOnSubmit();
 
         if (clearFormPref == null) {
@@ -766,7 +768,8 @@ public class UpdateEventAction extends EventActionBase {
          notification(s).
         */
 
-      final BwCalSuite cs = cl.getCalSuite();
+      final AdminClient adcl = (AdminClient)cl;
+      final BwCalSuite cs = adcl.getCalSuite();
       final String csHref;
 
       if (cs != null) {
@@ -881,7 +884,7 @@ public class UpdateEventAction extends EventActionBase {
   private List<SuggestedTo> doSuggested(final BwRequest request,
                                         final BwEvent ev,
                                         final ChangeTable changes) throws Throwable {
-    final Client cl = request.getClient();
+    final AdminClient cl = (AdminClient)request.getClient();
 
     if (!cl.getPublicAdmin() ||
             !cl.getSystemProperties().getSuggestionEnabled()) {
@@ -970,7 +973,7 @@ public class UpdateEventAction extends EventActionBase {
   }
 
   private void changeOwner(final BwEvent ev,
-                           final Client cl) {
+                           final RWClient cl) {
     cl.claimEvent(ev);
     ev.setCreatorHref(cl.getCurrentPrincipalHref());
   }

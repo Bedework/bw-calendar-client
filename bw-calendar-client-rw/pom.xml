@@ -9,15 +9,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>bw-calendar-client-admin</artifactId>
+  <artifactId>bw-calendar-client-rw</artifactId>
 
   <dependencies>
-    <dependency>
-      <groupId>org.bedework.bwwebcl</groupId>
-      <artifactId>bw-calendar-client-rw</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
       <artifactId>bw-calendar-client-appcommon</artifactId>
@@ -26,12 +20,12 @@
 
     <dependency>
       <groupId>org.bedework</groupId>
-      <artifactId>bw-util-config</artifactId>
+      <artifactId>bw-access</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.bedework</groupId>
-      <artifactId>bw-util-jmx</artifactId>
+      <artifactId>bw-calendar-facade</artifactId>
     </dependency>
   </dependencies>
 
@@ -51,11 +45,19 @@
         </executions>
 
         <configuration>
-          <moduleName>org.bedework.calendar.client.admin</moduleName>
+          <moduleName>org.bedework.calendar.client.rw</moduleName>
 
           <moduleDependencies>
             <moduleDependency>
-              <name>org.bedework.calendar.client.rw</name>
+              <name>org.bedework.calendar.client.appcommon</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.util.config</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.util.jmx</name>
             </moduleDependency>
           </moduleDependencies>
         </configuration>

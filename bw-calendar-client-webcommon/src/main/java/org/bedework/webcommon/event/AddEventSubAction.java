@@ -21,10 +21,10 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.EventKey;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.EventListEntry;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -48,12 +48,12 @@ public class AddEventSubAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    int fwd = addEventSub(request, form);
+    final int fwd = addEventSub(request, form);
     if (fwd != forwardSuccess) {
       return fwd;
     }
 
-    String start = form.getEvent().getDtstart().getDate().substring(0, 8);
+    final String start = form.getEvent().getDtstart().getDate().substring(0, 8);
     gotoDateView(request, start,
                  BedeworkDefs.vtDay);
 
@@ -69,7 +69,7 @@ public class AddEventSubAction extends EventActionBase {
    */
   private int addEventSub(final BwRequest request,
                           final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
      */
@@ -77,21 +77,21 @@ public class AddEventSubAction extends EventActionBase {
       return forwardNoAccess; // First line of defence
     }
 
-    EventKey ekey = form.getEventKey();
+    final EventKey ekey = form.getEventKey();
 
     if (ekey == null) {
       return forwardNoAction;
     }
 
-    EventInfo ei = findEvent(request, ekey);
+    final EventInfo ei = findEvent(request, ekey);
 
     if (ei == null) {
       // Do nothing
       return forwardEventNotFound;
     }
 
-    String subColPath = request.getReqPar("subColPath");
-    BwCalendar col;
+    final String subColPath = request.getReqPar("subColPath");
+    final BwCalendar col;
 
     if (subColPath != null) {
       /* See if the collection exists and is an event list collection */
@@ -115,7 +115,7 @@ public class AddEventSubAction extends EventActionBase {
 
     /* add the href to the collection */
 
-    SortedSet<EventListEntry> refs = col.getEventList();
+    final SortedSet<EventListEntry> refs = col.getEventList();
 
     String href = request.getReqPar("href");
     if (request.getReqPar("recurrenceId") != null) {

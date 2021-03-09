@@ -20,8 +20,9 @@ package org.bedework.webcommon.location;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.rw.RWClient.DeleteReffedEntityResult;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -38,22 +39,19 @@ import org.bedework.webcommon.BwRequest;
  * </ul>
  */
 public class DeleteLocationAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest() ||
         (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
       return forwardNoAccess;
     }
 
-    String uid = form.getLocationUid();
+    final String uid = form.getLocationUid();
 
     if (uid == null) {
       // Do nothing
@@ -62,12 +60,12 @@ public class DeleteLocationAction extends BwAbstractAction {
 
     form.setPropRefs(null);
 
-    var resp = cl.getLocationByUid(uid);
+    final var resp = cl.getLocationByUid(uid);
     if (resp.isNotFound()) {
       return forwardNotFound;
     }
-    BwLocation loc = resp.getEntity();
-    Client.DeleteReffedEntityResult delResult = cl.deleteLocation(loc);
+    final BwLocation loc = resp.getEntity();
+    final DeleteReffedEntityResult delResult = cl.deleteLocation(loc);
 
     if (delResult == null) {
       form.getErr().emit(ClientError.unknownLocation, uid);

@@ -18,13 +18,13 @@
 */
 package org.bedework.webcommon.sharing;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.sharing.AccessType;
 import org.bedework.caldav.util.sharing.RemoveType;
 import org.bedework.caldav.util.sharing.SetType;
 import org.bedework.caldav.util.sharing.ShareType;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -73,50 +73,50 @@ public class ShareCollectionAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-//    if (form.getGuest()) {
-  //    return forwardNoAccess; // First line of defence
-    //}
+    if (request.isGuest()) {
+      return forwardNoAccess; // First line of defense
+    }
 
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    BwCalendar col = request.getCollection(false);
+    final BwCalendar col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;
     }
 
-    String cua = request.getCua(false);
+    final String cua = request.getCua(false);
     if (cua == null) {
       form.getErr().emit(ValidationError.missingRecipients);
       return forwardRetry;
     }
 
-    String calAddr = cl.uriToCaladdr(cua);
+    final String calAddr = cl.uriToCaladdr(cua);
     if (calAddr == null) {
       form.getErr().emit(ValidationError.invalidUser, cua);
       return forwardRetry;
     }
 
-    ShareType share = new ShareType();
+    final ShareType share = new ShareType();
 
     if (request.present("remove")) {
-      RemoveType rem = new RemoveType();
+      final RemoveType rem = new RemoveType();
 
       rem.setHref(calAddr);
 
       share.getRemove().add(rem);
     } else {
-      SetType set = new SetType();
+      final SetType set = new SetType();
 
       set.setHref(calAddr);
 
-      String colName = request.getReqPar("colName");
+      final String colName = request.getReqPar("colName");
       if (colName == null) {
         set.setSummary(col.getSummary());
       } else {
         set.setSummary(colName);
       }
 
-      AccessType at = new AccessType();
+      final AccessType at = new AccessType();
 
       if (form.getGuest()) {
         // No more than read

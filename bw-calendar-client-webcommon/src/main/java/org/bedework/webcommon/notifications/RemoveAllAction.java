@@ -18,9 +18,9 @@
 */
 package org.bedework.webcommon.notifications;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -49,7 +49,7 @@ public class RemoveAllAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
     final HttpServletResponse response = request.getResponse();
 
     if (cl.isGuest()) {

@@ -18,7 +18,6 @@
 */
 package org.bedework.appcommon.client;
 
-import org.bedework.access.Ace;
 import org.bedework.access.PrivilegeDefs;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CollectionCollator;
@@ -26,28 +25,18 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.caldav.util.notifications.NotificationType;
-import org.bedework.caldav.util.sharing.InviteReplyType;
-import org.bedework.caldav.util.sharing.ShareResultType;
-import org.bedework.caldav.util.sharing.ShareType;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.BwDuration;
-import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
-import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwProperty;
-import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.ScheduleResult;
-import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
@@ -58,23 +47,16 @@ import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
-import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
-import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
-import org.bedework.calsvci.EventsI.RealiasResult;
-import org.bedework.calsvci.SchedulingI;
-import org.bedework.calsvci.SharingI;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
@@ -495,11 +477,6 @@ public class ROClientImpl implements Logged, Client {
     return svci.getDirectories().caladdrToPrincipal(cua);
   }
 
-  @Override
-  public void unindex(final String href) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
   /* ------------------------------------------------------------
    *                     Principals
    * ------------------------------------------------------------ */
@@ -758,26 +735,6 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwCalendar addCollection(final BwCalendar val,
-                                  final String parentPath)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void updateCollection(final BwCalendar col)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean deleteCollection(final BwCalendar val,
-                                  final boolean emptyIt)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
   public BwCalendar resolveAlias(final BwCalendar val,
                                  final boolean resolveSubAlias,
                                  final boolean freeBusy)
@@ -849,13 +806,6 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void moveCollection(final BwCalendar val,
-                             final BwCalendar newParent)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
   public SynchStatusResponse getSynchStatus(final String path) throws CalFacadeException {
     return svci.getCalendarsHandler().getSynchStatus(path);
   }
@@ -864,14 +814,6 @@ public class ROClientImpl implements Logged, Client {
   public Collection<BwCalendar> decomposeVirtualPath(final String vpath)
           throws CalFacadeException {
     return svci.getCalendarsHandler().decomposeVirtualPath(vpath);
-  }
-
-  @Override
-  public Collection<BwCalendar> getAddContentCollections(final boolean includeAliases)
-          throws CalFacadeException {
-    checkUpdate();
-    return getCalendarCollator().getCollatedCollection(
-            svci.getCalendarsHandler().getAddContentCollections(includeAliases));
   }
 
   @Override
@@ -954,12 +896,6 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwCategory getPersistentCategory(final String uid)
-          throws CalFacadeException {
-    return svci.getCategoriesHandler().getPersistent(uid);
-  }
-
-  @Override
   public Collection<BwCategory> getCategories()
           throws CalFacadeException {
     checkUpdate();
@@ -978,23 +914,6 @@ public class ROClientImpl implements Logged, Client {
           throws CalFacadeException {
     checkUpdate();
     return svci.getCategoriesHandler().getEditable();
-  }
-
-  @Override
-  public boolean addCategory(final BwCategory val) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void updateCategory(final BwCategory val)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public DeleteReffedEntityResult deleteCategory(final BwCategory val)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
   }
 
   @Override
@@ -1023,12 +942,6 @@ public class ROClientImpl implements Logged, Client {
     final var resp = svci.getContactsHandler().getByUid(uid);
     checkResponse(resp);
     return resp;
-  }
-
-  @Override
-  public BwContact getPersistentContact(final String uid)
-          throws CalFacadeException {
-    return svci.getContactsHandler().getPersistent(uid);
   }
 
   @Override
@@ -1066,29 +979,6 @@ public class ROClientImpl implements Logged, Client {
     return resp;
   }
 
-  @Override
-  public void addContact(final BwContact val) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void updateContact(final BwContact val)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public DeleteReffedEntityResult deleteContact(final BwContact val)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public EnsureEntityExistsResult<BwContact> ensureContactExists(final BwContact val,
-                                                                 final String ownerHref) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
   /* ------------------------------------------------------------
    *                     Locations
    * ------------------------------------------------------------ */
@@ -1099,12 +989,6 @@ public class ROClientImpl implements Logged, Client {
     final var resp = svci.getLocationsHandler().getByUid(uid);
     checkResponse(resp);
     return resp;
-  }
-
-  @Override
-  public BwLocation getPersistentLocation(final String uid)
-          throws CalFacadeException {
-    return svci.getLocationsHandler().getPersistent(uid);
   }
 
   @Override
@@ -1157,42 +1041,9 @@ public class ROClientImpl implements Logged, Client {
     return svci.getLocationsHandler().fetchLocationByKey(name, val);
   }
 
-  @Override
-  public boolean addLocation(final BwLocation val) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void updateLocation(final BwLocation val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public DeleteReffedEntityResult deleteLocation(final BwLocation val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public EnsureEntityExistsResult<BwLocation> ensureLocationExists(final BwLocation val,
-                                                                   final String ownerHref) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
   /* ------------------------------------------------------------
    *                     Events
    * ------------------------------------------------------------ */
-
-  @Override
-  public void claimEvent(final BwEvent ev) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public RealiasResult reAlias(final BwEvent ev) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
 
   @Override
   public GetEntitiesResponse<EventInfo> getEventByUid(final String path,
@@ -1275,258 +1126,6 @@ public class ROClientImpl implements Logged, Client {
                                              rrm);
   }
 
-  @Override
-  public UpdateResult addEvent(final EventInfo ei,
-                                         final boolean noInvites,
-                                         final boolean rollbackOnError) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public UpdateResult updateEvent(final EventInfo ei,
-                                            final boolean noInvites,
-                                            final String fromAttUri) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public UpdateResult updateEvent(final EventInfo ei,
-                                  final boolean noInvites,
-                                  final String fromAttUri,
-                                  final boolean alwaysWrite) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean deleteEvent(final EventInfo ei,
-                             final boolean sendSchedulingMessage)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void markDeleted(final BwEvent event)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  /* ------------------------------------------------------------
-   *                     Notifications
-   * ------------------------------------------------------------ */
-
-  @Override
-  public NotificationType findNotification(final String name)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public List<NotificationType> allNotifications()
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void removeNotification(final String name) {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void removeNotification(final NotificationType val)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void removeAllNotifications(final String PrincipalHref) throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void subscribe(final String principalHref,
-                        final List<String> emails)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void unsubscribe(final String principalHref,
-                          final List<String> emails)
-          throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  /* ------------------------------------------------------------
-   *                     Resources
-   * ------------------------------------------------------------ */
-
-  @Override
-  public void saveResource(final BwResource val) throws CalFacadeException {
-    throw new RuntimeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public BwResource getResource(final String path) throws CalFacadeException {
-    checkUpdate();
-    return svci.getResourcesHandler().get(path);
-  }
-
-  @Override
-  public boolean getResourceContent(final BwResource val)
-          throws CalFacadeException {
-    checkUpdate();
-    try {
-      svci.getResourcesHandler().getContent(val);
-    } catch (final CalFacadeException cfe) {
-      if (CalFacadeException.missingResourceContent.equals(cfe.getMessage())) {
-        return false;
-      }
-      
-      throw cfe;
-    }
-    
-    return true;
-  }
-
-  @Override
-  public List<BwResource> getAllResources(final String path)
-          throws CalFacadeException {
-    checkUpdate();
-    return svci.getResourcesHandler().getAll(path);
-  }
-
-  @Override
-  public List<BwResource> getResources(final String path,
-                                       final int count)
-          throws CalFacadeException {
-    checkUpdate();
-    return svci.getResourcesHandler().get(path, count);
-  }
-
-  @Override
-  public void updateResource(final BwResource val,
-                             final boolean updateContent)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public BwEvent getFreeBusy(final Collection<BwCalendar> fbset,
-                             final BwPrincipal who,
-                             final BwDateTime start,
-                             final BwDateTime end,
-                             final BwOrganizer org,
-                             final String uid,
-                             final String exceptUid)
-          throws CalFacadeException {
-    return svci.getScheduler().getFreeBusy(fbset, who, start, end,
-                                           org, uid, exceptUid);
-  }
-
-  @Override
-  public void setResourceValue(final BwResource val,
-                               final String content) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void setResourceValue(final BwResource val,
-                               final byte[] content) throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  /* ------------------------------------------------------------
-   *                     Scheduling
-   * ------------------------------------------------------------ */
-
-  @Override
-  public SchedulingI.FbResponses aggregateFreeBusy(final ScheduleResult sr,
-                                                   final BwDateTime start,
-                                                   final BwDateTime end,
-                                                   final BwDuration granularity)
-          throws CalFacadeException {
-    return svci.getScheduler().aggregateFreeBusy(sr, start, end, granularity);
-  }
-
-  @Override
-  public ScheduleResult schedule(final EventInfo ei,
-                                 final String recipient,
-                                 final String fromAttUri,
-                                 final boolean iSchedule)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public EventInfo getStoredMeeting(final BwEvent ev)
-          throws CalFacadeException {
-    checkUpdate();
-    return svci.getScheduler().getStoredMeeting(ev);
-  }
-
-  @Override
-  public ScheduleResult requestRefresh(final EventInfo ei,
-                                       final String comment)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  /* ------------------------------------------------------------
-   *                     Sharing
-   * ------------------------------------------------------------ */
-
-  @Override
-  public ShareResultType share(final String principalHref,
-                               final BwCalendar col,
-                               final ShareType share)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void publish(final BwCalendar col)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void unpublish(final BwCalendar col)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public SharingI.ReplyResult sharingReply(final InviteReplyType reply)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public SharingI.SubscribeResult subscribe(final String colPath,
-                                            final String subscribedName)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public SharingI.SubscribeResult subscribeExternal(final String extUrl,
-                                                    final String subscribedName,
-                                                    final int refresh,
-                                                    final String remoteId,
-                                                    final String remotePw)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  /* ------------------------------------------------------------
-   *                     Synch
-   * ------------------------------------------------------------ */
-
-  @Override
-  public BwSynchInfo getSynchInfo() throws CalFacadeException {
-    return svci.getSynch().getSynchInfo();
-  }
-
   /* ------------------------------------------------------------
    *                     Views
    * ------------------------------------------------------------ */
@@ -1561,38 +1160,11 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public boolean addView(final BwView val,
-                         final boolean makeDefault)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
   public Collection<BwView> getAllViews() throws CalFacadeException {
     if (getPublicAuth() && (getCurrentCalSuiteOwner() != null)) {
       return svci.getViewsHandler().getAll(getCurrentCalSuiteOwner());
     }
     return svci.getViewsHandler().getAll();
-  }
-
-  @Override
-  public boolean addViewCollection(final String name,
-                                   final String path)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean removeViewCollection(final String name,
-                                      final String path)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public boolean removeView(final BwView val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   /* ------------------------------------------------------------
@@ -1604,21 +1176,8 @@ public class ROClientImpl implements Logged, Client {
   }
 
   /* ------------------------------------------------------------
-   *                     Misc
+   *                     Search
    * ------------------------------------------------------------ */
-
-  @Override
-  public void moveContents(final BwCalendar cal,
-                           final BwCalendar newCal)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void postMessage(final Message val)
-          throws CalFacadeException {
-    svci.getMailer().post(val);
-  }
 
   @Override
   public void clearSearch() {
@@ -1711,14 +1270,6 @@ public class ROClientImpl implements Logged, Client {
             getSearchResult(lastSearch, start, num, PrivilegeDefs.privRead));
   }
 
-  @Override
-  public void changeAccess(final BwShareableDbentity<?> ent,
-                           final Collection<Ace> aces,
-                           final boolean replaceAll)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
   /* ------------------------------------------------------------
    *                   Calendar Suites
    * ------------------------------------------------------------ */
@@ -1771,24 +1322,6 @@ public class ROClientImpl implements Logged, Client {
   public Collection<BwFilterDef> getAllFilters()
           throws CalFacadeException {
     return svci.getFiltersHandler().getAll();
-  }
-
-  @Override
-  public void validateFilter(final String val)
-          throws CalFacadeException {
-    svci.getFiltersHandler().validate(val);
-  }
-
-  @Override
-  public void saveFilter(final BwFilterDef val)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
-  }
-
-  @Override
-  public void deleteFilter(final String name)
-          throws CalFacadeException {
-    throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   /* ------------------------------------------------------------

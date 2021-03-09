@@ -22,14 +22,14 @@ import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.util.misc.response.Response;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.misc.Util;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.xml.tagdefs.WebdavTags;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -64,7 +64,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence

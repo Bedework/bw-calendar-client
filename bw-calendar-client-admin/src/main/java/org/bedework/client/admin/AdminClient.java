@@ -3,7 +3,6 @@
 */
 package org.bedework.client.admin;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
@@ -14,6 +13,7 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
+import org.bedework.client.rw.RWClient;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * User: mike Date: 3/7/21 Time: 16:50
  */
-public interface AdminClient extends Client {
+public interface AdminClient extends RWClient {
   /** Show whether admin group maintenance is available.
    * Some sites may use other mechanisms.
    *

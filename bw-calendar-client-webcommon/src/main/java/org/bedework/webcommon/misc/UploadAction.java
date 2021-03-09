@@ -20,7 +20,6 @@ package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwCalendar;
@@ -30,6 +29,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
+import org.bedework.client.rw.RWClient;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
@@ -64,9 +64,6 @@ import java.util.Set;
  * </ul>
  */
 public class UploadAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @SuppressWarnings("rawtypes")
   @Override
   public int doAction(final BwRequest request,
@@ -75,34 +72,34 @@ public class UploadAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    String transparency = request.getReqPar("transparency");
+    final String transparency = request.getReqPar("transparency");
     if (!BwWebUtil.checkTransparency(transparency)) {
       form.getErr().emit(ValidationError.invalidTransparency, transparency);
       return forwardRetry;
     }
 
-    String status = request.getReqPar("status");
+    final String status = request.getReqPar("status");
     if (!BwWebUtil.checkStatus(status)) {
       form.getErr().emit(ValidationError.invalidStatus, status);
       return forwardRetry;
     }
 
-    boolean stripAlarms = request.getBooleanReqPar("stripAlarms", false);
+    final boolean stripAlarms = request.getBooleanReqPar("stripAlarms", false);
 
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    Map<String, String> paths = new HashMap<>();
+    final Map<String, String> paths = new HashMap<>();
 
-    String newCalPath = request.getReqPar("newCalPath");
+    final String newCalPath = request.getReqPar("newCalPath");
 
-    FormFile upFile = form.getUploadFile();
+    final FormFile upFile = form.getUploadFile();
 
     if (upFile == null) {
       // Just forget it
       return forwardSuccess;
     }
 
-    String fileName = upFile.getFileName();
+    final String fileName = upFile.getFileName();
 
     if ((fileName == null) || (fileName.length() == 0)) {
       form.getErr().emit(ClientError.missingFileName, 1);
@@ -118,13 +115,13 @@ public class UploadAction extends BwAbstractAction {
     try {
       // To catch some of the parser errors
 
-      InputStream is = upFile.getInputStream();
+      final InputStream is = upFile.getInputStream();
 
-      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
+      final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
-      Icalendar ic = trans.fromIcal(null, new InputStreamReader(is));
+      final Icalendar ic = trans.fromIcal(null, new InputStreamReader(is));
 
-      int method = ic.getMethodType();
+      final int method = ic.getMethodType();
 
       if (!cl.getPublicAdmin() &&
           (method != ScheduleMethods.methodTypePublish) &&
@@ -133,20 +130,20 @@ public class UploadAction extends BwAbstractAction {
         return importScheduleMessage(request, ic, null, stripAlarms);
       }
 
-      Collection<AddEventResult> aers = new ArrayList<>();
+      final Collection<AddEventResult> aers = new ArrayList<>();
       form.setAddEventResults(aers);
 
-      Iterator it = ic.iterator();
+      final Iterator it = ic.iterator();
 
       while (it.hasNext()) {
-        Object o = it.next();
+        final Object o = it.next();
 
         if (!(o instanceof EventInfo)) {
           continue;
         }
 
-        EventInfo ei = (EventInfo)o;
-        BwEvent ev = ei.getEvent();
+        final EventInfo ei = (EventInfo)o;
+        final BwEvent ev = ei.getEvent();
 
         /* Make up a unique name for the event. */
         ev.setName(ev.getUid() + ".ics");
@@ -160,7 +157,7 @@ public class UploadAction extends BwAbstractAction {
         }
 
         if (stripAlarms) {
-          Set<BwAlarm> alarms = ev.getAlarms();
+          final Set<BwAlarm> alarms = ev.getAlarms();
           if (alarms != null) {
             alarms.clear();
           }
@@ -178,7 +175,8 @@ public class UploadAction extends BwAbstractAction {
 
           ev.setColPath(col.getPath());
         } else {
-          String icalName = IcalDefs.entityTypeIcalNames[ev.getEntityType()];
+          final String icalName =
+                  IcalDefs.entityTypeIcalNames[ev.getEntityType()];
 
           String path = paths.get(icalName);
 
@@ -204,11 +202,12 @@ public class UploadAction extends BwAbstractAction {
         ev.setScheduleMethod(ScheduleMethods.methodTypeNone);
 
         if (ei.getNewEvent()) {
-          UpdateResult eur = cl.addEvent(ei, true,
-                                         false);
+          final UpdateResult eur = cl.addEvent(ei, true,
+                                               false);
 
-          AddEventResult aer = new AddEventResult(ev,
-                                                  eur.failedOverrides);
+          final AddEventResult aer =
+                  new AddEventResult(ev,
+                                     eur.failedOverrides);
           aers.add(aer);
 
           if (eur.failedOverrides != null) {
@@ -225,7 +224,8 @@ public class UploadAction extends BwAbstractAction {
             form.getErr().emit(cfe.getMessage(), cfe.getExtra());
           }*/
         } else {
-          var ueres = cl.updateEvent(ei, false, null);
+          final var ueres =
+                  cl.updateEvent(ei, false, null, false);
           if (!ueres.isOk()) {
             form.getErr().emit(ueres.getMessage());
             return forwardError;
@@ -233,13 +233,13 @@ public class UploadAction extends BwAbstractAction {
           numEventsUpdated++;
         }
       }
-    } catch (CalFacadeException cfe) {
+    } catch (final CalFacadeException cfe) {
       if (debug()) {
         cfe.printStackTrace();
       }
       form.getErr().emit(cfe.getMessage(), cfe.getExtra());
       return forwardBadData;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       t.printStackTrace();
       throw t;
     }
@@ -258,7 +258,7 @@ public class UploadAction extends BwAbstractAction {
                                     final Icalendar ic,
                                     final BwCalendar cal,
                                     final boolean stripAlarms) {
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     // Scheduling method - should contain a single entity
 
@@ -268,8 +268,8 @@ public class UploadAction extends BwAbstractAction {
     }
 
     @SuppressWarnings("rawtypes")
-    Iterator it = ic.iterator();
-    Object o = it.next();
+    final Iterator it = ic.iterator();
+    final Object o = it.next();
 
     if (o instanceof EventInfo) {
       EventInfo ei = (EventInfo)o;
@@ -278,18 +278,18 @@ public class UploadAction extends BwAbstractAction {
        * default calendar.
        */
       // RECUR - don't think cloning works for recurrences
-      BwEvent ev = (BwEvent)ei.getEvent().clone();
+      final BwEvent ev = (BwEvent)ei.getEvent().clone();
 
-      BwOrganizer org = ev.getOrganizer();
+      final BwOrganizer org = ev.getOrganizer();
 
       if (org == null) {
         request.getErr().emit(ValidationError.missingOrganizer);
         return forwardRetry;
       }
 
-      String userUri = cl.getCurrentCalendarAddress();
+      final String userUri = cl.getCurrentCalendarAddress();
 
-      boolean isOrganizer = userUri.equals(org.getOrganizerUri());
+      final boolean isOrganizer = userUri.equals(org.getOrganizerUri());
       ev.setOrganizerSchedulingObject(isOrganizer);
       ev.setAttendeeSchedulingObject(!isOrganizer);
 
@@ -305,7 +305,7 @@ public class UploadAction extends BwAbstractAction {
       ei = new EventInfo(ev); // RECUR - see above
 
       if (stripAlarms) {
-        Set<BwAlarm> alarms = ev.getAlarms();
+        final Set<BwAlarm> alarms = ev.getAlarms();
         if (alarms != null) {
           alarms.clear();
         }

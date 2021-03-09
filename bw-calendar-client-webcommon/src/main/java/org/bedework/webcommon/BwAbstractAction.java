@@ -27,10 +27,9 @@ import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.MyCalendarVO;
-import org.bedework.appcommon.NotificationInfo;
+import org.bedework.client.rw.NotificationInfo;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.ClientImpl;
 import org.bedework.appcommon.client.ROClientImpl;
 import org.bedework.appcommon.client.SearchParams;
 import org.bedework.caldav.util.filter.FilterBase;
@@ -40,10 +39,8 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
-import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.ScheduleResult;
@@ -69,6 +66,8 @@ import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminClientImpl;
 import org.bedework.client.admin.AdminConfig;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.rw.RWClientImpl;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleStates;
 import org.bedework.util.calendar.XcalUtil;
@@ -362,25 +361,29 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardCancelled];
     }
 
-    if (!cl.getPublicAdmin() && !form.getGuest()) {
-      InOutBoxInfo ib = form.getInBoxInfo();
-      if (ib == null) {
-        ib = new InOutBoxInfo(cl, true);
-        form.setInBoxInfo(ib);
-      } else {
-        ib.refresh(cl, false);
-      }
-    }
+    if (!form.getGuest()) {
+      final RWClient rwcl = (RWClient)cl;
 
-    if (!form.getGuest() &&
-            (!cl.getPublicAdmin() || ((AdminClient)cl).getGroupSet())) {
-      NotificationInfo ni = form.getNotificationInfo();
-      if (ni == null) {
-        ni = new NotificationInfo();
-        form.setNotificationInfo(ni);
+      if (!cl.getPublicAdmin()) {
+        InOutBoxInfo ib = form.getInBoxInfo();
+        if (ib == null) {
+          ib = new InOutBoxInfo(cl, true);
+          form.setInBoxInfo(ib);
+        } else {
+          ib.refresh(cl, false);
+        }
       }
 
-      ni.refresh(cl, false);
+      if ((!cl.getPublicAdmin() ||
+                   ((AdminClient)cl).getGroupSet())) {
+        NotificationInfo ni = form.getNotificationInfo();
+        if (ni == null) {
+          ni = new NotificationInfo();
+          form.setNotificationInfo(ni);
+        }
+
+        ni.refresh(rwcl, false);
+      }
     }
 
     String forward;
@@ -869,7 +872,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
           final Set<BwCategory> extraCats,
           final CategorisedEntity ent,
           final ChangeTable changes) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     // XXX We should use the change table code for this.
     final SetEntityCategoriesResult secr = new SetEntityCategoriesResult();
@@ -1093,7 +1096,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                         final String et,
                         final String intunitStr,
                         final int interval) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
     final BwModuleState mstate = request.getModule().getState();
 
     /*  Start of getting date/time - make a common method? */
@@ -1310,52 +1313,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return ev;
   }
 
-  protected BwLocation getLocation(final Client cl,
-                                   final BwActionFormBase form,
-                                   final String owner,
-                                   final boolean webSubmit) throws Throwable {
-    BwLocation loc = null;
-
-    if (!webSubmit) {
-      /* Check for user typing a new location into a text area.
-       */
-      final String a =
-              Util.checkNull(form.getLocationAddress().getValue());
-      if (a != null) {
-        // explicitly provided location overrides all others
-        loc = BwLocation.makeLocation();
-        loc.setAddress(new BwString(null, a));
-      }
-    }
-
-    /* No new location supplied - try to retrieve by uid
-     */
-    if (loc == null) {
-      if (form.getLocationUid() != null) {
-        loc = cl.getPersistentLocation(form.getLocationUid());
-      }
-    }
-
-    if (loc != null) {
-      loc.setLink(Util.checkNull(loc.getLink()));
-      String ownerHref = owner;
-
-      if (ownerHref == null) {
-        ownerHref = cl.getCurrentPrincipalHref();
-      }
-
-      final var cer = cl.ensureLocationExists(loc, ownerHref);
-
-      loc = cer.getEntity();
-
-      if (cer.added) {
-        form.getMsg().emit(ClientMessage.addedLocations, 1);
-      }
-    }
-
-    return loc;
-  }
-
   protected BwCalendar findCalendar(final BwRequest request,
                                     final String url) throws CalFacadeException {
     if (url == null) {
@@ -1393,7 +1350,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   protected ProcessedImage processImage(final BwRequest request,
                                         final FormFile file) {
     final ProcessedImage pi = new ProcessedImage();
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     try {
       final long maxSize = cl.getUserMaxEntitySize();
@@ -2092,11 +2049,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                        user,
                                        calSuiteName);
         } else if (readWrite) {
-          client = new ClientImpl(conf,
-                                  module.getModuleName(),
-                                  form.getCurrentUser(),
-                                  user,
-                                  form.getAppType());
+          client = new RWClientImpl(conf,
+                                    module.getModuleName(),
+                                    form.getCurrentUser(),
+                                    user,
+                                    form.getAppType());
         } else {
           client = new ROClientImpl(conf,
                                     module.getModuleName(),

@@ -16,10 +16,12 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.appcommon.client;
+package org.bedework.client.rw;
 
 import org.bedework.access.Ace;
 import org.bedework.appcommon.ConfigCommon;
+import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.ROClientImpl;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
@@ -28,9 +30,12 @@ import org.bedework.caldav.util.sharing.ShareType;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
+import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwLocation;
+import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
@@ -39,18 +44,23 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.indexing.BwIndexer;
+import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
+import org.bedework.calfacade.svc.CalSvcIPars;
+import org.bedework.calfacade.svc.EnsureEntityExistsResult;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
+import org.bedework.calfacade.svc.RealiasResult;
+import org.bedework.calfacade.svc.SharingReplyResult;
+import org.bedework.calfacade.svc.SubscribeResult;
+import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.CalSvcFactoryDefault;
-import org.bedework.calfacade.svc.CalSvcIPars;
 import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.Contacts;
-import org.bedework.calsvci.EventProperties.EnsureEntityExistsResult;
-import org.bedework.calsvci.EventsI.RealiasResult;
 import org.bedework.calsvci.Locations;
-import org.bedework.calsvci.SharingI;
+import org.bedework.calsvci.SchedulingI;
 import org.bedework.util.misc.response.Response;
 
 import java.nio.charset.StandardCharsets;
@@ -59,27 +69,27 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.includeDeleted;
-import static org.bedework.calfacade.indexing.BwIndexer.docTypeEvent;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:05 PM
  */
-public class ClientImpl extends ROClientImpl {
+public class RWClientImpl extends ROClientImpl
+        implements RWClient {
   protected boolean defaultFilterContextSet;
   protected FilterBase defaultFilterContext;
 
-  public ClientImpl(final ConfigCommon conf,
-                    final String id,
-                    final String authUser,
-                    final String runAsUser,
-                    final String appType) {
+  public RWClientImpl(final ConfigCommon conf,
+                      final String id,
+                      final String authUser,
+                      final String runAsUser,
+                      final String appType) {
     this(conf, id);
 
     reinit(authUser, runAsUser, appType);
   }
 
-  protected ClientImpl(final ConfigCommon conf,
-                       final String id) {
+  protected RWClientImpl(final ConfigCommon conf,
+                         final String id) {
     super(conf, id);
   }
 
@@ -111,7 +121,7 @@ public class ClientImpl extends ROClientImpl {
 
   @Override
   public Client copy(final String id) {
-    final ClientImpl cl = new ClientImpl(conf, id);
+    final RWClientImpl cl = new RWClientImpl(conf, id);
 
     copyCommon(id, cl);
 
@@ -121,7 +131,7 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public void unindex(final String href) throws CalFacadeException {
     getIndexer(isDefaultIndexPublic(),
-               docTypeEvent).unindexEntity(href);
+               BwIndexer.docTypeEvent).unindexEntity(href);
   }
 
   /* ------------------------------------------------------------
@@ -216,9 +226,23 @@ public class ClientImpl extends ROClientImpl {
     }
   }
 
+  @Override
+  public Collection<BwCalendar> getAddContentCollections(final boolean includeAliases)
+          throws CalFacadeException {
+    checkUpdate();
+    return getCalendarCollator().getCollatedCollection(
+            svci.getCalendarsHandler().getAddContentCollections(includeAliases));
+  }
+
   /* ------------------------------------------------------------
    *                     Categories
    * ------------------------------------------------------------ */
+
+  @Override
+  public BwCategory getPersistentCategory(final String uid)
+          throws CalFacadeException {
+    return svci.getCategoriesHandler().getPersistent(uid);
+  }
 
   @Override
   public boolean addCategory(final BwCategory val) {
@@ -297,6 +321,12 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
+  public BwContact getPersistentContact(final String uid)
+          throws CalFacadeException {
+    return svci.getContactsHandler().getPersistent(uid);
+  }
+
+  @Override
   public void addContact(final BwContact val) {
     svci.getContactsHandler().add(val);
     updated();
@@ -355,6 +385,12 @@ public class ClientImpl extends ROClientImpl {
   /* ------------------------------------------------------------
    *                     Locations
    * ------------------------------------------------------------ */
+
+  @Override
+  public BwLocation getPersistentLocation(final String uid)
+          throws CalFacadeException {
+    return svci.getLocationsHandler().getPersistent(uid);
+  }
 
   @Override
   public boolean addLocation(final BwLocation val) {
@@ -440,23 +476,13 @@ public class ClientImpl extends ROClientImpl {
   @Override
   public UpdateResult updateEvent(final EventInfo ei,
                                   final boolean noInvites,
-                                  final String fromAttUri) {
-    return update(svci.getEventsHandler().update(ei,
-                                                 noInvites,
-                                                 fromAttUri,
-                                                 false)); // autocreate
-  }
-
-  @Override
-  public UpdateResult updateEvent(final EventInfo ei,
-                                  final boolean noInvites,
                                   final String fromAttUri,
                                   final boolean alwaysWrite) {
     return update(svci.getEventsHandler().update(ei,
                                                  noInvites,
                                                  fromAttUri,
                                                  alwaysWrite,
-                                                 true,
+                                                 true, // it's a client
                                                  false)); // autocreate
   }
 
@@ -478,6 +504,26 @@ public class ClientImpl extends ROClientImpl {
   /* ------------------------------------------------------------
    *                     Notifications
    * ------------------------------------------------------------ */
+
+  @Override
+  public NotificationType findNotification(final String name)
+          throws CalFacadeException {
+    return svci.getNotificationsHandler().
+            find(getCurrentPrincipal().getPrincipalRef(),
+                 name);
+  }
+
+  @Override
+  public void removeNotification(final String name) {
+    try {
+      svci.getNotificationsHandler().
+              remove(getCurrentPrincipal().getPrincipalRef(),
+                     name);
+    } catch (final CalFacadeException e) {
+      throw new RuntimeException(e);
+    }
+    updated();
+  }
 
   @Override
   public void removeNotification(final NotificationType val)
@@ -509,6 +555,44 @@ public class ClientImpl extends ROClientImpl {
   /* ------------------------------------------------------------
    *                     Resources
    * ------------------------------------------------------------ */
+
+  @Override
+  public BwResource getResource(final String path) throws CalFacadeException {
+    checkUpdate();
+    return svci.getResourcesHandler().get(path);
+  }
+
+  @Override
+  public boolean getResourceContent(final BwResource val)
+          throws CalFacadeException {
+    checkUpdate();
+    try {
+      svci.getResourcesHandler().getContent(val);
+    } catch (final CalFacadeException cfe) {
+      if (CalFacadeException.missingResourceContent.equals(cfe.getMessage())) {
+        return false;
+      }
+
+      throw cfe;
+    }
+
+    return true;
+  }
+
+  @Override
+  public List<BwResource> getAllResources(final String path)
+          throws CalFacadeException {
+    checkUpdate();
+    return svci.getResourcesHandler().getAll(path);
+  }
+
+  @Override
+  public List<BwResource> getResources(final String path,
+                                       final int count)
+          throws CalFacadeException {
+    checkUpdate();
+    return svci.getResourcesHandler().get(path, count);
+  }
 
   @Override
   public void saveResource(final BwResource val) throws CalFacadeException {
@@ -553,6 +637,28 @@ public class ClientImpl extends ROClientImpl {
    * ------------------------------------------------------------ */
 
   @Override
+  public BwEvent getFreeBusy(final Collection<BwCalendar> fbset,
+                             final BwPrincipal who,
+                             final BwDateTime start,
+                             final BwDateTime end,
+                             final BwOrganizer org,
+                             final String uid,
+                             final String exceptUid)
+          throws CalFacadeException {
+    return svci.getScheduler().getFreeBusy(fbset, who, start, end,
+                                           org, uid, exceptUid);
+  }
+
+  @Override
+  public SchedulingI.FbResponses aggregateFreeBusy(final ScheduleResult sr,
+                                                   final BwDateTime start,
+                                                   final BwDateTime end,
+                                                   final BwDuration granularity)
+          throws CalFacadeException {
+    return svci.getScheduler().aggregateFreeBusy(sr, start, end, granularity);
+  }
+
+  @Override
   public ScheduleResult schedule(final EventInfo ei,
                                  final String recipient,
                                  final String fromAttUri,
@@ -562,6 +668,13 @@ public class ClientImpl extends ROClientImpl {
                                                recipient,
                                                fromAttUri,
                                                iSchedule));
+  }
+
+  @Override
+  public EventInfo getStoredMeeting(final BwEvent ev)
+          throws CalFacadeException {
+    checkUpdate();
+    return svci.getScheduler().getStoredMeeting(ev);
   }
 
   @Override
@@ -598,31 +711,40 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
-  public SharingI.ReplyResult sharingReply(final InviteReplyType reply)
+  public SharingReplyResult sharingReply(final InviteReplyType reply)
           throws CalFacadeException {
     return update(svci.getSharingHandler().reply(getHome(), reply));
   }
 
   @Override
-  public SharingI.SubscribeResult subscribe(final String colPath,
-                                            final String subscribedName)
+  public SubscribeResult subscribe(final String colPath,
+                                   final String subscribedName)
           throws CalFacadeException {
     return update(svci.getSharingHandler().subscribe(colPath,
                                                      subscribedName));
   }
 
   @Override
-  public SharingI.SubscribeResult subscribeExternal(final String extUrl,
-                                                    final String subscribedName,
-                                                    final int refresh,
-                                                    final String remoteId,
-                                                    final String remotePw)
+  public SubscribeResult subscribeExternal(final String extUrl,
+                                           final String subscribedName,
+                                           final int refresh,
+                                           final String remoteId,
+                                           final String remotePw)
           throws CalFacadeException {
     return update(svci.getSharingHandler().subscribeExternal(extUrl,
                                                       subscribedName,
                                                       refresh,
                                                       remoteId,
                                                       remotePw));
+  }
+
+  /* ------------------------------------------------------------
+   *                     Synch
+   * ------------------------------------------------------------ */
+
+  @Override
+  public BwSynchInfo getSynchInfo() throws CalFacadeException {
+    return svci.getSynch().getSynchInfo();
   }
 
   /* ------------------------------------------------------------
@@ -656,6 +778,10 @@ public class ClientImpl extends ROClientImpl {
           throws CalFacadeException {
     return update(svci.getViewsHandler().remove(val));
   }
+
+  /* ------------------------------------------------------------
+   *                     Misc
+   * ------------------------------------------------------------ */
 
   @Override
   public void moveContents(final BwCalendar cal,
@@ -692,6 +818,16 @@ public class ClientImpl extends ROClientImpl {
   }
 
   @Override
+  public void postMessage(final Message val)
+          throws CalFacadeException {
+    svci.getMailer().post(val);
+  }
+
+  /* ------------------------------------------------------------
+   *                   Access
+   * ------------------------------------------------------------ */
+
+  @Override
   public void changeAccess(final BwShareableDbentity<?> ent,
                            final Collection<Ace> aces,
                            final boolean replaceAll)
@@ -703,6 +839,12 @@ public class ClientImpl extends ROClientImpl {
   /* ------------------------------------------------------------
    *                   Filters
    * ------------------------------------------------------------ */
+
+  @Override
+  public void validateFilter(final String val)
+          throws CalFacadeException {
+    svci.getFiltersHandler().validate(val);
+  }
 
   @Override
   public void saveFilter(final BwFilterDef val)

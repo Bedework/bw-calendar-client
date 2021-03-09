@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon.misc;
 
-import org.bedework.appcommon.client.Client;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -29,9 +29,9 @@ import org.bedework.webcommon.BwRequest;
  */
 public class UnindexAction extends BwAbstractAction {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
      */

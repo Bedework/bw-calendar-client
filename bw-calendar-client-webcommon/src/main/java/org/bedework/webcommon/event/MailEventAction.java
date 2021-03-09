@@ -20,12 +20,12 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.mail.ObjectAttachment;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.misc.Util;
@@ -45,21 +45,22 @@ import net.fortuna.ical4j.model.Calendar;
  * </ul>
  */
 public class MailEventAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    EventInfo ei = form.getEventInfo();
+    if (request.isGuest()) {
+      return forwardNoAccess; // First line of defense
+    }
+
+    final EventInfo ei = form.getEventInfo();
 
     if (ei == null) {
       return forwardNoAction;
     }
 
-    BwEvent ev = ei.getEvent();
+    final BwEvent ev = ei.getEvent();
 
-    String recipient = request.getReqPar("lastEmail");
+    final String recipient = request.getReqPar("lastEmail");
     if (recipient == null) {
       request.getErr().emit(ClientError.mailNoRecipient, 1);
       return forwardRetry;
@@ -70,18 +71,19 @@ public class MailEventAction extends BwAbstractAction {
       subject = ev.getSummary();
     }
 
-    Message emsg = new Message();
-    String[] to = new String[]{recipient};
+    final Message emsg = new Message();
+    final String[] to = new String[]{recipient};
 
     emsg.setMailTo(to);
     emsg.setSubject(ev.getSummary());
 
-    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(request.getClient()));
+    final IcalTranslator trans =
+            new IcalTranslator(new IcalCallbackcb(request.getClient()));
 
-    Calendar cal = trans.toIcal(ei, Icalendar.methodTypePublish);
+    final Calendar cal = trans.toIcal(ei, Icalendar.methodTypePublish);
     mailMessage(emsg, cal.toString(),
                 "event.ics", "text/calendar",
-                request.getClient());
+                (RWClient)request.getClient());
 
     form.getMsg().emit(ClientMessage.mailedEvent);
 
@@ -98,15 +100,15 @@ public class MailEventAction extends BwAbstractAction {
    * @param att      String val to attach - e.g event, todo
    * @param name     name for attachment
    * @param type     mimetype for attachment
-   * @param cl
-   * @throws Throwable
+   * @param cl       read-write client
+   * @throws Throwable on fatal error
    */
   private void mailMessage(final Message val,
                            final String att,
                            final String name,
                            final String type,
-                           final Client cl) throws Throwable {
-    ObjectAttachment oa = new ObjectAttachment();
+                           final RWClient cl) throws Throwable {
+    final ObjectAttachment oa = new ObjectAttachment();
 
     oa.setOriginalName(name);
     oa.setVal(att);

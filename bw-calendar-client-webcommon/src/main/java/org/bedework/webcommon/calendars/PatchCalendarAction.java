@@ -18,8 +18,8 @@
 */
 package org.bedework.webcommon.calendars;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -44,12 +44,10 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class PatchCalendarAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwActionFormBase form) throws Throwable {
+    final RWClient cl = (RWClient)request.getClient();
 
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
@@ -62,7 +60,7 @@ public class PatchCalendarAction extends BwAbstractAction {
 
     boolean changed = false;
 
-    BwCalendar cal = request.getCalendar(false);
+    final BwCalendar cal = request.getCalendar(false);
     if (cal == null) {
       return forwardNotFound;
     }

@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.schedule;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.ParseUtil;
 import org.bedework.caldav.util.TimeRange;
 import org.bedework.calfacade.BwAttendee;
@@ -30,6 +29,7 @@ import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.json.JsonUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -67,19 +67,22 @@ import javax.servlet.http.HttpServletResponse;
  * @author Mike Douglass douglm   rpi.edu
  */
 public class RequestFreeBusy extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    if (request.isGuest()) {
+      request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
+
+      return forwardNull;
+    }
+
     try {
-      Client cl = request.getClient();
+      final RWClient cl = (RWClient)request.getClient();
 
-      Collection<String> attendees = request.getReqPars("attendeeUri");
-      Set<String> attendeeUris = new TreeSet<>();
+      final Collection<String> attendees = request.getReqPars("attendeeUri");
+      final Set<String> attendeeUris = new TreeSet<>();
 
-      for (String att: attendees) {
+      for (final String att: attendees) {
         attendeeUris.add(cl.uriToCaladdr(att));
       }
 
@@ -89,7 +92,7 @@ public class RequestFreeBusy extends BwAbstractAction {
         orgUri = cl.getCurrentCalendarAddress();
       }
 
-      AuthProperties authp = request.getSess().getAuthpars();
+      final AuthProperties authp = request.getSess().getAuthpars();
 
       int max = 0;
 
@@ -97,36 +100,36 @@ public class RequestFreeBusy extends BwAbstractAction {
         max = authp.getMaxFBPeriod();
       }
 
-      TimeRange tr = ParseUtil.getPeriod(request.getReqPar("start"),
-                                         request.getReqPar("end"),
-                                         Calendar.DATE,
-                                         authp.getDefaultFBPeriod(),
-                                         Calendar.DATE,
-                                         max);
+      final TimeRange tr = ParseUtil.getPeriod(request.getReqPar("start"),
+                                               request.getReqPar("end"),
+                                               Calendar.DATE,
+                                               authp.getDefaultFBPeriod(),
+                                               Calendar.DATE,
+                                               max);
 
 
-      HttpServletResponse resp = request.getResponse();
+      final HttpServletResponse resp = request.getResponse();
 
       if (tr == null) {
         resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "dates");
         return forwardNull;
       }
 
-      BwDateTime start = BwDateTime.makeBwDateTime(tr.getStart());
+      final BwDateTime start = BwDateTime.makeBwDateTime(tr.getStart());
 
-      BwDateTime end = BwDateTime.makeBwDateTime(tr.getEnd());
+      final BwDateTime end = BwDateTime.makeBwDateTime(tr.getEnd());
 
-      BwEvent fbreq = BwEventObj.makeFreeBusyRequest(start, end,
-                                                     null,     // organizer
-                                                     orgUri,
-                                                     null,     // attendees
-                                                     attendeeUris);
+      final BwEvent fbreq = BwEventObj.makeFreeBusyRequest(start, end,
+                                                           null,// organizer
+                                                           orgUri,
+                                                           null,// attendees
+                                                           attendeeUris);
       if (fbreq == null) {
         return forwardBadRequest;
       }
 
-      ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
-                                      null, null, false);
+      final ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
+                                            null, null, false);
 
       form.setContentName("freebusy.js");
       resp.setHeader("Content-Disposition",
@@ -134,7 +137,7 @@ public class RequestFreeBusy extends BwAbstractAction {
       resp.setContentType("text/json; charset=UTF-8");
 
       outputJson(resp, sr);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       if (debug()) {
         error(t);
       }
@@ -149,7 +152,7 @@ public class RequestFreeBusy extends BwAbstractAction {
 
   private void outputJson(final HttpServletResponse resp,
                           final ScheduleResult sr) throws Throwable {
-    Writer wtr = resp.getWriter();
+    final Writer wtr = resp.getWriter();
 
     int indent = 0;
 
@@ -162,10 +165,11 @@ public class RequestFreeBusy extends BwAbstractAction {
 
     indent += indentSize;
 
-    Collection<ScheduleRecipientResult> srrs = sr.recipientResults.values();
+    final Collection<ScheduleRecipientResult> srrs =
+            sr.recipientResults.values();
     int ct = srrs.size();
 
-    for (ScheduleRecipientResult srr: srrs) {
+    for (final ScheduleRecipientResult srr: srrs) {
       outputJson(wtr, indent + indentSize, srr, ct > 1);
       ct--;
     }
@@ -183,7 +187,7 @@ public class RequestFreeBusy extends BwAbstractAction {
                           final boolean withComma) throws Throwable {
     indented(wtr, indent, "{\n");
 
-    int indentPlus = indent + indentSize;
+    final int indentPlus = indent + indentSize;
     outputJsonValue(wtr, indentPlus, "recipient", srr.recipient);
     outputJsonValue(wtr, indentPlus, "status",
                     String.valueOf(srr.getStatus()),
@@ -219,8 +223,8 @@ public class RequestFreeBusy extends BwAbstractAction {
     outputJsonValue(wtr, indentPlus, "organizer",
                     ev.getOrganizer().getOrganizerUri());
 
-    Collection<String> attUris = new ArrayList<>();
-    for (BwAttendee att: ev.getAttendees()) {
+    final Collection<String> attUris = new ArrayList<>();
+    for (final BwAttendee att: ev.getAttendees()) {
       attUris.add(att.getAttendeeUri());
     }
 
@@ -232,7 +236,7 @@ public class RequestFreeBusy extends BwAbstractAction {
       indentPlus += indentSize;
       int ct = ev.getFreeBusyPeriods().size();
 
-      for (BwFreeBusyComponent fbc: ev.getFreeBusyPeriods()) {
+      for (final BwFreeBusyComponent fbc: ev.getFreeBusyPeriods()) {
         indented(wtr, indentPlus, "{\n");
 
         indentPlus += indentSize;
@@ -280,10 +284,10 @@ public class RequestFreeBusy extends BwAbstractAction {
                                 final Collection<?> vals,
                                 final boolean withComma) throws Throwable {
     outputJsonStart(wtr, indent, name, true);
-    int indentPlus = indent + indentSize;
+    final int indentPlus = indent + indentSize;
     int ct = vals.size();
 
-    for (Object val: vals) {
+    for (final Object val: vals) {
       outputJsonValue(wtr, indentPlus, String.valueOf(val), ct > 1);
       ct--;
     }

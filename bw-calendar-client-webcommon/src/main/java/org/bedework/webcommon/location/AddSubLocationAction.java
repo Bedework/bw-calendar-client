@@ -19,9 +19,9 @@
 
 package org.bedework.webcommon.location;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwString;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.misc.Uid;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -49,7 +49,7 @@ public class AddSubLocationAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
     /* Check access

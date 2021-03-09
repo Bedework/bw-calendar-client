@@ -25,6 +25,12 @@
 
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-rw</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
       <artifactId>bw-calendar-client-appcommon</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -132,6 +138,10 @@
 
             <moduleDependency>
               <name>org.bedework.calendar.client.admin</name>
+            </moduleDependency>
+
+            <moduleDependency>
+              <name>org.bedework.calendar.client.rw</name>
             </moduleDependency>
 
             <moduleDependency>

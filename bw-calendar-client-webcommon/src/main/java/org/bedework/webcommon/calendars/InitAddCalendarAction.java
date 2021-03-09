@@ -19,8 +19,8 @@
 
 package org.bedework.webcommon.calendars;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -47,14 +47,14 @@ public class InitAddCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    if (cl.isGuest()) {
+    if (request.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
 
-    BwSession sess = request.getSess();
-    BwCalendar cal = request.getCalendar(true);
+    final RWClient cl = (RWClient)request.getClient();
+
+    final BwSession sess = request.getSess();
+    final BwCalendar cal = request.getCalendar(true);
 
     if ((cal == null) || !cal.getCollectionInfo().childrenAllowed) {
       return forwardNotAllowed;
@@ -66,7 +66,7 @@ public class InitAddCalendarAction extends BwAbstractAction {
      */
     form.setSynchInfo(cl.getSynchInfo());
 
-    /** Set the objects to null so we get new ones.
+    /* Set the objects to null so we get new ones.
      */
     form.setCalendar(null);
     form.assignAddingCalendar(true);

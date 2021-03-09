@@ -20,12 +20,12 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
@@ -56,7 +56,7 @@ public class DeleteEventAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
      */
@@ -115,7 +115,7 @@ public class DeleteEventAction extends EventActionBase {
                         true);
         ev.setDeleted(true);
 
-        var ueres = cl.updateEvent(ei, true, null);
+        final var ueres = cl.updateEvent(ei, true, null, false);
         if (!ueres.isOk()) {
           if (ueres.getStatus() == Response.Status.noAccess) {
             form.getErr().emit(ClientError.noAccess);

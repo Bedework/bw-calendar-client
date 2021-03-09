@@ -20,9 +20,10 @@
     <orderEntry type="library" name="Maven: oro:oro:2.0.8" level="project" />
     <orderEntry type="module" module-name="bw-calendar-client-admin" />
     <orderEntry type="module" module-name="bw-util-jmx" />
+    <orderEntry type="module" module-name="bw-calendar-client-rw" />
+    <orderEntry type="library" name="Maven: org.bedework:bw-access:4.0.8" level="project" />
     <orderEntry type="module" module-name="bw-calendar-client-appcommon" />
     <orderEntry type="library" name="Maven: org.bedework:bw-util-indexing:4.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.bedework:bw-access:4.0.8" level="project" />
     <orderEntry type="module" module-name="bw-calendar-api" />
     <orderEntry type="module" module-name="bw-calendar-api-ro" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.10.0" level="project" />

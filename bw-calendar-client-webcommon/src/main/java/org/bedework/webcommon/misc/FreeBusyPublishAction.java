@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.misc;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwOrganizer;
@@ -28,6 +27,7 @@ import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
+import org.bedework.client.rw.RWClient;
 import org.bedework.convert.Icalendar;
 import org.bedework.convert.ical.VFreeUtil;
 import org.bedework.util.calendar.IcalendarUtil;
@@ -68,13 +68,18 @@ public class FreeBusyPublishAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    if (request.isGuest()) {
+      return forwardNoAccess; // First line of defence
+    }
+
     BwPrincipal principal = null;
-    Client cl = request.getClient();
-    BwModuleState mstate = request.getModule().getState();
+    final RWClient cl = (RWClient)request.getClient();
+
+    final BwModuleState mstate = request.getModule().getState();
 
     gotoDateView(request, mstate.getDate(), mstate.getViewType());
 
-    String userId = request.getReqPar("user");
+    final String userId = request.getReqPar("user");
     String cua = null;
 
     if (userId == null) {
@@ -96,7 +101,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
 
     BwCalendar cal = null;
 
-    String calPath = request.getReqPar("calPath");
+    final String calPath = request.getReqPar("calPath");
     if (calPath != null) {
       cal = cl.getCollection(calPath);
       if (cal == null) {
@@ -106,7 +111,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
       }
     }
 
-    AuthProperties authp = request.getSess().getAuthpars();
+    final AuthProperties authp = request.getSess().getAuthpars();
 
     int max = 0;
 
@@ -114,12 +119,13 @@ public class FreeBusyPublishAction extends BwAbstractAction {
       max = authp.getMaxFBPeriod();
     }
 
-    BwTimeRange tr = BwDateTimeUtil.getPeriod(request.getReqPar("start"),
-                                            request.getReqPar("end"),
-                                            Calendar.DATE,
-                                            authp.getDefaultFBPeriod(),
-                                            Calendar.DATE,
-                                            max);
+    final BwTimeRange tr =
+            BwDateTimeUtil.getPeriod(request.getReqPar("start"),
+                                     request.getReqPar("end"),
+                                     Calendar.DATE,
+                                     authp.getDefaultFBPeriod(),
+                                     Calendar.DATE,
+                                     max);
 
     if (tr == null) {
       request.getResponse().sendError(HttpServletResponse.SC_BAD_REQUEST,
@@ -135,7 +141,7 @@ public class FreeBusyPublishAction extends BwAbstractAction {
 
       Collection<BwCalendar> cals = null;
       if (cal != null) {
-        cals = new ArrayList<BwCalendar>();
+        cals = new ArrayList<>();
         cals.add(cal);
       }
 

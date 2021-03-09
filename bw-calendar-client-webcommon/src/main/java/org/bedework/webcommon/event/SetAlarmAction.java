@@ -20,11 +20,11 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -49,18 +49,18 @@ public class SetAlarmAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    BwEvent ev = form.getEvent();
-    EventState evstate = form.getEventState();
+    final BwEvent ev = form.getEvent();
+    final EventState evstate = form.getEventState();
 
     if (ev == null) {
       return forwardNoAction;
     }
 
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    BwAlarm alarm = new BwAlarm();
+    final BwAlarm alarm = new BwAlarm();
 
-    Trigger tr;
+    final Trigger tr;
     //boolean trDuration = false;
 
     if (evstate.getAlarmTriggerByDate()) {
@@ -70,13 +70,13 @@ public class SetAlarmAction extends BwAbstractAction {
     } else {
       //trDuration = true;
 
-      Related rel;
+      final Related rel;
       if (evstate.getAlarmRelStart()) {
         rel = Related.START;
       } else {
         rel = Related.END;
       }
-      ParameterList plist = new ParameterList();
+      final ParameterList plist = new ParameterList();
       plist.add(rel);
       tr = new Trigger(plist, evstate.getTriggerDuration().toString());
       tr.setValue(evstate.getTriggerDuration().toString());
@@ -107,7 +107,7 @@ public class SetAlarmAction extends BwAbstractAction {
     alarm.setSummary(subject);
     alarm.setDescription(ev.getDescription());
 
-    BwAttendee att = new BwAttendee();
+    final BwAttendee att = new BwAttendee();
 
     att.setAttendeeUri(cl.getCalendarAddress(recipient));
 
@@ -116,7 +116,8 @@ public class SetAlarmAction extends BwAbstractAction {
     alarm.setOwnerHref(cl.getCurrentPrincipalHref());
 
     ev.addAlarm(alarm);
-    var ueres = cl.updateEvent(new EventInfo(ev), true, null);
+    final var ueres =
+            cl.updateEvent(new EventInfo(ev), true, null, false);
     if (!ueres.isOk()) {
       form.getErr().emit(ueres.getMessage());
       return forwardError;

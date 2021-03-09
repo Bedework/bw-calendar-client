@@ -28,6 +28,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
+import org.bedework.client.rw.RWClient;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
@@ -85,13 +86,10 @@ import java.util.Collection;
  * </ul>
  */
 public class AttendeeRespond extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
      */
@@ -125,8 +123,8 @@ public class AttendeeRespond extends EventActionBase {
     final String methStr = request.getReqPar("method");
 
     if ("REFRESH".equals(methStr)) {
-      ScheduleResult sr = cl.requestRefresh(ei,
-                                            request.getReqPar("comment"));
+      final ScheduleResult sr = cl.requestRefresh(ei,
+                                                  request.getReqPar("comment"));
       emitScheduleStatus(form, sr, false);
 
       initSession(request);
@@ -197,7 +195,7 @@ public class AttendeeRespond extends EventActionBase {
                                     ev);
 
     if (ves != null) {
-      for (org.bedework.calfacade.exc.ValidationError ve: ves) {
+      for (final org.bedework.calfacade.exc.ValidationError ve: ves) {
         form.getErr().emit(ve.getErrorCode(), ve.getExtra());
       }
       return forwardValidationError;
@@ -221,7 +219,7 @@ public class AttendeeRespond extends EventActionBase {
                          request.getReqPar("comment"),         // comment
                          request.getBooleanReqPar("rsvp", false));
 
-    UpdateResult ur = cl.updateEvent(ei, false, null);
+    final UpdateResult ur = cl.updateEvent(ei, false, null, false);
     if (!ur.isOk()) {
       form.getErr().emit(ur.getMessage());
       return forwardError;
@@ -253,7 +251,7 @@ public class AttendeeRespond extends EventActionBase {
                                       final String partStat,
                                       final String orgComment,
                                       final boolean rsvp) {
-    BwEvent ev = ei.getEvent();
+    final BwEvent ev = ei.getEvent();
     BwEventProxy proxy = null;
     if (ev instanceof BwEventProxy) {
       proxy = (BwEventProxy)ev;
@@ -265,7 +263,7 @@ public class AttendeeRespond extends EventActionBase {
 
     /* Check that the current user is actually an attendee
      */
-    String uri = cl.getCurrentCalendarAddress();
+    final String uri = cl.getCurrentCalendarAddress();
     BwAttendee att = ev.findAttendee(uri);
 
     if (att == null) {
@@ -314,7 +312,7 @@ public class AttendeeRespond extends EventActionBase {
        *   .  The "Delegator" MUST also send a copy of the original "REQUEST"
        *      method to the "Delegate".
        */
-      String calAddr = cl.uriToCaladdr(delegate);
+      final String calAddr = cl.uriToCaladdr(delegate);
       if (calAddr == null) {
         return ValidationError.invalidUser;
       }
@@ -329,7 +327,7 @@ public class AttendeeRespond extends EventActionBase {
     } else if (method == ScheduleMethods.methodTypeReply) {
       // Expect a valid partstat for the attendee corresponding to the inbox
       // the event came from.
-      int pStat = IcalDefs.checkPartstat(partStat);
+      final int pStat = IcalDefs.checkPartstat(partStat);
 
       if ((pStat != IcalDefs.partstatAccepted) &&
           (pStat != IcalDefs.partstatDeclined) &&

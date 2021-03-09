@@ -22,12 +22,12 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.EventKey;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -51,12 +51,12 @@ public class AddEventRefAction extends EventActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    int fwd = addEventRef(request, form);
+    final int fwd = addEventRef(request, form);
     if (fwd != forwardSuccess) {
       return fwd;
     }
 
-    String start = form.getEvent().getDtstart().getDate().substring(0, 8);
+    final String start = form.getEvent().getDtstart().getDate().substring(0, 8);
     gotoDateView(request, start,
                  BedeworkDefs.vtDay);
 
@@ -68,16 +68,16 @@ public class AddEventRefAction extends EventActionBase {
   /** Add an event ref. The calendar to add it to is defined by the request
    * parameter newCalPath.
    *
-   * @param request
-   * @param form
+   * @param request bedework request object
+   * @param form action form
    * @return int forward index sucess for OK or an error index.
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   private int addEventRef(final BwRequest request,
                           final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
-    /** Check access
+    /* Check access
      */
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defence
@@ -85,13 +85,13 @@ public class AddEventRefAction extends EventActionBase {
 
 //    EventInfo ei = findEvent(request, Rmode.masterOnly);
 
-    EventKey ekey = form.getEventKey();
+    final EventKey ekey = form.getEventKey();
 
     if (ekey == null) {
       return forwardNoAction;
     }
 
-    EventInfo ei = findEvent(request, ekey);
+    final EventInfo ei = findEvent(request, ekey);
 
     if (ei == null) {
       // Do nothing
@@ -101,23 +101,24 @@ public class AddEventRefAction extends EventActionBase {
     /* Create an event to act as a reference to the targeted event and copy
      * the appropriate fields from the target
      */
-    BwEventProxy proxy = BwEventProxy.makeAnnotation(ei.getEvent(),
-                                                     ei.getEvent().getOwnerHref(),
-                                                     false);
+    final BwEventProxy proxy =
+            BwEventProxy.makeAnnotation(ei.getEvent(),
+                                        ei.getEvent().getOwnerHref(),
+                                        false);
 
-    EventInfo eref = new EventInfo(proxy);
+    final EventInfo eref = new EventInfo(proxy);
     form.setEventInfo(eref, false); // Make it available
 
     String calPath = getReqPar(request.getRequest(), "newCalPath");
 
     if (calPath == null) {
-      String icalName = IcalDefs.entityTypeIcalNames[proxy.getEntityType()];
+      final String icalName = IcalDefs.entityTypeIcalNames[proxy.getEntityType()];
 
       calPath = cl.getPreferredCollectionPath(icalName);
     }
     proxy.setOwnerHref(cl.getCurrentPrincipalHref());
 
-    String transparency = request.getReqPar("transparency");
+    final String transparency = request.getReqPar("transparency");
     if (transparency != null) {
       if (!BwEvent.validTransparency(transparency)) {
         form.getErr().emit(ValidationError.invalidTransparency, transparency);
@@ -132,7 +133,7 @@ public class AddEventRefAction extends EventActionBase {
     try {
       cl.addEvent(eref, true, false);
       form.getMsg().emit(ClientMessage.addedEventrefs, 1);
-    } catch (RuntimeException rte) {
+    } catch (final RuntimeException rte) {
       if (CalFacadeException.duplicateGuid.equals(rte.getMessage())) {
         form.getErr().emit(ClientError.duplicateUid);
         return forwardDuplicate;

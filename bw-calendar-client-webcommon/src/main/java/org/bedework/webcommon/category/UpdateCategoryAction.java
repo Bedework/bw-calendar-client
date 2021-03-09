@@ -20,11 +20,11 @@ package org.bedework.webcommon.category;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.ValidationError;
+import org.bedework.client.rw.RWClient;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -45,7 +45,7 @@ public class UpdateCategoryAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+    final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
      */

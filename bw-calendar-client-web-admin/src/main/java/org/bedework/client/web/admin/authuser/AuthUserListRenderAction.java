@@ -16,35 +16,28 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.authuser;
+package org.bedework.client.web.admin.authuser;
 
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
-/** This action retrieves all authorised users, perhaps toallow selection
- * of an entry for mod.
+/** Store auth users in session
+ * ADMIN ONLY
  *
- * <p>Forwards to:<ul>
- *      <li>forwardNoAccess     user not authorised.</li>
- *      <li>forwardContinue     continue on to next page.</li>
- * </ul>
- *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass  douglm - rpi.edu
  */
-public class GetAuthUsersAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    /** Check access
-     */
-    if (!form.getCurUserSuperUser()) {
-      return forwardNoAccess;
-    }
+public class AuthUserListRenderAction extends AdminActionBase {
+  @Override
+  public int doAction(final BwRequest request,
+                      final BwAdminActionForm form) throws Throwable {
+    final AdminClient cl = (AdminClient)request.getClient();
 
-    return forwardContinue;
+    request.setSessionAttr(BwRequest.bwAuthUsersListName,
+                           cl.getAllAuthUsers());
+
+    return forwardSuccess;
   }
 }
 

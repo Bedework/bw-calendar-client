@@ -16,28 +16,33 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.authuser;
+package org.bedework.client.web.admin.authuser;
 
-import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
-/** Store auth users in session
- * ADMIN ONLY
+/** This action retrieves all authorised users, perhaps toallow selection
+ * of an entry for mod.
  *
- * @author Mike Douglass  douglm - rpi.edu
+ * <p>Forwards to:<ul>
+ *      <li>forwardNoAccess     user not authorised.</li>
+ *      <li>forwardContinue     continue on to next page.</li>
+ * </ul>
+ *
+ * @author Mike Douglass   douglm@rpi.edu
  */
-public class AuthUserListRenderAction extends BwAbstractAction {
+public class GetAuthUsersAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
+                      final BwAdminActionForm form) throws Throwable {
+    /* Check access
+     */
+    if (!form.getCurUserSuperUser()) {
+      return forwardNoAccess;
+    }
 
-    request.setSessionAttr(BwRequest.bwAuthUsersListName,
-                           cl.getAllAuthUsers());
-
-    return forwardSuccess;
+    return forwardContinue;
   }
 }
 

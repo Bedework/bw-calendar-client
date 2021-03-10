@@ -16,13 +16,13 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.authuser;
+package org.bedework.client.web.admin.authuser;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches an authorised user
@@ -36,10 +36,10 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class FetchAuthAction extends BwAbstractAction {
+public class FetchAuthAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwAdminActionForm form) throws Throwable {
     final AdminClient cl = (AdminClient)request.getClient();
 
     /* Check access

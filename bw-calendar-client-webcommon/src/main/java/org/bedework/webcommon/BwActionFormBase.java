@@ -26,7 +26,6 @@ import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.InOutBoxInfo;
-import org.bedework.client.rw.NotificationInfo;
 import org.bedework.appcommon.SelectId;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
@@ -43,17 +42,16 @@ import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.BwAdminGroup;
-import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calsvci.SchedulingI.FbResponses;
+import org.bedework.client.rw.NotificationInfo;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
@@ -85,7 +83,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BwActionFormBase extends UtilActionForm
         implements Logged, BedeworkDefs {
-  private Map<String, BwModule> modules = new ConcurrentHashMap<>();
+  private final Map<String, BwModule> modules = new ConcurrentHashMap<>();
 
   private DateTimeFormatter today;
 
@@ -175,8 +173,6 @@ public class BwActionFormBase extends UtilActionForm
   private String editCalSuiteName;
 
   private BwCalSuiteWrapper calSuite;
-
-  private boolean addingCalSuite;
 
   private String resourceName;
 
@@ -303,22 +299,6 @@ public class BwActionFormBase extends UtilActionForm
   private boolean adminGroupMaintOK;
 
   private boolean userMaintOK;
-
-  /* ....................................................................
-   *                   Authorised user fields
-   * .................................................................... */
-
-  /** Value built out of checked boxes.
-   */
-  private int editAuthUserType;
-
-  /** User we want to fetch or modify
-   */
-  private String editAuthUserId;
-
-  /** User object we are creating or modifying
-   */
-  private BwAuthUser editAuthUser;
 
   /* ....................................................................
    *                   Admin group fields
@@ -801,9 +781,9 @@ public class BwActionFormBase extends UtilActionForm
     return getCurAuthUserPrefs().getCalendarPrefs().getPreferred();
   }
 
-  /* ====================================================================
+  /* ==============================================================
    *                   Authorised user maintenance
-   * ==================================================================== */
+   * ============================================================== */
 
   /**
    * @param val
@@ -819,91 +799,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public boolean getUserMaintOK() {
     return userMaintOK;
-  }
-
-  /** Only called if the flag is set - it's a checkbox.
-   *
-   * @param val
-   */
-  public void setEditAuthUserPublicEvents(final boolean val) {
-    editAuthUserType |= UserAuth.publicEventUser;
-  }
-
-  /** Only called if the flag is set - it's a checkbox.
-   *
-   * @param val
-   */
-  public void setEditAuthUserContentAdmin(final boolean val) {
-    editAuthUserType |= UserAuth.contentAdminUser;
-  }
-
-  /** Only called if the flag is set - it's a checkbox.
-   *
-   * @param val
-   */
-  public void setEditAuthUserApprover(final boolean val) {
-    editAuthUserType |= UserAuth.approverUser;
-  }
-
-  /**
-   *
-   * @return boolean
-   */
-  public boolean getEditAuthUserPublicEvents() {
-    return editAuthUser.isPublicEventUser();
-  }
-
-  /**
-   *
-   * @return boolean
-   */
-  public boolean getEditAuthUserContentAdmin() {
-    return editAuthUser.isContentAdminUser();
-  }
-
-  /**
-   *
-   * @return boolean
-   */
-  public boolean getEditAuthUserApprover() {
-    return editAuthUser.isApproverUser();
-  }
-
-  /** New auth user rights
-  *
-   * @return int rights
-   */
-  public int getEditAuthUserType() {
-    return editAuthUserType;
-  }
-
-  /**
-   * @param val
-   */
-  public void setEditAuthUserId(final String val) {
-    editAuthUserId = val;
-  }
-
-  /**
-   * @return id
-   */
-  public String getEditAuthUserId() {
-    return editAuthUserId;
-  }
-
-  /**
-   * @param val
-   */
-  public void setEditAuthUser(final BwAuthUser val) {
-    editAuthUser = val;
-    editAuthUserType = 0;
-  }
-
-  /**
-   * @return auth user object
-   */
-  public BwAuthUser getEditAuthUser() {
-    return editAuthUser;
   }
 
   /* ====================================================================
@@ -1288,21 +1183,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public BwCalSuiteWrapper getCalSuite() {
     return calSuite;
-  }
-
-  /** Not set - invisible to jsp
-   *
-   * @param val
-   */
-  public void assignAddingCalSuite(final boolean val) {
-    addingCalSuite = val;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getAddingCalSuite() {
-    return addingCalSuite;
   }
 
   /** Not set - invisible to jsp
@@ -2910,8 +2790,6 @@ public class BwActionFormBase extends UtilActionForm
     today = null;
 
     //key.reset();
-
-    editAuthUserType = 0;
   }
 
   /** Reset objects used to select event entities.

@@ -16,42 +16,51 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.admingroup;
+package org.bedework.client.web.admin.admingroup;
 
+import org.bedework.appcommon.ClientError;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.AdminBwModule;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
-/** This action sets the state ready for updating an admingroup.
+/** This action switches the users Admin Groups.
  * ADMIN ONLY
- *
- * <p>Forwards to:<ul>
- *      <li>forwardNoAccess     user not authorised.</li>
- *      <li>forwardContinue     continue on to update page.</li>
- * </ul>
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class InitUpdateAGAction extends BwAbstractAction {
+public class SwitchAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    /* Check access
-     */
-    if (!form.getCurUserSuperUser()) {
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
+    /* ============================================================
+     *              Selecting a group - any access if no group set
+     * ============================================================ */
+
+    /* Check access - no don't
+
+    if (!form.getCurUserContentAdminUser()) {
       return forwardNoAccess;
     }
+    */
 
-    final AdminClient cl = (AdminClient)request.getClient();
+    cl.setGroupSet(false);
+    cl.setChoosingGroup(false);
+
     cl.refreshAdminGroups();
-    request.embedAdminGroups();
 
-    /* Set the objects to null so we get new ones.
-     */
-    form.assignAddingAdmingroup(false);
-    form.setUpdGroupMember(null);
-    form.assignCalSuites(request.getClient().getContextCalSuites());
+    form.setNotificationInfo(null);
+
+    // Back to main menu. Abstract action will do the rest.
+
+    final int temp = ((AdminBwModule)request.getModule())
+            .checkGroup(request, false);
+    if (temp == forwardNoAction) {
+      form.getErr().emit(ClientError.chooseGroupSuppressed);
+      return forwardError;
+    }
 
     return forwardContinue;
   }

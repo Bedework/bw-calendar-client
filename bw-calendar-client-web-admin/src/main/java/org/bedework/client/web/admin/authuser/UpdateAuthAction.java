@@ -39,9 +39,8 @@ import org.bedework.webcommon.BwRequest;
 public class UpdateAuthAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
+                      final AdminClient cl,
                       final BwAdminActionForm form) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
-
     /* Check access
      */
     if (!cl.isSuperUser()) {

@@ -422,13 +422,12 @@ public interface Client extends Serializable {
    * we try to match languages on the assumption that somebody requesting fr_FR
    * is likely to be happier with fr_CA than en_US.
    *
-   * @param locales
+   * @param locales possibly null list of locales
    * @param locale possibly null explicitly requested locale
    * @return Collection of locales.
-   * @throws CalFacadeException on fatal error
    */
   Locale getUserLocale(Collection<Locale> locales,
-                       Locale locale) throws CalFacadeException;
+                       Locale locale);
 
   /* ------------------------------------------------------------
    *                     Collections

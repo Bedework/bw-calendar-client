@@ -41,7 +41,6 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
@@ -288,31 +287,7 @@ public class BwActionFormBase extends UtilActionForm
    */
   private boolean addingLocation;
 
-  /** True if we are adding a new administrative group
-   */
-  private boolean addingAdmingroup;
-
-  /** True to show members in list
-   */
-  private boolean showAgMembers;
-
-  private boolean adminGroupMaintOK;
-
   private boolean userMaintOK;
-
-  /* ....................................................................
-   *                   Admin group fields
-   * .................................................................... */
-
-  private BwAdminGroup updAdminGroup;
-
-  /** Group owner and group event owner */
-  private String adminGroupGroupOwner;
-  private String adminGroupEventOwner;
-
-  /** Group member to add/delete
-   */
-  private String updGroupMember;
 
   /* ....................................................................
    *                   Timezones
@@ -371,8 +346,8 @@ public class BwActionFormBase extends UtilActionForm
 
   private String contactUid;
 
-  private SelectId<String> ctctId = new SelectId<String>(null,
-                                                         SelectId.AHasPrecedence);
+  private SelectId<String> ctctId = new SelectId<>(null,
+                                                   SelectId.AHasPrecedence);
 
   /** True if we are adding a new contact
    */
@@ -457,7 +432,11 @@ public class BwActionFormBase extends UtilActionForm
    *                       Modules
    * .................................................................... */
 
-  public void setModule(String name, BwModule module) {
+  public BwModule newModule(final String name) {
+    return new BwModule(name);
+  }
+
+  public void setModule(final String name, final BwModule module) {
     modules.put(name, module);
   }
 
@@ -471,11 +450,11 @@ public class BwActionFormBase extends UtilActionForm
     BwModule m = modules.get(n);
 
     if (m == null) {
-      m = new BwModule(n, null);
+      m = newModule(n);
 
       /* clone the client from any active module */
       if (modules.size() > 0) {
-        for (BwModule from: modules.values()) {
+        for (final BwModule from: modules.values()) {
           if (from.getClient() != null) {
             m.setClient(from.getClient().copy(m.getModuleName()));
           }
@@ -804,131 +783,6 @@ public class BwActionFormBase extends UtilActionForm
   /* ====================================================================
    *                   Admin groups
    * ==================================================================== */
-
-  /** Not set - invisible to jsp
-   *
-   * @param val
-   */
-  public void assignAddingAdmingroup(final boolean val) {
-    addingAdmingroup = val;
-  }
-
-  /**
-   * @return adding group
-   */
-  public boolean getAddingAdmingroup() {
-    return addingAdmingroup;
-  }
-
-  /**
-   * @param val
-   */
-  public void setShowAgMembers(final boolean val) {
-    showAgMembers = val;
-  }
-
-  /**
-   * @return group members
-   */
-  public boolean getShowAgMembers() {
-    return showAgMembers;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignAdminGroupMaintOK(final boolean val) {
-    adminGroupMaintOK = val;
-  }
-
-  /** Show whether admin group maintenance is available.
-   * Some sites may use other mechanisms.
-   *
-   * @return boolean    true if admin group maintenance is implemented.
-   */
-  public boolean getAdminGroupMaintOK() {
-    return adminGroupMaintOK;
-  }
-
-  /**
-   * @param val
-   */
-  public void setUpdAdminGroup(final BwAdminGroup val) {
-    if (val == null) {
-      updAdminGroup = new BwAdminGroup();
-    } else {
-      updAdminGroup = val;
-    }
-
-    try {
-      String href = updAdminGroup.getGroupOwnerHref();
-
-      if (href != null) {
-        setAdminGroupGroupOwner(href);
-      }
-
-      href = updAdminGroup.getOwnerHref();
-
-      if (href != null) {
-        setAdminGroupEventOwner(href);
-      }
-   } catch (Throwable t) {
-      err.emit(t);
-    }
-  }
-
-  /**
-   * @return group
-   */
-  public BwAdminGroup getUpdAdminGroup() {
-    if (updAdminGroup == null) {
-      updAdminGroup = new BwAdminGroup();
-    }
-
-    return updAdminGroup;
-  }
-
-  /**
-   * @param val
-   */
-  public void setAdminGroupGroupOwner(final String val) {
-    adminGroupGroupOwner = val;
-  }
-
-  /**
-   * @return group owner
-   */
-  public String getAdminGroupGroupOwner() {
-    return adminGroupGroupOwner;
-  }
-
-  /**
-   * @param val
-   */
-  public void setAdminGroupEventOwner(final String val) {
-    adminGroupEventOwner = val;
-  }
-
-  /**
-   * @return owner
-   */
-  public String getAdminGroupEventOwner() {
-    return  adminGroupEventOwner;
-  }
-
-  /**
-   * @param val
-   */
-  public void setUpdGroupMember(final String val) {
-    updGroupMember = val;
-  }
-
-  /**
-   * @return group member
-   */
-  public String getUpdGroupMember() {
-    return updGroupMember;
-  }
 
   /**
    * @val token for event registration

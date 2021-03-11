@@ -28,7 +28,6 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.webcommon.AdminUtil;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -59,21 +58,25 @@ public class InitAddEventAction extends EventActionBase {
                       final BwActionFormBase form) throws Throwable {
     request.refresh();
 
-    BwEvent ev = new BwEventObj();
+    final BwEvent ev = new BwEventObj();
     form.getEventDates().setNewEvent(ev);
 
-    TimeView tv = request.getSess().getCurTimeView(request);
+    final TimeView tv = request.getSess().getCurTimeView(request);
 
-    form.getEventStartDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
-    form.getEventEndDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
-    EventInfo ei = new EventInfo(ev);
+    form.getEventStartDate().setDateTime(tv.getCurDayFmt()
+                                           .getDateTimeString());
+    form.getEventEndDate().setDateTime(tv.getCurDayFmt()
+                                         .getDateTimeString());
+    final EventInfo ei = new EventInfo(ev);
 
     form.setEventInfo(ei, true);
 
     form.assignSavedEvent(new BwEventObj());
     form.resetSelectIds();
 
-    ChangeTable changes = ei.getChangeset(request.getClient().getCurrentPrincipalHref());
+    final ChangeTable changes =
+            ei.getChangeset(request.getClient()
+                                   .getCurrentPrincipalHref());
 
     form.assignAddingEvent(true);
     form.setAttendees(new Attendees());
@@ -82,14 +85,14 @@ public class InitAddEventAction extends EventActionBase {
 
     ev.setEntityType(request.getEntityType()); // Check for error after sched
 
-    int sched = request.getSchedule();
+    final int sched = request.getSchedule();
 
     if (request.getErrFlag()) {
       return forwardValidationError;
     }
 
     if (sched == ScheduleMethods.methodTypeRequest) {
-      int res = initMeeting(request, form, true);
+      final int res = initMeeting(request, form, true);
 
       if (res != forwardSuccess) {
         return res;
@@ -98,7 +101,7 @@ public class InitAddEventAction extends EventActionBase {
 
     String date = request.getReqPar("startdate");
 
-    EventDates evdates = form.getEventDates();
+    final EventDates evdates = form.getEventDates();
 
     if (date != null) {
       evdates.setFromDate(date);
@@ -110,12 +113,12 @@ public class InitAddEventAction extends EventActionBase {
       evdates.getEndDate().setDateTime(date);
     }
 
-    int minutes = request.getIntReqPar("minutes", -1);
+    final int minutes = request.getIntReqPar("minutes", -1);
 
     if (minutes > 0) {
       // Set the duration
       evdates.setEndType(String.valueOf(StartEndComponent.endTypeDuration));
-      DurationBean dur = evdates.getDuration();
+      final DurationBean dur = evdates.getDuration();
 
       dur.setType(DurationBean.dayTimeDuration);
       dur.setMinutes(minutes);
@@ -128,7 +131,7 @@ public class InitAddEventAction extends EventActionBase {
     form.setFormattedRdates(null);
     form.setFormattedExdates(null);
 
-    BwCalendar cal = request.getNewCal(false);
+    final BwCalendar cal = request.getNewCal(false);
 
     if (cal != null) {
       changes.changed(PropertyInfoIndex.COLLECTION,
@@ -145,16 +148,6 @@ public class InitAddEventAction extends EventActionBase {
     sess.embedContactCollection(request, BwSession.ownersEntity);
 
     final Client cl = request.getClient();
-
-    if (cl.getPublicAdmin()) {
-      sess.embedContactCollection(request, BwSession.preferredEntity);
-      sess.embedLocations(request, BwSession.preferredEntity);
-
-      if (form.getSuggestionEnabled()) {
-        AdminUtil.embedPreferredAdminGroups(request);
-        AdminUtil.embedCalsuiteAdminGroups(request);
-      }
-    }
 
     sess.embedCategories(request, false, BwSession.ownersEntity);
     sess.embedLocations(request, BwSession.ownersEntity);

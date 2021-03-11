@@ -16,62 +16,38 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.admingroup;
+package org.bedework.client.web.admin.admingroup;
 
-import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.ClientMessage;
-import org.bedework.calfacade.svc.BwAdminGroup;
-import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
-/** This action deletes an admin group
+/** This action sets the state ready for adding an admingroup.
  * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardNoAccess     user not authorised.</li>
- *      <li>forwardNotFound     no such event.</li>
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm rpi.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
-public class DeleteAGAction extends BwAbstractAction {
+public class InitAddAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final AdminClient cl,
+                      final BwAdminActionForm form) {
     /* Check access
      */
-    if (!form.getCurUserSuperUser()) {
+    if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
 
-    final BwAdminGroup updgrp = form.getUpdAdminGroup();
-
-    if (updgrp == null) {
-      // That's not right
-      return forwardNotFound;
-    }
-
-    final AdminClient cl = (AdminClient)request.getClient();
-
-    // Ensure group is not a calendar suite admin group.
-    final BwCalSuiteWrapper csw = cl.getCalSuite(updgrp);
-
-    if (csw != null) {
-      // Group already assigned to another cal suite
-      form.getErr().emit(ClientError.adminGroupAssignedCS, csw.getName());
-      return forwardContinue;
-    }
-
-    cl.setChoosingGroup(false); // reset
-
-    cl.removeAdminGroup(updgrp);
+    /* Set the objects to null so we get new ones.
+     */
     form.setUpdAdminGroup(null);
-    form.getMsg().emit(ClientMessage.deletedGroup);
-    cl.refreshAdminGroups();
+    form.assignAddingAdmingroup(true);
 
     return forwardContinue;
   }

@@ -628,33 +628,6 @@ public abstract class UtilAbstractAction extends Action
    *                       Response methods
    * ==================================================================== */
 
-  /** Check request for refresh interval
-   *
-   * @param request
-   * @param response
-   * @param refreshInterval
-   * @param refreshAction
-   * @param form
-   */
-  public void setRefreshInterval(final HttpServletRequest request,
-                                 final HttpServletResponse response,
-                                 final int refreshInterval,
-                                 final String refreshAction,
-                                 final UtilActionForm form) {
-    if (refreshInterval != 0) {
-      StringBuilder sb = new StringBuilder(250);
-
-      sb.append(refreshInterval);
-      sb.append("; URL=");
-      sb.append(form.getUrlPrefix());
-      if (!refreshAction.startsWith("/")) {
-        sb.append("/");
-      }
-      sb.append(refreshAction);
-      response.setHeader("Refresh", sb.toString());
-    }
-  }
-
   /* ====================================================================
    *                  Application variable methods
    * ==================================================================== */

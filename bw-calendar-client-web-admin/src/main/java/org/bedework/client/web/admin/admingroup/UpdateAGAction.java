@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.admingroup;
+package org.bedework.client.web.admin.admingroup;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -28,8 +28,9 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.util.misc.Util;
-import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
@@ -54,11 +55,11 @@ import org.bedework.webcommon.BwWebUtil;
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class UpdateAGAction extends BwAbstractAction {
+public class UpdateAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
 
     /* Check access
      */
@@ -214,7 +215,7 @@ public class UpdateAGAction extends BwAbstractAction {
   }
 
   private boolean validateNewAdminGroup(final AdminClient cl,
-                                        final BwActionFormBase form) {
+                                        final BwAdminActionForm form) {
     boolean ok = true;
 
     final BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
@@ -280,7 +281,7 @@ public class UpdateAGAction extends BwAbstractAction {
   }
 
   private boolean validateAdminGroup(final AdminClient cl,
-                                     final BwActionFormBase form) throws Throwable {
+                                     final BwAdminActionForm form) throws Throwable {
     boolean ok = true;
 
     final BwAdminGroup updAdminGroup = form.getUpdAdminGroup();

@@ -895,7 +895,7 @@ public class BwSessionImpl implements Logged, BwSession {
   /**
    * @param val prefs
    */
-  void setCurAuthUserPrefs(final BwAuthUserPrefs val) {
+  public void setCurAuthUserPrefs(final BwAuthUserPrefs val) {
     curAuthUserPrefs = val;
   }
 

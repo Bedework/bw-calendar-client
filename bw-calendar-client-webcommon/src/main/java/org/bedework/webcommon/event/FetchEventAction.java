@@ -21,7 +21,6 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.webcommon.AdminUtil;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -44,16 +43,16 @@ public class FetchEventAction extends EventActionBase {
     final Client cl = request.getClient();
 
     if (cl.getPublicAdmin()) {
-      if (!form.getAuthorisedUser()) {
-        return forwardNoAccess;
-      }
-
-      if (form.getSuggestionEnabled()) {
-        AdminUtil.embedPreferredAdminGroups(request);
-        AdminUtil.embedCalsuiteAdminGroups(request);
-      }
+      // Handled by overide
+      return forwardNoAccess;
     }
 
+    return doAction(request, cl, form);
+  }
+
+  public int doAction(final BwRequest request,
+                      final Client cl,
+                      final BwActionFormBase form) throws Throwable {
     form.assignAddingEvent(false);
 
     final Rmode mode;
@@ -79,11 +78,6 @@ public class FetchEventAction extends EventActionBase {
     sess.embedCategories(request, false, BwSession.ownersEntity);
 
     sess.embedLocations(request, BwSession.ownersEntity);
-
-    if (cl.getPublicAdmin()) {
-      sess.embedContactCollection(request, BwSession.preferredEntity);
-      sess.embedLocations(request, BwSession.preferredEntity);
-    }
 
     if (fwd == forwardContinue) {
       if (request.hasCopy()) {

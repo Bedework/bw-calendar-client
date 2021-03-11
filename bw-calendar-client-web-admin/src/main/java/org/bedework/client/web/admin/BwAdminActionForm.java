@@ -3,9 +3,11 @@
 */
 package org.bedework.client.web.admin;
 
+import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.webcommon.BwModule;
 
 import org.apache.struts.action.ActionMapping;
 
@@ -15,6 +17,30 @@ import javax.servlet.http.HttpServletRequest;
  * User: mike Date: 3/9/21 Time: 22:25
  */
 public class BwAdminActionForm extends BwActionFormBase {
+  /* ..............................................................
+   *                   Admin group fields
+   * .............................................................. */
+
+  /** True if we are adding a new administrative group
+   */
+  private boolean addingAdmingroup;
+
+  /** True to show members in list
+   */
+  private boolean showAgMembers;
+
+  private boolean adminGroupMaintOK;
+
+  private BwAdminGroup updAdminGroup;
+
+  /** Group owner and group event owner */
+  private String adminGroupGroupOwner;
+  private String adminGroupEventOwner;
+
+  /** Group member to add/delete
+   */
+  private String updGroupMember;
+
   /* ..............................................................
    *                   Authorised user fields
    * .............................................................. */
@@ -30,6 +56,135 @@ public class BwAdminActionForm extends BwActionFormBase {
   /** User object we are creating or modifying
    */
   private BwAuthUser editAuthUser;
+
+  /* ====================================================================
+   *                   Admin groups
+   * ==================================================================== */
+
+  /** Not set - invisible to jsp
+   *
+   * @param val true if adding admin group
+   */
+  public void assignAddingAdmingroup(final boolean val) {
+    addingAdmingroup = val;
+  }
+
+  /**
+   * @return adding group
+   */
+  public boolean getAddingAdmingroup() {
+    return addingAdmingroup;
+  }
+
+  /**
+   * @param val true for show group members
+   */
+  public void setShowAgMembers(final boolean val) {
+    showAgMembers = val;
+  }
+
+  /**
+   * @return true for show group members
+   */
+  public boolean getShowAgMembers() {
+    return showAgMembers;
+  }
+
+  /**
+   * @param val true for admin group maint allowed
+   */
+  public void assignAdminGroupMaintOK(final boolean val) {
+    adminGroupMaintOK = val;
+  }
+
+  /** Show whether admin group maintenance is available.
+   * Some sites may use other mechanisms.
+   *
+   * @return boolean    true if admin group maintenance is implemented.
+   */
+  public boolean getAdminGroupMaintOK() {
+    return adminGroupMaintOK;
+  }
+
+  /**
+   * @param val the group or null for a new one
+   */
+  public void setUpdAdminGroup(final BwAdminGroup val) {
+    if (val == null) {
+      updAdminGroup = new BwAdminGroup();
+    } else {
+      updAdminGroup = val;
+    }
+
+    try {
+      String href = updAdminGroup.getGroupOwnerHref();
+
+      if (href != null) {
+        setAdminGroupGroupOwner(href);
+      }
+
+      href = updAdminGroup.getOwnerHref();
+
+      if (href != null) {
+        setAdminGroupEventOwner(href);
+      }
+    } catch (final Throwable t) {
+      err.emit(t);
+    }
+  }
+
+  /**
+   * @return group
+   */
+  public BwAdminGroup getUpdAdminGroup() {
+    if (updAdminGroup == null) {
+      updAdminGroup = new BwAdminGroup();
+    }
+
+    return updAdminGroup;
+  }
+
+  /**
+   * @param val Admin group group owner
+   */
+  public void setAdminGroupGroupOwner(final String val) {
+    adminGroupGroupOwner = val;
+  }
+
+  /**
+   * @return group owner
+   */
+  public String getAdminGroupGroupOwner() {
+    return adminGroupGroupOwner;
+  }
+
+  /**
+   * @param val event owner
+   */
+  public void setAdminGroupEventOwner(final String val) {
+    adminGroupEventOwner = val;
+  }
+
+  /**
+   * @return owner
+   */
+  public String getAdminGroupEventOwner() {
+    return  adminGroupEventOwner;
+  }
+
+  /**
+   * @param val member
+   */
+  public void setUpdGroupMember(final String val) {
+    updGroupMember = val;
+  }
+
+  /**
+   * @return group member
+   */
+  public String getUpdGroupMember() {
+    return updGroupMember;
+  }
 
   /* ==============================================================
    *                   Authorised user maintenance
@@ -92,7 +247,7 @@ public class BwAdminActionForm extends BwActionFormBase {
   }
 
   /**
-   * @param val
+   * @param val id
    */
   public void setEditAuthUserId(final String val) {
     editAuthUserId = val;
@@ -106,7 +261,7 @@ public class BwAdminActionForm extends BwActionFormBase {
   }
 
   /**
-   * @param val
+   * @param val auth user object
    */
   public void setEditAuthUser(final BwAuthUser val) {
     editAuthUser = val;
@@ -132,5 +287,13 @@ public class BwAdminActionForm extends BwActionFormBase {
     super.reset(mapping, request);
 
     editAuthUserType = 0;
+  }
+
+  /* ....................................................................
+   *                       Modules
+   * .................................................................... */
+
+  public BwModule newModule(final String name) {
+    return new AdminBwModule(name);
   }
 }

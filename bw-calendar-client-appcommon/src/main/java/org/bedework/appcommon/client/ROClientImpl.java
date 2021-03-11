@@ -609,7 +609,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Locale getUserLocale(final Collection<Locale> locales,
-                              final Locale locale) throws CalFacadeException {
+                              final Locale locale) {
     final Collection<Locale> sysLocales = getSupportedLocales();
 
     if (locale != null) {
@@ -1581,12 +1581,8 @@ public class ROClientImpl implements Logged, Client {
     }
   }
 
-  protected Locale makeLocale(final String val) throws CalFacadeException {
-    try {
+  protected Locale makeLocale(final String val) {
       return Util.makeLocale(val);
-    } catch (final Throwable t) {
-      throw new CalFacadeException(t);
-    }
   }
 
   private final static FlushMap<String, FilterBase> defaultFilters =
@@ -1656,7 +1652,7 @@ public class ROClientImpl implements Logged, Client {
     return entries;
   }
 
-  private Collection<Locale> getSupportedLocales() throws CalFacadeException {
+  private Collection<Locale> getSupportedLocales() {
     if (supportedLocales != null) {
       return supportedLocales;
     }
@@ -1670,24 +1666,17 @@ public class ROClientImpl implements Logged, Client {
       return supportedLocales;
     }
 
-    try {
-      int pos = 0;
+    int pos = 0;
 
-      while (pos < ll.length()) {
-        final int nextPos = ll.indexOf(",", pos);
-        if (nextPos < 0) {
-          supportedLocales.add(makeLocale(ll.substring(pos)));
-          break;
-        }
-
-        supportedLocales.add(makeLocale(ll.substring(pos, nextPos)));
-        pos = nextPos + 1;
+    while (pos < ll.length()) {
+      final int nextPos = ll.indexOf(",", pos);
+      if (nextPos < 0) {
+        supportedLocales.add(makeLocale(ll.substring(pos)));
+        break;
       }
-    } catch (final CalFacadeException cfe) {
-      throw cfe;
-    } catch (final Throwable t) {
-      throw new CalFacadeException(CalFacadeException.badSystemLocaleList,
-                                   ll);
+
+      supportedLocales.add(makeLocale(ll.substring(pos, nextPos)));
+      pos = nextPos + 1;
     }
 
     if (supportedLocales.isEmpty()) {

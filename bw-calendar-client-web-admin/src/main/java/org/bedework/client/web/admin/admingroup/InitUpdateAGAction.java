@@ -16,37 +16,42 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.admingroup;
+package org.bedework.client.web.admin.admingroup;
 
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
-/** This action sets the state ready for adding an admingroup.
+/** This action sets the state ready for updating an admingroup.
+ * ADMIN ONLY
  *
  * <p>Forwards to:<ul>
  *      <li>forwardNoAccess     user not authorised.</li>
  *      <li>forwardContinue     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm  rpi.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
-public class InitAddAGAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    /** Check access
+public class InitUpdateAGAction extends AdminActionBase {
+  @Override
+  public int doAction(final BwRequest request,
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
+    /* Check access
      */
-    if (!form.getCurUserSuperUser()) {
+    if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
 
-    /** Set the objects to null so we get new ones.
+    cl.refreshAdminGroups();
+    request.embedAdminGroups();
+
+    /* Set the objects to null so we get new ones.
      */
-    form.setUpdAdminGroup(null);
-    form.assignAddingAdmingroup(true);
+    form.assignAddingAdmingroup(false);
+    form.setUpdGroupMember(null);
+    form.assignCalSuites(request.getClient().getContextCalSuites());
 
     return forwardContinue;
   }

@@ -20,15 +20,24 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.ROClientImpl;
+import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.client.rw.RWClientImpl;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.Request;
+import org.bedework.util.struts.UtilActionForm;
 
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import static org.bedework.webcommon.ForwardDefs.forwardNoAction;
 
 /** A module represents a client and its associated state. A module
  * or its subclass MUST NOT be exposed to jsp. It MAY hold an object
@@ -60,10 +69,8 @@ public class BwModule implements Logged, Serializable {
 
   private Request currentReq;
 
-  public BwModule(final String moduleName,
-                  final Client cl) {
+  public BwModule(final String moduleName) {
     this.moduleName = moduleName;
-    this.cl = cl;
     state = new BwModuleState(moduleName);
   }
 
@@ -245,6 +252,186 @@ public class BwModule implements Logged, Serializable {
 
   }
 
+  /** Ensure we have a client object for the given user.
+   *
+   * <p>This method must only be called for a non admin client.
+   * It it overridden by the admin version.
+   *
+   * @param request       for pars
+   * @param user          String user we want to be
+   * @param canSwitch     true if we should definitely allow user to switch
+   *                      this allows a user to switch between and into
+   *                      groups of which they are a member
+   * @return boolean      false for problems.
+   * @throws Throwable on fatal error
+   */
+  public boolean checkClient(final Request request,
+                             final BwSession sess,
+                             final String user,
+                             boolean canSwitch,
+                             final ConfigCommon conf) throws Throwable {
+    final BwActionFormBase form = (BwActionFormBase)request.getForm();
+
+    if (conf.getPublicAdmin()) {
+      throw new RuntimeException("Non-admin client called for admin app");
+    }
+
+    final boolean readWrite = conf.getReadWrite();
+    final boolean guestMode = !readWrite && conf.getGuestMode();
+    String calSuiteName = null;
+
+    final BwModuleState mstate = getState();
+
+//    Client client = BwWebUtil.getClient(request.getRequest());
+    Client client = getClient();
+
+    if (BedeworkDefs.appTypeFeeder.equals(conf.getAppType())) {
+      calSuiteName = request.getReqPar("cs", conf.getCalSuite());
+    } else if (guestMode ||
+            BedeworkDefs.appTypeWebpublicauth.equals(conf.getAppType())) {
+      // A guest user using the public clients. Get the calendar suite from the
+      // configuration
+      calSuiteName = conf.getCalSuite();
+    } else if (!user.equals(form.getCurrentUser())) {
+      /* !publicAdmin: We're never allowed to switch identity as a user client.
+       */
+      return false;
+    }
+
+    try {
+      /* Make some checks to see if this is an old - restarted session.
+       */
+      if (client != null) {
+        /* Not the first time through here so for a public admin client we
+         * already have the authorised user's rights set in the form.
+         */
+
+        /* Already there and already opened */
+        if (debug()) {
+          debug("Client interface -- Obtained from session for user " +
+                        client.getCurrentPrincipalHref());
+        }
+      } else {
+        if (debug()) {
+          debug("Client-- getResource new object for user " + user);
+        }
+
+        if (readWrite) {
+          client = new RWClientImpl(conf,
+                                    getModuleName(),
+                                    form.getCurrentUser(),
+                                    user,
+                                    form.getAppType());
+        } else {
+          client = new ROClientImpl(conf,
+                                    getModuleName(),
+                                    form.getCurrentUser(),
+                                    user,
+                                    calSuiteName,
+                                    form.getAppType(),
+                                    true);
+        }
+
+        setClient(client);
+        setRequest(request);
+
+        // Didn't release module - just reflag entry
+        requestIn();
+        mstate.setRefresh(true);
+        sess.reset(request);
+      }
+    } catch (final CalFacadeException cfe) {
+      throw cfe;
+    } catch (final Throwable t) {
+      throw new CalFacadeException(t);
+    }
+
+    return true;
+  }
+
+  /** Called just before action.
+   *
+   * @param request wrapper
+   * @param form action form
+   * @return int foward index
+   * @throws Throwable on fatal error
+   */
+  protected int actionSetup(final BwRequest request,
+                            final BwActionFormBase form) throws Throwable {
+    final Client cl = request.getClient();
+
+    // Not public admin.
+
+    final ConfigCommon conf = form.getConfig();
+
+    String refreshAction = request.getRefreshAction();
+    Integer refreshInt = request.getRefreshInt();
+
+    if (refreshAction == null) {
+      refreshAction = conf.getRefreshAction();
+    }
+
+    if (refreshAction == null) {
+      refreshAction = request.getActionPath();
+    }
+
+    if (refreshAction != null) {
+      if (refreshInt == null) {
+        refreshInt =  conf.getRefreshInterval();
+      }
+
+      setRefreshInterval(request.getRequest(), request.getResponse(),
+                         refreshInt, refreshAction, form);
+
+      /* Ensure the session timeout interval is longer than our refresh period
+       */
+
+      if (refreshInt > 0) {
+        final HttpSession sess = request.getRequest().getSession(false);
+        final int timeout = sess.getMaxInactiveInterval();
+
+        if (timeout <= refreshInt) {
+          // An extra minute should do it.
+          debug("@+@+@+@+@+ set timeout to " + (refreshInt + 60));
+          sess.setMaxInactiveInterval(refreshInt + 60);
+        }
+      }
+    }
+
+    //if (debug()) {
+    //  log.debug("curTimeView=" + form.getCurTimeView());
+    //}
+
+    return forwardNoAction;
+  }
+
+  /** Check request for refresh interval
+   *
+   * @param request http request
+   * @param response http response
+   * @param refreshInterval seconds
+   * @param refreshAction action to call
+   * @param form our form
+   */
+  public void setRefreshInterval(final HttpServletRequest request,
+                                 final HttpServletResponse response,
+                                 final int refreshInterval,
+                                 final String refreshAction,
+                                 final UtilActionForm form) {
+    if (refreshInterval != 0) {
+      final StringBuilder sb = new StringBuilder(250);
+
+      sb.append(refreshInterval);
+      sb.append("; URL=");
+      sb.append(form.getUrlPrefix());
+      if (!refreshAction.startsWith("/")) {
+        sb.append("/");
+      }
+      sb.append(refreshAction);
+      response.setHeader("Refresh", sb.toString());
+    }
+  }
+
   private void closeNow() throws Throwable {
     Throwable t = null;
 
@@ -266,7 +453,7 @@ public class BwModule implements Logged, Serializable {
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

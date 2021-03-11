@@ -27,10 +27,8 @@ import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.MyCalendarVO;
-import org.bedework.client.rw.NotificationInfo;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.ROClientImpl;
 import org.bedework.appcommon.client.SearchParams;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
@@ -58,16 +56,13 @@ import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.client.admin.AdminClientImpl;
-import org.bedework.client.admin.AdminConfig;
+import org.bedework.client.rw.NotificationInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.rw.RWClientImpl;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleStates;
 import org.bedework.util.calendar.XcalUtil;
@@ -91,7 +86,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -136,7 +130,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final BwActionFormBase form = (BwActionFormBase)request.getForm();
     String adminUserId = null;
 
-    final BwCallback cb = getCb(request, form);
+    final BwCallback cb = BwCallback.getCb(request, form);
 
     final int status;
     
@@ -174,7 +168,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                      adminUserId, conf);
 
     if (debug()) {
-      debug("About to get state");
+      debug("Obtained state");
     }
 
     form.setSession(bsess);
@@ -185,38 +179,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       bwreq.refresh();
     }
 
-    final Collection<Locale> reqLocales = request.getLocales();
-    final String reqLoc = request.getReqPar("locale");
-
-    if (reqLoc != null) {
-      if ("default".equals(reqLoc)) {
-        form.setRequestedLocale(null);
-      } else {
-        try {
-          final Locale loc = Util.makeLocale(reqLoc);
-          form.setRequestedLocale(loc); // Make it stick
-        } catch (final Throwable t) {
-          // Ignore bad parameter?
-        }
-      }
-    }
-
     checkMvarReq(bwreq);
 
     final Client cl = bwreq.getClient();
-
-    final Locale loc = cl.getUserLocale(reqLocales,
-                                  form.getRequestedLocale());
     final BwModuleState mstate = bwreq.getModule().getState();
 
-    if (loc != null) {
-      BwLocale.setLocale(loc);
-      final Locale cloc = form.getCurrentLocale();
-      if ((cloc == null) || (!cloc.equals(loc))) {
-        mstate.setRefresh(true);
-      }
-      form.setCurrentLocale(loc);
-    }
+    setLocale(bwreq, mstate, form);
 
     form.assignSuggestionEnabled(cl.getSystemProperties().getSuggestionEnabled());
     form.assignWorkflowEnabled(cl.getSystemProperties().getWorkflowEnabled());
@@ -225,12 +193,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     form.assignUserMaintOK(cl.getUserMaintOK());
     form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
 
-    if (cl.getPublicAdmin()) {
-      final AdminClient adcl = (AdminClient)cl;
+    //if (cl.getPublicAdmin()) {
+    //  final AdminClient adcl = (AdminClient)cl;
 
-      form.assignOneGroup(adcl.getOneGroup());
-      form.assignAdminGroupMaintOK(adcl.getAdminGroupMaintOK());
-    }
+    //  form.assignOneGroup(adcl.getOneGroup());
+    //  form.assignAdminGroupMaintOK(adcl.getAdminGroupMaintOK());
+    //}
 
     // We need to have set the current locale before we do this.
     mstate.setCalInfo(CalendarInfo.getInstance());
@@ -345,7 +313,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /* Set up ready for the action - may reset svci */
 
-    final int temp = actionSetup(bwreq, form);
+    final int temp = bwreq.getModule().actionSetup(bwreq, form);
     if (temp != forwardNoAction) {
       return forwards[temp];
     }
@@ -430,61 +398,37 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return forward;
   }
 
-  /** Called just before action.
-   *
-   * @param request wrapper
-   * @param form action form
-   * @return int foward index
-   * @throws Throwable on fatal error
-   */
-  public int actionSetup(final BwRequest request,
-                         final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+  private void setLocale(final BwRequest request,
+                         final BwModuleState mstate,
+                         final BwActionFormBase form) {
+    final Collection<Locale> reqLocales = request.getLocales();
+    final String reqLoc = request.getReqPar("locale");
 
-    if (cl.getPublicAdmin()) {
-      return AdminUtil.actionSetup(request);
-    }
-
-    // Not public admin.
-
-    final ConfigCommon conf = form.getConfig();
-
-    /*
-    if (form.getNewSession()) {
-      // Try to enable supersuer mode for personal clients.
-      // First time through here for this session. svci is still set up for the
-      // authenticated user. Set access rights.
-      if (form.getCurrentUser().equals("root")) {
-        form.fetchSvci().setSuperUser(true);
+    if (reqLoc != null) {
+      if ("default".equals(reqLoc)) {
+        form.setRequestedLocale(null);
+      } else {
+        try {
+          final Locale loc = Util.makeLocale(reqLoc);
+          form.setRequestedLocale(loc); // Make it stick
+        } catch (final Throwable t) {
+          // Ignore bad parameter?
+        }
       }
     }
-    */
 
-    String refreshAction = request.getRefreshAction();
-    Integer refreshInt = request.getRefreshInt();
+    final Locale loc =
+            request.getClient().getUserLocale(reqLocales,
+                                        form.getRequestedLocale());
 
-    if (refreshAction == null) {
-      refreshAction = conf.getRefreshAction();
-    }
-
-    if (refreshAction == null) {
-      refreshAction = request.getActionPath();
-    }
-
-    if (refreshAction != null) {
-      if (refreshInt == null) {
-        refreshInt =  conf.getRefreshInterval();
+    if (loc != null) {
+      BwLocale.setLocale(loc);
+      final Locale cloc = form.getCurrentLocale();
+      if ((cloc == null) || (!cloc.equals(loc))) {
+        mstate.setRefresh(true);
       }
-
-      setRefreshInterval(request.getRequest(), request.getResponse(),
-                         refreshInt, refreshAction, form);
+      form.setCurrentLocale(loc);
     }
-
-    //if (debug()) {
-    //  log.debug("curTimeView=" + form.getCurTimeView());
-    //}
-
-    return forwardNoAction;
   }
 
   /** Set the config object.
@@ -1809,62 +1753,45 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                              final BwActionFormBase form,
                              final String adminUserId,
                              final ConfigCommon conf) throws Throwable {
-    //synchronized (form) {
-      BwSession s = BwWebUtil.getState(request.getRequest());
-      final HttpSession sess = request.getRequest().getSession(false);
-      final String appName = getAppName(sess);
+    BwSession s = BwWebUtil.getState(request.getRequest());
+    final HttpSession sess = request.getRequest().getSession(false);
+    final String appName = getAppName(sess);
 
-      if (s != null) {
-        if (debug()) {
-          debug("getState-- obtainedfrom session");
-          debug("getState-- timeout interval = " +
-                           sess.getMaxInactiveInterval());
-        }
-
-        form.assignNewSession(false);
-      } else {
-        if (debug()) {
-          debug("getState-- get new object");
-        }
-
-        form.assignNewSession(true);
-
-        s = new BwSessionImpl(conf,
-                              form.getCurrentUser(),
-                              appName);
-
-        BwWebUtil.setState(request.getRequest(), s);
-
-        final String raddr = request.getRemoteAddr();
-        final String rhost = request.getRemoteHost();
-        info("===============" + appName + ": New session (" +
-                     s.getSessionNum() + ") from " +
-                     rhost + "(" + raddr + ")");
-
-        if (!form.getConfig().getPublicAdmin()) {
-          /* Ensure the session timeout interval is longer than our refresh period
-           */
-          //  Should come from db -- int refInt = s.getRefreshInterval();
-          final int refInt = 60; // 1 min refresh?
-
-          if (refInt > 0) {
-            final int timeout = sess.getMaxInactiveInterval();
-
-            if (timeout <= refInt) {
-              // An extra minute should do it.
-              debug("@+@+@+@+@+ set timeout to " + (refInt + 60));
-              sess.setMaxInactiveInterval(refInt + 60);
-            }
-          }
-        }
+    if (s != null) {
+      if (debug()) {
+        debug("getState-- obtainedfrom session");
+        debug("getState-- timeout interval = " +
+                      sess.getMaxInactiveInterval());
       }
 
-      /* Ensure we have a CalSvcI object
-       */
-      checkSvci(request, s, adminUserId, false, conf);
+      form.assignNewSession(false);
+    } else {
+      if (debug()) {
+        debug("getState-- get new object");
+      }
 
-      return s;
-    //}
+      form.assignNewSession(true);
+
+      s = new BwSessionImpl(conf,
+                            form.getCurrentUser(),
+                            appName);
+
+      BwWebUtil.setState(request.getRequest(), s);
+
+      final String raddr = request.getRemoteAddr();
+      final String rhost = request.getRemoteHost();
+      info("===============" + appName + ": New session (" +
+                   s.getSessionNum() + ") from " +
+                   rhost + "(" + raddr + ")");
+    }
+
+    /* Ensure we have a client
+       */
+
+    form.fetchModule(request.getModuleName()).
+            checkClient(request, s, adminUserId, false, conf);
+
+    return s;
   }
 
   private String getAppName(final HttpSession sess) {
@@ -1876,235 +1803,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return appname;
-  }
-
-  /** Ensure we have a CalAdminSvcI object for the given user.
-   *
-   * <p>For an admin client with a super user we may switch to a different
-   * user to administer their events.
-   *
-   * @param request       for pars
-   * @param user          String user we want to be
-   * @param canSwitch     true if we should definitely allow user to switch
-   *                      this allows a user to switch between and into
-   *                      groups of which they are a member
-   * @return boolean      false for problems.
-   * @throws Throwable on fatal error
-   */
-  boolean checkSvci(final Request request,
-                    final BwSession sess,
-                    final String user,
-                    boolean canSwitch,
-                    final ConfigCommon conf) throws Throwable {
-    final BwActionFormBase form = (BwActionFormBase)request.getForm();
-    final boolean publicAdmin = conf.getPublicAdmin();
-    final boolean readWrite = conf.getReadWrite();
-    final boolean guestMode =
-            !publicAdmin && !readWrite && conf.getGuestMode();
-    String calSuiteName = null;
-
-
-    final BwCallback cb = getCb(request, form);
-    final BwModule module = form.fetchModule(request.getModuleName());
-    final BwModuleState mstate = module.getState();
-
-//    Client client = BwWebUtil.getClient(request.getRequest());
-    Client client = module.getClient();
-
-    if (BedeworkDefs.appTypeFeeder.equals(conf.getAppType())) {
-      calSuiteName = request.getReqPar("cs", conf.getCalSuite());
-    } else if (guestMode ||
-            BedeworkDefs.appTypeWebpublicauth.equals(conf.getAppType())) {
-      // A guest user using the public clients. Get the calendar suite from the
-      // configuration
-      calSuiteName = conf.getCalSuite();
-    } else if (publicAdmin & (client != null)) {
-      /* Calendar suite we are administering is the one we find attached to a
-       * group as we proceed up the tree
-       */
-      final AdminClient adcl = (AdminClient)client;
-
-      /* Note that we redo this once we have a group set. The first call
-         (before we have any client) has no group name set in the form
-       */
-      final BwCalSuiteWrapper cs =
-              AdminUtil.findCalSuite(request,
-                                     adcl);
-      form.setCurrentCalSuite(cs);
-
-      if (cs != null) {
-        calSuiteName = cs.getName();
-        adcl.setCalSuite(cs);
-
-        // Use preferences to set approver
-        final List<String> approvers =
-                adcl.getCalsuitePreferences().getCalsuiteApproversList();
-
-        if (approvers.contains(form.getCurrentUser())) {
-          form.assignCurUserApproverUser(true);
-        }
-
-        // If membership of an admin group implies approver - use that
-        final boolean adminGroupImpliesApprover =
-                ((AdminConfig)form.getConfig()).getAdminGroupApprovers();
-
-        if (adminGroupImpliesApprover &&
-                (cs.getGroup() != null) &&
-                cs.getGroup().getAccount().equals(form.getAdminGroupName())) {
-          form.assignCurUserApproverUser(true);
-        }
-      }
-      
-      form.setCalSuiteName(calSuiteName);
-
-      if (debug()) {
-        if (cs != null) {
-          debug("Found calSuite " + cs);
-        } else {
-          debug("No calsuite found");
-        }
-      }
-    } else {
-      /* !publicAdmin: We're never allowed to switch identity as a user client.
-       */
-      if (!user.equals(form.getCurrentUser())) {
-        return false;
-      }
-    }
-
-    boolean reinitClient = false;
-
-    try {
-      /* Make some checks to see if this is an old - restarted session.
-        If so discard the svc interface
-       */
-      if (client != null) {
-        /* Not the first time through here so for a public admin client we
-         * already have the authorised user's rights set in the form.
-         */
-
-        /* if (!client.isOpen()) {
-          //svci.flushAll();
-          reinitClient = true;
-          info("Client interface discarded from old session");
-          ((Callback)cb).closeNow(); // So we're not waiting for ourself
-        } else */
-        if (publicAdmin) {
-          final BwPrincipal pr = client.getCurrentPrincipal();
-          if (pr == null) {
-            throw new CalFacadeException("Null user for public admin.");
-          }
-
-          canSwitch = canSwitch || form.getCurUserContentAdminUser() ||
-                  form.getCurUserSuperUser();
-
-          final String curUser = pr.getAccount();
-
-          if (!user.equals(curUser)) {
-            if (!canSwitch) {
-              /* Trying to switch but not allowed */
-              return false;
-            }
-
-            /* Switching user */
-            client.endTransaction();
-            client.close();
-            reinitClient = true;
-            sess.reset(request);
-            cb.close(request.getRequest(), true); // So we're not waiting for ourself
-          }
-        }
-
-        /* Already there and already opened */
-        if (debug()) {
-          debug("Client interface -- Obtained from session for user " +
-                           client.getCurrentPrincipalHref());
-        }
-
-        if (reinitClient) {
-          // We did a module close will need to reclaim - always public admin
-          if (debug()) {
-            debug("Client-- reinit for user " + user);
-          }
-
-          form.flushModules(request.getModuleName());
-
-          ((AdminClientImpl)client).reinit(form.getCurrentUser(),
-                                           user,
-                                           calSuiteName);
-
-          cb.in(request);
-          //client.requestIn(request.getConversationType());
-          mstate.setRefresh(true);
-        }
-      } else {
-        if (debug()) {
-          debug("Client-- getResource new object for user " + user);
-        }
-
-        if (publicAdmin) {
-          client = new AdminClientImpl(conf,
-                                       module.getModuleName(),
-                                       form.getCurrentUser(),
-                                       user,
-                                       calSuiteName);
-        } else if (readWrite) {
-          client = new RWClientImpl(conf,
-                                    module.getModuleName(),
-                                    form.getCurrentUser(),
-                                    user,
-                                    form.getAppType());
-        } else {
-          client = new ROClientImpl(conf,
-                                    module.getModuleName(),
-                                    form.getCurrentUser(),
-                                    user,
-                                    calSuiteName,
-                                    form.getAppType(),
-                                    true);
-        }
-
-        module.setClient(client);
-        module.setRequest(request);
-
-        // Didn't release module - just reflag entry
-        module.requestIn();
-        mstate.setRefresh(true);
-        sess.reset(request);
-      }
-
-      if (client.getPublicAdmin()) {
-        final BwPrincipal pr = client.getCurrentPrincipal();
-        form.assignCurrentAdminUser(pr.getAccount());
-      }
-    } catch (final CalFacadeException cfe) {
-      throw cfe;
-    } catch (final Throwable t) {
-      throw new CalFacadeException(t);
-    }
-
-    return true;
-  }
-
-  private BwCallback getCb(final Request request,
-                           final BwActionFormBase form) {
-    final HttpSession hsess = request.getRequest().getSession();
-    BwCallback cb = (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
-    if (cb == null) {
-      /* create a call back object so the filter can open the service
-      interface */
-
-      cb = new BwCallbackImpl(form, request.getMapping());
-      hsess.setAttribute(BwCallback.cbAttrName, cb);
-    }
-
-    if (debug()) {
-      debug("checkSvci-- set req in cb - form action path = " +
-                       request.getActionPath() +
-                       " conv-type = " + request.getConversationType());
-    }
-
-    return cb;
   }
 
   /** Check for request parameter setting a module variable

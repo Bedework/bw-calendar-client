@@ -18,6 +18,7 @@
 */
 package org.bedework.client.web.admin.authuser;
 
+import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
@@ -35,6 +36,7 @@ import org.bedework.webcommon.BwRequest;
 public class GetAuthUsersAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
+                      final AdminClient cl,
                       final BwAdminActionForm form) throws Throwable {
     /* Check access
      */

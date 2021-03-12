@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.resources;
+package org.bedework.client.web.admin.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.calfacade.BwResource;

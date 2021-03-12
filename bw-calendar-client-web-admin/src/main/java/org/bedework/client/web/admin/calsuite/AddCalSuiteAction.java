@@ -16,15 +16,15 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.calsuite;
+package org.bedework.client.web.admin.calsuite;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** Add a new calendar suite.
@@ -45,16 +45,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class AddCalSuiteAction extends BwAbstractAction {
+public class AddCalSuiteAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
-
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
     final String name = request.getReqPar("name");
 
     if (name == null) {

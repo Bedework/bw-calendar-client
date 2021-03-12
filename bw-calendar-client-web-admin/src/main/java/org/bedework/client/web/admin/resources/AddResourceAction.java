@@ -17,15 +17,15 @@
     under the License.
 */
 
-package org.bedework.webcommon.resources;
+package org.bedework.client.web.admin.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** Add a new resource for a calendar suite.
@@ -48,18 +48,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author eric.wittmann@redhat.com
  */
-public class AddResourceAction extends BwAbstractAction {
+public class AddResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
     String rclass = request.getReqPar("class");
     final String name = request.getReqPar("name");
     String contentType = request.getReqPar("ct");

@@ -3,13 +3,19 @@
 */
 package org.bedework.client.web.admin;
 
+import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
+import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.UserAuth;
+import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModule;
 
 import org.apache.struts.action.ActionMapping;
+
+import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +26,9 @@ public class BwAdminActionForm extends BwActionFormBase {
   /* ..............................................................
    *                   Admin group fields
    * .............................................................. */
+
+  private boolean oneGroup;
+  private String adminGroupName;
 
   /** True if we are adding a new administrative group
    */
@@ -57,9 +66,61 @@ public class BwAdminActionForm extends BwActionFormBase {
    */
   private BwAuthUser editAuthUser;
 
-  /* ====================================================================
+  /* ..............................................................
+   *                       Calendar suites
+   * .............................................................. */
+
+  private String editCalSuiteName;
+
+  private BwCalSuiteWrapper calSuite;
+
+  private Collection<BwCalSuite> calSuites;
+
+  /* ..............................................................
+   *                     Resources
+   * .............................................................. */
+
+  private String resourceName;
+
+  private String resourceClass;
+
+  private boolean addingResource;
+
+  private CalSuiteResource calSuiteResource;
+
+  private List<CalSuiteResource> calSuiteResources;
+
+  /* ==============================================================
    *                   Admin groups
-   * ==================================================================== */
+   * ============================================================== */
+
+  /**
+   * @param val true if there is only one group
+   */
+  public void assignOneGroup(final boolean val) {
+    oneGroup = val;
+  }
+
+  /**
+   * @return true if there is only one group
+   */
+  public boolean getOneGroup() {
+    return oneGroup;
+  }
+
+  /**
+   * @param val admin group name
+   */
+  public void assignAdminGroupName(final String val) {
+    adminGroupName = val;
+  }
+
+  /**
+   * @return String admin group name
+   */
+  public String getAdminGroupName() {
+    return adminGroupName;
+  }
 
   /** Not set - invisible to jsp
    *
@@ -274,6 +335,140 @@ public class BwAdminActionForm extends BwActionFormBase {
   public BwAuthUser getEditAuthUser() {
     return editAuthUser;
   }
+
+  /* ==============================================================
+   *                   Calendar suites
+   * ============================================================== */
+
+  /** Name of CalSuite to edit/add/delete.
+   *
+   * @param val
+   */
+  public void setEditCalSuiteName(final String val) {
+    editCalSuiteName = val;
+  }
+
+  /** name of CalSuite to edit/add/delete.
+   *
+   * @return String
+   */
+  public String getEditCalSuiteName() {
+    return editCalSuiteName;
+  }
+
+  /** CalSuite we are editing or creating.
+   *
+   * @param val
+   */
+  public void setCalSuite(final BwCalSuiteWrapper val) {
+    calSuite = val;
+  }
+
+  /** CalSuite we are editing or creating.
+   *
+   * @return BwCalSuiteWrapper
+   */
+  public BwCalSuiteWrapper getCalSuite() {
+    return calSuite;
+  }
+
+  /**
+   *
+   * @param val the collection of cal suites
+   */
+  public void assignCalSuites(final Collection<BwCalSuite> val) {
+    calSuites = val;
+  }
+
+  /** Return the collection of cal suites
+   *
+   * @return Calendar suites
+   */
+  public Collection<BwCalSuite> getCalSuites() {
+    return calSuites;
+  }
+
+  /* ==============================================================
+   *                   Resources
+   * ============================================================== */
+
+  /** Not set - invisible to jsp
+   *
+   * @param val
+   */
+  public void assignAddingResource(final boolean val) {
+    addingResource = val;
+  }
+
+  /**
+   * @return bool
+   */
+  public boolean getAddingResource() {
+    return addingResource;
+  }
+
+  /**
+   * @return the resource name
+   */
+  public String getResourceName() {
+    return resourceName;
+  }
+
+  /**
+   * Sets the resource name.
+   * @param name
+   */
+  public void setResourceName(final String name) {
+    this.resourceName = name;
+  }
+
+  /**
+   * @return the resource class
+   */
+  public String getResourceClass() {
+    return resourceClass;
+  }
+
+  /**
+   * Sets the resource class.
+   * @param resourceClass
+   */
+  public void setResourceClass(final String resourceClass) {
+    this.resourceClass = resourceClass;
+  }
+
+  /** Current resource fetched
+   *
+   * @param val
+   */
+  public void setCalSuiteResource(final CalSuiteResource val) {
+    calSuiteResource = val;
+  }
+
+  /**
+   * @return resource or null
+   */
+  public CalSuiteResource getCalSuiteResource() {
+    return calSuiteResource;
+  }
+
+  /** Current resources fetched
+   *
+   * @param val
+   */
+  public void setCalSuiteResources(final List<CalSuiteResource> val) {
+    calSuiteResources = val;
+  }
+
+  /**
+   * @return list or null
+   */
+  public List<CalSuiteResource> getCalSuiteResources() {
+    return calSuiteResources;
+  }
+
+  /* ==============================================================
+   * ============================================================== */
 
   /**
    * Reset properties to their default values.

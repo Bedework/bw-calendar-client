@@ -16,58 +16,41 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.calsuite;
+package org.bedework.client.web.admin.calsuite;
 
-import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.RenderAction;
 
-/** Fetch a calendar suite for update/display/delete. Name is in form
- * property calsuiteName.
+/** Fetch a calendar suite for update/display/delete.
+ *
+ * <p>Parameters are:<ul>
+ *      <li>"name"             Name of suite</li>
+ * </ul>
  *
  * <p>Forwards to:<ul>
  *      <li>"error"        some form of fatal error.</li>
- *      <li>"noAccess"     user not authorised.</li>
- *      <li>"notFound"     no such subscription.</li>
  *      <li>"retry"        try again.</li>
  *      <li>"success"      subscribed ok.</li>
  * </ul>
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class RenderCalSuiteAction extends RenderAction {
+public class FetchCalSuiteAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
-    final String name = form.getEditCalSuiteName();
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
+    final String name = request.getReqPar("name");
 
     if (name == null) {
       form.getErr().emit(ValidationError.missingName);
       return forwardRetry;
     }
 
-    final BwCalSuiteWrapper cs = cl.getCalSuite(name);
-
-    if (cs == null) {
-      form.getErr().emit(ClientError.unknownCalendarSuite);
-      return forwardNotFound;
-    }
-
-    cs.setContext(null);
-    cs.setDefaultContext(false);
-    form.setCalSuite(cs);
-
-    final String reqpar = request.getReqPar("delete");
-
-    if (reqpar != null) {
-      return forwardDelete;
-    }
+    form.setEditCalSuiteName(name);
 
     return forwardSuccess;
   }

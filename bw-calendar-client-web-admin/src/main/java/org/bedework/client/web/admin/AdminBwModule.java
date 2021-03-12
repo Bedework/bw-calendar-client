@@ -63,7 +63,7 @@ public class AdminBwModule extends BwModule {
       throw new RuntimeException("Admin client called for non admin app");
     }
 
-    final BwActionFormBase form = (BwAdminActionForm)request.getForm();
+    final BwAdminActionForm form = (BwAdminActionForm)request.getForm();
     final BwModuleState mstate = getState();
     AdminClient client = (AdminClient)getClient();
     final BwCallback cb = BwCallback.getCb(request, form);
@@ -371,7 +371,7 @@ public class AdminBwModule extends BwModule {
 
   private int setGroup(final BwRequest request,
                        final BwAdminGroup adg) throws Throwable {
-    final BwActionFormBase form = request.getBwForm();
+    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final AdminClient cl = (AdminClient)request.getClient();
 
     cl.getMembers(adg);

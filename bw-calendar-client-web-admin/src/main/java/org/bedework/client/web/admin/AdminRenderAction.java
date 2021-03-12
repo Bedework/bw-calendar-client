@@ -16,34 +16,25 @@
     specific language governing permissions and limitations
     under the License.
 */
+package org.bedework.client.web.admin;
 
-package org.bedework.webcommon.resources;
-
+import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.RenderAction;
 
-/**
- * Shows a single resource, for editing purposes.
+/** This is a no-op action
+ * ADMIN ONLY
  *
- * <p>Forwards to:<ul>
- *      <li>"success"      show edit form.</li>
- *      <li>"retry"        back to resource list.</li>
- * </ul>
- *
- * @author eric.wittmann@redhat.com
+ * @author Mike Douglass  douglm - rpi.edu
  */
-public class EditResourceAction extends RenderAction {
+public class AdminRenderAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    final String name = request.getReqPar("name");
-    final String class_ = request.getReqPar("class");
-
-    form.setResourceName(name);
-    form.setResourceClass(class_);
-    form.assignAddingResource(false);
+    form.assignCalSuites(request.getClient().getContextCalSuites());
+    request.embedAdminGroups();
 
     return forwardSuccess;
   }
 }
+

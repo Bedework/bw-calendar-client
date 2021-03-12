@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.admin.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwCategory;
@@ -28,11 +28,12 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedResponseEvent;
 import org.bedework.util.calendar.PropertyIndex;
 import org.bedework.util.misc.Util;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.List;
@@ -54,17 +55,16 @@ import javax.servlet.http.HttpServletResponse;
  *            not a suggested event</li>
  * </ul>
  */
-public class SuggestAction extends EventActionBase {
+public class SuggestAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
     final HttpServletResponse response = request.getResponse();
 
     /* Check access
      */
-    final boolean publicAdmin = cl.getPublicAdmin();
-    if (cl.isGuest() || !publicAdmin || !form.getCurUserApproverUser()) {
+    if (!form.getCurUserApproverUser()) {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       return forwardNull;
     }
@@ -126,9 +126,10 @@ public class SuggestAction extends EventActionBase {
       newStatus = 'R';
     }
 
-    final String newSt = new BwEvent.SuggestedTo(newStatus,
-                                                 st.getGroupHref(),
-                                                 st.getSuggestedByHref()).toString();
+    final String newSt =
+            new BwEvent.SuggestedTo(newStatus,
+                                    st.getGroupHref(),
+                                    st.getSuggestedByHref()).toString();
     /* TODO - reenable after data fixed
     if (newSt.equals(st.toString())) {
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);

@@ -17,16 +17,16 @@
     under the License.
 */
 
-package org.bedework.webcommon.resources;
+package org.bedework.client.web.admin.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.RenderAction;
 
 /** Shows a single resource, for editing purposes.
  * ADMIN ONLY
@@ -38,10 +38,11 @@ import org.bedework.webcommon.RenderAction;
  *
  * @author eric.wittmann@redhat.com
  */
-public class RenderResourceAction extends RenderAction {
+public class RenderResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
     final AdminClient cl = (AdminClient)request.getClient();
 
     final String name = form.getResourceName();

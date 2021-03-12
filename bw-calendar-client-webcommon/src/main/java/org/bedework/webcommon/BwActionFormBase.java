@@ -19,7 +19,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
-import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
@@ -41,7 +40,6 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
@@ -67,7 +65,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -161,30 +158,13 @@ public class BwActionFormBase extends UtilActionForm
 
   private BwFilterDef currentFilter;
 
-  /* ....................................................................
+  /* ..............................................................
    *                       Calendar suites
-   * .................................................................... */
+   * .............................................................. */
 
   private BwCalSuiteWrapper currentCalSuite;
 
   private String calSuiteName;
-
-  private String editCalSuiteName;
-
-  private BwCalSuiteWrapper calSuite;
-
-  private String resourceName;
-
-  private String resourceClass;
-
-  private boolean addingResource;
-
-  private CalSuiteResource calSuiteResource;
-
-  private List<CalSuiteResource> calSuiteResources;
-
-  private boolean oneGroup;
-  private String adminGroupName;
 
   /** The groups of which our user is a member
    */
@@ -421,7 +401,6 @@ public class BwActionFormBase extends UtilActionForm
   private UpdateFromTimeZonesInfo updateFromTimeZonesInfo;
 
   private boolean reloadRequired;
-  private Collection<BwCalSuite> calSuites;
   private String calendarUserAddress;
 
   /* ====================================================================
@@ -972,9 +951,9 @@ public class BwActionFormBase extends UtilActionForm
     return markDeleted;
   }
 
-  /* ====================================================================
+  /* ==============================================================
    *                   Calendar suites
-   * ==================================================================== */
+   * ============================================================== */
 
   /** Current calSuite for the application
    *
@@ -1007,160 +986,9 @@ public class BwActionFormBase extends UtilActionForm
     return calSuiteName;
   }
 
-  /** Name of CalSuite to edit/add/delete.
-   *
-   * @param val
-   */
-  public void setEditCalSuiteName(final String val) {
-    editCalSuiteName = val;
-  }
-
-  /** name of CalSuite to edit/add/delete.
-   *
-   * @return String
-   */
-  public String getEditCalSuiteName() {
-    return editCalSuiteName;
-  }
-
-  /** CalSuite we are editing or creating.
-   *
-   * @param val
-   */
-  public void setCalSuite(final BwCalSuiteWrapper val) {
-    calSuite = val;
-  }
-
-  /** CalSuite we are editing or creating.
-   *
-   * @return BwCalSuiteWrapper
-   */
-  public BwCalSuiteWrapper getCalSuite() {
-    return calSuite;
-  }
-
-  /** Not set - invisible to jsp
-   *
-   * @param val
-   */
-  public void assignAddingResource(final boolean val) {
-    addingResource = val;
-  }
-
-  /**
-   * @return the resource name
-   */
-  public String getResourceName() {
-    return resourceName;
-  }
-
-  /**
-   * Sets the resource name.
-   * @param name
-   */
-  public void setResourceName(final String name) {
-    this.resourceName = name;
-  }
-
-  /**
-   * @return the resource class
-   */
-  public String getResourceClass() {
-    return resourceClass;
-  }
-
-  /**
-   * Sets the resource class.
-   * @param resourceClass
-   */
-  public void setResourceClass(final String resourceClass) {
-    this.resourceClass = resourceClass;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getAddingResource() {
-    return addingResource;
-  }
-
-  /** the collection of cal suites
-   *
-   * @return Calendar suites
-   */
-  public void assignCalSuites(Collection<BwCalSuite> val) {
-    calSuites = val;
-  }
-
-  /** Return the collection of cal suites
-   *
-   * @return Calendar suites
-   */
-  public Collection<BwCalSuite> getCalSuites() {
-    return calSuites;
-  }
-
-  /** Current resource fetched
-   *
-   * @param val
-   */
-  public void setCalSuiteResource(final CalSuiteResource val) {
-    calSuiteResource = val;
-  }
-
-  /**
-   * @return resource or null
-   */
-  public CalSuiteResource getCalSuiteResource() {
-    return calSuiteResource;
-  }
-
-  /** Current resources fetched
-   *
-   * @param val
-   */
-  public void setCalSuiteResources(final List<CalSuiteResource> val) {
-    calSuiteResources = val;
-  }
-
-  /**
-   * @return list or null
-   */
-  public List<CalSuiteResource> getCalSuiteResources() {
-    return calSuiteResources;
-  }
-
-  /* ====================================================================
-   *                   Admin groups
-   * ==================================================================== */
-
-  /**
-   * @param val
-   */
-  public void assignOneGroup(final boolean val) {
-    oneGroup = val;
-  }
-
-  /**
-   * @return true if there is only one group
-   */
-  public boolean getOneGroup() {
-    return oneGroup;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignAdminGroupName(final String val) {
-    adminGroupName = val;
-  }
-
-  /**
-   * @return String admin group name
-   */
-  public String getAdminGroupName() {
-    return adminGroupName;
-  }
+  /* ==============================================================
+   *                   groups
+   * ============================================================== */
 
   /** The groups of which our user is a member
    *

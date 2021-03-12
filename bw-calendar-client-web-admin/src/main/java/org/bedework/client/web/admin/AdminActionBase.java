@@ -15,8 +15,16 @@ public abstract class AdminActionBase extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
+    final AdminClient cl = (AdminClient)request.getClient();
+
+    /* Check access
+     */
+    if (cl.isGuest()) {
+      return forwardNoAccess; // First line of defence
+    }
+
     return doAction(request,
-                    (AdminClient)request.getClient(),
+                    cl,
                     (BwAdminActionForm)form);
   }
 

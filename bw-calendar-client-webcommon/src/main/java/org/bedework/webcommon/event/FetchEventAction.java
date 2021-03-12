@@ -18,15 +18,33 @@
 */
 package org.bedework.webcommon.event;
 
+import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.DateTimeFormatter;
+import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.client.Client;
+import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.BwEvent;
+import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
+import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.convert.IcalTranslator;
+import org.bedework.convert.RecurRuleComponents;
+import org.bedework.util.calendar.ScheduleMethods;
+import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.webcommon.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
+import java.util.Collection;
+import java.util.TreeSet;
+
+import static org.bedework.util.misc.response.Response.Status.notFound;
+
 /** This action fetches events for editing
+ * ADMIN + RW
  *
  * <p>Forwards to:<ul>
  *      <li>"noAccess"     user not authorised.</li>
@@ -90,5 +108,119 @@ public class FetchEventAction extends EventActionBase {
     }
 
     return fwd;
+  }
+
+  /** Given the EventInfo object refresh the information in the form.
+   *
+   * @param request bw request object
+   * @param ei      event info
+   * @return int forward.
+   * @throws Throwable on fatal error
+   */
+  protected int refreshEvent(final BwRequest request,
+                             final EventInfo ei) throws Throwable {
+    final BwActionFormBase form = request.getBwForm();
+
+    if (ei == null) {
+      request.getErr().emit(ClientError.unknownEvent);
+      return forwardNotFound;
+    }
+
+    final Client cl = request.getClient();
+    final BwEvent ev = ei.getEvent();
+
+    form.setEventInfo(ei, false);
+    form.assignSavedEvent((BwEvent)ev.clone());
+    form.assignAddingEvent(false);
+
+    String str = null;
+    BwStringBase<?> bstr = ev.findDescription(null);
+    if (bstr != null) {
+      str = bstr.getValue();
+    }
+    form.setDescription(str);
+
+    bstr = ev.findSummary(null);
+    if (bstr != null) {
+      str = bstr.getValue();
+    } else {
+      str = null;
+    }
+    form.setSummary(str);
+
+    form.setEventStatus(ev.getStatus());
+
+    if (!request.setEventCalendar(ei,
+                                  ei.getChangeset(cl.getCurrentPrincipalHref()))) {
+      return forwardNoAction;
+    }
+
+    final BwLocation loc = ev.getLocation();
+
+    if (debug()) {
+      if (loc == null) {
+        debug("Set event with null location");
+      } else {
+        debug("Set event with location " + loc);
+      }
+    }
+
+    form.setLocation(null);
+
+    if (loc != null) {
+      form.setLocationUid(loc.getUid());
+    } else {
+      form.setLocationUid(null);
+    }
+
+    final GetEntitiesResponse<RecurRuleComponents> rrcs =
+            RecurRuleComponents.fromEventRrules(ev);
+
+    if (rrcs.getStatus() == notFound) {
+      form.setRruleComponents(null);
+    } else if (!rrcs.isOk()) {
+      request.getErr().emit(rrcs.getMessage());
+      return forwardNoAction;
+    } else {
+      form.setRruleComponents(rrcs.getEntities());
+    }
+
+    final EventFormatter ef =
+            new EventFormatter(cl,
+                               new IcalTranslator(new IcalCallbackcb(cl)),
+                               ei);
+
+    form.setCurEventFmt(ef);
+
+    if (ev.getScheduleMethod() != ScheduleMethods.methodTypeNone) {
+      // Assume we need a list of event calendars
+      form.setMeetingCal(cl.getCollection(ev.getColPath()));
+    }
+
+    Collection<BwDateTime> dates = ev.getRdates();
+    Collection<DateTimeFormatter> frdates = null;
+    if ((dates != null) && (!dates.isEmpty())) {
+      frdates = new TreeSet<>();
+
+      for (final BwDateTime date: dates) {
+        frdates.add(new DateTimeFormatter(date));
+      }
+    }
+
+    form.setFormattedRdates(frdates);
+
+    dates = ev.getExdates();
+    frdates = null;
+    if ((dates != null) && (!dates.isEmpty())) {
+      frdates = new TreeSet<>();
+
+      for (final BwDateTime date: dates) {
+        frdates.add(new DateTimeFormatter(date));
+      }
+    }
+
+    form.setFormattedExdates(frdates);
+
+    return forwardContinue;
   }
 }

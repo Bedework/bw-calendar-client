@@ -51,8 +51,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Action to upload an icalendar file.
+/** Action to upload an icalendar file.
+ * RW
+ *
  * <p>Parameters are:<ul>
  *      <li>"newCalPath"            Path of calendar</li>
  * </ul>

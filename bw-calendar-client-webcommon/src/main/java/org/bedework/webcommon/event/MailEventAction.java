@@ -35,8 +35,9 @@ import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.Calendar;
 
-/**
- * Action to mail an Event.
+/** Action to mail an Event.
+ * RW
+ *
  * <p>No request parameters (other than updates to email and subject)
  * <p>Forwards to:<ul>
  *      <li>"retry"        email options still not valid.</li>

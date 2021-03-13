@@ -34,15 +34,11 @@ import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
-import org.bedework.calfacade.ScheduleResult;
-import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.configs.AuthProperties;
@@ -59,12 +55,10 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
-import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.NotificationInfo;
 import org.bedework.client.rw.RWClient;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
-import org.bedework.util.calendar.ScheduleStates;
 import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
@@ -731,35 +725,66 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                       false,   // floating
                                       null);   // tzid
   }
+  protected EventInfo findEvent(final BwRequest request,
+                                final EventKey ekey) throws Throwable {
+    final Client cl = request.getClient();
+    EventInfo ev = null;
 
-  protected void emitScheduleStatus(final BwActionFormBase form,
-                                    final ScheduleResult sr,
-                                    final boolean errorsOnly) {
-    if (sr.errorCode != null) {
-      form.getErr().emit(sr.errorCode, sr.extraInfo);
+    if (ekey.getColPath() == null) {
+      // bogus request
+      request.getErr().emit(ValidationError.missingCalendarPath);
+      return null;
     }
 
-    if (sr.ignored) {
-      form.getMsg().emit(ClientMessage.scheduleIgnored);
-    }
+    String key = null;
 
-    if (sr.reschedule) {
-      form.getMsg().emit(ClientMessage.scheduleRescheduled);
-    }
-
-    if (sr.update) {
-      form.getMsg().emit(ClientMessage.scheduleUpdated);
-    }
-
-    for (final ScheduleRecipientResult srr: sr.recipientResults.values()) {
-      if (srr.getStatus() == ScheduleStates.scheduleDeferred) {
-        form.getMsg().emit(ClientMessage.scheduleDeferred, srr.recipient);
-      } else if (srr.getStatus() == ScheduleStates.scheduleNoAccess) {
-        form.getErr().emit(ClientError.noSchedulingAccess, srr.recipient);
-      } else if (!errorsOnly) {
-        form.getMsg().emit(ClientMessage.scheduleSent, srr.recipient);
+    if (ekey.getGuid() != null) {
+      if (debug()) {
+        debug("Get event by guid");
       }
+      key = ekey.getGuid();
+      String rid = ekey.getRecurrenceId();
+      // DORECUR is this right?
+      final RecurringRetrievalMode rrm;
+      if (ekey.getForExport()) {
+        rrm = RecurringRetrievalMode.overrides;
+        rid = null;
+      } else {
+        rrm = RecurringRetrievalMode.expanded;
+      }
+
+      final Collection<EventInfo> evs =
+              cl.getEventByUid(ekey.getColPath(),
+                               ekey.getGuid(),
+                               rid, rrm).getEntities();
+      if (debug()) {
+        debug("Get event by guid found " + evs.size());
+      }
+
+      if (evs.size() == 1) {
+        ev = evs.iterator().next();
+      } else {
+        // XXX this needs dealing with
+      }
+    } else if (ekey.getName() != null) {
+      if (debug()) {
+        debug("Get event by name");
+      }
+      key = ekey.getName();
+
+      ev = cl.getEvent(ekey.getColPath(),
+                       ekey.getName(),
+                       ekey.getRecurrenceId());
     }
+
+    if (ev == null) {
+      request.getErr().emit(ClientError.unknownEvent, key);
+      return null;
+    } else if (debug()) {
+      debug("Get event found " + ev.getEvent());
+    }
+
+    return ev;
   }
 
   /** Find a principal object given a "user" request parameter.
@@ -1020,131 +1045,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return secr;
-  }
-
-  /**
-   * @param request     BwRequest for parameters
-   * @param form        action form
-   * @param atts Attendees
-   * @param st start time
-   * @param et end time
-   * @param intunitStr interval unit as string
-   * @param interval value
-   * @return int
-   * @throws Throwable on fatal error
-   */
-  public int doFreeBusy(final BwRequest request,
-                        final BwActionFormBase form,
-                        final Attendees atts,
-                        final String st,
-                        final String et,
-                        final String intunitStr,
-                        final int interval) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-    final BwModuleState mstate = request.getModule().getState();
-
-    /*  Start of getting date/time - make a common method? */
-
-    final Calendar start;
-    final Calendar end;
-
-    if (st == null) {
-      /* Set period and start from the current timeview */
-      final TimeView tv = request.getSess().getCurTimeView(request);
-
-      /* Clone calendar so we don't mess up time */
-      start = (Calendar)tv.getFirstDay().clone();
-      end = tv.getLastDay();
-      end.add(Calendar.DATE, 1);
-    } else {
-      start = mstate.getCalInfo().getFirstDayOfThisWeek(Timezones.getDefaultTz(),
-                                                      DateTimeUtil.fromISODate(st));
-
-      // Set end to 1 week on.
-      end = (Calendar)start.clone();
-      end.add(Calendar.WEEK_OF_YEAR, 1);
-    }
-
-    // Don't allow more than a month
-    final Calendar check = Calendar.getInstance(
-            mstate.getCalInfo().getLocale());
-    check.setTime(start.getTime());
-    check.add(Calendar.DATE, 32);
-
-    if (check.before(end)) {
-      return forwardBadRequest;
-    }
-
-    final BwDateTime sdt = BwDateTimeUtil.getDateTime(start.getTime());
-    final BwDateTime edt = BwDateTimeUtil.getDateTime(end.getTime());
-
-    /*  End of getting date/time - make a common method? */
-
-    final String originator = cl.getCurrentCalendarAddress();
-    final BwEvent fbreq = BwEventObj.makeFreeBusyRequest(sdt, edt,
-                                                   null,     // organizer
-                                                   originator,
-                                                   atts.getAttendees(),
-                                                   atts.getRecipients());
-    if (fbreq == null) {
-      return forwardBadRequest;
-    }
-
-    final ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
-                                    null, null, false);
-    if (debug()) {
-      debug(sr.toString());
-    }
-
-    if (sr.recipientResults != null) {
-      for (final ScheduleRecipientResult srr: sr.recipientResults.values()) {
-        if (srr.getStatus() !=ScheduleStates.scheduleOk) {
-          form.getMsg().emit(ClientMessage.freebusyUnavailable, srr.recipient);
-        }
-      }
-    }
-
-    final BwDuration dur = new BwDuration();
-
-    if (interval <= 0) {
-      form.getErr().emit(ClientError.badInterval, interval);
-      return forwardError;
-    }
-
-    if (intunitStr != null) {
-      switch (intunitStr) {
-        case "minutes":
-          dur.setMinutes(interval);
-          break;
-        case "hours":
-          dur.setHours(interval);
-          break;
-        case "days":
-          dur.setDays(interval);
-          break;
-        case "weeks":
-          dur.setWeeks(interval);
-          break;
-        default:
-          form.getErr().emit(ClientError.badIntervalUnit, interval);
-          return forwardError;
-      }
-    } else {
-      dur.setHours(interval);
-    }
-
-    final FbResponses resps = cl.aggregateFreeBusy(sr, sdt, edt, dur);
-    form.setFbResponses(resps);
-
-    final FormattedFreeBusy ffb = new FormattedFreeBusy(
-            resps.getAggregatedResponse(),
-            mstate.getCalInfo().getLocale());
-
-    form.setFormattedFreeBusy(ffb);
-
-    emitScheduleStatus(form, sr, true);
-
-    return forwardSuccess;
   }
 
   /** Method to retrieve an event. An event is identified by the calendar +

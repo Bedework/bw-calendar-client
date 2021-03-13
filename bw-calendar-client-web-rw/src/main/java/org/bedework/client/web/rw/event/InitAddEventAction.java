@@ -16,24 +16,27 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.TimeView;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.base.StartEndComponent;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.webcommon.Attendees;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.Attendees;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.DurationBean;
 import org.bedework.webcommon.EventDates;
+
+import static org.bedework.client.web.rw.EventCommon.initMeeting;
 
 /** Set up for addition of new event.
  *
@@ -52,10 +55,11 @@ import org.bedework.webcommon.EventDates;
  * @see org.bedework.webcommon.BwRequest#getSchedule()
  *
  */
-public class InitAddEventAction extends EventActionBase {
+public class InitAddEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     request.refresh();
 
     final BwEvent ev = new BwEventObj();
@@ -146,8 +150,6 @@ public class InitAddEventAction extends EventActionBase {
     sess.embedUserCollections(request);
 
     sess.embedContactCollection(request, BwSession.ownersEntity);
-
-    final Client cl = request.getClient();
 
     sess.embedCategories(request, false, BwSession.ownersEntity);
     sess.embedLocations(request, BwSession.ownersEntity);

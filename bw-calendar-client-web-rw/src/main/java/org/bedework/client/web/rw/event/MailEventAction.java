@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -26,11 +26,11 @@ import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.mail.ObjectAttachment;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.misc.Util;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.Calendar;
@@ -45,14 +45,11 @@ import net.fortuna.ical4j.model.Calendar;
  *      <li>"success"      mailed (or queued) ok.</li>
  * </ul>
  */
-public class MailEventAction extends BwAbstractAction {
+public class MailEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final EventInfo ei = form.getEventInfo();
 
     if (ei == null) {
@@ -84,9 +81,9 @@ public class MailEventAction extends BwAbstractAction {
     final Calendar cal = trans.toIcal(ei, Icalendar.methodTypePublish);
     mailMessage(emsg, cal.toString(),
                 "event.ics", "text/calendar",
-                (RWClient)request.getClient());
+                cl);
 
-    form.getMsg().emit(ClientMessage.mailedEvent);
+    request.getMsg().emit(ClientMessage.mailedEvent);
 
     return forwardSuccess;
   }

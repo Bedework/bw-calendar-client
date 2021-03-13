@@ -43,8 +43,6 @@ public class RenderResourceAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
-
     final String name = form.getResourceName();
     if (name == null) {
       request.getErr().emit(ValidationError.missingName);

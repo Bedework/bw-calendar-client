@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -26,13 +26,16 @@ import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.List;
+
+import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 
 /**
  * Action to delete an event
@@ -52,18 +55,11 @@ import java.util.List;
  *      <li>org.bedework.message.nosuchevent</li>
  * </ul>
  */
-public class DeleteEventAction extends EventActionBase {
+public class DeleteEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final boolean publicAdmin = cl.getPublicAdmin();
     final boolean submitApp = form.getSubmitApp();
     final boolean publicEvents = publicAdmin || submitApp;

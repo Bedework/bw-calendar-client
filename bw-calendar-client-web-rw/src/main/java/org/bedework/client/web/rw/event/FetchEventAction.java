@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.DateTimeFormatter;
@@ -29,18 +29,22 @@ import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.svc.EventInfo;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.response.GetEntitiesResponse;
-import org.bedework.webcommon.Attendees;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.Attendees;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
 import java.util.Collection;
 import java.util.TreeSet;
 
+import static org.bedework.client.web.rw.EventCommon.copyEvent;
+import static org.bedework.client.web.rw.EventCommon.resetEvent;
 import static org.bedework.util.misc.response.Response.Status.notFound;
 
 /** This action fetches events for editing
@@ -54,12 +58,11 @@ import static org.bedework.util.misc.response.Response.Status.notFound;
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class FetchEventAction extends EventActionBase {
+public class FetchEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     if (cl.getPublicAdmin()) {
       // Handled by overide
       return forwardNoAccess;
@@ -68,9 +71,9 @@ public class FetchEventAction extends EventActionBase {
     return doAction(request, cl, form);
   }
 
-  public int doAction(final BwRequest request,
-                      final Client cl,
-                      final BwActionFormBase form) throws Throwable {
+  protected int doTheAction(final BwRequest request,
+                            final RWClient cl,
+                            final BwRWActionForm form) throws Throwable {
     form.assignAddingEvent(false);
 
     final Rmode mode;
@@ -119,7 +122,7 @@ public class FetchEventAction extends EventActionBase {
    */
   protected int refreshEvent(final BwRequest request,
                              final EventInfo ei) throws Throwable {
-    final BwActionFormBase form = request.getBwForm();
+    final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
 
     if (ei == null) {
       request.getErr().emit(ClientError.unknownEvent);

@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
@@ -28,8 +28,9 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.IcalDefs;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Action to add an event alias to a personal calendar.
@@ -47,11 +48,12 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      added ok.</li>
  * </ul>
  */
-public class AddEventRefAction extends EventActionBase {
+public class AddEventRefAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final int fwd = addEventRef(request, form);
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    final int fwd = addEventRef(request, cl, form);
     if (fwd != forwardSuccess) {
       return fwd;
     }
@@ -74,15 +76,8 @@ public class AddEventRefAction extends EventActionBase {
    * @throws Throwable on fatal error
    */
   private int addEventRef(final BwRequest request,
-                          final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                          final RWClient cl,
+                          final BwRWActionForm form) throws Throwable {
 //    EventInfo ei = findEvent(request, Rmode.masterOnly);
 
     final EventKey ekey = form.getEventKey();

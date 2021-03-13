@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.schedule;
+package org.bedework.client.web.rw.schedule;
 
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
@@ -29,16 +29,22 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.BwWebUtil;
-import org.bedework.webcommon.event.EventActionBase;
 
 import java.util.Collection;
+
+import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
+import static org.bedework.client.web.rw.EventCommon.refetchEvent;
+import static org.bedework.client.web.rw.EventCommon.setEventContact;
+import static org.bedework.client.web.rw.EventCommon.setEventLocation;
+import static org.bedework.client.web.rw.EventCommon.setEventText;
 
 /**
  * Action to handle scheduling requests - that is the schedule method was
@@ -85,18 +91,11 @@ import java.util.Collection;
  *      <li>"success"      changes made.</li>
  * </ul>
  */
-public class AttendeeRespond extends EventActionBase {
+public class AttendeeRespond extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     if (request.present("initUpdate")) {
 //      ei = sched.initAttendeeUpdate(ei);
       final EventInfo ei = form.getEventInfo();
@@ -159,15 +158,9 @@ public class AttendeeRespond extends EventActionBase {
      // }
 
       /* -------------------------- Location ------------------------------ */
-      if (publicAdmin) {
-        if (!adminEventLocation(request, ei)) {
-          return forwardValidationError;
-        }
-      } else {
-        if (setEventLocation(request, ei, form, false)) {
-          // RFC says maybe for this.
-          //incSequence = true;
-        }
+      if (setEventLocation(request, ei, form, false)) {
+        // RFC says maybe for this.
+        //incSequence = true;
       }
 
       /* -------------------------- Contact ------------------------------ */

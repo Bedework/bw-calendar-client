@@ -3,11 +3,12 @@
 */
 package org.bedework.client.web.admin.event;
 
+import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.admin.AdminUtil;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.event.FetchEventAction;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
-import org.bedework.webcommon.event.FetchEventAction;
 
 /**
  * User: mike Date: 3/10/21 Time: 21:17
@@ -15,12 +16,13 @@ import org.bedework.webcommon.event.FetchEventAction;
 public class AdminFetchEventAction extends FetchEventAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     if (!form.getAuthorisedUser()) {
       return forwardNoAccess;
     }
 
-    final int fwd = doAction(request, request.getClient(), form);
+    final int fwd = doTheAction(request, cl, form);
 
     if (form.getSuggestionEnabled()) {
       AdminUtil.embedPreferredAdminGroups(request);

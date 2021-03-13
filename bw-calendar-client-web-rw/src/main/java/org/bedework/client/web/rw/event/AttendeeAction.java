@@ -16,16 +16,21 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collection;
+
+import static org.bedework.client.web.rw.EventCommon.doAttendee;
+import static org.bedework.client.web.rw.EventCommon.doFreeBusy;
 
 /**
  * Action to handle recipients and attendees for an event. This action
@@ -53,14 +58,11 @@ import java.util.Collection;
  *      <li>"success"      changes made.</li>
  * </ul>
  */
-public class AttendeeAction extends EventActionBase {
+public class AttendeeAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final BwModuleState mstate = request.getModule().getState();
 
     final boolean listResponseOnly =
@@ -94,7 +96,8 @@ public class AttendeeAction extends EventActionBase {
             debug(att.toString());
           }
           res = doAttendee(request,
-                           form, request.present("delete"),
+                           form,
+                           request.present("delete"),
                            request.present("update"),
                            false,            // recipient
                            true,             // attendee
@@ -111,7 +114,7 @@ public class AttendeeAction extends EventActionBase {
             return res;
           }
         } catch (final Throwable t) {
-          form.getErr().emit(ClientError.unknownAttendee, s);
+          request.getErr().emit(ClientError.unknownAttendee, s);
           return forwardNoAction;
         }
       }
@@ -121,7 +124,8 @@ public class AttendeeAction extends EventActionBase {
 
       if (uri != null) {
         res = doAttendee(request,
-                         form, request.present("delete"),
+                         form,
+                         request.present("delete"),
                          request.present("update"),
                          request.present("recipient"),
                          request.present("attendee"),

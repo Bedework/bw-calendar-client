@@ -89,6 +89,7 @@
     <module>bw-calendar-client-admin</module>
     <module>bw-calendar-client-rw</module>
     <module>bw-calendar-client-web-admin</module>
+    <module>bw-calendar-client-web-rw</module>
   </modules>
 
   <developers>

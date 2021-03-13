@@ -271,7 +271,7 @@ public class AdminBwModule extends BwModule {
    */
   public int checkGroup(final BwRequest request,
                         final boolean initCheck) {
-    final BwActionFormBase form = (BwActionFormBase)request.getForm();
+    final BwAdminActionForm form = (BwAdminActionForm)request.getForm();
 
     final AdminClient cl = (AdminClient)request.getClient();
 

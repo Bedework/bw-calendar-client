@@ -16,19 +16,21 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.misc;
+package org.bedework.client.web.rw.schedule;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.IcalDefs;
-import org.bedework.webcommon.Attendees;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.Attendees;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.parameter.Role;
+
+import static org.bedework.client.web.rw.EventCommon.doFreeBusy;
 
 /**
  * Action to fetch free busy information for web use.
@@ -56,17 +58,17 @@ import net.fortuna.ical4j.model.parameter.Role;
  *
  * @author Mike Douglass douglm @ rpi.edu
  */
-public class FreeBusyAction extends BwAbstractAction {
+public class FreeBusyAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     String uri = null;
-    Client cl = request.getClient();
-    BwModuleState mstate = request.getModule().getState();
+    final BwModuleState mstate = request.getModule().getState();
 
     gotoDateView(request, mstate.getDate(), mstate.getViewType());
 
-    String userId = request.getReqPar("userid");
+    final String userId = request.getReqPar("userid");
 
     if (userId != null) {
       uri = cl.getCalendarAddress(userId);
@@ -79,16 +81,16 @@ public class FreeBusyAction extends BwAbstractAction {
       return forwardNotFound;
     }
 
-    String st = request.getReqPar("start");
-    String et = request.getReqPar("end");
-    String intunitStr = request.getReqPar("intunit");
-    int interval = request.getIntReqPar("interval", 1);
+    final String st = request.getReqPar("start");
+    final String et = request.getReqPar("end");
+    final String intunitStr = request.getReqPar("intunit");
+    final int interval = request.getIntReqPar("interval", 1);
 
     // Make user an attendee
-    Attendees atts = new Attendees();
+    final Attendees atts = new Attendees();
     atts.addRecipient(uri);
 
-    BwAttendee att = new BwAttendee();
+    final BwAttendee att = new BwAttendee();
 
     att.setAttendeeUri(uri);
     att.setRole(Role.CHAIR.getValue());

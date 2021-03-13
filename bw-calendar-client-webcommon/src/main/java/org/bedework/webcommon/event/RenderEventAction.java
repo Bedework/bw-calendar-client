@@ -31,6 +31,7 @@ import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
@@ -43,7 +44,7 @@ import static org.bedework.util.misc.response.Response.Status.notFound;
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
-public class RenderEventAction extends EventActionBase {
+public class RenderEventAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {

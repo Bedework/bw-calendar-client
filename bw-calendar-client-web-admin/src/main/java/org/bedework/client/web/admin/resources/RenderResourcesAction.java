@@ -23,6 +23,7 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
@@ -49,7 +50,7 @@ public class RenderResourcesAction extends RenderAction {
                          form.getCurrentCalSuite());
 
     // TODO: add admin-only suite resources if logged-in user is a superadmin
-    form.setCalSuiteResources(resources);
+    ((BwAdminActionForm)form).setCalSuiteResources(resources);
 
     return forwardSuccess;
   }

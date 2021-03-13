@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.misc;
+package org.bedework.client.web.rw.misc;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -30,13 +30,13 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.webcommon.AddEventResult;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.AddEventResult;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
 
@@ -64,30 +64,25 @@ import java.util.Set;
  *      <li>"success"      mailed (or queued) ok.</li>
  * </ul>
  */
-public class UploadAction extends BwAbstractAction {
+public class UploadAction extends RWActionBase {
   @SuppressWarnings("rawtypes")
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final String transparency = request.getReqPar("transparency");
     if (!BwWebUtil.checkTransparency(transparency)) {
-      form.getErr().emit(ValidationError.invalidTransparency, transparency);
+      request.getErr().emit(ValidationError.invalidTransparency, transparency);
       return forwardRetry;
     }
 
     final String status = request.getReqPar("status");
     if (!BwWebUtil.checkStatus(status)) {
-      form.getErr().emit(ValidationError.invalidStatus, status);
+      request.getErr().emit(ValidationError.invalidStatus, status);
       return forwardRetry;
     }
 
     final boolean stripAlarms = request.getBooleanReqPar("stripAlarms", false);
-
-    final RWClient cl = (RWClient)request.getClient();
 
     final Map<String, String> paths = new HashMap<>();
 
@@ -103,7 +98,7 @@ public class UploadAction extends BwAbstractAction {
     final String fileName = upFile.getFileName();
 
     if ((fileName == null) || (fileName.length() == 0)) {
-      form.getErr().emit(ClientError.missingFileName, 1);
+      request.getErr().emit(ClientError.missingFileName, 1);
       return forwardRetry;
     }
 
@@ -169,7 +164,7 @@ public class UploadAction extends BwAbstractAction {
             col = cl.getCollection(newCalPath);
 
             if (col == null) {
-              form.getErr().emit(ValidationError.missingCalendar);
+              request.getErr().emit(ValidationError.missingCalendar);
               return forwardRetry;
             }
           }
@@ -185,7 +180,7 @@ public class UploadAction extends BwAbstractAction {
             path = cl.getPreferredCollectionPath(icalName);
 
             if (path == null) {
-              form.getErr().emit(ValidationError.missingCalendar);
+              request.getErr().emit(ValidationError.missingCalendar);
             }
           }
 
@@ -197,7 +192,7 @@ public class UploadAction extends BwAbstractAction {
         col = cl.getCollection(newCalPath);
 
         if (col == null) {
-          form.getErr().emit(ValidationError.missingCalendar);
+          request.getErr().emit(ValidationError.missingCalendar);
         }
 
         ev.setScheduleMethod(ScheduleMethods.methodTypeNone);
@@ -222,13 +217,13 @@ public class UploadAction extends BwAbstractAction {
             if (!cfe.getMessage().equals(CalFacadeException.noRecurrenceInstances)) {
               throw cfe;
             }
-            form.getErr().emit(cfe.getMessage(), cfe.getExtra());
+            request.getErr().emit(cfe.getMessage(), cfe.getExtra());
           }*/
         } else {
           final var ueres =
                   cl.updateEvent(ei, false, null, false);
           if (!ueres.isOk()) {
-            form.getErr().emit(ueres.getMessage());
+            request.getErr().emit(ueres.getMessage());
             return forwardError;
           }
           numEventsUpdated++;
@@ -238,7 +233,7 @@ public class UploadAction extends BwAbstractAction {
       if (debug()) {
         cfe.printStackTrace();
       }
-      form.getErr().emit(cfe.getMessage(), cfe.getExtra());
+      request.getErr().emit(cfe.getMessage(), cfe.getExtra());
       return forwardBadData;
     } catch (final Throwable t) {
       t.printStackTrace();
@@ -246,11 +241,11 @@ public class UploadAction extends BwAbstractAction {
     }
 
     if (numFailedOverrides > 0) {
-      form.getErr().emit(ClientError.failedOverrides, numFailedOverrides);
+      request.getErr().emit(ClientError.failedOverrides, numFailedOverrides);
     }
 
-    form.getMsg().emit(ClientMessage.addedEvents, numEventsAdded);
-    form.getMsg().emit(ClientMessage.updatedEvents, numEventsUpdated);
+    request.getMsg().emit(ClientMessage.addedEvents, numEventsAdded);
+    request.getMsg().emit(ClientMessage.updatedEvents, numEventsUpdated);
 
     return forwardSuccess;
   }

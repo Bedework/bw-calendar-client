@@ -16,11 +16,12 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.schedule;
+package org.bedework.client.web.rw.schedule;
 
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.event.EventActionBase;
 
 /** NOTE: This action is possibly no longer needed now that replies are
  * handled automatically by the system. We probably need to retain inbox entries
@@ -45,16 +46,11 @@ import org.bedework.webcommon.event.EventActionBase;
  *      <li>"success"      changes made.</li>
  * </ul>
  */
-public class AttendeeReply extends EventActionBase {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+public class AttendeeReply extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (form.getGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     return forwardEdit;
   }
 

@@ -9,7 +9,7 @@ import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.webcommon.BwModule;
 
 import org.apache.struts.action.ActionMapping;
@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * User: mike Date: 3/9/21 Time: 22:25
  */
-public class BwAdminActionForm extends BwActionFormBase {
+public class BwAdminActionForm extends BwRWActionForm {
   /* ..............................................................
    *                   Admin group fields
    * .............................................................. */

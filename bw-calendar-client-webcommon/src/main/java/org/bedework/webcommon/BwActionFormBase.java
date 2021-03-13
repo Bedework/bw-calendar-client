@@ -47,7 +47,6 @@ import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.client.rw.NotificationInfo;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
@@ -58,7 +57,6 @@ import org.bedework.util.timezones.TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.upload.FormFile;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -192,9 +190,9 @@ public class BwActionFormBase extends UtilActionForm
 
   private EventKey eventKey;
 
-  /* ....................................................................
+  /* ..............................................................
    *           Fields for creating or editing objects
-   * .................................................................... */
+   * .............................................................. */
 
    private EventState eventState;
 
@@ -202,53 +200,21 @@ public class BwActionFormBase extends UtilActionForm
    */
   private EventFormatter curEventFmt;
 
-  /** event is where we hold a Event object for adding/editing/displaying
-   */
-  private BwEvent event;
-
-  private boolean addingEvent;
-
   private EventInfo eventInfo;
 
-  /** Event copy before mods applied - temp till we finish change table stuff
+  /** event is where we hold a Event object for adding/editing/displaying
    */
-  private BwEvent savedEvent;
-
-  private Collection<AddEventResult> addEventResults;
-
-  private String summary;
-
-  private String description;
+  protected BwEvent event;
 
   private String eventStatus;
-
-  private String eventLink;
-
-  private String eventCost;
-
-  private String transparency;
 
   /** True if we should list all events
    */
   private boolean listAllEvents;
 
-  private Collection<DateTimeFormatter> formattedRdates;
-
-  private Collection<DateTimeFormatter> formattedExdates;
-
-  private Attendees attendees;
-
-  private FbResponses fbResponses;
-
-  private FormattedFreeBusy formattedFreeBusy;
-
-  /* ....................................................................
+  /* ..............................................................
    *                       Uploads and exports
-   * .................................................................... */
-
-  private FormFile uploadFile;
-
-  private FormFile eventImageUpload;
+   * .............................................................. */
 
   private String imageUploadDirectory;
 
@@ -289,11 +255,11 @@ public class BwActionFormBase extends UtilActionForm
    *                   Location fields
    * .................................................................... */
 
-  private String locationUid;
+  protected String locationUid;
 
   /** Location address
    */
-  private BwString locationAddress;
+  protected BwString locationAddress;
 
   private String locationStatus;
 
@@ -1154,34 +1120,6 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val
    */
-  public void setUploadFile(final FormFile val) {
-    uploadFile = val;
-  }
-
-  /**
-   * @return FormFile
-   */
-  public FormFile getUploadFile() {
-    return uploadFile;
-  }
-
-  /**
-   * @param val
-   */
-  public void setEventImageUpload(final FormFile val) {
-    eventImageUpload = val;
-  }
-
-  /**
-   * @return FormFile
-   */
-  public FormFile getEventImageUpload() {
-    return eventImageUpload;
-  }
-
-  /**
-   * @param val
-   */
   public void assignImageUploadDirectory(final String val) {
     imageUploadDirectory = val;
   }
@@ -1913,22 +1851,6 @@ public class BwActionFormBase extends UtilActionForm
     return eventState;
   }
 
-  /** Not set - invisible to jsp
-   */
-  /**
-   * @param val
-   */
-  public void assignAddingEvent(final boolean val) {
-    addingEvent = val;
-  }
-
-  /**
-   * @return boolean
-   */
-  public boolean getAddingEvent() {
-    return addingEvent;
-  }
-
   /**
    * @param val
    */
@@ -1973,80 +1895,6 @@ public class BwActionFormBase extends UtilActionForm
     return eventDates;
   }
 
-  /**
-   *
-   * @param val Collection of formatted rdates
-   */
-  public void setFormattedRdates(final Collection<DateTimeFormatter> val) {
-    formattedRdates = val;
-  }
-
-  /** Return formatted rdate objects.
-   *
-   * @return Collection
-   */
-  public Collection<DateTimeFormatter> getFormattedRdates() {
-    return formattedRdates;
-  }
-
-  /**
-   *
-   * @param val Collection of formatted exdates
-   */
-  public void setFormattedExdates(final Collection<DateTimeFormatter> val) {
-    formattedExdates = val;
-  }
-
-  /** Return formatted exdate objects.
-   *
-   * @return Collection
-   */
-  public Collection<DateTimeFormatter> getFormattedExdates() {
-    return formattedExdates;
-  }
-
-  /**
-   * @param val
-   */
-  public void setAttendees(final Attendees val) {
-    attendees = val;
-  }
-
-  /**
-   * @return Attendees
-   */
-  public Attendees getAttendees() {
-    return attendees;
-  }
-
-  /**
-   * @param val
-   */
-  public void setFbResponses(final FbResponses val) {
-    fbResponses = val;
-  }
-
-  /**
-   * @return FbResponses
-   */
-  public FbResponses getFbResponses() {
-    return fbResponses;
-  }
-
-  /**
-   * @param val
-   */
-  public void setFormattedFreeBusy(final FormattedFreeBusy val) {
-    formattedFreeBusy = val;
-  }
-
-  /**
-   * @return FormattedFreeBusy
-   */
-  public FormattedFreeBusy getFormattedFreeBusy() {
-    return formattedFreeBusy;
-  }
-
   /** Event key for next action
    *
    * @param val
@@ -2060,13 +1908,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public EventKey getEventKey() {
     return eventKey;
-  }
-
-  /**
-   * @return event
-   */
-  public BwEvent getEvent() {
-    return event;
   }
 
   /**
@@ -2084,7 +1925,7 @@ public class BwActionFormBase extends UtilActionForm
 
       locationAddress = null;
       locationUid = null;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       err.emit(t);
     }
   }
@@ -2096,18 +1937,11 @@ public class BwActionFormBase extends UtilActionForm
     return eventInfo;
   }
 
-  /** Event passed between actions
-   * @param val
-   */
-  public void assignSavedEvent(final BwEvent val) {
-    savedEvent = val;
-  }
-
   /**
    * @return event
    */
-  public BwEvent retrieveSavedEvent() {
-    return savedEvent;
+  public BwEvent getEvent() {
+    return event;
   }
 
   /** Return an initialised TimeDateComponents representing now
@@ -2116,48 +1950,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public TimeDateComponents getNowTimeComponents() {
     return getEventDates().getNowTimeComponents();
-  }
-
-  /**
-   * @param val
-   */
-  public void setAddEventResults(final Collection<AddEventResult> val) {
-    addEventResults = val;
-  }
-
-  /**
-   * @return failed overrides from add of event.
-   */
-  public Collection<AddEventResult> getAddEventResults() {
-    return addEventResults;
-  }
-
-  /**
-   * @param val
-   */
-  public void setSummary(final String val) {
-    summary = val;
-  }
-
-  /**
-   * @return summary
-   */
-  public String getSummary() {
-    return summary;
-  }
-
-  /**
-   * @param val
-   */
-  public void setDescription(final String val) {
-    description = val;
-  }
-
-  /**
-   * @return String description for event
-   */
-  public String getDescription() {
-    return description;
   }
 
   /**
@@ -2172,48 +1964,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getEventStatus() {
     return eventStatus;
-  }
-
-  /**
-   * @param val
-   */
-  public void setEventLink(final String val) {
-    eventLink = val;
-  }
-
-  /**
-   * @return String eventLink for event
-   */
-  public String getEventLink() {
-    return eventLink;
-  }
-
-  /**
-   * @param val
-   */
-  public void setEventCost(final String val) {
-    eventCost = val;
-  }
-
-  /**
-   * @return String eventLink for event
-   */
-  public String getEventCost() {
-    return eventCost;
-  }
-
-  /**
-   * @param val
-   */
-  public void setTransparency(final String val) {
-    transparency = val;
-  }
-
-  /**
-   * @return String transparency for event
-   */
-  public String getTransparency() {
-    return transparency;
   }
 
   /* ====================================================================

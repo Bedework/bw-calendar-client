@@ -16,25 +16,44 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.misc;
+package org.bedework.client.web.rw.schedule;
 
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwSession;
 
-/**
- * Render action to initiate upload.
+/** This is largely a no-op action
  *
+ * @author Mike Douglass  douglm - rpi.edu
  */
-public class InitUploadAction extends BwAbstractAction {
+public class VpollAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final BwSession sess = request.getSess();
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    if (form.getNewSession()) {
+      request.refresh();
+      return forwardGotomain;
+    }
 
-    sess.embedAddContentCalendarCollections(request);
+    final String uid = request.getReqPar("uid");
+
+    if (uid == null) {
+      request.removeSessionAttr(BwRequest.bwReqUidName);
+    } else {
+      request.setSessionAttr(BwRequest.bwReqUidName, uid);
+    }
+
+    final String tab = request.getReqPar("tab");
+
+    if (tab == null) {
+      request.removeSessionAttr(BwRequest.bwReqVpollTabName);
+    } else {
+      request.setSessionAttr(BwRequest.bwReqVpollTabName, tab);
+    }
 
     return forwardSuccess;
   }
 }
+

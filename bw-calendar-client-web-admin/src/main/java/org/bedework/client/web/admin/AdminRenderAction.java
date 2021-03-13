@@ -18,8 +18,7 @@
 */
 package org.bedework.client.web.admin;
 
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwRequest;
 
 /** This is a no-op action
@@ -27,10 +26,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
-public class AdminRenderAction extends BwAbstractAction {
+public class AdminRenderAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
     form.assignCalSuites(request.getClient().getContextCalSuites());
     request.embedAdminGroups();
 

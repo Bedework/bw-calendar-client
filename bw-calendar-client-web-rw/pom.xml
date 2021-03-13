@@ -9,12 +9,12 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>bw-calendar-client-web-admin</artifactId>
+  <artifactId>bw-calendar-client-web-rw</artifactId>
 
   <dependencies>
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
-      <artifactId>bw-calendar-client-web-rw</artifactId>
+      <artifactId>bw-calendar-client-webcommon</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -35,11 +35,11 @@
         </executions>
 
         <configuration>
-          <moduleName>org.bedework.calendar.client.web.admin</moduleName>
+          <moduleName>org.bedework.calendar.client.web.rw</moduleName>
 
           <moduleDependencies>
             <moduleDependency>
-              <name>org.bedework.calendar.client.web.rw</name>
+              <name>org.bedework.calendar.client.webcommon</name>
             </moduleDependency>
           </moduleDependencies>
         </configuration>

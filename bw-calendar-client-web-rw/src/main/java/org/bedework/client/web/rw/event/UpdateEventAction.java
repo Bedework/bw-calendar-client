@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
@@ -48,6 +48,8 @@ import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminConfig;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.sysevents.events.SysEventBase;
@@ -59,7 +61,7 @@ import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
-import org.bedework.webcommon.Attendees;
+import org.bedework.client.web.rw.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwWebUtil;
@@ -77,6 +79,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.bedework.client.web.rw.EventCommon.adminEventLocation;
+import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
+import static org.bedework.client.web.rw.EventCommon.initMeeting;
+import static org.bedework.client.web.rw.EventCommon.notifyEventReg;
+import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
+import static org.bedework.client.web.rw.EventCommon.resetEvent;
+import static org.bedework.client.web.rw.EventCommon.setEventContact;
+import static org.bedework.client.web.rw.EventCommon.setEventLocation;
+import static org.bedework.client.web.rw.EventCommon.setEventText;
 import static org.bedework.util.misc.response.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
@@ -106,12 +117,11 @@ import static org.bedework.util.misc.response.Response.Status.ok;
  *
  * @author Mike Douglass
  */
-public class UpdateEventAction extends EventActionBase {
+public class UpdateEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final boolean publicAdmin = cl.getPublicAdmin();
     final boolean submitApp = form.getSubmitApp();
 
@@ -1014,7 +1024,7 @@ public class UpdateEventAction extends EventActionBase {
                                  final boolean evDateOnly,
                                  final ChangeTable changes) throws Throwable {
     Collection<BwDateTime> reqDates = request.getRdates(evDateOnly);
-    Collection<BwDateTime> evDates = new TreeSet<>();
+    final Collection<BwDateTime> evDates = new TreeSet<>();
     if (event.getRdates() != null) {
       evDates.addAll(event.getRdates());
     }
@@ -1031,7 +1041,7 @@ public class UpdateEventAction extends EventActionBase {
         rdChanged = true;
       }
     } else if (Util.isEmpty(evDates)) {
-      for (BwDateTime dt: reqDates) {
+      for (final BwDateTime dt: reqDates) {
         event.addRdate(dt);
       }
 
@@ -1047,7 +1057,7 @@ public class UpdateEventAction extends EventActionBase {
     }
 
     if (rdChanged) {
-      ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.RDATE);
+      final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.RDATE);
       cte.setChanged(evDates, event.getRdates());
       cte.setRemovedValues(removed);
       cte.setAddedValues(added);
@@ -1071,7 +1081,7 @@ public class UpdateEventAction extends EventActionBase {
         exdChanged = true;
       }
     } else if (Util.isEmpty(evDates)) {
-      for (BwDateTime dt: reqDates) {
+      for (final BwDateTime dt: reqDates) {
         event.addExdate(dt);
       }
 

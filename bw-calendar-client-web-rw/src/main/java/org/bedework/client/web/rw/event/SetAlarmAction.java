@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.event;
+package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -25,9 +25,9 @@ import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.EventState;
 
@@ -45,18 +45,17 @@ import net.fortuna.ical4j.model.property.Trigger;
  *      <li>"success"      mailed (or queued) ok.</li>
  * </ul>
  */
-public class SetAlarmAction extends BwAbstractAction {
+public class SetAlarmAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final BwEvent ev = form.getEvent();
     final EventState evstate = form.getEventState();
 
     if (ev == null) {
       return forwardNoAction;
     }
-
-    final RWClient cl = (RWClient)request.getClient();
 
     final BwAlarm alarm = new BwAlarm();
 

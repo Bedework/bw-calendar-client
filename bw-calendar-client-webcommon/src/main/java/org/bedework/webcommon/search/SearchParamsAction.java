@@ -36,11 +36,11 @@ import org.bedework.util.misc.response.Response;
 import org.bedework.util.xml.XmlEmit;
 import org.bedework.util.xml.XmlEmit.NameSpace;
 import org.bedework.util.xml.tagdefs.XcalTags;
+import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
-import org.bedework.webcommon.event.EventActionBase;
 
 import net.fortuna.ical4j.model.Calendar;
 
@@ -71,7 +71,7 @@ import javax.servlet.http.HttpServletResponse;
  *      <li>"showEvent"    event is setup for viewing.</li>
  * </ul>
  */
-public class SearchParamsAction extends EventActionBase {
+public class SearchParamsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {

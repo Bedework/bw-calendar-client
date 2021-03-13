@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.schedule;
+package org.bedework.client.web.rw.schedule;
 
 import org.bedework.caldav.util.ParseUtil;
 import org.bedework.caldav.util.TimeRange;
@@ -30,9 +30,9 @@ import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.json.JsonUtil;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.io.Writer;
@@ -66,19 +66,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass douglm   rpi.edu
  */
-public class RequestFreeBusy extends BwAbstractAction {
+public class RequestFreeBusy extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
-
-      return forwardNull;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     try {
-      final RWClient cl = (RWClient)request.getClient();
-
       final Collection<String> attendees = request.getReqPars("attendeeUri");
       final Set<String> attendeeUris = new TreeSet<>();
 
@@ -146,6 +139,11 @@ public class RequestFreeBusy extends BwAbstractAction {
     }
 
     return forwardNull;
+  }
+
+  @Override
+  protected boolean actionIsWebService() {
+    return true;
   }
 
   private final static int indentSize = 2;

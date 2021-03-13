@@ -7,7 +7,7 @@ import org.bedework.client.web.admin.AdminUtil;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
-import org.bedework.webcommon.event.InitAddEventAction;
+import org.bedework.client.web.rw.event.InitAddEventAction;
 
 /**
  * User: mike Date: 3/10/21 Time: 21:26

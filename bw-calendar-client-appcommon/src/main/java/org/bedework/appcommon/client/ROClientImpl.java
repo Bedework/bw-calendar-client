@@ -468,11 +468,6 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public boolean getUserMaintOK() throws CalFacadeException {
-    return svci.getUserAuth().getUserMaintOK();
-  }
-
-  @Override
   public BwPrincipal calAddrToPrincipal(final String cua) {
     return svci.getDirectories().caladdrToPrincipal(cua);
   }

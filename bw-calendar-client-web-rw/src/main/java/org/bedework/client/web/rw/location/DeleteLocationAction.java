@@ -16,15 +16,15 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.location;
+package org.bedework.client.web.rw.location;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.rw.RWClient.DeleteReffedEntityResult;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /**
@@ -38,19 +38,11 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"success"      deleted ok.</li>
  * </ul>
  */
-public class DeleteLocationAction extends BwAbstractAction {
+public class DeleteLocationAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest() ||
-        (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final String uid = form.getLocationUid();
 
     if (uid == null) {
@@ -68,20 +60,19 @@ public class DeleteLocationAction extends BwAbstractAction {
     final DeleteReffedEntityResult delResult = cl.deleteLocation(loc);
 
     if (delResult == null) {
-      form.getErr().emit(ClientError.unknownLocation, uid);
+      request.error(ClientError.unknownLocation, uid);
       return forwardNotFound;
     }
 
     if (!delResult.getDeleted()) {
       form.setPropRefs(delResult.getReferences());
 
-      form.getErr().emit(ClientError.referencedLocation);
+      request.error(ClientError.referencedLocation);
       return forwardReferenced;
     }
 
-    form.getMsg().emit(ClientMessage.deletedLocations, 1);
+    request.message(ClientMessage.deletedLocations, 1);
 
     return forwardSuccess;
   }
-
 }

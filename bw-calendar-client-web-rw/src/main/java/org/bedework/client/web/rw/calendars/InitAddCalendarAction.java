@@ -17,12 +17,12 @@
     under the License.
 */
 
-package org.bedework.webcommon.calendars;
+package org.bedework.client.web.rw.calendars;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -40,19 +40,11 @@ import org.bedework.webcommon.BwSession;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class InitAddCalendarAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+public class InitAddCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
-    final RWClient cl = (RWClient)request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final BwSession sess = request.getSess();
     final BwCalendar cal = request.getCalendar(true);
 

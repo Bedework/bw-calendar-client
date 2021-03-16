@@ -5,6 +5,7 @@ package org.bedework.client.web.admin.event;
 
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.admin.AdminUtil;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.event.FetchEventAction;
 import org.bedework.webcommon.BwRequest;
@@ -18,13 +19,9 @@ public class AdminFetchEventAction extends FetchEventAction {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) throws Throwable {
-    if (!form.getAuthorisedUser()) {
-      return forwardNoAccess;
-    }
-
     final int fwd = doTheAction(request, cl, form);
 
-    if (form.getSuggestionEnabled()) {
+    if (((BwAdminActionForm)form).getSuggestionEnabled()) {
       AdminUtil.embedPreferredAdminGroups(request);
       AdminUtil.embedCalsuiteAdminGroups(request);
     }

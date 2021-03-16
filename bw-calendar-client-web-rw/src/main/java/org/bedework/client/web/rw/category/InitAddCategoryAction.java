@@ -16,45 +16,31 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.location;
+package org.bedework.client.web.rw.category;
 
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwLocation;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-/** This action sets the state ready for adding a location.
+/** This action sets the state ready for adding a category.
  *
  * <p>Forwards to:<ul>
  *      <li>"noAccess"     user not authorised.</li>
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm rpi.edu
+ * @author Mike Douglass   douglm  rpi.edu
  */
-public class InitAddLocationAction extends BwAbstractAction {
-  @Override
+public class InitAddCategoryAction extends RWActionBase {
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
-    /** Check access
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    /* Set the objects to null so we get new ones.
      */
-    if (cl.isGuest() ||
-        (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
-    /** Set the objects to null so we get new ones.
-     */
-    form.assignAddingLocation(true);
-    form.setLocation(BwLocation.makeLocation());
-    form.setLocationAddress(null);
-    form.setLocationStatus(null);
-    form.setLocationSubaddress(null);
+    form.assignAddingCategory(true);
+    form.setCategory(null);
 
     return forwardContinue;
   }
 }
-

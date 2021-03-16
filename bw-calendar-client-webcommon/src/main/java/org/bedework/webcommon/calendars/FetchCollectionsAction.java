@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.bedework.util.misc.Util.escapeJava;
 
-/** This action fetches all categories and embeds them in the session.
+/** This action fetches all collections and embeds them in the session.
  *
  * <p>Forwards to:<ul>
  *      <li>"success"      ok.</li>

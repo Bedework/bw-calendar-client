@@ -16,18 +16,19 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.contact;
+package org.bedework.client.web.rw.contact;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.EventProps.ValidateResult;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwWebUtil;
-import org.bedework.webcommon.BwWebUtil.ValidateResult;
+
+import static org.bedework.client.web.rw.EventProps.validateContact;
 
 /** This action updates a contact.
  *
@@ -39,19 +40,11 @@ import org.bedework.webcommon.BwWebUtil.ValidateResult;
  *
  * @author Mike Douglass   douglm   rpi.edu
  */
-public class UpdateContactAction extends BwAbstractAction {
+public class UpdateContactAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest() ||
-            (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final String reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
@@ -62,7 +55,7 @@ public class UpdateContactAction extends BwAbstractAction {
 
     /* We are just updating from the current form values.
      */
-    final ValidateResult vr = BwWebUtil.validateContact(form);
+    final ValidateResult vr = validateContact(request, form);
     if (!vr.ok) {
       return forwardRetry;
     }
@@ -85,7 +78,7 @@ public class UpdateContactAction extends BwAbstractAction {
     if (add) {
       c.setPublick(cl.getPublicAdmin());
       if (!cl.findContact(c.getCn()).isNotFound()) {
-        form.getErr().emit(ClientError.duplicateContact, c.getCn());
+        request.error(ClientError.duplicateContact, c.getCn());
         return forwardDuplicate;
       }
 
@@ -100,9 +93,9 @@ public class UpdateContactAction extends BwAbstractAction {
     form.assignAddingContact(false);
 
     if (add) {
-      form.getMsg().emit(ClientMessage.addedContact);
+      request.message(ClientMessage.addedContact);
     } else { // CHGTBL if (vr.changed) {
-      form.getMsg().emit(ClientMessage.updatedContact);
+      request.message(ClientMessage.updatedContact);
     }
 
     return forwardSuccess;

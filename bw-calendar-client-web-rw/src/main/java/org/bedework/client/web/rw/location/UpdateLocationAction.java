@@ -17,18 +17,19 @@
     under the License.
 */
 
-package org.bedework.webcommon.location;
+package org.bedework.client.web.rw.location;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.EventProps.ValidateResult;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwWebUtil;
-import org.bedework.webcommon.BwWebUtil.ValidateResult;
+
+import static org.bedework.client.web.rw.EventProps.validateLocation;
 
 /** This action updates a location.
  *
@@ -40,19 +41,11 @@ import org.bedework.webcommon.BwWebUtil.ValidateResult;
  *
  * @author Mike Douglass   douglm  rpi.edu
  */
-public class UpdateLocationAction extends BwAbstractAction {
+public class UpdateLocationAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest() ||
-        (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     if (request.getReqPar("delete") != null) {
       return forwardDelete;
     }
@@ -65,7 +58,7 @@ public class UpdateLocationAction extends BwAbstractAction {
 
     if (location == null) {
       form.setLocation(null);
-      form.getErr().emit(ClientError.unknownLocation);
+      request.error(ClientError.unknownLocation);
       return forwardNotFound;
     }
 
@@ -89,7 +82,7 @@ public class UpdateLocationAction extends BwAbstractAction {
       }
     }
 
-    final ValidateResult ver = BwWebUtil.validateLocation(form);
+    final ValidateResult ver = validateLocation(request, form);
     if (!ver.ok) {
       return forwardRetry;
     }
@@ -120,12 +113,12 @@ public class UpdateLocationAction extends BwAbstractAction {
 
     if (add) {
       if (added) {
-        form.getMsg().emit(ClientMessage.addedLocations, 1);
+        request.message(ClientMessage.addedLocations, 1);
       } else {
-        form.getErr().emit(ClientError.duplicateLocation);
+        request.error(ClientError.duplicateLocation);
       }
     } else {
-      form.getMsg().emit(ClientMessage.updatedLocation);
+      request.message(ClientMessage.updatedLocation);
     }
 
     return forwardSuccess;

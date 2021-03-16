@@ -16,45 +16,37 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.contact;
+package org.bedework.client.web.rw.location;
 
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwContact;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.calfacade.BwLocation;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-/** This action sets the state ready for adding a category.
+/** This action sets the state ready for adding a location.
  *
  * <p>Forwards to:<ul>
  *      <li>"noAccess"     user not authorised.</li>
  *      <li>"continue"     continue on to update page.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass   douglm rpi.edu
  */
-public class InitAddContactAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-
-    /** Check access
+public class InitAddLocationAction extends RWActionBase {
+  @Override
+  public int doAction(final BwRequest request,
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    /* Set the objects to null so we get new ones.
      */
-    if (cl.isGuest() ||
-            (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
-    /** Set the objects to null so we get new ones.
-     */
-    form.assignAddingContact(true);
-    form.setContact(BwContact.makeContact());
-    form.setContactName(null);
-    form.setContactStatus(null);
+    form.assignAddingLocation(true);
+    form.setLocation(BwLocation.makeLocation());
+    form.setLocationAddress(null);
+    form.setLocationStatus(null);
+    form.setLocationSubaddress(null);
 
     return forwardContinue;
   }
 }
+

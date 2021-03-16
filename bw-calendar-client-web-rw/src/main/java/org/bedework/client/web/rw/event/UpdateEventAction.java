@@ -137,12 +137,6 @@ public class UpdateEventAction extends RWActionBase {
     // TODO - set this based on an x-prop or a request param
     boolean awaitingApprovalEvent = false;
 
-    if ((publicAdmin && !form.getAuthorisedUser()) ||
-        form.getGuest()) {
-      cl.rollback();
-      return forwardNoAccess;
-    }
-
     if (approveEvent && !form.getCurUserApproverUser()) {
       cl.rollback();
       return forwardNoAccess;

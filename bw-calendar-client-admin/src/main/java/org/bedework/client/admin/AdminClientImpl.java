@@ -162,6 +162,11 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
+  public boolean getUserMaintOK() throws CalFacadeException {
+    return svci.getUserAuth().getUserMaintOK();
+  }
+
+  @Override
   public void addUser(final String account)
           throws CalFacadeException {
     svci.getUsersHandler().add(account);

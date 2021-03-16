@@ -43,7 +43,7 @@ public class RenderCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    /** User requested a calendar from the list. Retrieve it, embed it in
+    /* User requested a calendar from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
 
@@ -51,7 +51,7 @@ public class RenderCalendarAction extends BwAbstractAction {
 
     if (calPath == null) {
       // bogus request
-      form.getErr().emit(ClientError.missingCalendarPath);
+      request.error(ClientError.missingCalendarPath);
       return forwardNotFound;
     }
 
@@ -80,11 +80,10 @@ public class RenderCalendarAction extends BwAbstractAction {
                                       BwSession.ownersEntity);
 
     if (calendar == null) {
-      form.getErr().emit(ClientError.unknownCalendar, calPath);
+      request.error(ClientError.unknownCalendar, calPath);
       return forwardNotFound;
     }
 
-    form.assignBeforeCalendar((BwCalendar)calendar.clone());
     final SynchStatusResponse ssr = cl.getSynchStatus(calPath);
     request.setSessionAttr(BwRequest.bwSubscriptionStatus, ssr);
 

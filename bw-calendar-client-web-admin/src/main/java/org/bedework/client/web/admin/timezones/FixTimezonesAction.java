@@ -16,12 +16,12 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.timezones;
+package org.bedework.client.web.admin.timezones;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fixes the system after uploading system timezone definitions.
@@ -35,21 +35,15 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class FixTimezonesAction extends BwAbstractAction {
+public class FixTimezonesAction extends AdminActionBase {
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    /* Check access
-     */
-    if (!form.getAuthorisedUser()) {
-      return forwardNoAccess;
-    }
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
+    final boolean checkOnly = request.present("check") ;
 
-    Client cl = request.getClient();
-    boolean checkOnly = request.present("check") ;
+    final UpdateFromTimeZonesInfo info = null;
 
-    UpdateFromTimeZonesInfo info = null;
-
-    form.getErr().emit("unimplemented");
+    request.error("unimplemented");
     /* This needs fixing to take a collection href 
     for (;;) {
       info = cl.updateFromTimeZones(100, checkOnly, info);

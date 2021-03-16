@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.calendars;
+package org.bedework.client.web.rw.calendars;
 
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
@@ -28,10 +28,11 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
 import org.bedework.util.xml.tagdefs.WebdavTags;
-import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -60,16 +61,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class UpdateCalendarAction extends BwAbstractAction {
+public class UpdateCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
       return forwardNoAccess;
@@ -97,14 +93,14 @@ public class UpdateCalendarAction extends BwAbstractAction {
 
         if (newCal.equals(cal)) {
           // Cannot be your own parent (except in Red Dwarf)
-          form.getErr().emit(ClientError.badRequest);
+          request.error(ClientError.badRequest);
           return forwardContinue;
         }
 
         if (newCal.getCalendarCollection() ||
             !newCal.getCollectionInfo().childrenAllowed) {
           // Cannot be part of a calendar collection
-          form.getErr().emit(ClientError.badRequest);
+          request.error(ClientError.badRequest);
           return forwardContinue;
         }
 
@@ -112,7 +108,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
           request.getSess().flushPublicCache();
         }
         cl.moveCollection(cal, newCal);
-        form.getMsg().emit(ClientMessage.updatedCalendar);
+        request.message(ClientMessage.updatedCalendar);
 
         return forwardContinue;
       }
@@ -180,8 +176,8 @@ public class UpdateCalendarAction extends BwAbstractAction {
         form.setCalendar(cl.addCollection(cal, parentPath));
       } catch (final CalFacadeException cfe) {
         if (cfe.getMessage().equals(CalFacadeException.duplicateCalendar)) {
-          form.getErr().emit(CalFacadeException.duplicateCalendar,
-                             cal.getName());
+          request.error(CalFacadeException.duplicateCalendar,
+                        cal.getName());
           return forwardRetry;
         }
         throw cfe;
@@ -201,10 +197,10 @@ public class UpdateCalendarAction extends BwAbstractAction {
 
       if (axu.getErrorTag() != null) {
         if (axu.getErrorTag().equals(WebdavTags.recognizedPrincipal)) {
-          form.getErr().emit(CalFacadeException.principalNotFound,
-                             axu.getErrorMsg());
+          request.error(CalFacadeException.principalNotFound,
+                        axu.getErrorMsg());
         } else {
-          form.getErr().emit(CalFacadeException.badRequest, axu.getErrorTag());
+          request.error(CalFacadeException.badRequest, axu.getErrorTag());
         }
         return forwardRetry;
       }
@@ -216,15 +212,15 @@ public class UpdateCalendarAction extends BwAbstractAction {
 
     if (cal.getCalendarCollection()) {
       if (add) {
-        form.getMsg().emit(ClientMessage.addedCalendar);
+        request.message(ClientMessage.addedCalendar);
       } else {
-        form.getMsg().emit(ClientMessage.updatedCalendar);
+        request.message(ClientMessage.updatedCalendar);
       }
     } else {
       if (add) {
-        form.getMsg().emit(ClientMessage.addedFolder);
+        request.message(ClientMessage.addedFolder);
       } else {
-        form.getMsg().emit(ClientMessage.updatedFolder);
+        request.message(ClientMessage.updatedFolder);
       }
     }
 
@@ -339,7 +335,7 @@ public class UpdateCalendarAction extends BwAbstractAction {
     final BwCalendar cal = form.getCalendar();
 
     if (cal.getName() == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       ok = false;
     }
 

@@ -21,21 +21,17 @@ package org.bedework.webcommon;
 import org.bedework.access.AccessPrincipal;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
-import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwLongString;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.base.StartEndComponent;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.convert.ical.IcalUtil;
 import org.bedework.util.calendar.IcalDefs;
-import org.bedework.util.misc.Util;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.property.DtEnd;
@@ -117,28 +113,26 @@ public class BwWebUtil {
 
   /** Validate the date properties of the event.
    *
-   * @param request
-   * @param ei
+   * @param request bw request
+   * @param ei event info
    * @return boolean true for ok
-   * @throws CalFacadeException
    */
   public static boolean validateEventDates(final BwRequest request,
-                                           final EventInfo ei) throws CalFacadeException {
-    BwEvent ev = ei.getEvent();
+                                           final EventInfo ei) {
+    final BwEvent ev = ei.getEvent();
     boolean ok = true;
 
     /* ------------- Start, end and duration  ------------------ */
 
-    BwDateTime evstart = ev.getDtstart();
-    DtStart start = evstart.makeDtStart();
+    final BwDateTime evstart = ev.getDtstart();
+    final DtStart start = evstart.makeDtStart();
     DtEnd end = null;
     Duration dur = null;
 
-    char endType = ev.getEndType();
+    final char endType = ev.getEndType();
 
-    if (endType == StartEndComponent.endTypeNone) {
-    } else if (endType == StartEndComponent.endTypeDate) {
-      BwDateTime evend = ev.getDtend();
+    if (endType == StartEndComponent.endTypeDate) {
+      final BwDateTime evend = ev.getDtend();
 
       if (evstart.after(evend)) {
         request.getErr().emit(ValidationError.startAfterEnd);
@@ -148,7 +142,7 @@ public class BwWebUtil {
       }
     } else if (endType == StartEndComponent.endTypeDuration) {
       dur = new Duration(new Dur(ev.getDuration()));
-    } else {
+    } else if (endType != StartEndComponent.endTypeNone) {
       request.getErr().emit(ValidationError.invalidEndtype);
       ok = false;
     }
@@ -168,16 +162,14 @@ public class BwWebUtil {
    *
    * @param cl - for system properties
    * @param prePublish - a public event being submitted or updated before publish
-   * @param publicAdmin
-   * @param ev
+   * @param publicAdmin true fior public admin
+   * @param ev event
    * @return  null for OK, validation errors otherwise.
-   * @throws CalFacadeException
    */
   public static List<ValidationError> validateEvent(final Client cl,
                                                     final boolean prePublish,
                                                     final boolean publicAdmin,
-                                                    final BwEvent ev)
-                                  throws CalFacadeException {
+                                                    final BwEvent ev) {
     List<ValidationError> ves = null;
 
     /* ------------- Set zero length fields to null ------------------ */
@@ -185,8 +177,8 @@ public class BwWebUtil {
     ev.setLink(checkNull(ev.getLink()));
 
     /* ------------- Check summary and description ------------------ */
-    AuthProperties apars = cl.getAuthProperties();
-    int maxDescLen;
+    final AuthProperties apars = cl.getAuthProperties();
+    final int maxDescLen;
     if (publicAdmin || prePublish) {
       maxDescLen = apars.getMaxPublicDescriptionLength();
     } else {
@@ -195,8 +187,8 @@ public class BwWebUtil {
 
     /* ------------------------- summary ------------------------------- */
 
-    boolean nullOk = !publicAdmin && !prePublish;
-    Collection<BwString> sums = ev.getSummaries();
+    final boolean nullOk = !publicAdmin && !prePublish;
+    final Collection<BwString> sums = ev.getSummaries();
     if ((sums == null) || (sums.size() == 0)) {
       if (!nullOk) {
         ves = addError(ves, ValidationError.missingTitle);
@@ -213,13 +205,13 @@ public class BwWebUtil {
 
     /* ------------------------- description ------------------------------- */
 
-    Collection<BwLongString> descs = ev.getDescriptions();
+    final Collection<BwLongString> descs = ev.getDescriptions();
     if ((descs == null) || (descs.size() == 0)) {
       if (!nullOk) {
         ves = addError(ves, ValidationError.missingDescription);
       }
     } else {
-      for (BwLongString s: descs) {
+      for (final BwLongString s: descs) {
         if (s.getValue().length() > maxDescLen) {
           ves = addError(ves, ValidationError.tooLongDescription,
                    String.valueOf(maxDescLen));
@@ -257,7 +249,7 @@ public class BwWebUtil {
     /* ------------- All referenced users valid? ------------------ */
 
     if (ev.getNumRecipients() > 0) {
-      for (String recip: ev.getRecipients()) {
+      for (final String recip: ev.getRecipients()) {
         if (!validateUserHref(cl, recip)) {
           ves = addError(ves, ValidationError.invalidRecipient, recip);
         }
@@ -265,7 +257,7 @@ public class BwWebUtil {
     }
 
     if (ev.getNumAttendees() > 0) {
-      for (BwAttendee att: ev.getAttendees()) {
+      for (final BwAttendee att: ev.getAttendees()) {
         if (!validateUserHref(cl, att.getAttendeeUri())) {
           ves = addError(ves, ValidationError.invalidAttendee,
                          att.getAttendeeUri());
@@ -273,7 +265,7 @@ public class BwWebUtil {
       }
     }
 
-    BwOrganizer org = ev.getOrganizer();
+    final BwOrganizer org = ev.getOrganizer();
     if (org != null) {
       if (!validateUserHref(cl, org.getOrganizerUri())) {
         ves = addError(ves, ValidationError.invalidOrganizer,
@@ -293,7 +285,7 @@ public class BwWebUtil {
                                                       final String errorCode,
                                                       final String extra) {
     if (ves == null) {
-      ves = new ArrayList<ValidationError>();
+      ves = new ArrayList<>();
     }
 
     ves.add(new ValidationError(errorCode, extra));
@@ -309,178 +301,16 @@ public class BwWebUtil {
    * @param cl - client
    * @param href of possible principal
    * @return boolean true for ok
-   * @throws CalFacadeException
    */
   public static boolean validateUserHref(final Client cl,
-                                         final String href) throws CalFacadeException {
-    AccessPrincipal p = cl.calAddrToPrincipal(href);
+                                         final String href) {
+    final AccessPrincipal p = cl.calAddrToPrincipal(href);
 
     if (p == null) {
       return true; // External user.
     }
 
     return cl.validPrincipal(p.getPrincipalRef());
-  }
-
-  /** */
-  public static class ValidateResult {
-    /** */
-    public boolean ok = true;
-    /** */
-    public boolean changed;
-  }
-
-  /**
-   * @param form struts form
-   * @return ValidateResult
-   */
-  public static ValidateResult validateLocation(final BwActionFormBase form) {
-    final ValidateResult vr = new ValidateResult();
-
-    final BwLocation loc = form.getLocation();
-
-    /*
-    BwString str = loc.getAddress();
-    BwString frmstr = form.getLocationAddress();
-    if (frmstr != null) {
-      if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
-        frmstr = null;
-      }
-    }
-
-    if (str == null) {
-      if (frmstr != null) {
-        vr.changed = true;
-        loc.setAddress(frmstr);
-      }
-    } else if (frmstr == null) {
-      vr.changed = true;
-      loc.deleteAddress();
-    } else if (str.update(frmstr)) {
-      vr.changed = true;
-    }
-
-    final BwString str = loc.getSubaddress();
-    BwString frmstr = form.getLocationSubaddress();
-    if (frmstr != null) {
-      if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
-        frmstr = null;
-      }
-    }
-
-    if (str == null) {
-      if (frmstr != null) {
-        vr.changed = true;
-        loc.setSubaddress(frmstr);
-      }
-    } else if (frmstr == null) {
-      vr.changed = true;
-      loc.deleteSubaddress();
-    } else if (str.update(frmstr)) {
-      vr.changed = true;
-    }
-    */
-
-    final BwString addr = loc.getAddress();
-    if (addr == null) {
-      form.getErr().emit(ValidationError.missingAddress);
-      vr.ok = false;
-    } else {
-      /* Put the status in the address lang */
-
-      final String formSt = Util.checkNull(form.getCategoryStatus());
-
-      if (formSt == null) {
-        vr.changed = addr.getLang() != null;
-        addr.setLang(null);
-      } else if (!formSt.equals(addr.getLang())) {
-        addr.setLang(formSt);
-        vr.changed = true;
-      }
-    }
-    
-    // XXX - always true for the moment
-    vr.changed = true;
-
-    return vr;
-  }
-
-  /**
-   *
-   * @param form for data
-   * @return ValidateResult
-   */
-  public static ValidateResult validateContact(final BwActionFormBase form) {
-    final ValidateResult vr = new ValidateResult();
-
-    final BwContact contact = form.getContact();
-
-    final BwString str = contact.getCn();
-    BwString frmstr = form.getContactName();
-    if (frmstr != null) {
-      if (frmstr.checkNulls() && (frmstr.getValue() == null)) {
-        frmstr = null;
-      }
-    }
-
-    if (str == null) {
-      if (frmstr != null) {
-        vr.changed = true;
-        contact.setCn(frmstr);
-      } else {
-        form.getErr().emit(ValidationError.missingContactName);
-        vr.ok = false;
-      }
-    } else if (frmstr == null) {
-      vr.changed = true;
-      contact.deleteName();
-      form.getErr().emit(ValidationError.missingContactName);
-      vr.ok = false;
-    } else if (str.update(frmstr)) {
-      vr.changed = true;
-    }
-    
-    if (str != null) {
-      /* Put the status in the cn lang */
-
-      final String formSt = Util.checkNull(form.getCategoryStatus());
-
-      if (formSt == null) {
-        vr.changed = str.getLang() != null;
-        str.setLang(null);
-      } else if (!formSt.equals(str.getLang())) {
-        str.setLang(formSt);
-        vr.changed = true;
-      }
-    }
-
-    contact.setPhone(Util.checkNull(contact.getPhone()));
-    contact.setEmail(Util.checkNull(contact.getEmail()));
-    contact.setLink(Util.checkNull(contact.getLink()));
-
-    contact.setLink(fixLink(contact.getLink()));
-
-    return vr;
-  }
-
-  /** Return either null (for null or all whitespace) or a url
-   * prefixed with http://
-   *
-   * @param val  String urlk to fix up
-   * @return String  fixed up
-   */
-  public static String fixLink(String val) {
-    val = checkNull(val);
-
-    if (val == null) {
-      return val;
-    }
-
-    if (val.indexOf("://") > 0) {
-      return val;
-    }
-
-    return "http://" + val;
   }
 
   /** Check for valid transparency setting

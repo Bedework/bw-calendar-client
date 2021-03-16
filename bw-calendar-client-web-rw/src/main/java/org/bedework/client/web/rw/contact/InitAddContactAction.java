@@ -16,31 +16,34 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.misc;
+package org.bedework.client.web.rw.contact;
 
+import org.bedework.calfacade.BwContact;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-/**
- * Action to reload internal lists etc.
+/** This action sets the state ready for adding a category.
  *
+ * <p>Forwards to:<ul>
+ *      <li>"noAccess"     user not authorised.</li>
+ *      <li>"continue"     continue on to update page.</li>
+ * </ul>
+ *
+ * @author Mike Douglass   douglm@rpi.edu
  */
-public class UnindexAction extends BwAbstractAction {
-  @Override
+public class InitAddContactAction extends RWActionBase {
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    /* Set the objects to null so we get new ones.
      */
-    if (!cl.isSuperUser()) {
-      return forwardNoAccess;
-    }
+    form.assignAddingContact(true);
+    form.setContact(BwContact.makeContact());
+    form.setContactName(null);
+    form.setContactStatus(null);
 
-    cl.unindex(request.getReqPar("href"));
-
-    return forwardSuccess;
+    return forwardContinue;
   }
 }

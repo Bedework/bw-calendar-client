@@ -16,10 +16,11 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.location;
+package org.bedework.client.web.rw.location;
 
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -31,10 +32,11 @@ import org.bedework.webcommon.BwSession;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class InitUpdateAction extends BwAbstractAction {
+public class InitUpdateAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     request.getSess().embedLocations(request,
                                      BwSession.editableEntity);
 

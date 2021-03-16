@@ -33,6 +33,18 @@ public interface AdminClient extends RWClient {
    *                     Admin users
    * ------------------------------------------------------------ */
 
+  /** Show whether user entries can be displayed or modified with this
+   * class. Some sites may use other mechanisms.
+   *
+   * <p>This may need supplementing with changes to the jsp. For example,
+   * it's hard to deal programmatically with the case of directory/roles
+   * based authorisation and db based user information.
+   *
+   * @return boolean    true if user maintenance is implemented.
+   * @throws CalFacadeException  for errors
+   */
+  boolean getUserMaintOK() throws CalFacadeException;
+
   /** Add an entry for the user.
    *
    * @param account for user

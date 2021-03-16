@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.calendars;
+package org.bedework.client.web.rw.calendars;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -25,8 +25,8 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.List;
@@ -47,16 +47,11 @@ import java.util.List;
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class MoveCalendarAction extends BwAbstractAction {
+public class MoveCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
-    final RWClient cl = (RWClient)request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final boolean contents = request.present("contents");
 
     final BwCalendar cal = request.getCalendar(true);
@@ -67,7 +62,7 @@ public class MoveCalendarAction extends BwAbstractAction {
     }
 
     if (!contents && cal.equals(cl.getHome())) {
-      form.getErr().emit(ClientError.cannotMoveHome, cal.getPath());
+      request.error(ClientError.cannotMoveHome, cal.getPath());
       return forwardInUse;
     }
 
@@ -80,7 +75,7 @@ public class MoveCalendarAction extends BwAbstractAction {
     cl.flushState();
 
     if (!contents) {
-      return moveCollection(cl, cal, newCal, form);
+      return moveCollection(cl, cal, newCal, request);
     }
 
     cl.moveContents(cal, newCal);
@@ -91,7 +86,7 @@ public class MoveCalendarAction extends BwAbstractAction {
   private int moveCollection(final RWClient cl,
                              final BwCalendar cal,
                              final BwCalendar newCal,
-                             final BwActionFormBase form) throws Throwable {
+                             final BwRequest request) throws Throwable {
     /* Check for references in views. For user extra simple mode only we will
      * automatically remove the subscription. For others we list the references
      */
@@ -106,11 +101,11 @@ public class MoveCalendarAction extends BwAbstractAction {
       if ((paths != null) && paths.contains(cal.getPath())) {
         if (autoRemove) {
           if (!cl.removeViewCollection(v.getName(), cal.getPath())) {
-            form.getErr().emit(ClientError.unknownView, v.getName());
+            request.error(ClientError.unknownView, v.getName());
             return forwardError;
           }
         } else {
-          form.getErr().emit(ClientError.referencedSubscription, v.getName());
+          request.error(ClientError.referencedSubscription, v.getName());
           reffed = true;
         }
       }
@@ -124,14 +119,14 @@ public class MoveCalendarAction extends BwAbstractAction {
       cl.moveCollection(cal, newCal);
     } catch (final CalFacadeException cfe) {
       if (CalFacadeException.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
-        form.getErr().emit(ClientError.referencedCalendar, "default calendar");
+        request.error(ClientError.referencedCalendar, "default calendar");
         return forwardInUse;
       }
 
       throw cfe;
     }
 
-    form.getMsg().emit(ClientMessage.movedCalendar, cal.getPath());
+    request.message(ClientMessage.movedCalendar, cal.getPath());
 
     return forwardContinue;
   }

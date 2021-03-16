@@ -248,18 +248,6 @@ public interface Client extends Serializable {
    */
   String uriToCaladdr(String val);
 
-  /** Show whether user entries can be displayed or modified with this
-   * class. Some sites may use other mechanisms.
-   *
-   * <p>This may need supplementing with changes to the jsp. For example,
-   * it's hard to deal programmatically with the case of directory/roles
-   * based authorisation and db based user information.
-   *
-   * @return boolean    true if user maintenance is implemented.
-   * @throws CalFacadeException  for errors
-   */
-  boolean getUserMaintOK() throws CalFacadeException;
-
   /* ------------------------------------------------------------
    *                     Principals
    * ------------------------------------------------------------ */
@@ -353,9 +341,8 @@ public interface Client extends Serializable {
    *
    * @param href of the principal
    * @return true if it's a valid principal
-   * @throws CalFacadeException on fatal error
    */
-  boolean validPrincipal(String href) throws CalFacadeException;
+  boolean validPrincipal(String href);
 
   /* ------------------------------------------------------------
    *                     Admin Groups

@@ -180,19 +180,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     setLocale(bwreq, mstate, form);
 
-    form.assignSuggestionEnabled(cl.getSystemProperties().getSuggestionEnabled());
-    form.assignWorkflowEnabled(cl.getSystemProperties().getWorkflowEnabled());
-    form.assignWorkflowRoot(cl.getSystemProperties().getWorkflowRoot());
-    form.assignCurUserSuperUser(cl.isSuperUser());
-    form.assignUserMaintOK(cl.getUserMaintOK());
     form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
-
-    //if (cl.getPublicAdmin()) {
-    //  final AdminClient adcl = (AdminClient)cl;
-
-    //  form.assignOneGroup(adcl.getOneGroup());
-    //  form.assignAdminGroupMaintOK(adcl.getAdminGroupMaintOK());
-    //}
+    form.assignCurUserSuperUser(cl.isSuperUser());
 
     // We need to have set the current locale before we do this.
     mstate.setCalInfo(CalendarInfo.getInstance());

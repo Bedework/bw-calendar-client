@@ -14,6 +14,8 @@ import org.bedework.webcommon.BwModule;
 
 import org.apache.struts.action.ActionMapping;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 
@@ -89,6 +91,14 @@ public class BwAdminActionForm extends BwRWActionForm {
   private CalSuiteResource calSuiteResource;
 
   private List<CalSuiteResource> calSuiteResources;
+
+  /* ..............................................................
+   *                       Misc
+   * .............................................................. */
+
+  private boolean suggestionEnabled;
+  private boolean workflowEnabled;
+  private String workflowRoot;
 
   /* ==============================================================
    *                   Admin groups
@@ -484,11 +494,74 @@ public class BwAdminActionForm extends BwRWActionForm {
     editAuthUserType = 0;
   }
 
-  /* ....................................................................
+  /* ====================================================================
    *                       Modules
-   * .................................................................... */
+   * ==================================================================== */
 
   public BwModule newModule(final String name) {
     return new AdminBwModule(name);
+  }
+
+  /* ====================================================================
+   *                   Calendars
+   * ==================================================================== */
+
+  /* ====================================================================
+   *                   Misc
+   * ==================================================================== */
+
+  /** Return the encoded root of the workflow collections
+   *
+   * @return String path.
+   */
+  public String getEncodedWorkflowRoot() {
+    final String appType = getAppType();
+
+    if (appTypeWebadmin.equals(appType)) {
+      if (getWorkflowRoot() == null) {
+        return "";
+      }
+
+      try {
+        return URLEncoder.encode(getWorkflowRoot(),
+                                 StandardCharsets.UTF_8);
+      } catch (final Throwable t) {
+        getErr().emit(t);
+      }
+    }
+
+    return "";
+  }
+
+  /**
+   *
+   * @param val root of the workflow collections
+   */
+  public void assignWorkflowRoot(final String val) {
+    workflowRoot = val;
+  }
+
+  /** Return the unencoded root of the workflow collections
+   *
+   * @return String path.
+   */
+  public String getWorkflowRoot() {
+    return workflowRoot;
+  }
+
+  public void assignSuggestionEnabled(final boolean val) {
+    suggestionEnabled = val;
+  }
+
+  public boolean getSuggestionEnabled() {
+    return suggestionEnabled;
+  }
+
+  public void assignWorkflowEnabled(final boolean val) {
+    workflowEnabled = val;
+  }
+
+  public boolean getWorkflowEnabled() {
+    return workflowEnabled;
   }
 }

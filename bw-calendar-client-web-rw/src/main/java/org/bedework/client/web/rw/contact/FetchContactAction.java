@@ -16,14 +16,14 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.contact;
+package org.bedework.client.web.rw.contact;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwString;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches a sponsor.
@@ -36,18 +36,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm   rpi.edu
  */
-public class FetchContactAction extends BwAbstractAction {
+public class FetchContactAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
-    /* Check access
-     */
-    if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
-      return forwardNoAccess;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     /* User requested a contact from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
@@ -55,7 +48,7 @@ public class FetchContactAction extends BwAbstractAction {
 
     BwContact contact = null;
     if (uid != null) {
-      var resp = cl.getContactByUid(uid);
+      final var resp = cl.getContactByUid(uid);
       if (resp.isOk()) {
         contact = resp.getEntity();
       }
@@ -73,7 +66,7 @@ public class FetchContactAction extends BwAbstractAction {
     form.setContact(contact);
 
     if (contact == null) {
-      form.getErr().emit(ClientError.unknownContact, uid);
+      request.error(ClientError.unknownContact, uid);
       return forwardNotFound;
     }
 

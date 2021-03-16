@@ -177,12 +177,56 @@ public class Request extends ReqUtil {
     return mapping;
   }
 
+  /** Emit message with given throwable
+   *
+   * @param val - exception object
+   */
+  public void error(final Throwable val) {
+    getErr().emit(val);
+  }
+
+  /** Emit message with given property name
+   *
+   * @param pname - property name
+   */
+  public void error(final String pname) {
+    getErr().emit(pname);
+  }
+
+  /** Emit message with given property name and Object value
+   *
+   * @param pname - property name
+   * @param o - object to display
+   */
+  public void error(final String pname,
+                    final Object o) {
+    getErr().emit(pname, o);
+  }
+
   /**
    * @return MessageEmit
    */
   public MessageEmit getErr() {
     errFlag = true;
     return form.getErr();
+  }
+
+  /** Emit message with given property name
+   *
+   * @param pname - property name
+   */
+  public void message(final String pname) {
+    getMsg().emit(pname);
+  }
+
+  /** Emit message with given property name and Object value
+   *
+   * @param pname - property name
+   * @param o - object to display
+   */
+  public void message(final String pname,
+                      final Object o) {
+    getMsg().emit(pname, o);
   }
 
   /**

@@ -17,13 +17,13 @@
     under the License.
 */
 
-package org.bedework.webcommon.location;
+package org.bedework.client.web.rw.location;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwLocation;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches a location.
@@ -36,18 +36,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class FetchLocationAction extends BwAbstractAction {
+public class FetchLocationAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
-    /* Check access
-     */
-    if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
-      return forwardNoAccess;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     /* User requested a location from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
@@ -55,7 +48,7 @@ public class FetchLocationAction extends BwAbstractAction {
 
     BwLocation location = null;
     if (uid != null) {
-      var resp = cl.getLocationByUid(uid);
+      final var resp = cl.getLocationByUid(uid);
       if (resp.isOk()) {
         location = resp.getEntity();
       }
@@ -73,7 +66,7 @@ public class FetchLocationAction extends BwAbstractAction {
     form.setLocation(location);
 
     if (location == null) {
-      form.getErr().emit(ClientError.unknownLocation, uid);
+      request.error(ClientError.unknownLocation, uid);
       return forwardNotFound;
     }
 

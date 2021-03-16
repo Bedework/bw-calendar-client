@@ -17,14 +17,14 @@
     under the License.
 */
 
-package org.bedework.webcommon.location;
+package org.bedework.client.web.admin.location;
 
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwString;
-import org.bedework.client.rw.RWClient;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.util.misc.Uid;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import javax.servlet.http.HttpServletResponse;
@@ -45,19 +45,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class AddSubLocationAction extends BwAbstractAction {
+public class AddSubLocationAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
     final HttpServletResponse resp = request.getResponse();
-
-    /* Check access
-     */
-    if (cl.getPublicAdmin() && !form.getAuthorisedUser()) {
-      resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      return forwardNull;
-    }
 
     /* Find the location we base the new one on
      */
@@ -65,7 +58,7 @@ public class AddSubLocationAction extends BwAbstractAction {
 
     BwLocation location = null;
     if (uid != null) {
-      var gresp = cl.getLocationByUid(uid);
+      final var gresp = cl.getLocationByUid(uid);
       if (gresp.isOk()) {
         location = gresp.getEntity();
       }

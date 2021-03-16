@@ -218,12 +218,17 @@ public class AdminBwModule extends BwModule {
 
     final BwAuthUser au = cl.getAuthUser(cl.getAuthPrincipal());
 
-    if (au == null) {
+    if ((au == null) || au.isUnauthorized()) {
       return forwardNoAccess;
     }
 
     form.assignOneGroup(cl.getOneGroup());
     form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
+
+    form.assignSuggestionEnabled(cl.getSystemProperties().getSuggestionEnabled());
+    form.assignWorkflowEnabled(cl.getSystemProperties().getWorkflowEnabled());
+    form.assignWorkflowRoot(cl.getSystemProperties().getWorkflowRoot());
+    form.assignUserMaintOK(cl.getUserMaintOK());
 
     // Refresh current auth user prefs.
     final BwAuthUserPrefs prefs = au.getPrefs();
@@ -237,8 +242,6 @@ public class AdminBwModule extends BwModule {
       form.assignCurUserPublicEvents(au.isPublicEventUser());
       form.assignCurUserContentAdminUser(au.isContentAdminUser());
       form.assignCurUserApproverUser(au.isApproverUser());
-
-      form.assignAuthorisedUser(!au.isUnauthorized());
     }
 
     if (debug()) {
@@ -253,10 +256,6 @@ public class AdminBwModule extends BwModule {
         info("form.getGroupSet()=" + cl.getGroupSet());
       }
       return temp;
-    }
-
-    if (!form.getAuthorisedUser()) {
-      return forwardNoAccess;
     }
 
     return forwardNoAction;

@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.category;
+package org.bedework.client.web.rw.category;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -25,9 +25,9 @@ import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -41,19 +41,11 @@ import org.bedework.webcommon.BwSession;
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class UpdateCategoryAction extends BwAbstractAction {
+public class UpdateCategoryAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest() ||
-            (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final String reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
@@ -66,7 +58,7 @@ public class UpdateCategoryAction extends BwAbstractAction {
 
     /* We are just updating from the current form values.
      */
-    final ValidateCategoryResult vcr = validateCategory(form);
+    final ValidateCategoryResult vcr = validateCategory(request, form);
     if (!vcr.ok) {
       return forwardRetry;
     }
@@ -100,12 +92,12 @@ public class UpdateCategoryAction extends BwAbstractAction {
 
     if (add) {
       if (added) {
-        form.getMsg().emit(ClientMessage.addedCategories, 1);
+        request.message(ClientMessage.addedCategories, 1);
       } else {
-        form.getErr().emit(ClientError.duplicateCategory);
+        request.error(ClientError.duplicateCategory);
       }
     } else if (vcr.changed) {
-      form.getMsg().emit(ClientMessage.updatedCategory);
+      request.message(ClientMessage.updatedCategory);
     }
 
     /* refresh lists */
@@ -129,8 +121,9 @@ public class UpdateCategoryAction extends BwAbstractAction {
     public boolean changed;
   }
 
-  private ValidateCategoryResult validateCategory(final BwActionFormBase form)
-          throws Throwable {
+  private ValidateCategoryResult validateCategory(
+          final BwRequest request,
+          final BwRWActionForm form) {
     final ValidateCategoryResult vcr = new ValidateCategoryResult();
 
     final BwCategory cat = form.getCategory();
@@ -189,7 +182,7 @@ public class UpdateCategoryAction extends BwAbstractAction {
     }
 
     if (cat.getWord() == null) {
-      form.getErr().emit(ValidationError.missingCategoryKeyword);
+      request.error(ValidationError.missingCategoryKeyword);
       vcr.ok = false;
     } else if (desc != null) {
       if ((desc.getLang() == null) && (desc.getValue() == null)) {

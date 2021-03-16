@@ -16,15 +16,16 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.category;
+package org.bedework.client.web.rw.category;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-/** This action fetches a category.
+/** This action fetches a category for update.
  *
  * <p>Request parameters<ul>
  *      <li>catUid           The key.</li>
@@ -38,23 +39,22 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm  rpi.edu
  */
-public class FetchCategoryAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    /** User requested a category from the list. Retrieve it, embed it in
+public class FetchCategoryAction extends RWActionBase {
+  @Override
+  public int doAction(final BwRequest request,
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    /* User requested a category from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
-    String catUid = request.getReqPar("catUid");
+    final String catUid = request.getReqPar("catUid");
 
     if (catUid == null) {
-      form.getErr().emit(ClientError.unknownCategory, "null");
+      request.error(ClientError.unknownCategory, "null");
       return forwardNotFound;
     }
 
-    BwCategory category = request.getClient().getCategoryByUid(catUid);
+    final BwCategory category = request.getClient().getCategoryByUid(catUid);
 
     if (debug()) {
       if (category == null) {
@@ -66,7 +66,7 @@ public class FetchCategoryAction extends BwAbstractAction {
 
     form.setCategory(category);
     if (category == null) {
-      form.getErr().emit(ClientError.unknownCategory, catUid);
+      request.error(ClientError.unknownCategory, catUid);
       return forwardNotFound;
     }
 

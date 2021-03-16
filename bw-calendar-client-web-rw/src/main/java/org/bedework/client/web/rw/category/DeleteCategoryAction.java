@@ -16,14 +16,15 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.contact;
+package org.bedework.client.web.rw.category;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwCategory;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient.DeleteReffedEntityResult;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action deletes a category.
@@ -36,38 +37,30 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class DeleteContactAction extends BwAbstractAction {
+public class DeleteCategoryAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    /* Check access
-     */
-    if (cl.isGuest() ||
-            (cl.getPublicAdmin() && !form.getAuthorisedUser())) {
-      return forwardNoAccess;
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     form.setPropRefs(null);
 
-    String uid = form.getContact().getUid();
+    final BwCategory key = form.getCategory();
 
-    RWClient.DeleteReffedEntityResult drer = cl.deleteContact(form.getContact());
+    final DeleteReffedEntityResult drer = cl.deleteCategory(key);
 
     if (drer == null) {
-      form.getErr().emit(ClientError.unknownContact, uid);
+      request.error(ClientError.unknownCategory, key);
       return forwardNotFound;
     }
 
     if (!drer.getDeleted()) {
       form.setPropRefs(drer.getReferences());
 
-      form.getErr().emit(ClientError.referencedContact, uid);
+      request.error(ClientError.referencedCategory);
       return forwardInUse;
     }
 
-    form.getMsg().emit(ClientMessage.deletedContact);
+    request.message(ClientMessage.deletedCategory);
 
     return forwardContinue;
   }

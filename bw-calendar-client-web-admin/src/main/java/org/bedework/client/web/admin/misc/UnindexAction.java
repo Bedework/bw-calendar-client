@@ -16,25 +16,30 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.contact;
+package org.bedework.client.web.admin.misc;
 
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
+import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwSession;
 
-/** Fetch the editable contacts for rendering
+/**
+ * Action to reload internal lists etc.
  *
- * @author Mike Douglass  douglm - rpi.edu
  */
-public class RenderEditableContactsAction extends BwAbstractAction {
+public class UnindexAction extends AdminActionBase {
   @Override
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    request.getSess().embedContactCollection(request,
-                                             BwSession.editableEntity);
+  public int doAction(final BwRequest request,
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
+    /* Check access
+     */
+    if (!cl.isSuperUser()) {
+      return forwardNoAccess;
+    }
+
+    cl.unindex(request.getReqPar("href"));
 
     return forwardSuccess;
   }
 }
-

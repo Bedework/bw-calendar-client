@@ -25,19 +25,13 @@ import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.InOutBoxInfo;
-import org.bedework.appcommon.SelectId;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
-import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
-import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.DirectoryInfo;
-import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.BwPreferences;
@@ -51,15 +45,12 @@ import org.bedework.client.rw.NotificationInfo;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
-import org.bedework.util.misc.Util;
 import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 
 import org.apache.struts.action.ActionMapping;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -85,8 +76,6 @@ public class BwActionFormBase extends UtilActionForm
 
   private CalendarInfo calInfo;
 
-  private Collection<EventPropertiesReference> propRefs;
-
   /** This object will be set up appropriately for the kind of client,
    * e.g. admin, guest etc.
    */
@@ -111,10 +100,6 @@ public class BwActionFormBase extends UtilActionForm
 
   private BwSession sess;
 
-  private boolean suggestionEnabled;
-  private boolean workflowEnabled;
-  private String workflowRoot;
-
   private boolean markDeleted;
 
   /** true if this is a guest (unauthenticated) user
@@ -126,9 +111,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   protected String currentAdminUser;
 
-  /** True if this user has more than the default rights
-   */
-  private boolean authorisedUser;
   private boolean superUser;
 
   //private String appType;
@@ -220,18 +202,14 @@ public class BwActionFormBase extends UtilActionForm
 
   private String eventRegAdminToken;
 
-  /** ...................................................................
+  /* ..............................................................
    *                   Application state
-   *  ................................................................... */
+   *  ............................................................. */
 
 
   /** True if we are adding an alert
    */
   private boolean alertEvent;
-
-  /** True if we are adding a new location
-   */
-  private boolean addingLocation;
 
   private boolean userMaintOK;
 
@@ -252,64 +230,8 @@ public class BwActionFormBase extends UtilActionForm
   private boolean addingView;
 
   /* ....................................................................
-   *                   Location fields
-   * .................................................................... */
-
-  protected String locationUid;
-
-  /** Location address
-   */
-  protected BwString locationAddress;
-
-  private String locationStatus;
-
-  /** Location subAddress
-   */
-  private BwString locationSubaddress;
-
-  private BwLocation location;
-
-  private SelectId<String> locId = new SelectId<String>(null,
-                                                        SelectId.AHasPrecedence);
-
-  /* ....................................................................
-   *                   Categories
-   * .................................................................... */
-
-  /** True if we are adding a new category
-   */
-  private boolean addingCategory;
-
-  private BwCategory category;
-
-  private BwString categoryWord;
-  private String categoryDesc;
-  private String categoryStatus;
-
-  /* ....................................................................
-   *                   Contacts
-   * .................................................................... */
-
-  private String contactUid;
-
-  private SelectId<String> ctctId = new SelectId<>(null,
-                                                   SelectId.AHasPrecedence);
-
-  /** True if we are adding a new contact
-   */
-  private boolean addingContact;
-
-  private BwContact contact;
-
-  private BwString contactName;
-
-  private String contactStatus;
-
-  /* ....................................................................
    *                       Calendars
    * .................................................................... */
-
-  private BwCalendar beforeCalendar;
 
   private BwCalendar calendar;
 
@@ -320,16 +242,11 @@ public class BwActionFormBase extends UtilActionForm
 
   private String calendarPath;
 
-  private String parentCalendarPath;
-
   /** True if we are adding a new calendar
    */
   private boolean addingCalendar;
 
   private BwCalendar meetingCal;
-
-  private SelectId<String> calendarId = new SelectId<String>(null,
-                                                               SelectId.AHasPrecedence);
 
   /* ....................................................................
    *                   Preferences
@@ -556,22 +473,6 @@ public class BwActionFormBase extends UtilActionForm
     return dirInfo;
   }
 
-  public void assignSuggestionEnabled(final boolean val) {
-    suggestionEnabled = val;
-  }
-
-  public boolean getSuggestionEnabled() {
-    return suggestionEnabled;
-  }
-
-  public void assignWorkflowEnabled(final boolean val) {
-    workflowEnabled = val;
-  }
-
-  public boolean getWorkflowEnabled() {
-    return workflowEnabled;
-  }
-
   /* ====================================================================
    *                   Timezones
    * ==================================================================== */
@@ -638,71 +539,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public boolean getAlertEvent() {
     return alertEvent;
-  }
-
-  /* ====================================================================
-   *                   Calendars
-   * ==================================================================== */
-
-  /**
-   * @return SelectId id object
-   */
-  public SelectId<String> retrieveCalendarId() {
-    return calendarId;
-  }
-
-  /** We have a preferred and all calendars form field. One of them will be
-   * unset so we ignore null values.
-   */
-  /**
-   * @param val
-   */
-  public void setCalendarId(final String val) {
-    if (Util.checkNull(val) != null) {
-      calendarId.setA(val);
-    }
-  }
-
-  /**
-   * @return cal id
-   */
-  public String getCalendarId() {
-    return getCalendar().getPath();
-  }
-
-  /**
-   * @return cal id (path)
-   */
-  public String getOriginalCalendarId() {
-    if (calendarId == null) {
-      return null;
-    }
-
-    return calendarId.getOriginalVal();
-  }
-
-  /**
-   * @param val
-   */
-  public void setPrefCalendarId(final String val) {
-    if (Util.checkNull(val) != null) {
-      calendarId.setB(val);
-    }
-  }
-
-  /**
-   * @return id
-   */
-  public String getPrefCalendarId() {
-    return getCalendar().getPath();
-  }
-
-  /** Get the preferred calendars for the current user
-   *
-   * @return Collection  preferred calendars
-   */
-  public Collection<BwCalendar> getPreferredCalendars() {
-    return getCurAuthUserPrefs().getCalendarPrefs().getPreferred();
   }
 
   /* ==============================================================
@@ -1030,22 +866,6 @@ public class BwActionFormBase extends UtilActionForm
     return m.getClient();
   }
 
-  /** Set flag to show if this user has any admin rights.
-   *
-   * @param val   boolean true if admin user
-   */
-  public void assignAuthorisedUser(final boolean val) {
-    authorisedUser = val;
-  }
-
-  /** See if user has some form of access
-   *
-   * @return true for auth user
-   */
-  public boolean getAuthorisedUser() {
-    return authorisedUser;
-  }
-
   /**
    * @return DateTimeFormatter today
    */
@@ -1059,20 +879,6 @@ public class BwActionFormBase extends UtilActionForm
                       new Date(System.currentTimeMillis())));
 
     return today;
-  }
-
-  /**
-   * @param val Property references
-   */
-  public void setPropRefs(final Collection<EventPropertiesReference> val) {
-    propRefs = val;
-  }
-
-  /**
-   * @return property refs
-   */
-  public Collection<EventPropertiesReference> getPropRefs() {
-    return propRefs;
   }
 
   /**
@@ -1209,64 +1015,6 @@ public class BwActionFormBase extends UtilActionForm
    *                   Calendars
    * ==================================================================== */
 
-  /** Return the encoded root of the submissions calendars
-   *
-   * @return String path.
-   */
-  public String getEncodedSubmissionRoot() {
-    final String appType = getAppType();
-
-    if (appTypeWebsubmit.equals(appType) ||
-        appTypeWebadmin.equals(appType)) {
-      try {
-        return URLEncoder.encode(getConfig().getSubmissionRoot(), "UTF-8");
-      } catch (final Throwable t) {
-        getErr().emit(t);
-      }
-    }
-
-    return "";
-  }
-
-  /** Return the encoded root of the workflow collections
-   *
-   * @return String path.
-   */
-  public String getEncodedWorkflowRoot() {
-    final String appType = getAppType();
-
-    if (appTypeWebadmin.equals(appType)) {
-      if (getWorkflowRoot() == null) {
-        return "";
-      }
-
-      try {
-        return URLEncoder.encode(getWorkflowRoot(),
-                                 StandardCharsets.UTF_8);
-      } catch (final Throwable t) {
-        getErr().emit(t);
-      }
-    }
-
-    return "";
-  }
-
-  /**
-   *
-   * @param val root of the workflow collections
-   */
-  public void assignWorkflowRoot(final String val) {
-    workflowRoot = val;
-  }
-
-  /** Return the unencoded root of the workflow collections
-   *
-   * @return String path.
-   */
-  public String getWorkflowRoot() {
-    return workflowRoot;
-  }
-
   /**
    * @param val Set of String
    */
@@ -1311,25 +1059,9 @@ public class BwActionFormBase extends UtilActionForm
     return calendarPath;
   }
 
-  /** Save the Path of the soon-to-be parent
-   *
-   * @param val
-   */
-  public void setParentCalendarPath(final String val) {
-    parentCalendarPath = val;
-  }
-
-  /**
-   * @return cal Path
-   */
-  public String getParentCalendarPath() {
-    return parentCalendarPath;
-  }
-
   /** Not set - invisible to jsp
-   */
-  /**
-   * @param val
+   *
+   * @param val true for adding
    */
   public void assignAddingCalendar(final boolean val) {
     addingCalendar = val;
@@ -1340,21 +1072,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public boolean getAddingCalendar() {
     return addingCalendar;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignBeforeCalendar(final BwCalendar val) {
-    beforeCalendar = val;
-  }
-
-  /** Saved copy of object before changes made..
-   *
-   * @return BwCalendar
-   */
-  public BwCalendar fetchBeforeCalendar() {
-    return beforeCalendar;
   }
 
   /**
@@ -1409,435 +1126,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public BwPreferences getUserPreferences() {
     return userPreferences;
-  }
-
-  /* ====================================================================
-   *                   Categories
-   * ==================================================================== */
-
-  /** Not set - invisible to jsp
-   *
-   * @param val
-   */
-  public void assignAddingCategory(final boolean val) {
-    addingCategory = val;
-  }
-
-  /**
-   * @return boolean
-   */
-  public boolean getAddingCategory() {
-    return addingCategory;
-  }
-
-  /**
-   * @param val
-   */
-  public void setCategory(final BwCategory val) {
-    category = val;
-    categoryWord = null;
-    categoryDesc = null;
-    if (val != null) {
-      final BwString s = val.getWord();
-      if (s != null) {
-        setCategoryWord((BwString)s.clone());
-      }
-      categoryDesc = val.getDescriptionVal();
-      setCategoryStatus(val.getStatus());
-    }
-  }
-
-  /** If a Category object exists, return that otherwise create an empty one.
-   *
-   * @return BwCategory  Category value object
-   */
-  public BwCategory getCategory() {
-    if (category == null) {
-      category = BwCategory.makeCategory();
-    }
-
-    return category;
-  }
-
-  /**
-   * @param val
-   */
-  public void setCategoryWord(final BwString val) {
-    categoryWord = val;
-  }
-
-  /** If a category word object exists, return that otherwise create an empty one.
-   *
-   * @return BwString  Category word value object
-   */
-  public BwString getCategoryWord() {
-    if (categoryWord == null) {
-      categoryWord = new BwString();
-    }
-
-    return categoryWord;
-  }
-
-  /**
-   * @param val
-   */
-  public void setCategoryDescription(final String val) {
-    categoryDesc = val;
-  }
-
-  /** If a category Desc object exists, return that otherwise create an empty one.
-   *
-   * @return BwString  Category Desc value object
-   */
-  public String getCategoryDescription() {
-    return categoryDesc;
-  }
-
-  /**
-   * @param val status of category
-   */
-  public void setCategoryStatus(final String val) {
-    categoryStatus = val;
-  }
-
-  /** 
-   * @return String  Category Status
-   */
-  public String getCategoryStatus() {
-    return Util.checkNull(categoryStatus);
-  }
-
-  /** This is the current category,
-   *
-   * @return current category
-   */
-  public String getCategoryKey() {
-    return getCategory().getWordVal();
-  }
-
-  /* ====================================================================
-   *                   Contacts
-   * ==================================================================== */
-
-  /** Not set - invisible to jsp
-   *
-   * @param val
-   */
-  public void assignAddingContact(final boolean val) {
-    addingContact = val;
-  }
-
-  /**
-   * @return boolean
-   */
-  public boolean getAddingContact() {
-    return addingContact;
-  }
-
-  /**
-   * @param val
-   */
-  public void setContact(final BwContact val) {
-    contact = val;
-    contactName = null;
-    contactUid = null;
-    if (val != null) {
-      contactUid = val.getUid();
-
-      BwString s = val.getCn();
-      if (s != null) {
-        contactName = (BwString)s.clone();
-      }
-    }
-  }
-
-  /** If a Contact object exists, return that otherwise create an empty one.
-   *
-   * @return BwContact  Contact value object
-   */
-  public BwContact getContact() {
-    if (contact == null) {
-      contact = new BwContact();
-    }
-
-    return contact;
-  }
-
-  /**
-   * @param val
-   */
-  public void setContactName(final BwString val) {
-    contactName = val;
-  }
-
-  /** If a contact name object exists, return that otherwise create an empty one.
-   *
-   * @return BwString  Contact name value object
-   */
-  public BwString getContactName() {
-    if (contactName == null) {
-      contactName = new BwString();
-    }
-
-    return contactName;
-  }
-
-  /**
-   * @param val
-   */
-  public void setContactStatus(final String val) {
-    contactStatus = val;
-  }
-
-  /**
-   * @return contact status
-   */
-  public String getContactStatus() {
-    return Util.checkNull(contactStatus);
-  }
-
-  /**
-   * @return SelectId id object
-   */
-  public SelectId<String> retrieveCtctId() {
-    return ctctId;
-  }
-
-  /** We have a preferred and all contacts form field. One of them may be
-   * unset so we ignore null values
-   *
-   * @param val
-   */
-  public void setAllContactId(final String val) {
-    if (Util.checkNull(val) != null) {
-      ctctId.setA(val);
-    }
-  }
-
-  /** This is the current contact, usually out of the current event. It is
-   * used to select a particular contact in select lists.
-   * @see org.bedework.webcommon.BwActionFormBase#getContactUid()
-   *
-   * @return int
-   */
-  public String getAllContactId() {
-    return getContact().getUid();
-  }
-
-  /**
-   * @return int
-   */
-  public String getOriginalContactId() {
-    if (ctctId == null) {
-      return null;
-    }
-
-    return ctctId.getOriginalVal();
-  }
-
-  /**
-   * @param val
-   */
-  public void setPrefContactId(final String val) {
-    if (Util.checkNull(val) != null) {
-      ctctId.setB(val);
-    }
-  }
-
-  /** This is the current contact, usually out of the current event. It is
-   * used to select a particular contact in select lists.
-   *
-   * @return String
-   */
-  public String getPrefContactId() {
-    return getContact().getUid();
-  }
-
-  /** Contact uid for next action
-   *
-   * @param val
-   */
-  public void setContactUid(final String val) {
-    contactUid = val;
-  }
-
-  /**
-   * @return id
-   */
-  public String getContactUid() {
-    return contactUid;
-  }
-
-  /* ====================================================================
-   *                   Locations
-   * ==================================================================== */
-
-  /**
-   * @param val
-   */
-  public void setLocationAddress(final BwString val) {
-    locationAddress = val;
-  }
-
-  /**
-   * @return location address
-   */
-  public BwString getLocationAddress() {
-    if (locationAddress == null) {
-      locationAddress = new BwString();
-    }
-
-    return locationAddress;
-  }
-
-  /**
-   * @param val
-   */
-  public void setLocationStatus(final String val) {
-    locationStatus = val;
-  }
-
-  /**
-   * @return location status
-   */
-  public String getLocationStatus() {
-    return Util.checkNull(locationStatus);
-  }
-
-  /**
-   * @param val
-   */
-  public void setLocationSubaddress(final BwString val) {
-    locationSubaddress = val;
-  }
-
-  /**
-   * @return location subaddress
-   */
-  public BwString getLocationSubaddress() {
-    if (locationSubaddress == null) {
-      locationSubaddress = new BwString();
-    }
-
-    return locationSubaddress;
-  }
-
-  /** Location id for next action
-   *
-   * @param val id
-   */
-  public void setLocationUid(final String val) {
-    locationUid = val;
-  }
-
-  /**
-   * @return uid
-   */
-  public String getLocationUid() {
-    return Util.checkNull(locationUid);
-  }
-
-  /** Not set - invisible to jsp
-   */
-  /**
-   * @param val
-   */
-  public void assignAddingLocation(final boolean val) {
-    addingLocation = val;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getAddingLocation() {
-    return addingLocation;
-  }
-
-  /**
-   * @param val
-   */
-  public void setLocation(final BwLocation val) {
-    location = val;
-    if (val == null) {
-      setLocationUid(null);
-    } else {
-      setLocationUid(val.getUid());
-      if (val.getAddress() != null) {
-        setLocationAddress((BwString)val.getAddress().clone());
-        setLocationStatus(val.getAddress().getLang());
-      } else {
-        setLocationAddress(null);
-      }
-      if (val.getSubaddress() != null) {
-        setLocationSubaddress((BwString)val.getSubaddress().clone());
-      } else {
-        setLocationSubaddress(null);
-      }
-    }
-  }
-
-  /** If a location object exists, return that otherwise create an empty one.
-   *
-   * @return LocationVO  populated location value object
-   */
-  public BwLocation getLocation() {
-    if (location == null) {
-      location = BwLocation.makeLocation();
-    }
-
-    return location;
-  }
-
-  /**
-   * @return SelectId id object
-   */
-  public SelectId<String> retrieveLocId() {
-    return locId;
-  }
-
-  /** We have a preferred and all locations form field. One of them will be
-   * unset so we ignore negative values.
-   *
-   * @param val
-   */
-  public void setAllLocationId(final String val) {
-    if (Util.checkNull(val) != null) {
-      locId.setA(val);
-    }
-  }
-
-  /**
-   * @return String
-   */
-  public String getAllLocationId() {
-    return getLocation().getUid();
-  }
-
-  /**
-   * @return String
-   */
-  public String getOriginalLocationId() {
-    if (locId == null) {
-      return null;
-    }
-
-    return locId.getOriginalVal();
-  }
-
-  /**
-   * @param val
-   */
-  public void setPrefLocationId(final String val) {
-    if (Util.checkNull(val) != null) {
-      locId.setB(val);
-    }
-  }
-
-  /**
-   * @return String
-   */
-  public String getPrefLocationId() {
-    return getLocation().getUid();
   }
 
   /* ====================================================================
@@ -1922,9 +1210,6 @@ public class BwActionFormBase extends UtilActionForm
       if (!newEvent) {
         getEventDates().setFromEvent(event);
       }
-
-      locationAddress = null;
-      locationUid = null;
     } catch (final Throwable t) {
       err.emit(t);
     }
@@ -2224,15 +1509,6 @@ public class BwActionFormBase extends UtilActionForm
     //key.reset();
   }
 
-  /** Reset objects used to select event entities.
-   *
-   */
-  public void resetSelectIds() {
-    calendarId = new SelectId<>(null, SelectId.AHasPrecedence);
-    locId = new SelectId<>(null, SelectId.AHasPrecedence);
-    ctctId = new SelectId<>(null, SelectId.AHasPrecedence);
-  }
-
   /* ====================================================================
    *                Private methods
    * ==================================================================== */
@@ -2250,7 +1526,7 @@ public class BwActionFormBase extends UtilActionForm
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

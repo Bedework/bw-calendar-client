@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.calendars;
+package org.bedework.client.web.rw.calendars;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
@@ -25,8 +25,8 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.List;
@@ -41,31 +41,26 @@ import java.util.List;
  *
  * @author Mike Douglass   douglm rpi.edu
  */
-public class DeleteCalendarAction extends BwAbstractAction {
+public class DeleteCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
-    final RWClient cl = (RWClient)request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final String calPath = form.getCalendarPath();
     final BwCalendar cal = cl.getCollection(calPath);
     if (cal == null) {
-      form.getErr().emit(ClientError.unknownCalendar, calPath);
+      request.error(ClientError.unknownCalendar, calPath);
       return forwardNotFound;
     }
 
     final boolean publick = cal.getPublick();
 
     if (cal.equals(cl.getHome())) {
-      form.getErr().emit(ClientError.cannotDeleteHome, calPath);
+      request.error(ClientError.cannotDeleteHome, calPath);
       return forwardInUse;
     }
 
-    if (cal.getUnremoveable() && !form.getCurUserSuperUser()) {
+    if (cal.getUnremoveable() && !cl.isSuperUser()) {
       // Only super user can remove the unremovable
       return forwardNoAccess;
     }
@@ -85,11 +80,11 @@ public class DeleteCalendarAction extends BwAbstractAction {
         if (autoRemove) {
           if (!cl.removeViewCollection(v.getName(),
                                        cal.getPath())) {
-            form.getErr().emit(ClientError.unknownView, v.getName());
+            request.error(ClientError.unknownView, v.getName());
             return forwardError;
           }
         } else {
-          form.getErr().emit(ClientError.referencedSubscription, v.getName());
+          request.error(ClientError.referencedSubscription, v.getName());
           reffed = true;
         }
       }
@@ -102,24 +97,24 @@ public class DeleteCalendarAction extends BwAbstractAction {
     try {
       if (!cl.deleteCollection(cal,
                                request.getBooleanReqPar("deleteContent", false))) {
-        form.getErr().emit(ClientError.unknownCalendar, calPath);
+        request.error(ClientError.unknownCalendar, calPath);
         return forwardNotFound;
       }
     } catch (final CalFacadeException cfe) {
       if (CalFacadeException.collectionNotEmpty.equals(cfe.getMessage())) {
-        form.getErr().emit(ClientError.referencedCalendar, calPath);
+        request.error(ClientError.referencedCalendar, calPath);
         return forwardInUse;
       }
 
       if (CalFacadeException.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
-        form.getErr().emit(ClientError.referencedCalendar, "default calendar");
+        request.error(ClientError.referencedCalendar, "default calendar");
         return forwardInUse;
       }
 
       throw cfe;
     }
 
-    form.getMsg().emit(ClientMessage.deletedCalendar, calPath);
+    request.message(ClientMessage.deletedCalendar, calPath);
 
     if (publick) {
       request.getSess().flushPublicCache();

@@ -34,6 +34,7 @@ import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.EventProps.ValidateResult;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
@@ -49,8 +50,6 @@ import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwWebUtil;
-import org.bedework.webcommon.BwWebUtil.ValidateResult;
 import org.bedework.webcommon.FormattedFreeBusy;
 
 import net.fortuna.ical4j.model.parameter.Role;
@@ -62,6 +61,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static org.bedework.client.web.rw.EventProps.validateContact;
+import static org.bedework.client.web.rw.EventProps.validateLocation;
 import static org.bedework.webcommon.ForwardDefs.forwardBadRequest;
 import static org.bedework.webcommon.ForwardDefs.forwardError;
 import static org.bedework.webcommon.ForwardDefs.forwardNoAction;
@@ -658,7 +659,7 @@ public class EventCommon {
    */
   public static boolean adminEventLocation(final BwRequest req,
                                            final EventInfo ei) {
-    final BwActionFormBase form = req.getBwForm();
+    final BwRWActionForm form = (BwRWActionForm)req.getBwForm();
     final RWClient cl = (RWClient)req.getClient();
     final BwEvent event = ei.getEvent();
     final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
@@ -670,7 +671,7 @@ public class EventCommon {
       if (form.getConfig().getAutoCreateLocations()) {
         BwLocation l = form.getLocation();
 
-        final ValidateResult vr = BwWebUtil.validateLocation(form);
+        final ValidateResult vr = validateLocation(req, form);
         if (!vr.ok) {
           return false;
         }
@@ -702,11 +703,11 @@ public class EventCommon {
 
       if ((loc == null) || !loc.getPublick()) {
         // Somebody's faking
-        form.getErr().emit(ValidationError.locationNotPublic);
+        req.error(ValidationError.locationNotPublic);
         return false;
       }
 
-      if ((eloc == null) || !loc.equals(eloc)) {
+      if (!loc.equals(eloc)) {
         event.setLocation(loc);
         form.setLocation(loc);
         changes.changed(PropertyInfoIndex.LOCATION,
@@ -714,15 +715,15 @@ public class EventCommon {
       }
 
       return true;
-    } catch (Throwable t) {
-      form.getErr().emit(t);
+    } catch (final Throwable t) {
+      req.error(t);
       return false;
     }
   }
 
   public static boolean setEventLocation(final BwRequest request,
                                          final EventInfo ei,
-                                         final BwActionFormBase form,
+                                         final BwRWActionForm form,
                                          final boolean webSubmit) throws Throwable {
     final RWClient cl = (RWClient)request.getClient();
     final BwEvent ev = ei.getEvent();
@@ -737,7 +738,7 @@ public class EventCommon {
       return false;
     }
 
-    if ((eloc == null) || (loc == null) || !loc.equals(eloc)) {
+    if ((loc == null) || !loc.equals(eloc)) {
       changes.changed(PropertyInfoIndex.LOCATION,
                       eloc, loc);
       ev.setLocation(loc);
@@ -779,7 +780,7 @@ public class EventCommon {
       if (form.getConfig().getAutoCreateContacts()) {
         c = form.getContact();
 
-        final ValidateResult vr = BwWebUtil.validateContact(form);
+        final ValidateResult vr = validateContact(request, form);
         if (!vr.ok) {
           return false;
         }
@@ -885,7 +886,7 @@ public class EventCommon {
       for (final String s: vals) {
         final int pos = s.indexOf(":");
 
-        String text;
+        final String text;
         String lang = null;
 
         if (pos > 0) {
@@ -963,7 +964,7 @@ public class EventCommon {
   }
 
   private static BwLocation getLocation(final RWClient cl,
-                                        final BwActionFormBase form,
+                                        final BwRWActionForm form,
                                         final String owner,
                                         final boolean webSubmit) throws Throwable {
     BwLocation loc = null;

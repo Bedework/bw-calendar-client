@@ -48,6 +48,7 @@ import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminConfig;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.Attendees;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
@@ -61,10 +62,8 @@ import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
-import org.bedework.client.web.rw.Attendees;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwWebUtil;
 import org.bedework.webcommon.TimeDateComponents;
 
 import net.fortuna.ical4j.model.Recur;
@@ -88,6 +87,8 @@ import static org.bedework.client.web.rw.EventCommon.resetEvent;
 import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
+import static org.bedework.client.web.rw.EventCommon.validateEvent;
+import static org.bedework.client.web.rw.EventCommon.validateEventDates;
 import static org.bedework.util.misc.response.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
@@ -359,7 +360,7 @@ public class UpdateEventAction extends RWActionBase {
       return res;
     }
 
-    if (!BwWebUtil.validateEventDates(request, ei)) {
+    if (!validateEventDates(request, ei)) {
       restore(ev, preserveColPath);
       return forwardRetry;
     }
@@ -600,10 +601,10 @@ public class UpdateEventAction extends RWActionBase {
      * if it were the submit app.
      */
     final List<ValidationError> ves =
-            BwWebUtil.validateEvent(cl,
-                                    updateSubmitEvent || submitApp,
-                                    publicAdmin,
-                                    ev);
+            validateEvent(cl,
+                          updateSubmitEvent || submitApp,
+                          publicAdmin,
+                          ev);
 
     if (ves != null) {
       for (final ValidationError ve: ves) {

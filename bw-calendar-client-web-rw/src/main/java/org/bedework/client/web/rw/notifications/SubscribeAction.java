@@ -16,14 +16,14 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.notifications;
+package org.bedework.client.web.rw.notifications;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.List;
@@ -37,25 +37,18 @@ import javax.servlet.http.HttpServletResponse;
  *      <li>  add | remove  - only one must be present </li>.
  * </ul>
  */
-public class SubscribeAction extends BwAbstractAction {
+public class SubscribeAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final HttpServletResponse response = request.getResponse();
-
-    /* Check access
-     */
-    if (cl.isGuest()) {
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      return forwardNull;
-    }
 
     final boolean add = request.present("add");
     final boolean remove = request.present("remove");
 
     if (add && remove) {
-      form.getErr().emit(ClientError.badRequest);
+      request.error(ClientError.badRequest);
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return forwardNull;
     }
@@ -70,7 +63,7 @@ public class SubscribeAction extends BwAbstractAction {
         cl.unsubscribe(href, emails);
       } else {
         if (Util.isEmpty(emails)) {
-          form.getErr().emit(ClientError.badRequest);
+          request.error(ClientError.badRequest);
           response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
           return forwardNull;
         }

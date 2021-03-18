@@ -16,13 +16,13 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.sharing;
+package org.bedework.client.web.rw.sharing;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.svc.SubscribeResult;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action published a collection making it world readable and providing an
@@ -50,40 +50,32 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class SubscribeAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+public class SubscribeAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-//    if (form.getGuest()) {
-  //    return forwardNoAccess; // First line of defence
-    //}
-
-    String colName = request.getReqPar("colName");
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    final String colName = request.getReqPar("colName");
     if (colName == null) {
-      form.getErr().emit(ClientError.badRequest, "Missing colName");
+      request.error(ClientError.badRequest, "Missing colName");
       return forwardError;
     }
 
-    final RWClient cl = (RWClient)request.getClient();
-
-    String href = request.getReqPar("colHref");
+    final String href = request.getReqPar("colHref");
     String extUrl = null;
     if (href == null) {
       extUrl = request.getReqPar("extUrl");
 
       if (extUrl == null) {
-        form.getErr().emit(ClientError.badRequest, "Missing colHref or extUrl");
+        request.error(ClientError.badRequest, "Missing colHref or extUrl");
         return forwardError;
       }
     } else if (request.getReqPar("extUrl") != null) {
-      form.getErr().emit(ClientError.badRequest, "Must supply only one of colHref or extUrl");
+      request.error(ClientError.badRequest, "Must supply only one of colHref or extUrl");
       return forwardError;
     }
 
-    SubscribeResult sr;
+    final SubscribeResult sr;
 
     if (href != null) {
       sr = cl.subscribe(href, colName);
@@ -96,7 +88,7 @@ public class SubscribeAction extends BwAbstractAction {
     }
 
     if (sr.isAlreadySubscribed()) {
-      form.getErr().emit(ClientError.alreadySubscribed, sr.getPath());
+      request.error(ClientError.alreadySubscribed, sr.getPath());
     }
 
     cl.flushState();

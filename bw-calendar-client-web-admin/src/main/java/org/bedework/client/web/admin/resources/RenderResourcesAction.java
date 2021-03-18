@@ -23,10 +23,9 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.client.admin.AdminClient;
+import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.BwAdminActionForm;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.RenderAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,21 +35,22 @@ import java.util.List;
  *
  * @author eric.wittmann@redhat.com
  */
-public class RenderResourcesAction extends RenderAction {
+public class RenderResourcesAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final AdminClient cl,
+                      final BwAdminActionForm form) throws Throwable {
     if (form.getNewSession()) {
       request.refresh();
       return forwardGotomain;
     }
 
     final List<CalSuiteResource> resources =
-            getResources(((AdminClient)request.getClient()),
+            getResources(cl,
                          form.getCurrentCalSuite());
 
     // TODO: add admin-only suite resources if logged-in user is a superadmin
-    ((BwAdminActionForm)form).setCalSuiteResources(resources);
+    form.setCalSuiteResources(resources);
 
     return forwardSuccess;
   }

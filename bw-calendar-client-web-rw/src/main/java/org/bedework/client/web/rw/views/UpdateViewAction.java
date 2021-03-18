@@ -17,61 +17,83 @@
     under the License.
 */
 
-package org.bedework.webcommon.views;
+package org.bedework.client.web.rw.views;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-/** Delete a view.
+/** Update a view for a user - add/remove subscription.
  *
  * <p>Parameters are:<ul>
- *      <li>"name"             Name of view</li>
+ *      <li>"name"            Name of view to update</li>
+ *      <li>"add"             Name of subscription to add</li>
+ *      <li>"remove"          Name of subscription to remove</li>
+ *      <li>"makedefaultview" Optional true/false to make this the default view.</li>
  * </ul>
  *
  * <p>Forwards to:<ul>
  *      <li>"error"        some form of fatal error.</li>
  *      <li>"noAccess"     user not authorised.</li>
- *      <li>"notFound"     no such subscription.</li>
+ *      <li>"notAdded"     duplicate or bad name.</li>
  *      <li>"retry"        try again.</li>
  *      <li>"success"      subscribed ok.</li>
  * </ul>
  *
  * @author Mike Douglass   douglm  rpi.edu
  */
-public class DeleteViewAction extends BwAbstractAction {
+public class UpdateViewAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     /* Check access
      */
     if (request.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    final RWClient cl = (RWClient)request.getClient();
-
     final String name = request.getReqPar("name");
 
     if (name == null) {
-      request.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardRetry;
+    }
+
+    final String add = request.getReqPar("add");
+    final String remove = request.getReqPar("remove");
+
+    if (add != null) {
+      if (!cl.collectionExists(add)) {
+        request.error(ClientError.unknownCalendar, add);
+        return forwardNotFound;
+      }
+
+      if (!cl.addViewCollection(name, add)) {
+        request.error(ClientError.unknownView, name);
+        return forwardNotFound;
+      }
+    }
+
+    if (remove != null) {
+      if (!cl.removeViewCollection(name, remove)) {
+        request.error(ClientError.unknownView, name);
+        return forwardNotFound;
+      }
     }
 
     final BwView view = cl.getView(name);
 
     if (view == null) {
-      request.getErr().emit(ClientError.unknownView, name);
+      request.error(ClientError.unknownView, name);
       return forwardNotFound;
     }
 
-    cl.removeView(view);
-    request.getMsg().emit(ClientMessage.deletedView);
+    form.setView(view);
     request.getSess().embedViews(request);
 
     return forwardSuccess;

@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.sharing;
+package org.bedework.client.web.rw.sharing;
 
 import org.bedework.caldav.util.sharing.AccessType;
 import org.bedework.caldav.util.sharing.RemoveType;
@@ -25,8 +25,8 @@ import org.bedework.caldav.util.sharing.ShareType;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action sends a sharing invite for the collection identified by the href.
@@ -66,19 +66,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class ShareCollectionAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
+public class ShareCollectionAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
-    final RWClient cl = (RWClient)request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final BwCalendar col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;
@@ -86,13 +78,13 @@ public class ShareCollectionAction extends BwAbstractAction {
 
     final String cua = request.getCua(false);
     if (cua == null) {
-      form.getErr().emit(ValidationError.missingRecipients);
+      request.error(ValidationError.missingRecipients);
       return forwardRetry;
     }
 
     final String calAddr = cl.uriToCaladdr(cua);
     if (calAddr == null) {
-      form.getErr().emit(ValidationError.invalidUser, cua);
+      request.error(ValidationError.invalidUser, cua);
       return forwardRetry;
     }
 

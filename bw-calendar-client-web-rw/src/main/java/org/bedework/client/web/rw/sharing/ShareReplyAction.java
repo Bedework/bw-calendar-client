@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.sharing;
+package org.bedework.client.web.rw.sharing;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.caldav.util.notifications.NotificationType;
@@ -24,8 +24,8 @@ import org.bedework.caldav.util.sharing.InviteNotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action sends a sharing reply for the invite identified by the name.
@@ -48,16 +48,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class ShareReplyAction extends BwAbstractAction {
+public class ShareReplyAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final NotificationType note = cl.findNotification(request.getReqPar("name"));
 
     if (note == null) {
@@ -65,7 +60,7 @@ public class ShareReplyAction extends BwAbstractAction {
     }
 
     if (!(note.getNotification() instanceof InviteNotificationType)) {
-      request.getErr().emit(ClientError.badRequest, "Not an invite");
+      request.error(ClientError.badRequest, "Not an invite");
       return forwardError;
     }
 
@@ -74,7 +69,7 @@ public class ShareReplyAction extends BwAbstractAction {
 
     final Boolean accept = request.getBooleanReqPar("accept");
     if (accept == null) {
-      request.getErr().emit(ClientError.badRequest, "Missing accept");
+      request.error(ClientError.badRequest, "Missing accept");
       return forwardError;
     }
 
@@ -82,7 +77,7 @@ public class ShareReplyAction extends BwAbstractAction {
     if (accept) {
       colName = request.getReqPar("colName");
       if (colName == null) {
-        request.getErr().emit(ClientError.badRequest, "Missing colName");
+        request.error(ClientError.badRequest, "Missing colName");
         return forwardError;
       }
     }
@@ -100,7 +95,7 @@ public class ShareReplyAction extends BwAbstractAction {
     try {
       cl.sharingReply(reply);
     } catch (final CalFacadeForbidden cf) {
-      request.getErr().emit(cf.getMessage());
+      request.error(cf.getMessage());
       error = true;
     }
 

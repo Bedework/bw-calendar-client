@@ -30,15 +30,14 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.AddEventResult;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.client.web.rw.AddEventResult;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwWebUtil;
 
 import org.apache.struts.upload.FormFile;
 
@@ -50,6 +49,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import static org.bedework.client.web.rw.EventCommon.checkStatus;
+import static org.bedework.client.web.rw.EventCommon.checkTransparency;
 
 /** Action to upload an icalendar file.
  * RW
@@ -71,13 +73,13 @@ public class UploadAction extends RWActionBase {
                       final RWClient cl,
                       final BwRWActionForm form) throws Throwable {
     final String transparency = request.getReqPar("transparency");
-    if (!BwWebUtil.checkTransparency(transparency)) {
+    if (!checkTransparency(transparency)) {
       request.getErr().emit(ValidationError.invalidTransparency, transparency);
       return forwardRetry;
     }
 
     final String status = request.getReqPar("status");
-    if (!BwWebUtil.checkStatus(status)) {
+    if (!checkStatus(status)) {
       request.getErr().emit(ValidationError.invalidStatus, status);
       return forwardRetry;
     }

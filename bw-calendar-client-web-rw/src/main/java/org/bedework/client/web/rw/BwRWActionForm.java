@@ -15,7 +15,6 @@ import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
-import org.bedework.webcommon.FormattedFreeBusy;
 
 import org.apache.struts.upload.FormFile;
 

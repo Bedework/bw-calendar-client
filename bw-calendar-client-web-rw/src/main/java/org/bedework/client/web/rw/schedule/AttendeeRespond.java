@@ -36,7 +36,6 @@ import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
-import org.bedework.webcommon.BwWebUtil;
 
 import java.util.Collection;
 
@@ -45,6 +44,7 @@ import static org.bedework.client.web.rw.EventCommon.refetchEvent;
 import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
+import static org.bedework.client.web.rw.EventCommon.validateEvent;
 
 /**
  * Action to handle scheduling requests - that is the schedule method was
@@ -182,10 +182,10 @@ public class AttendeeRespond extends RWActionBase {
     /* ------------------ final validation -------------------------- */
 
     final Collection<ValidationError>  ves =
-            BwWebUtil.validateEvent(cl,
-                                    false,
-                                    false,
-                                    ev);
+            validateEvent(cl,
+                          false,
+                          false,
+                          ev);
 
     if (ves != null) {
       for (final org.bedework.calfacade.exc.ValidationError ve: ves) {

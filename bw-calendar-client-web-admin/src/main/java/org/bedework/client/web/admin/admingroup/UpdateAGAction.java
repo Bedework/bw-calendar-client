@@ -30,10 +30,10 @@ import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.BwAdminActionForm;
-import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwWebUtil;
+
+import static org.bedework.util.misc.Util.checkNull;
 
 /** This action updates an admin group
  * ADMIN ONLY
@@ -85,7 +85,7 @@ public class UpdateAGAction extends AdminActionBase {
       if (request.getReqPar("addGroupMember") != null) {
         /* Add a user to the group we are updating.
          */
-        final String mbr = BwWebUtil.checkNull(form.getUpdGroupMember());
+        final String mbr = checkNull(form.getUpdGroupMember());
         if (mbr == null) {
           return forwardContinue;
         }
@@ -225,7 +225,7 @@ public class UpdateAGAction extends AdminActionBase {
       return false;
     }
 
-    updAdminGroup.setAccount(Util.checkNull(updAdminGroup.getAccount()));
+    updAdminGroup.setAccount(checkNull(updAdminGroup.getAccount()));
 
     if (updAdminGroup.getAccount() == null) {
       form.getErr().emit(ValidationError.missingName);
@@ -240,14 +240,14 @@ public class UpdateAGAction extends AdminActionBase {
       updAdminGroup.setPrincipalRef(href + updAdminGroup.getAccount());
     }
 
-    updAdminGroup.setDescription(Util.checkNull(updAdminGroup.getDescription()));
+    updAdminGroup.setDescription(checkNull(updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
       form.getErr().emit(ValidationError.missingDescription);
       ok = false;
     }
 
-    final String adminGroupGroupOwner = Util.checkNull(form.getAdminGroupGroupOwner());
+    final String adminGroupGroupOwner = checkNull(form.getAdminGroupGroupOwner());
     if (adminGroupGroupOwner == null) {
       form.getErr().emit(ValidationError.missingGroupOwner);
       ok = false;
@@ -255,7 +255,7 @@ public class UpdateAGAction extends AdminActionBase {
       updAdminGroup.setGroupOwnerHref(cl.getUserAlways(adminGroupGroupOwner).getPrincipalRef());
     }
 
-    String adminGroupEventOwner = Util.checkNull(form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = checkNull(form.getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       adminGroupEventOwner = updAdminGroup.getAccount();
     }
@@ -293,14 +293,14 @@ public class UpdateAGAction extends AdminActionBase {
 
     /* We should see if somebody tried to change the name of the group */
 
-    updAdminGroup.setDescription(Util.checkNull(updAdminGroup.getDescription()));
+    updAdminGroup.setDescription(checkNull(updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
       form.getErr().emit(ValidationError.missingDescription);
       ok = false;
     }
 
-    final String adminGroupGroupOwner = Util.checkNull(form.getAdminGroupGroupOwner());
+    final String adminGroupGroupOwner = checkNull(form.getAdminGroupGroupOwner());
     final BwPrincipal updAgowner = cl.getPrincipal(updAdminGroup.getGroupOwnerHref());
 
     if ((adminGroupGroupOwner != null) &&
@@ -315,7 +315,7 @@ public class UpdateAGAction extends AdminActionBase {
       updAdminGroup.setGroupOwnerHref(aggo.getPrincipalRef());
     }
 
-    String adminGroupEventOwner = Util.checkNull(form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = checkNull(form.getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       // no change
       return ok;

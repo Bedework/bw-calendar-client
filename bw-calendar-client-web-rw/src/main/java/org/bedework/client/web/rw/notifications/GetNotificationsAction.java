@@ -16,12 +16,12 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.notifications;
+package org.bedework.client.web.rw.notifications;
 
 import org.bedework.client.rw.NotificationInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /**
@@ -31,16 +31,11 @@ import org.bedework.webcommon.BwRequest;
  *      <li>  add | remove  - only one must be present </li>.
  * </ul>
  */
-public class GetNotificationsAction extends BwAbstractAction {
+public class GetNotificationsAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
-    final RWClient cl = (RWClient)request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     NotificationInfo ni = form.getNotificationInfo();
     if (ni == null) {
       ni = new NotificationInfo();

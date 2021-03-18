@@ -16,46 +16,27 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.filter;
+package org.bedework.client.web.rw.filter;
 
-import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.util.misc.response.Response;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-/** Set the current filter.
- *
- * <p>Parameters are:<ul>
- *   <li>"filterName"            Name of filter</li>
- *   <li>"fexpr"                 Filter expression</li>
- * </ul>
- *
- * <p>If both absent unset any filter.
+/** Get the current filters.
  *
  * <p>Forwards to:<ul>
- *      <li>"notFound"     filter not found.</li>
  *      <li>"success"      created ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm     rpi.edu
+ * @author Mike Douglass   douglm@rpi.edu
  */
-public class SetFilterAction extends BwAbstractAction {
+public class GetFiltersAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
-    final GetFilterDefResponse gfdr = request.getFilterDef();
-
-    if (gfdr.getStatus() == Response.Status.notFound) {
-      return forwardNotFound;
-    }
-
-    if (gfdr.getStatus() != Response.Status.ok) {
-      return forwardError;
-    }
-    
-    form.setCurrentFilter(gfdr.getFilterDef());
-    request.refresh();
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    request.getSess().embedFilters(request);
     return forwardSuccess;
   }
 }

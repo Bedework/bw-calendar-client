@@ -17,12 +17,12 @@
     under the License.
 */
 
-package org.bedework.webcommon.pref;
+package org.bedework.client.web.rw.pref;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwPreferences;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -41,12 +41,11 @@ import org.bedework.webcommon.BwSession;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class FetchPrefsAction extends BwAbstractAction {
+public class FetchPrefsAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final BwSession sess = request.getSess();
 
     sess.embedCategories(request, false,

@@ -3,6 +3,7 @@
 */
 package org.bedework.client.web.rw;
 
+import org.bedework.access.AccessPrincipal;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.SelectId;
@@ -16,6 +17,7 @@ import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwLocation;
+import org.bedework.calfacade.BwLongString;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwString;
@@ -25,6 +27,8 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.base.BwStringBase;
+import org.bedework.calfacade.base.StartEndComponent;
+import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -35,6 +39,7 @@ import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.EventProps.ValidateResult;
+import org.bedework.convert.ical.IcalUtil;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
@@ -50,11 +55,15 @@ import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.FormattedFreeBusy;
 
+import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.property.DtEnd;
+import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.Duration;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +72,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.bedework.client.web.rw.EventProps.validateContact;
 import static org.bedework.client.web.rw.EventProps.validateLocation;
+import static org.bedework.util.misc.Util.checkNull;
 import static org.bedework.webcommon.ForwardDefs.forwardBadRequest;
 import static org.bedework.webcommon.ForwardDefs.forwardError;
 import static org.bedework.webcommon.ForwardDefs.forwardNoAction;
@@ -488,6 +498,231 @@ public class EventCommon {
     }
   }
 
+  /** Validate the date properties of the event.
+   *
+   * @param request bw request
+   * @param ei event info
+   * @return boolean true for ok
+   */
+  public static boolean validateEventDates(final BwRequest request,
+                                           final EventInfo ei) {
+    final BwEvent ev = ei.getEvent();
+    boolean ok = true;
+
+    /* ------------- Start, end and duration  ------------------ */
+
+    final BwDateTime evstart = ev.getDtstart();
+    final DtStart start = evstart.makeDtStart();
+    DtEnd end = null;
+    Duration dur = null;
+
+    final char endType = ev.getEndType();
+
+    if (endType == StartEndComponent.endTypeDate) {
+      final BwDateTime evend = ev.getDtend();
+
+      if (evstart.after(evend)) {
+        request.getErr().emit(ValidationError.startAfterEnd);
+        ok = false;
+      } else {
+        end = IcalUtil.makeDtEnd(evend);
+      }
+    } else if (endType == StartEndComponent.endTypeDuration) {
+      dur = new Duration(new Dur(ev.getDuration()));
+    } else if (endType != StartEndComponent.endTypeNone) {
+      request.getErr().emit(ValidationError.invalidEndtype);
+      ok = false;
+    }
+
+    if (ok) {
+      /* This calculates the duration etc. We need to merge this in with the
+       * EventDates stuff as we are setting things twice
+       */
+      IcalUtil.setDates(request.getClient().getCurrentPrincipalHref(),
+                        ei, start, end, dur);
+    }
+
+    return ok;
+  }
+
+  /** Validate the properties of the event.
+   *
+   * @param cl - for system properties
+   * @param prePublish - a public event being submitted or updated before publish
+   * @param publicAdmin true fior public admin
+   * @param ev event
+   * @return  null for OK, validation errors otherwise.
+   */
+  public static List<ValidationError> validateEvent(final Client cl,
+                                                    final boolean prePublish,
+                                                    final boolean publicAdmin,
+                                                    final BwEvent ev) {
+    List<ValidationError> ves = null;
+
+    /* ------------- Set zero length fields to null ------------------ */
+
+    ev.setLink(checkNull(ev.getLink()));
+
+    /* ------------- Check summary and description ------------------ */
+    final AuthProperties apars = cl.getAuthProperties();
+    final int maxDescLen;
+    if (publicAdmin || prePublish) {
+      maxDescLen = apars.getMaxPublicDescriptionLength();
+    } else {
+      maxDescLen = apars.getMaxUserDescriptionLength();
+    }
+
+    /* ------------------------- summary ------------------------------- */
+
+    final boolean nullOk = !publicAdmin && !prePublish;
+    final Collection<BwString> sums = ev.getSummaries();
+    if ((sums == null) || (sums.size() == 0)) {
+      if (!nullOk) {
+        ves = addError(ves, ValidationError.missingTitle);
+      }
+    } else {
+      for (BwString s: sums) {
+        if (s.getValue().length() > maxDescLen) {
+          ves = addError(ves, ValidationError.tooLongSummary,
+                         String.valueOf(maxDescLen));
+          break;
+        }
+      }
+    }
+
+    /* ------------------------- description ------------------------------- */
+
+    final Collection<BwLongString> descs = ev.getDescriptions();
+    if ((descs == null) || (descs.size() == 0)) {
+      if (!nullOk) {
+        ves = addError(ves, ValidationError.missingDescription);
+      }
+    } else {
+      for (final BwLongString s: descs) {
+        if (s.getValue().length() > maxDescLen) {
+          ves = addError(ves, ValidationError.tooLongDescription,
+                         String.valueOf(maxDescLen));
+          break;
+        }
+      }
+    }
+
+    if (publicAdmin && !prePublish) {
+      /* -------------------------- Location ------------------------------ */
+
+      if (ev.getLocation() == null) {
+        ves = addError(ves, ValidationError.missingLocation);
+      }
+
+      /* -------------------------- Contact ------------------------------ */
+
+      if (ev.getContact() == null) {
+        ves = addError(ves, ValidationError.missingContact);
+      }
+    }
+
+    /* ------------- Transparency and status ------------------ */
+
+    if (!checkTransparency(ev.getTransparency())) {
+      ves = addError(ves, ValidationError.invalidTransparency,
+                     ev.getTransparency());
+    }
+
+    if (!checkStatus(ev.getStatus())) {
+      ves = addError(ves, ValidationError.invalidStatus,
+                     ev.getStatus());
+    }
+
+    /* ------------- All referenced users valid? ------------------ */
+
+    if (ev.getNumRecipients() > 0) {
+      for (final String recip: ev.getRecipients()) {
+        if (!validateUserHref(cl, recip)) {
+          ves = addError(ves, ValidationError.invalidRecipient, recip);
+        }
+      }
+    }
+
+    if (ev.getNumAttendees() > 0) {
+      for (final BwAttendee att: ev.getAttendees()) {
+        if (!validateUserHref(cl, att.getAttendeeUri())) {
+          ves = addError(ves, ValidationError.invalidAttendee,
+                         att.getAttendeeUri());
+        }
+      }
+    }
+
+    final BwOrganizer org = ev.getOrganizer();
+    if (org != null) {
+      if (!validateUserHref(cl, org.getOrganizerUri())) {
+        ves = addError(ves, ValidationError.invalidOrganizer,
+                       org.getOrganizerUri());
+      }
+    }
+
+    return ves;
+  }
+
+  private static List<ValidationError> addError(final List<ValidationError> ves,
+                                                final String errorCode) {
+    return addError(ves, errorCode, null);
+  }
+
+  private static List<ValidationError> addError(List<ValidationError> ves,
+                                                final String errorCode,
+                                                final String extra) {
+    if (ves == null) {
+      ves = new ArrayList<>();
+    }
+
+    ves.add(new ValidationError(errorCode, extra));
+
+    return ves;
+  }
+
+  /** Given a calendar user href check for validity.
+   *
+   * <p>If it's external to the system we just accept it. If it's internal we
+   * require it be a valid user account.
+   *
+   * @param cl - client
+   * @param href of possible principal
+   * @return boolean true for ok
+   */
+  public static boolean validateUserHref(final Client cl,
+                                         final String href) {
+    final AccessPrincipal p = cl.calAddrToPrincipal(href);
+
+    if (p == null) {
+      return true; // External user.
+    }
+
+    return cl.validPrincipal(p.getPrincipalRef());
+  }
+
+  /** Check for valid transparency setting
+   *
+   * @param val possible transparency value
+   * @return boolean true for ok
+   */
+  public static boolean checkTransparency(final String val) {
+    return (val == null) ||  // Defaulted
+            IcalDefs.transparencyOpaque.equals(val) ||
+            IcalDefs.transparencyTransparent.equals(val);
+  }
+
+  /** Check for valid status setting
+   *
+   * @param val possible status value
+   * @return boolean true for ok
+   */
+  public static boolean checkStatus(final String val) {
+    return (val == null) ||  // Defaulted
+            BwEvent.statusConfirmed.equals(val) ||
+            BwEvent.statusTentative.equals(val) ||
+            BwEvent.statusCancelled.equals(val);
+  }
+
   /** XXX This should be changed so that we manipulate our list of attendees
    * then update the event list when we're finished. This may be triggering
    * multiple db updates.
@@ -809,7 +1044,7 @@ public class EventCommon {
     String uid = form.retrieveCtctId().getVal();
 
     if (uid == null) {
-      uid = Util.checkNull(form.getContactUid());
+      uid = checkNull(form.getContactUid());
     }
 
     if (uid != null) {
@@ -973,7 +1208,7 @@ public class EventCommon {
       /* Check for user typing a new location into a text area.
        */
       final String a =
-              Util.checkNull(form.getLocationAddress().getValue());
+              checkNull(form.getLocationAddress().getValue());
       if (a != null) {
         // explicitly provided location overrides all others
         loc = BwLocation.makeLocation();
@@ -990,7 +1225,7 @@ public class EventCommon {
     }
 
     if (loc != null) {
-      loc.setLink(Util.checkNull(loc.getLink()));
+      loc.setLink(checkNull(loc.getLink()));
       String ownerHref = owner;
 
       if (ownerHref == null) {

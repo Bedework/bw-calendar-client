@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon;
+package org.bedework.client.web.rw;
 
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.exc.CalFacadeException;

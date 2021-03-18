@@ -17,11 +17,12 @@
     under the License.
 */
 
-package org.bedework.webcommon.views;
+package org.bedework.client.web.rw.views;
 
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Set a view name for update/display/delete.
@@ -39,16 +40,15 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass
  */
-public class SetViewNameAction extends BwAbstractAction {
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
-  public int doAction(BwRequest request,
-                      BwActionFormBase form) throws Throwable {
-    String name = request.getReqPar("name");
+public class SetViewNameAction extends RWActionBase {
+  @Override
+  public int doAction(final BwRequest request,
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    final String name = request.getReqPar("name");
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardRetry;
     }
 

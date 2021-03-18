@@ -16,71 +16,56 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.filter;
+package org.bedework.client.web.rw.filter;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.calfacade.BwFilterDef;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-/** Add a new filter.
+/** Delete a filter.
  *
  * <p>Parameters are:<ul>
  *      <li>"name"             Name of filter</li>
- *      <li>"def"              XML definition.</li>
- *      <li>"desc"             Optional description.</li>
  * </ul>
  *
  * <p>Forwards to:<ul>
  *      <li>"error"        some form of fatal error.</li>
  *      <li>"noAccess"     user not authorised.</li>
- *      <li>"notAdded"     duplicate or bad name.</li>
+ *      <li>"noAction"     duplicate or bad name.</li>
  *      <li>"success"      created ok.</li>
  * </ul>
  *
- * @author Mike Douglass   douglm@rpi.edu
+ * @author Mike Douglass
  */
-public class AddFilterAction extends BwAbstractAction {
+public class DeleteFilterAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
+    final String name = request.getReqPar("name");
+
+    if (name == null) {
+      request.error(ValidationError.missingName);
+      return forwardNoAction;
     }
-
-    final RWClient cl = (RWClient)request.getClient();
-
-    final BwFilterDef fd = new BwFilterDef();
-    fd.setName(request.getReqPar("name"));
-
-    if (fd.getName() == null) {
-      form.getErr().emit(ValidationError.missingName);
-      return forwardNotAdded;
-    }
-
-    if (fd.getName().length() > BwFilterDef.maxNameLength) {
-      form.getErr().emit(ValidationError.tooLongName);
-      return forwardNotAdded;
-    }
-
-    fd.setDefinition(request.getReqPar("def"));
-
-    if (fd.getDefinition() == null) {
-      form.getErr().emit(ValidationError.missingFilterDef);
-      return forwardNotAdded;
-    }
-
-    fd.setDescription(request.getReqPar("desc"));
 
     try {
-      cl.validateFilter(fd.getDefinition());
-      cl.saveFilter(fd);
+      cl.deleteFilter(name);
+    } catch (final CalFacadeException cfe) {
+      if (cfe.getMessage().equals(CalFacadeException.unknownFilter)) {
+        request.error(ClientError.unknownFilter, name);
+        return forwardNotFound;
+      }
+
+      request.error(cfe);
+      return forwardNoAction;
     } catch (final Throwable t) {
-      form.getErr().emit(ClientError.badFilter, t.getMessage());
-      return forwardNotAdded;
+      request.error(t);
+      return forwardNoAction;
     }
 
     form.assignReloadRequired(true);

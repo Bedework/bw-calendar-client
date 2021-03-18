@@ -16,53 +16,48 @@
     specific language governing permissions and limitations
     under the License.
 */
+package org.bedework.client.web.rw.filter;
 
-package org.bedework.webcommon.views;
-
-import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calfacade.svc.BwView;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.calfacade.responses.GetFilterDefResponse;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
+import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.RenderAction;
 
-/** Implant the subscriptions in the form.
+/** Set the current filter.
  *
- * <p>Forwards to:<ul>
- *      <li>"success"      subscribed ok.</li>
+ * <p>Parameters are:<ul>
+ *   <li>"filterName"            Name of filter</li>
+ *   <li>"fexpr"                 Filter expression</li>
  * </ul>
  *
- * @author Mike Douglass   douglm  rpi.edu
+ * <p>If both absent unset any filter.
+ *
+ * <p>Forwards to:<ul>
+ *      <li>"notFound"     filter not found.</li>
+ *      <li>"success"      created ok.</li>
+ * </ul>
+ *
+ * @author Mike Douglass   douglm     rpi.edu
  */
-public class RenderViewAction extends RenderAction {
+public class SetFilterAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+                      final RWClient cl,
+                      final BwRWActionForm form) {
+    final GetFilterDefResponse gfdr = request.getFilterDef();
 
-    final String name = form.getViewName();
-
-    if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
-      return forwardRetry;
-    }
-
-    final BwView view = cl.getView(name);
-
-    if (view == null) {
-      form.getErr().emit(ClientError.unknownView, name);
+    if (gfdr.getStatus() == Response.Status.notFound) {
       return forwardNotFound;
     }
 
-    form.setView(view);
-
-    final String reqpar = request.getReqPar("delete");
-
-    if (reqpar != null) {
-      return forwardDelete;
+    if (gfdr.getStatus() != Response.Status.ok) {
+      return forwardError;
     }
-
+    
+    form.setCurrentFilter(gfdr.getFilterDef());
+    request.refresh();
     return forwardSuccess;
   }
 }

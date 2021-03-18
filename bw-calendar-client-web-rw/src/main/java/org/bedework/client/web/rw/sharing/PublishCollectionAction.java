@@ -16,12 +16,12 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.sharing;
+package org.bedework.client.web.rw.sharing;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action published a collection making it world readable and providing an
@@ -45,16 +45,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class PublishCollectionAction extends BwAbstractAction {
+public class PublishCollectionAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    if (request.isGuest()) {
-      return forwardNoAccess; // First line of defense
-    }
-
-    final RWClient cl = (RWClient)request.getClient();
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final BwCalendar col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;

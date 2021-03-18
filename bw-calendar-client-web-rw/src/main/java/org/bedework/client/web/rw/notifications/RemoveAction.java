@@ -16,11 +16,11 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.notifications;
+package org.bedework.client.web.rw.notifications;
 
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action removes a notification identified by the name.
@@ -41,16 +41,11 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class RemoveAction extends BwAbstractAction {
+public class RemoveAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
-
-    if (cl.isGuest()) {
-      return forwardNoAccess; // First line of defence
-    }
-
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     int forward;
 
     try {
@@ -58,7 +53,7 @@ public class RemoveAction extends BwAbstractAction {
       forward = forwardSuccess;
     } catch (final RuntimeException ca) {
       forward = forwardNoAccess;
-      form.getErr().emit(ca.getMessage());
+      request.error(ca.getMessage());
     }
 
     form.setNotificationInfo(null); // force a refresh

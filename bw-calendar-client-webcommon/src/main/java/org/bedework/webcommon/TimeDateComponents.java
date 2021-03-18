@@ -59,7 +59,7 @@ public class TimeDateComponents implements Serializable {
 
   //private transient Logger log;
 
-  private CalendarInfo calInfo;
+  private final CalendarInfo calInfo;
 
   /* We populate minuteLabels and minuteVals with the appropriate increments. */
   private String[] minuteLabels;
@@ -68,10 +68,10 @@ public class TimeDateComponents implements Serializable {
   /** Only accept minute values that are multiples of this */
   private int minuteIncrement;
 
-  private String[] ampmLabels;
+  private final String[] ampmLabels;
 
   /** Are we on the 24-hour clock? */
-  private boolean hour24;
+  private final boolean hour24;
 
   /** current value of am/pm */
   private boolean isAm = true;
@@ -149,11 +149,11 @@ public class TimeDateComponents implements Serializable {
    * @return Collection of timezone names
    */
   public Collection<TimeZoneName> getTimeZoneNames() {
-    Collection<TimeZoneName> nms = new TreeSet<>();
+    final Collection<TimeZoneName> nms = new TreeSet<>();
 
     try {
       nms.addAll(Timezones.getTzNames());
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       fieldInError = "TimeZoneNames";
     }
 
@@ -366,7 +366,7 @@ public class TimeDateComponents implements Serializable {
       c.set(Calendar.MINUTE, getMinute());
     }
     */
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     getFourDigit(sb, getYear());
     getTwoDigit(sb, getMonth());
     getTwoDigit(sb, getDay());
@@ -405,7 +405,7 @@ public class TimeDateComponents implements Serializable {
    * @return String date time in rfc3339 format
    */
   public String getRfc3339DateTime() {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     getFourDigit(sb, getYear());
     sb.append("-");
     getTwoDigit(sb, getMonth());
@@ -615,8 +615,8 @@ public class TimeDateComponents implements Serializable {
   private void setMinutes(final int increment) {
     minuteIncrement = Math.max(increment, 1);
 
-    String[] labels = getCalInfo().getMinuteLabels();
-    String[] vals = getCalInfo().getMinuteVals();
+    final String[] labels = getCalInfo().getMinuteLabels();
+    final String[] vals = getCalInfo().getMinuteVals();
 
     if (minuteIncrement == 1) {
       minuteLabels = labels;
@@ -624,7 +624,7 @@ public class TimeDateComponents implements Serializable {
       return;
     }
 
-    int sz = labels.length / minuteIncrement;
+    final int sz = labels.length / minuteIncrement;
 
     minuteLabels = new String[sz];
     minuteVals = new String[sz];
@@ -643,13 +643,13 @@ public class TimeDateComponents implements Serializable {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
     sb.append("TimeDateComponents{");
     try {
       sb.append(getDateTime());
-    } catch (Throwable t) {
-      sb.append("Exception " + t);
+    } catch (final Throwable t) {
+      sb.append("Exception ").append(t);
     }
     sb.append("}");
 

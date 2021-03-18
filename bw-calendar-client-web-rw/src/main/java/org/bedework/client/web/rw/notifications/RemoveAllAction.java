@@ -16,13 +16,13 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.notifications;
+package org.bedework.client.web.rw.notifications;
 
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 import javax.servlet.http.HttpServletResponse;
@@ -45,17 +45,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class RemoveAllAction extends BwAbstractAction {
+public class RemoveAllAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final RWClient cl = (RWClient)request.getClient();
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final HttpServletResponse response = request.getResponse();
-
-    if (cl.isGuest()) {
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      return forwardNull;
-    }
 
     int status;
     final String principalHref;
@@ -71,10 +66,10 @@ public class RemoveAllAction extends BwAbstractAction {
       cl.removeAllNotifications(principalHref);
       status = HttpServletResponse.SC_OK;
     } catch (final CalFacadeAccessException ca) {
-      form.getErr().emit(ca.getMessage());
+      request.error(ca.getMessage());
       status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     } catch (final CalFacadeForbidden cf) {
-      form.getErr().emit(cf.getMessage());
+      request.error(cf.getMessage());
       status = HttpServletResponse.SC_FORBIDDEN;
     }
 

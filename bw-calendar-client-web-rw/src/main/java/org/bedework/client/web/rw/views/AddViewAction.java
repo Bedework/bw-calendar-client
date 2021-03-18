@@ -17,14 +17,14 @@
     under the License.
 */
 
-package org.bedework.webcommon.views;
+package org.bedework.client.web.rw.views;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Add a new view for a user.
@@ -43,22 +43,21 @@ import org.bedework.webcommon.BwRequest;
  *
  * @author Mike Douglass
  */
-public class AddViewAction extends BwAbstractAction {
+public class AddViewAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     /* Check access
      */
     if (request.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
-    final RWClient cl = (RWClient)request.getClient();
-
     final String name = request.getReqPar("name");
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardNotAdded;
     }
 
@@ -73,7 +72,7 @@ public class AddViewAction extends BwAbstractAction {
     view.setName(name);
 
     if (!cl.addView(view, makeDefaultView)) {
-      form.getErr().emit(ClientError.viewNotAdded, name);
+      request.error(ClientError.viewNotAdded, name);
       return forwardNotAdded;
     }
 

@@ -16,17 +16,17 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.webcommon.pref;
+package org.bedework.client.web.rw.pref;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwPreferences;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.timezones.Timezones;
-import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.Collection;
@@ -69,11 +69,11 @@ import java.util.TreeSet;
  *
  * @author Mike Douglass   douglm   rpi.edu
  */
-public class UpdatePrefsAction extends BwAbstractAction {
+public class UpdatePrefsAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    final Client cl = request.getClient();
+                      final RWClient cl,
+                      final BwRWActionForm form) throws Throwable {
     final BwPreferences prefs;
     boolean tzChanged = false;
 
@@ -118,7 +118,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
       if (str != null) {
         final BwCalendar cal = cl.getCollection(str);
         if (cal == null) {
-          form.getErr().emit(ClientError.unknownCalendar, str);
+          request.error(ClientError.unknownCalendar, str);
           return forwardNotFound;
         }
         prefs.setDefaultImageDirectory(str);
@@ -136,7 +136,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
     str = request.getReqPar("preferredView");
     if (str != null) {
       if (cl.getView(str) == null) {
-        form.getErr().emit(ClientError.unknownView, str);
+        request.error(ClientError.unknownView, str);
         return forwardNotFound;
       }
 
@@ -214,7 +214,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
     if (str != null) {
       final BwCalendar cal = cl.getCollection(str);
       if (cal == null) {
-        form.getErr().emit(ClientError.unknownCalendar, str);
+        request.error(ClientError.unknownCalendar, str);
         return forwardNotFound;
       }
       prefs.setDefaultCalendarPath(cal.getPath());
@@ -224,7 +224,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     if (mode != -1) {
       if ((mode < 0) || (mode > BwPreferences.maxMode)) {
-        form.getErr().emit(ValidationError.invalidPrefUserMode);
+        request.error(ValidationError.invalidPrefUserMode);
         return forwardBadPref;
       }
 
@@ -235,7 +235,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     if (pageSize != -1) {
       if (pageSize < 0) {
-        form.getErr().emit(ValidationError.invalidPageSize);
+        request.error(ValidationError.invalidPageSize);
         return forwardBadPref;
       } else {
         prefs.setPageSize(pageSize);
@@ -252,7 +252,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     if (startMinutes != -1) {
       if ((startMinutes < 0) || (startMinutes > ((24 * 60) - 1))) {
-        form.getErr().emit(ValidationError.invalidPrefWorkDayStart);
+        request.error(ValidationError.invalidPrefWorkDayStart);
         return forwardBadPref;
       }
     } else {
@@ -263,7 +263,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     if (endMinutes != -1) {
       if ((endMinutes < 0) || (endMinutes > ((24 * 60) - 1))) {
-        form.getErr().emit(ValidationError.invalidPrefWorkDayEnd);
+        request.error(ValidationError.invalidPrefWorkDayEnd);
         return forwardBadPref;
       }
     } else {
@@ -271,7 +271,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
     }
 
     if (startMinutes > endMinutes) {
-      form.getErr().emit(ValidationError.invalidPrefWorkDays);
+      request.error(ValidationError.invalidPrefWorkDays);
       return forwardBadPref;
     }
 
@@ -285,7 +285,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
         prefs.setPreferredEndType(str);
         form.setEndDateType(prefs.getPreferredEndType());
       } else {
-        form.getErr().emit(ValidationError.invalidPrefEndType);
+        request.error(ValidationError.invalidPrefEndType);
         return forwardBadPref;
       }
     }
@@ -299,7 +299,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     if (ival != -1) {
       if ((ival < 0) || (ival > BwPreferences.scheduleMaxAutoCancel)) {
-        form.getErr().emit(ValidationError.invalidPrefAutoCancel);
+        request.error(ValidationError.invalidPrefAutoCancel);
         return forwardBadPref;
       }
 
@@ -315,7 +315,7 @@ public class UpdatePrefsAction extends BwAbstractAction {
 
     if (ival != -1) {
       if ((ival < 0) || (ival > BwPreferences.scheduleMaxAutoProcessResponses)) {
-        form.getErr().emit(ValidationError.invalidPrefAutoProcess);
+        request.error(ValidationError.invalidPrefAutoProcess);
         return forwardBadPref;
       }
 

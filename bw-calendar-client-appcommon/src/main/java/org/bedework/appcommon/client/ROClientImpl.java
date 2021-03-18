@@ -89,6 +89,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.includeDeleted;
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.noDeleted;
+import static org.bedework.calfacade.indexing.BwIndexer.docTypeCollection;
 import static org.bedework.calfacade.indexing.BwIndexer.docTypeEvent;
 import static org.bedework.calsvci.CalSuitesI.ResourceClass;
 
@@ -368,8 +369,14 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public String getCurrentChangeToken() throws CalFacadeException {
-    return getIndexer(isDefaultIndexPublic(),
+    var evChg = getIndexer(isDefaultIndexPublic(),
                       docTypeEvent).currentChangeToken();
+    if (evChg == null) {
+      evChg = "";
+    }
+
+    return evChg + getIndexer(isDefaultIndexPublic(),
+                              docTypeCollection).currentChangeToken();
   }
 
   @Override

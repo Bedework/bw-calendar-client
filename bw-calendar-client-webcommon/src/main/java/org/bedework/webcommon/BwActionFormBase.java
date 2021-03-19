@@ -19,7 +19,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
-import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
@@ -35,9 +34,7 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.BwPreferences;
-import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
@@ -73,8 +70,6 @@ public class BwActionFormBase extends UtilActionForm
   private DateTimeFormatter today;
 
   private BwSynchInfo synchInfo;
-
-  private CalendarInfo calInfo;
 
   /** This object will be set up appropriately for the kind of client,
    * e.g. admin, guest etc.
@@ -113,8 +108,6 @@ public class BwActionFormBase extends UtilActionForm
 
   private boolean superUser;
 
-  //private String appType;
-
   /** true if we are showing the public face
    */
   private boolean publicView;
@@ -125,16 +118,6 @@ public class BwActionFormBase extends UtilActionForm
   /** Whether we show year data
    */
   private boolean showYearData;
-
-  /** Auth prefs for the currently logged in user
-   */
-  private BwAuthUserPrefs curAuthUserPrefs;
-
-  /* Settings for current authenticated user */
-  private boolean curUserAlerts;
-  private boolean curUserPublicEvents;
-  private boolean curUserContentAdminUser;
-  private boolean curUserApproverUser;
 
   private BwFilterDef currentFilter;
 
@@ -202,33 +185,6 @@ public class BwActionFormBase extends UtilActionForm
 
   private String eventRegAdminToken;
 
-  /* ..............................................................
-   *                   Application state
-   *  ............................................................. */
-
-
-  /** True if we are adding an alert
-   */
-  private boolean alertEvent;
-
-  private boolean userMaintOK;
-
-  /* ....................................................................
-   *                   Timezones
-   * .................................................................... */
-
-  private boolean uploadingTimeZones;
-
-  /* ....................................................................
-   *                       Views
-   * .................................................................... */
-
-  private BwView view;
-
-  private String viewName;
-
-  private boolean addingView;
-
   /* ....................................................................
    *                       Calendars
    * .................................................................... */
@@ -248,30 +204,13 @@ public class BwActionFormBase extends UtilActionForm
 
   private BwCalendar meetingCal;
 
-  /* ....................................................................
+  /* ..............................................................
    *                   Preferences
-   * .................................................................... */
-
-  /** Last email address used to mail message. By default set to
-   * preferences value.
-   */
-  private String lastEmail;
-
-  private String lastSubject;
+   * .............................................................. */
 
   private BwPreferences preferences;
 
   private BwPreferences userPreferences;
-
-  /* ....................................................................
-   *                   public events submission
-   * .................................................................... */
-
-  private String snfrom;
-
-  private String sntext;
-
-  private String snsubject;
 
   /* ....................................................................
    *                   Notifications, Inbox
@@ -477,37 +416,6 @@ public class BwActionFormBase extends UtilActionForm
    *                   Timezones
    * ==================================================================== */
 
-  /** Not set - invisible to jsp
-   *
-   * @param val
-   */
-  public void assignUploadingTimezones(final boolean val) {
-    uploadingTimeZones = val;
-  }
-
-  /**
-   * @return true if uploading timezones
-   */
-  public boolean getUploadingTimezones() {
-    return uploadingTimeZones;
-  }
-
-  /** Get a list of system timezones
-   *
-   * @return Collection of timezone names
-   */
-  public Collection<TimeZoneName> getSystemTimeZoneNames() {
-    Collection<TimeZoneName> nms = new TreeSet<TimeZoneName>();
-
-    try {
-      nms.addAll(Timezones.getTzNames());
-    } catch (Throwable t) {
-      getErr().emit(t);
-    }
-
-    return nms;
-  }
-
   /** Get a list of system and user timezones
    *
    * @return Collection of timezone names
@@ -522,51 +430,11 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /* ====================================================================
-   *                   Events
-   * ==================================================================== */
-
-  /** Not set - invisible to jsp
-   */
-  /**
-   * @param val
-   */
-  public void assignAlertEvent(final boolean val) {
-    alertEvent = val;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getAlertEvent() {
-    return alertEvent;
-  }
-
-  /* ==============================================================
-   *                   Authorised user maintenance
-   * ============================================================== */
-
-  /**
-   * @param val
-   */
-  public void assignUserMaintOK(final boolean val) {
-    userMaintOK = val;
-  }
-
-  /** Show whether user entries can be displayed or modified with this
-   * class. Some sites may use other mechanisms.
-   *
-   * @return boolean    true if user maintenance is implemented.
-   */
-  public boolean getUserMaintOK() {
-    return userMaintOK;
-  }
-
-  /* ====================================================================
    *                   Admin groups
    * ==================================================================== */
 
   /**
-   * @val token for event registration
+   * @param val token for event registration
    */
   public void setEventRegAdminToken(String val) {
     eventRegAdminToken = val;
@@ -635,84 +503,6 @@ public class BwActionFormBase extends UtilActionForm
    *                   Current authenticated user Methods
    * DO NOT set with setXXX. Use assign
    * ==================================================================== */
-
-  /**
-   * @param val
-   */
-  public void setCurAuthUserPrefs(final BwAuthUserPrefs val) {
-    curAuthUserPrefs = val;
-  }
-
-  /**
-   * @return auth user prefs
-   */
-  public BwAuthUserPrefs getCurAuthUserPrefs() {
-    return curAuthUserPrefs;
-  }
-
-  /** Current user rights
-   *
-   * @param val
-   */
-  public void assignCurUserAlerts(final boolean val) {
-    curUserAlerts = val;
-  }
-
-  /** Current user rights
-  *
-   * @return alerts
-   */
-  public boolean getCurUserAlerts() {
-    return curUserAlerts;
-  }
-
-  /** Current user rights
-   *
-   * @param val
-   */
-  public void assignCurUserPublicEvents(final boolean val) {
-    curUserPublicEvents = val;
-  }
-
-  /** Current user rights
-  *
-   * @return true for user who can edit public events
-   */
-  public boolean getCurUserPublicEvents() {
-    return curUserPublicEvents;
-  }
-
-  /** True for contentAdminUser
-   *
-   * @param val boolean
-   */
-  public void assignCurUserContentAdminUser(final boolean val) {
-    curUserContentAdminUser = val;
-  }
-
-  /** True for contentAdminUser
-   *
-   * @return boolean
-   */
-  public boolean getCurUserContentAdminUser() {
-    return curUserContentAdminUser;
-  }
-
-  /** True for approver
-   *
-   * @param val boolean
-   */
-  public void assignCurUserApproverUser(final boolean val) {
-    curUserApproverUser = val;
-  }
-
-  /** True for approver
-   *
-   * @return boolean
-   */
-  public boolean getCurUserApproverUser() {
-    return curUserApproverUser;
-  }
 
   /**
    * @param val
@@ -954,61 +744,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getViewTypeName(final int i) {
     return BedeworkDefs.viewPeriodNames[i];
-  }
-
-  /* ====================================================================
-   *                   Views
-   * ==================================================================== */
-
-  /** Set the view name for fetch
-   *
-   * @param val    String name
-   */
-  public void setViewName(final String val) {
-    viewName = val;
-  }
-
-  /** Get the view name
-   *
-   * @return String name
-   */
-  public String getViewName() {
-    return viewName;
-  }
-
-  /** Set the view we are editing
-   *
-   * @param val    BwView  object or null
-   */
-  public void setView(final BwView val) {
-    view = val;
-  }
-
-  /** Get the view we are editing
-   *
-   * @return BwView  object
-   */
-  public BwView getView() {
-    if (view == null) {
-      view = new BwView();
-    }
-
-    return view;
-  }
-
-  /** Not set - invisible to jsp
-   *
-   * @param val
-   */
-  public void assignAddingView(final boolean val) {
-    addingView = val;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getAddingView() {
-    return addingView;
   }
 
   /* ====================================================================
@@ -1259,24 +994,6 @@ public class BwActionFormBase extends UtilActionForm
    * They will be distinguished by the action called.
    * ==================================================================== */
 
-  /* * Return an object containing the rdate.
-   *
-   * @return TimeDateComponents  for rdate
-   * /
-  public TimeDateComponents getRdate() {
-    if (rdate == null) {
-      try {
-        rdate = new TimeDateComponents(getCalInfo(),
-                                       config.getMinIncrement(),
-                                       getHour24());
-      } catch (Throwable t) {
-        getErr().emit(t);
-      }
-    }
-
-    return rdate;
-  } */
-
   /**
    * @param val Collection of RecurRuleComponents
    */
@@ -1364,58 +1081,6 @@ public class BwActionFormBase extends UtilActionForm
     return inBoxInfo;
   }
 
-  /* ....................................................................
-   *                   public events submission
-   * .................................................................... */
-
-  /** Set submission notification from
-   *
-   * @param val
-   */
-  public void setSnfrom(final String val) {
-    snfrom = val;
-  }
-
-  /** Get submission notification from
-   *
-   * @return submission notification from
-   */
-  public String getSnfrom() {
-    return snfrom;
-  }
-
-  /** Set submission notification text
-   *
-   * @param val
-   */
-  public void setSntext(final String val) {
-    sntext = val;
-  }
-
-  /** Get submission notification text
-   *
-   * @return submission notification text
-   */
-  public String getSntext() {
-    return sntext;
-  }
-
-  /** Set submission notification subject
-   *
-   * @param val
-   */
-  public void setSnsubject(final String val) {
-    snsubject = val;
-  }
-
-  /** Get submission notification subject
-   *
-   * @return submission notification subject
-   */
-  public String getSnsubject() {
-    return snsubject;
-  }
-
   /** Return an object representing an events start date.
    *
    * @return TimeDateComponents  object representing date and time
@@ -1438,7 +1103,7 @@ public class BwActionFormBase extends UtilActionForm
    */
   public DurationBean getEventDuration() {
 //    return getEventDates().getDuration();
-    DurationBean db = getEventDates().getDuration();
+    final DurationBean db = getEventDates().getDuration();
     if (debug()) {
       debug("Event duration=" + db);
     }

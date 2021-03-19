@@ -27,36 +27,25 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.BwEvent.SuggestedTo;
 import org.bedework.calfacade.BwEventObj;
-import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.base.StartEndComponent;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calfacade.svc.BwAdminGroup;
-import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
-import org.bedework.calfacade.svc.RealiasResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
-import org.bedework.client.admin.AdminClient;
-import org.bedework.client.admin.AdminConfig;
+import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.Attendees;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
-import org.bedework.sysevents.events.SysEventBase;
-import org.bedework.sysevents.events.publicAdmin.EntityApprovalNeededEvent;
-import org.bedework.sysevents.events.publicAdmin.EntityApprovalResponseEvent;
-import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
@@ -78,18 +67,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.bedework.client.web.rw.EventCommon.adminEventLocation;
 import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
 import static org.bedework.client.web.rw.EventCommon.initMeeting;
-import static org.bedework.client.web.rw.EventCommon.notifyEventReg;
-import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
-import static org.bedework.client.web.rw.EventCommon.resetEvent;
+import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
 import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
 import static org.bedework.client.web.rw.EventCommon.validateEvent;
 import static org.bedework.client.web.rw.EventCommon.validateEventDates;
-import static org.bedework.util.misc.response.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
  * distinguish.
@@ -119,60 +104,94 @@ import static org.bedework.util.misc.response.Response.Status.ok;
  * @author Mike Douglass
  */
 public class UpdateEventAction extends RWActionBase {
+  protected static class UpdatePars {
+    public final BwRequest request;
+    public final RWClient cl;
+    public final BwRWActionForm form;
+    public final EventInfo ei;
+    public final BwEvent ev;
+
+    public String preserveColPath;
+
+    public final ChangeTable changes;
+
+    public final boolean adding;
+
+    public final boolean sendInvitations;
+
+    public String unindexLocation;
+
+    protected UpdatePars(final BwRequest request,
+                         final RWClient cl,
+                         final BwRWActionForm form) {
+      this.request = request;
+      this.cl = cl;
+      this.form = form;
+
+      ei = form.getEventInfo();
+      ev = ei.getEvent();
+
+      /* This should be done by a wrapper */
+      changes = ei.getChangeset(cl.getCurrentPrincipalHref());
+      adding = form.getAddingEvent();
+      sendInvitations = request.present("submitAndSend");
+
+      if (ev != null) {
+        /* We have a problem with roll back in the case of errors.
+         * Hibernate will actually update the event as we change fields and
+         * really we should do a roll back on any failure.
+         *
+         * However, this causes a problem with the UI. All this should be
+         * resolved with the newer client approach which doesn't update
+         * this way. For the moment preserve some important value(s).
+         */
+
+        preserveColPath = ev.getColPath();
+
+      /* TODO - If we are publishing this we should do it as a MOVE
+              Allows the back end to remove the index entry from the old
+              location. For the moment do it explicitly here
+       */
+
+      /*
+        if (publishEvent | approveEvent) {
+          // Will need to unindex from old location
+    //      cl.unindex(ei.getEvent().getHref());
+          unindexLocation = ev.getHref();
+        } else {
+          unindexLocation = null;
+        }
+      */
+        if (!adding) {
+          unindexLocation = ev.getHref();
+        }
+      }
+    }
+  }
+
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) throws Throwable {
-    final boolean publicAdmin = cl.getPublicAdmin();
-    final boolean submitApp = form.getSubmitApp();
+    return doUpdate(request, cl, form,
+                    new UpdatePars(request, cl, form));
+  }
 
-    String submitterEmail = null;
-    //String submitter = null;
-
-    final boolean sendInvitations = request.present("submitAndSend");
-    final boolean publishEvent = request.present("publishEvent");
-    final boolean updateSubmitEvent = request.present(
-            "updateSubmitEvent");
-    final boolean approveEvent = request.present("approveEvent");
-
-    // TODO - set this based on an x-prop or a request param
-    boolean awaitingApprovalEvent = false;
-
-    if (approveEvent && !form.getCurUserApproverUser()) {
-      cl.rollback();
-      return forwardNoAccess;
-    }
-
+  public int doUpdate(final BwRequest request,
+                      final RWClient cl,
+                      final BwRWActionForm form,
+                      final UpdatePars pars) throws Throwable {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
       cl.rollback();
       return forwardNoAccess;
     }
 
-    EventInfo ei = form.getEventInfo();
-    BwEvent ev = ei.getEvent();
+    EventInfo ei = pars.ei;
+    BwEvent ev = pars.ev;
     if (ev == null) {
       return forwardNoAction;
     }
-
-    final boolean eventOwner;
-
-    if (!publicAdmin) {
-      eventOwner = true;
-    } else {
-      eventOwner = form.getAddingEvent() ||
-              ((AdminClient)cl).isCalSuiteEntity(ev);
-    }
-
-    if ((publishEvent || approveEvent) && (ev.getRecurrenceId() != null)) {
-      // Cannot publish/approve an instance - only the master
-      cl.rollback();
-      return forwardError;
-    }
-
-    /* This should be done by a wrapper */
-    final ChangeTable changes = ei.getChangeset(
-            cl.getCurrentPrincipalHref());
 
     /*
     BwEventAnnotation ann = null;
@@ -194,7 +213,7 @@ public class UpdateEventAction extends RWActionBase {
       return forwardError;
     }
 
-    /* ----------------------- Change attendee list ------------------------- */
+    /* ------------------- Change attendee list ------------------- */
 
     if (request.present("editEventAttendees")) {
       final int res = initMeeting(request, form, true);
@@ -206,7 +225,7 @@ public class UpdateEventAction extends RWActionBase {
       return forwardEditEventAttendees;
     }
 
-    /* -------------------- Turn event into meeting ------------------------- */
+    /* ----------------- Turn event into meeting ------------------ */
 
     if (request.present("makeEventIntoMeeting")) {
       final int res = initMeeting(request, form, true);
@@ -230,8 +249,6 @@ public class UpdateEventAction extends RWActionBase {
       return forwardEventDatesInited;
     }
 
-    final boolean adding = form.getAddingEvent();
-
     if (request.hasDelete()) {
       // Delete button in form
       form.assignMarkDeleted(false);
@@ -246,51 +263,16 @@ public class UpdateEventAction extends RWActionBase {
 
     if (cl.isSuperUser() && ev.getDeleted()) {
       if (!request.present("deleted")) {
-        changes.changed(PropertyInfoIndex.DELETED,
-                        true,
-                        false);
+        pars.changes.changed(PropertyInfoIndex.DELETED,
+                             true,
+                             false);
         ev.setDeleted(false);
       }
     }
 
-    /* -------------------------- Collection ------------------------------ */
-
-    /* TODO - If we are publishing this we should do it as a MOVE
-              Allows the back end to remove the index entry from the old
-              location. For the moment do it explicitly here
-     */
-
-    final String submissionsRoot = form.getConfig().getSubmissionRoot();
-    final String workflowRoot = cl.getSystemProperties().getWorkflowRoot();
-    String unindexLocation = null;
-
-    /*
-    if (publishEvent | approveEvent) {
-      // Will need to unindex from old location
-//      cl.unindex(ei.getEvent().getHref());
-      unindexLocation = ev.getHref();
-    } else {
-      unindexLocation = null;
-    }
-    */
-    if (!adding) {
-      unindexLocation = ev.getHref();
-    }
-
-    /* We have a problem with roll back in the case of errors.
-     * Hibernate will actually update the event as we change fields and
-     * really we should do a roll back on any failure.
-     *
-     * However, this causes a problem with the UI. All this should be
-     * resolved with the newer client approach which doesn't update
-     * this way. For the moment preserve some important value(s).
-     */
-
-    final String preserveColPath = ev.getColPath();
-
     /* ------------------------ Text fields ------------------------------ */
 
-    setEventText(request, ev, adding, changes);
+    setEventText(request, ev, pars.adding, pars.changes);
 
     /* ---------------------- Uploaded image ----------------------------- */
 
@@ -306,7 +288,7 @@ public class UpdateEventAction extends RWActionBase {
           return forwardValidationError;
         }
 
-        restore(ev, preserveColPath);
+        restore(pars);
         return forwardRetry;
       }
 
@@ -325,31 +307,10 @@ public class UpdateEventAction extends RWActionBase {
 
     /* ----------------------- X-properties ------------------------------ */
 
-    int res = processXprops(request, ev, extras,
-                            publishEvent,
-                            changes);
+    int res = processXprops(pars, extras);
     if (res == forwardValidationError) {
       cl.rollback();
       return res;
-    }
-
-    if ((publishEvent || updateSubmitEvent)) {
-      // We might need the submitters info */
-
-      final List<BwXproperty> xps =
-              ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
-
-      if (!Util.isEmpty(xps)) {
-        submitterEmail = xps.get(0).getValue();
-      }
-    }
-
-    /* ---------------- Suggested to a group? --------------------- */
-
-    List<SuggestedTo> suggestedTo = null;
-
-    if (publicAdmin && eventOwner) {
-      suggestedTo = doSuggested(request, ev, changes);
     }
 
     /* -------------------------- Dates ------------------------------ */
@@ -361,69 +322,40 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (!validateEventDates(request, ei)) {
-      restore(ev, preserveColPath);
+      restore(pars);
       return forwardRetry;
     }
 
     /* -------------------------- CalSuite ------------------------------ */
-    
+
     ev.setCalSuite(form.getCalSuiteName());
 
     /* -------------------------- Location ------------------------------ */
 
-    if (publicAdmin) {
-      if (!adminEventLocation(request, ei)) {
-        restore(ev, preserveColPath);
-        return forwardRetry;
-      }
-    } else {
-      setEventLocation(request, ei, form, submitApp);
-        // RFC says maybe for this.
-        //incSequence = true;
+    if (!setLocation(pars)) {
+      return forwardRetry;
     }
 
     /* -------------------------- Contact ------------------------------ */
 
 
-    if (!setEventContact(request, submitApp)) {
-      restore(ev, preserveColPath);
+    if (!setContact(pars)) {
       return forwardRetry;
     }
 
     /* -------------------------- Aliases ------------------------------ */
 
-    Set<BwCategory> cats = null;
-    if (cl.getPublicAdmin() ||
-            request.getBwForm().getSubmitApp()) {
-        final RealiasResult resp = cl.reAlias(ev);
-      if (resp.getStatus() != ok) {
-        if (debug()) {
-          debug("Failed to get topical areas? " + resp);
-        }
-        cl.rollback();
-        form.getErr().emit(ValidationError.missingTopic);
-        restore(ev, preserveColPath);
-        return forwardRetry;
-      }
-
-      cats = resp.getCats();
-
-      if (publicAdmin && !updateSubmitEvent && Util.isEmpty(cats)) {
-        if (debug()) {
-          debug("No topical areas? " + resp);
-        }
-        form.getErr().emit(ValidationError.missingTopic);
-        restore(ev, preserveColPath);
-        return forwardRetry;
-      }
+    final Set<BwCategory> cats = doAliases(pars);
+    if (cats == null) {
+      return forwardRetry;
     }
 
     /* -------------------------- Categories ------------------------------ */
 
-    final SetEntityCategoriesResult secr = 
-            setEntityCategories(request, 
+    final EventsI.SetEntityCategoriesResult secr =
+            setEntityCategories(request,
                                 cats,
-                                ev, changes);
+                                ev, pars.changes);
     if (secr.rcode != forwardSuccess) {
       cl.rollback();
       return secr.rcode;
@@ -434,12 +366,12 @@ public class UpdateEventAction extends RWActionBase {
     final String link = Util.checkNull(form.getEventLink());
     if ((link != null) && (Util.validURI(link) == null)) {
       form.getErr().emit(ValidationError.invalidUri);
-      restore(ev, preserveColPath);
+      restore(pars);
       return forwardRetry;
     }
 
     if (!Util.equalsString(ev.getLink(), link)) {
-      changes.changed(PropertyInfoIndex.URL, ev.getLink(), link);
+      pars.changes.changed(PropertyInfoIndex.URL, ev.getLink(), link);
       ev.setLink(link);
     }
 
@@ -447,7 +379,7 @@ public class UpdateEventAction extends RWActionBase {
 
     final String cost = Util.checkNull(form.getEventCost());
     if (!Util.equalsString(ev.getCost(), cost)) {
-      changes.changed(PropertyInfoIndex.COST, ev.getCost(), cost);
+      pars.changes.changed(PropertyInfoIndex.COST, ev.getCost(), cost);
       ev.setCost(cost);
     }
 
@@ -455,14 +387,11 @@ public class UpdateEventAction extends RWActionBase {
 
     final String transp = Util.checkNull(form.getTransparency());
     if (!Util.equalsString(ev.getTransparency(), transp)) {
-      changes.changed(PropertyInfoIndex.TRANSP, ev.getTransparency(),
-                      transp);
+      pars.changes.changed(PropertyInfoIndex.TRANSP, ev.getTransparency(),
+                           transp);
       ev.setTransparency(transp);
     }
 
-    /* ------------------------- publick ---------------------------- */
-
-    ev.setPublick(publicAdmin);
 
     /* ------------------------- Status ---------------------------- */
 
@@ -476,8 +405,8 @@ public class UpdateEventAction extends RWActionBase {
       //      canceling = true;
       //  }
 
-      changes.changed(PropertyInfoIndex.STATUS, ev.getStatus(),
-                      fStatus);
+      pars.changes.changed(PropertyInfoIndex.STATUS, ev.getStatus(),
+                           fStatus);
       ev.setStatus(fStatus);
     }
 
@@ -487,9 +416,10 @@ public class UpdateEventAction extends RWActionBase {
 
     final Attendees atts = form.getAttendees();
 
-    ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.ATTENDEE);
+    ChangeTableEntry cte =
+            pars.changes.getEntry(PropertyInfoIndex.ATTENDEE);
 
-    if (adding) {
+    if (pars.adding) {
       ev.setAttendees(atts.getAttendees());
     }
 
@@ -506,7 +436,7 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (request.getErrFlag()) {
-      restore(ev, preserveColPath);
+      restore(pars);
       return forwardRetry;
     }
 
@@ -555,7 +485,7 @@ public class UpdateEventAction extends RWActionBase {
         if (rruleChanged) {
           ev.addRrule(rrule);
 
-          cte = changes.getEntry(PropertyInfoIndex.RRULE);
+          cte = pars.changes.getEntry(PropertyInfoIndex.RRULE);
           cte.setChanged(oldRrules, ev.getRrules());
           cte.setRemovedValues(oldRrules);
           cte.setAddedValues(new TreeSet<>(ev.getRrules()));
@@ -573,7 +503,7 @@ public class UpdateEventAction extends RWActionBase {
       final Collection<String> rrules = ev.getRrules();
 
       if (!Util.isEmpty(rrules)) {
-        cte = changes.getEntry(PropertyInfoIndex.RRULE);
+        cte = pars.changes.getEntry(PropertyInfoIndex.RRULE);
         cte.setChanged(rrules, null);
         cte.setRemovedValues(new ArrayList<>(rrules));
 
@@ -593,261 +523,51 @@ public class UpdateEventAction extends RWActionBase {
       evDateOnly = form.getEventDates().getStartDate().getDateOnly();
     }
 
-    updateRExdates(request, ev, evDateOnly, changes);
+    updateRExdates(pars, evDateOnly);
+
+    /* ---------------- Suggested to a group? --------------------- */
+
+    if (!doAdditional(pars)) {
+      return forwardRetry;
+    }
+
+    /* --------- set collection (why not earlier?) ---------------- */
+
+    if (!request.setEventCalendar(ei, pars.changes)) {
+      return forwardRetry;
+    }
 
     /* ------------------ final validation -------------------------- */
 
     /* If we're updating but not publishing a submitted event, treat it as
      * if it were the submit app.
      */
-    final List<ValidationError> ves =
-            validateEvent(cl,
-                          updateSubmitEvent || submitApp,
-                          publicAdmin,
-                          ev);
+    final List<ValidationError> ves = validate(pars);
 
     if (ves != null) {
       for (final ValidationError ve: ves) {
-        form.getErr().emit(ve.getErrorCode(), ve.getExtra());
+        request.error(ve.getErrorCode(), ve.getExtra());
       }
-      restore(ev, preserveColPath);
-      return forwardRetry;
-    }
-
-    /* ------------- web submit - copy entities and change owner ------------ */
-
-    if (!request.setEventCalendar(ei, changes)) {
-      return forwardRetry;
-    }
-
-    final String colPath = ev.getColPath();
-
-    if (publishEvent) {
-      /* Event MUST NOT be in a submission calendar */
-      if (colPath.startsWith(submissionsRoot)) {
-        form.getErr().emit(ValidationError.inSubmissionsCalendar);
-        cl.rollback();
-        return forwardValidationError;
-      }
-    } else if (approveEvent) {
-      /* Event MUST NOT be in a workflow calendar */
-      if (colPath.startsWith(workflowRoot)) {
-        form.getErr().emit(ValidationError.inSubmissionsCalendar);
-        restore(ev, preserveColPath);
-        cl.rollback();
-        return forwardValidationError;
-      }
-
-      // See if colpath changed and if so change the overrides
-      if (ev.getRecurring() &&
-              !preserveColPath.equals(colPath) &&
-              (ei.getOverrideProxies() != null)) {
-        for (final BwEvent oev: ei.getOverrideProxies()) {
-          oev.setColPath(ev.getColPath());
-        }
-      }
-
-    } else if (updateSubmitEvent) {
-      /* Event MUST be in a submission calendar */
-      if (!colPath.startsWith(submissionsRoot)) {
-        form.getErr().emit(ValidationError.notSubmissionsCalendar);
-        cl.rollback();
-        return forwardValidationError;
-      }
-    } else if ((workflowRoot != null) && colPath.startsWith(workflowRoot)) {
-      awaitingApprovalEvent = adding;
-    }
-
-    if (publishEvent) {
-      copyEntities(ev);
-      changeOwner(ev, cl);
-      changes.changed(PropertyInfoIndex.CREATOR, null,
-                      ev.getCreatorHref());
-
-      // Do the same for any overrides
-
-      if (ev.getRecurring() &&
-              (ei.getOverrideProxies() != null)) {
-        for (final BwEvent oev: ei.getOverrideProxies()) {
-          copyEntities(oev);
-          changeOwner(oev, cl);
-          oev.setColPath(ev.getColPath());
-        }
-      }
+      restore(pars);
+      return forwardValidationError;
     }
 
     /* --------------------- Must have a calendar ------------------ */
 
     if (ev.getColPath() == null) {
-      form.getErr().emit(ValidationError.missingCalendar);
+      request.error(ValidationError.missingCalendar);
       cl.rollback();
       return forwardValidationError;
     }
 
     /* --------------------- Add or update the event ------------------------ */
 
-    if (debug()) {
-      debug(changes.toString());
+    final var fwd = update(pars);
+    if (fwd != forwardSuccess) {
+      return fwd;
     }
 
-    boolean clearForm = false;
-
-    try {
-      final UpdateResult ur;
-      ei.setNewEvent(adding);
-
-      if (adding) {
-        ur = cl.addEvent(ei,
-                         !sendInvitations,
-                         true);
-      } else {
-        ur = cl.updateEvent(ei, !sendInvitations, null, false);
-      }
-      if (!ur.isOk()) {
-        form.getErr().emit(ur.getMessage());
-        return forwardError;
-      }
-
-      if (ur.schedulingResult != null) {
-        emitScheduleStatus(form, ur.schedulingResult, false);
-      }
-
-      form.assignAddingEvent(false);
-
-      if (cl.getPublicAdmin()) {
-        final AdminClient adcl = (AdminClient)cl;
-        final String clearFormPref = adcl.getCalsuitePreferences().
-                getClearFormsOnSubmit();
-
-        if (clearFormPref == null) {
-          clearForm = ((AdminConfig)form.getConfig())
-                  .getDefaultClearFormsOnSubmit();
-        } else {
-          clearForm = Boolean.parseBoolean(clearFormPref);
-        }
-
-        if (clearForm) {
-          form.setLocation(null);
-          form.setContact(null);
-          form.resetSelectIds();
-        }
-      }
-
-      /* -------------------------- Access ------------------------------ */
-
-      final String aclStr = request.getReqPar("acl");
-      if (aclStr != null) {
-        final Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
-
-        cl.changeAccess(ev, acl.getAces(), true);
-      }
-
-      if (!adding && !unindexLocation.equals(ev.getHref())) {
-        cl.unindex(unindexLocation);
-      }
-    } catch (final CalFacadeException cfe) {
-      cl.rollback();
-
-      if (CalFacadeException.noRecurrenceInstances.equals(cfe.getMessage())) {
-        form.getErr().emit(ClientError.noRecurrenceInstances,
-                           ev.getUid());
-        return forwardValidationError;
-      }
-
-      if (CalFacadeException.duplicateGuid.equals(cfe.getMessage())) {
-        form.getErr().emit(ClientError.duplicateUid);
-        return forwardDuplicate;
-      }
-
-      throw cfe;
-    }
-
-    if ((publishEvent || updateSubmitEvent) &&
-        request.getBooleanReqPar("submitNotification", false)) {
-      notifySubmitter(request, ei, submitterEmail);
-    }
-
-    if (approveEvent || awaitingApprovalEvent) {
-      /* Post an event flagging the approval.
-         The change notification processor will add the
-         notification(s).
-        */
-
-      final AdminClient adcl = (AdminClient)cl;
-      final BwCalSuite cs = adcl.getCalSuite();
-      final String csHref;
-
-      if (cs != null) {
-        csHref = cs.getGroup().getOwnerHref();
-      } else {
-        csHref = null;
-      }
-
-      final SysEventBase sev;
-
-      if (approveEvent) {
-        sev = new EntityApprovalResponseEvent(
-                SysEventBase.SysCode.APPROVAL_STATUS,
-                cl.getCurrentPrincipalHref(),
-                ev.getCreatorHref(),
-                ev.getHref(),
-                null,
-                true,
-                null,
-                csHref);
-      } else {
-        sev = new EntityApprovalNeededEvent(
-                SysEventBase.SysCode.APPROVAL_NEEDED,
-                cl.getCurrentPrincipalHref(),
-                ev.getCreatorHref(),
-                ev.getHref(),
-                null,
-                null,
-                csHref);
-      }
-      cl.postNotification(sev);
-    }
-
-    if (publicAdmin) {
-      final AdminClient adcl = (AdminClient)cl;
-
-      if (!Util.isEmpty(suggestedTo)) {
-        for (final SuggestedTo st: suggestedTo) {
-          final BwAdminGroup grp =
-                  (BwAdminGroup)adcl.getAdminGroup(st.getGroupHref());
-
-          if (grp == null) {
-            warn("Unable to locate group " + st.getGroupHref());
-            continue;
-          }
-
-          final EntitySuggestedEvent ese =
-                  new EntitySuggestedEvent(
-                          SysEventBase.SysCode.SUGGESTED,
-                          cl.getCurrentPrincipalHref(),
-                          ev.getCreatorHref(),
-                          ev.getHref(),
-                          null,
-                          grp.getOwnerHref());
-          cl.postNotification(ese);
-        }
-      }
-
-      /* See if we need to notify event registration system for add/update */
-      final BwXproperty evregprop =
-              ev.findXproperty(BwXproperty.bedeworkEventRegStart);
-
-      if (evregprop != null) {
-        // Registerable event
-        notifyEventReg(request, ei);
-      }
-
-      resetEvent(request, clearForm);
-    } else {
-      request.refresh();
-    }
-
-    if (adding) {
+    if (pars.adding) {
       ev = new BwEventObj();
       form.getEventDates().setNewEvent(ev);
 
@@ -860,14 +580,14 @@ public class UpdateEventAction extends RWActionBase {
       form.setEventInfo(ei, true);
 
       if (ev.getEntityType() == IcalDefs.entityTypeTodo) {
-        form.getMsg().emit(ClientMessage.addedTasks, 1);
+        request.message(ClientMessage.addedTasks, 1);
       } else {
-        form.getMsg().emit(ClientMessage.addedEvents, 1);
+        request.message(ClientMessage.addedEvents, 1);
       }
-    } else  if (ev.getEntityType() == IcalDefs.entityTypeTodo) {
-      form.getMsg().emit(ClientMessage.updatedTask);
+    } else if (ev.getEntityType() == IcalDefs.entityTypeTodo) {
+      request.message(ClientMessage.updatedTask);
     } else {
-      form.getMsg().emit(ClientMessage.updatedEvent);
+      request.message(ClientMessage.updatedEvent);
     }
 
     cl.clearSearchEntries();
@@ -875,150 +595,128 @@ public class UpdateEventAction extends RWActionBase {
     return forwardSuccess;
   }
 
-  private void restore(final BwEvent ev,
-                       final String preserveColPath) {
-    if (preserveColPath == null) {
+  protected boolean isOwner(final UpdatePars pars) {
+    return true;
+  }
+
+  protected boolean setLocation(final UpdatePars pars) throws Throwable {
+    setEventLocation(pars.request, pars.ei, pars.form, false);
+    return true;
+  }
+
+  /* -------------------------- Contact ------------------------------ */
+
+  protected boolean setContact(final UpdatePars pars) {
+    if (!setEventContact(pars.request, false)) {
+      restore(pars);
+      return false;
+    }
+
+    return true;
+  }
+
+  protected Set<BwCategory> doAliases(final UpdatePars pars) {
+    return null;
+  }
+
+  protected boolean doAdditional(final UpdatePars pars) throws Throwable {
+    return true;
+  }
+
+  protected int update(final UpdatePars pars) throws Throwable {
+    final var fwd = doUpdate(pars);
+    if (fwd != forwardSuccess) {
+      return fwd;
+    }
+
+    pars.request.refresh();
+
+    return forwardSuccess;
+  }
+
+  protected int doUpdate(final UpdatePars pars) throws Throwable {
+
+    if (debug()) {
+      debug(pars.changes.toString());
+    }
+
+    try {
+      final UpdateResult ur;
+      pars.ei.setNewEvent(pars.adding);
+
+      if (pars.adding) {
+        ur = pars.cl.addEvent(pars.ei,
+                              !pars.sendInvitations,
+                              true);
+      } else {
+        ur = pars.cl.updateEvent(pars.ei, !pars.sendInvitations, null, false);
+      }
+      if (!ur.isOk()) {
+        pars.request.error(ur.getMessage());
+        return forwardError;
+      }
+
+      if (ur.schedulingResult != null) {
+        emitScheduleStatus(pars.form, ur.schedulingResult, false);
+      }
+
+      pars.form.assignAddingEvent(false);
+
+      /* -------------------------- Access ------------------------------ */
+
+      final String aclStr = pars.request.getReqPar("acl");
+      if (aclStr != null) {
+        final Acl acl =
+                new AccessXmlUtil(null, pars.cl).getAcl(aclStr, true);
+
+        pars.cl.changeAccess(pars.ev, acl.getAces(), true);
+      }
+
+      if (!pars.adding && !pars.unindexLocation.equals(pars.ev.getHref())) {
+        pars.cl.unindex(pars.unindexLocation);
+      }
+    } catch (final CalFacadeException cfe) {
+      pars.cl.rollback();
+
+      if (CalFacadeException.noRecurrenceInstances.equals(cfe.getMessage())) {
+        pars.request.error(ClientError.noRecurrenceInstances,
+                           pars.ev.getUid());
+        return forwardValidationError;
+      }
+
+      if (CalFacadeException.duplicateGuid.equals(cfe.getMessage())) {
+        pars.request.error(ClientError.duplicateUid);
+        return forwardDuplicate;
+      }
+
+      throw cfe;
+    }
+
+    return forwardSuccess;
+  }
+
+  protected void restore(final UpdatePars pars) {
+    if (pars.preserveColPath == null) {
       return;
     }
 
-    if (!preserveColPath.equals(ev.getColPath())) {
-      ev.setColPath(preserveColPath);
-    }
-  }
-
-  private List<SuggestedTo> doSuggested(final BwRequest request,
-                                        final BwEvent ev,
-                                        final ChangeTable changes) throws Throwable {
-    final AdminClient cl = (AdminClient)request.getClient();
-
-    if (!cl.getPublicAdmin() ||
-            !cl.getSystemProperties().getSuggestionEnabled()) {
-      return null;
-    }
-
-    /* If so we adjust x-properties to match */
-
-    List<SuggestedTo> suggestedTo = null;
-
-    final ChangeTableEntry xcte =
-            changes.getEntry(PropertyInfoIndex.XPROP);
-
-    final List<String> groupHrefs = request.getReqPars("groupHref");
-
-    final List<BwXproperty> alreadySuggested =
-            ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
-
-    final BwCalSuite cs = cl.getCalSuite();
-
-    final String csHref = cs.getGroup().getPrincipalRef();
-    if (groupHrefs == null) {
-      if (!Util.isEmpty(alreadySuggested)) {
-        for (final BwXproperty xp : alreadySuggested) {
-          ev.removeXproperty(xp);
-          xcte.addRemovedValue(xp);
-        }
-      }
-
-      return suggestedTo;
-    }
-
-    // Add each suggested group to the event and update preferred groups.
-
-    final Set<String> hrefsPresent = new TreeSet<>();
-    final Map<String, BwXproperty> toRemove =
-            new HashMap<>(alreadySuggested.size());
-
-    /* List those present and populate the toRemove map -
-           we'll remove entries from toRemove as we process them later
-         */
-    for (final BwXproperty as: alreadySuggested) {
-      final String href = new SuggestedTo(as.getValue()).getGroupHref();
-      hrefsPresent.add(href);
-      toRemove.put(href, as);
-    }
-
-    final Set<String> deDuped = new TreeSet<>(groupHrefs);
-
-    for (final String groupHref: deDuped) {
-      if (!hrefsPresent.contains(groupHref)) {
-        final SuggestedTo sto =
-                new SuggestedTo(SuggestedTo.pending, groupHref,
-                                csHref);
-        final BwXproperty grpXp =
-                new BwXproperty(BwXproperty.bedeworkSuggestedTo,
-                                null,
-                                sto.toString());
-        ev.addXproperty(grpXp);
-        xcte.addAddedValue(grpXp);
-        if (suggestedTo == null) {
-          suggestedTo = new ArrayList<>();
-        }
-
-        suggestedTo.add(sto);
-      } else {
-        toRemove.remove(groupHref);
-      }
-
-      // Add to preferred list
-      cl.getPreferences().addPreferredGroup(groupHref);
-    }
-
-    /* Anything left in toRemove wasn't in the list. Remove
-         * those entries
-         */
-
-    if (!Util.isEmpty(toRemove.values())) {
-      for (final BwXproperty xp: toRemove.values()) {
-        ev.removeXproperty(xp);
-        xcte.addRemovedValue(xp);
-      }
-    }
-
-    return suggestedTo;
-  }
-
-  private void changeOwner(final BwEvent ev,
-                           final RWClient cl) {
-    cl.claimEvent(ev);
-    ev.setCreatorHref(cl.getCurrentPrincipalHref());
-  }
-
-  private void copyEntities(final BwEvent ev) {
-    /* Copy event entities */
-    BwLocation loc = ev.getLocation();
-    if ((loc != null) && !loc.getPublick()) {
-      loc = (BwLocation)loc.clone();
-      loc.setOwnerHref(null);
-      loc.setCreatorHref(null);
-      loc.setPublick(true);
-      ev.setLocation(loc);
-    }
-
-    BwContact contact = ev.getContact();
-    if ((contact != null)  && !contact.getPublick()) {
-      contact = (BwContact)contact.clone();
-      contact.setOwnerHref(null);
-      contact.setCreatorHref(null);
-      contact.setPublick(true);
-      ev.setLocation(loc);
-      ev.setContact(contact);
+    if (!pars.preserveColPath.equals(pars.ev.getColPath())) {
+      pars.ev.setColPath(pars.preserveColPath);
     }
   }
 
   /** Update rdates and exdates.
    *
-   * @param request object
-   * @param event to be updated
+   * @param pars update parameters
    * @param evDateOnly true for date only
-   * @param changes to record changes
    * @return boolean  true if changed.
    * @throws Throwable on fatal error
    */
-  private boolean updateRExdates(final BwRequest request,
-                                 final BwEvent event,
-                                 final boolean evDateOnly,
-                                 final ChangeTable changes) throws Throwable {
-    Collection<BwDateTime> reqDates = request.getRdates(evDateOnly);
+  private boolean updateRExdates(final UpdatePars pars,
+                                 final boolean evDateOnly) throws Throwable {
+    Collection<BwDateTime> reqDates = pars.request.getRdates(evDateOnly);
+    final BwEvent event = pars.ev;
+
     final Collection<BwDateTime> evDates = new TreeSet<>();
     if (event.getRdates() != null) {
       evDates.addAll(event.getRdates());
@@ -1052,7 +750,8 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (rdChanged) {
-      final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.RDATE);
+      final ChangeTableEntry cte =
+              pars.changes.getEntry(PropertyInfoIndex.RDATE);
       cte.setChanged(evDates, event.getRdates());
       cte.setRemovedValues(removed);
       cte.setAddedValues(added);
@@ -1067,7 +766,7 @@ public class UpdateEventAction extends RWActionBase {
     added = null;
     removed = null;
 
-    reqDates = request.getExdates(evDateOnly);
+    reqDates = pars.request.getExdates(evDateOnly);
 
     if (Util.isEmpty(reqDates)) {
       if (!Util.isEmpty(evDates)) {
@@ -1091,7 +790,8 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (exdChanged) {
-      ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.EXDATE);
+      final ChangeTableEntry cte =
+              pars.changes.getEntry(PropertyInfoIndex.EXDATE);
       cte.setChanged(evDates, event.getExdates());
       cte.setRemovedValues(removed);
       cte.setAddedValues(added);
@@ -1101,31 +801,30 @@ public class UpdateEventAction extends RWActionBase {
   }
 
   private static final String alwaysRemove1 =
-      "BEGIN:VEVENT\r\nUID:123456\r\nDTSTART;VALUE=DATE:20080212\r\n";
+          "BEGIN:VEVENT\r\nUID:123456\r\nDTSTART;VALUE=DATE:20080212\r\n";
 
   private static final String alwaysRemove2 =
-      "BEGIN:VEVENT\nUID:123456\nDTSTART;VALUE=DATE:20080212\n";
+          "BEGIN:VEVENT\nUID:123456\nDTSTART;VALUE=DATE:20080212\n";
 
   /* return forwardNoAction for no change
    * forward success for change otherwise error.
    */
-  private int processXprops(final BwRequest request,
-                            final BwEvent event,
-                            final List<BwXproperty> extras,
-                            final boolean publishEvent,
-                            final ChangeTable changes) throws Throwable {
-    final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.XPROP);
-    final List<String> unparsedxps = request.getReqPars("xproperty");
+  protected int processXprops(final UpdatePars pars,
+                              final List<BwXproperty> extras) throws Throwable {
+    final ChangeTableEntry cte =
+            pars.changes.getEntry(PropertyInfoIndex.XPROP);
+    final List<String> unparsedxps =
+            pars.request.getReqPars("xproperty");
 
-    List<BwXproperty> added;
+    final List<BwXproperty> added;
     List<BwXproperty> removed = null;
 
     List<BwXproperty> xprops = null;
 
     final List<BwXproperty> evxprops = new ArrayList<>();
 
-    if (!Util.isEmpty(event.getXproperties())) {
-      evxprops.addAll(event.getXproperties());
+    if (!Util.isEmpty(pars.ev.getXproperties())) {
+      evxprops.addAll(pars.ev.getXproperties());
     }
 
     /* When the xproperties get emitted we don't emit the set marked for skipping
@@ -1133,7 +832,7 @@ public class UpdateEventAction extends RWActionBase {
      */
 
     if (unparsedxps != null) {
-      xprops = parseXprops(request, /*publishEvent*/false);
+      xprops = parseXprops(pars, /*publishEvent*/false);
     }
 
     if (!Util.isEmpty(extras)) {
@@ -1156,12 +855,12 @@ public class UpdateEventAction extends RWActionBase {
       for (final BwXproperty xp:  evxprops) {
         if (xp.getSkipJsp()) {
           if (!xp.getName().equals(BwXproperty.bedeworkIcal) ||
-              (xp.getValue() == null)) {
+                  (xp.getValue() == null)) {
             continue;
           }
 
           if (!xp.getValue().startsWith(alwaysRemove1) &&
-              !xp.getValue().startsWith(alwaysRemove2)) {
+                  !xp.getValue().startsWith(alwaysRemove2)) {
             continue;
           }
         }
@@ -1175,7 +874,7 @@ public class UpdateEventAction extends RWActionBase {
       }
 
       if (removed != null) {
-        cte.setChanged(evxprops, event.getXproperties());
+        cte.setChanged(evxprops, pars.ev.getXproperties());
         cte.setRemovedValues(removed);
       }
 
@@ -1183,13 +882,13 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (Util.isEmpty(evxprops)) {
-      if (event.getXproperties() == null) {
-        event.setXproperties(new ArrayList<>(xprops));
+      if (pars.ev.getXproperties() == null) {
+        pars.ev.setXproperties(new ArrayList<>(xprops));
       } else {
-        event.getXproperties().addAll(xprops);
+        pars.ev.getXproperties().addAll(xprops);
       }
 
-      cte.setChanged(evxprops, new ArrayList<>(event.getXproperties()));
+      cte.setChanged(evxprops, new ArrayList<>(pars.ev.getXproperties()));
       cte.setAddedValues(xprops);
 
       if (removed != null) {
@@ -1205,8 +904,8 @@ public class UpdateEventAction extends RWActionBase {
       if (xp.getSkipJsp()) {
         if (xp.getName().equals(BwXproperty.bedeworkIcal)) {
           if ((xp.getValue() != null) &&
-              (xp.getValue().startsWith(alwaysRemove1) ||
-               xp.getValue().startsWith(alwaysRemove2))) {
+                  (xp.getValue().startsWith(alwaysRemove1) ||
+                           xp.getValue().startsWith(alwaysRemove2))) {
             continue; // Bogus x-prop - remove it
           }
         }
@@ -1222,9 +921,9 @@ public class UpdateEventAction extends RWActionBase {
 
     if (CalFacadeUtil.updateCollection(true, // clone them
                                        xprops, // make it look like this
-                                       event.getXproperties(), // change this (to)
+                                       pars.ev.getXproperties(), // change this (to)
                                        added, removed)) {
-      cte.setChanged(evxprops, new ArrayList<>(event.getXproperties()));
+      cte.setChanged(evxprops, new ArrayList<>(pars.ev.getXproperties()));
       cte.setAddedValues(added);
       cte.setRemovedValues(removed);
 
@@ -1234,28 +933,36 @@ public class UpdateEventAction extends RWActionBase {
     return forwardNoAction;
   }
 
+  protected List<ValidationError> validate(final UpdatePars pars) throws Throwable {
+    return validateEvent(pars.cl,
+                         pars.cl.getAuthProperties()
+                                .getMaxUserDescriptionLength(),
+                         true, pars.ev);
+  }
+
   /* This is a bit bogus but it will get us going. Make up a fake calendar,
    * parse it with ical4j and then extract the xproperties.
    *
    * We'll be rebuilding all of this anyway.
    */
-  private List<BwXproperty> parseXprops(final BwRequest request,
+  private List<BwXproperty> parseXprops(final UpdatePars pars,
                                         final boolean publishEvent) throws Throwable {
-    Collection<String> unparsedxps = request.getReqPars("xproperty");
+    final Collection<String> unparsedxps =
+            pars.request.getReqPars("xproperty");
 
     if (unparsedxps == null) {
       return null;
     }
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     sb.append("BEGIN:VCALENDAR\n" +
-              "VERSION:2.0\n" +
-              "PRODID:-//xyz.com//EN\n" +
-              "BEGIN:VEVENT\n" +
-              "UID:123456\n" +
-              "DTSTART;VALUE=DATE:20080212\n");
+                      "VERSION:2.0\n" +
+                      "PRODID:-//xyz.com//EN\n" +
+                      "BEGIN:VEVENT\n" +
+                      "UID:123456\n" +
+                      "DTSTART;VALUE=DATE:20080212\n");
 
-    for (String unparsedxp: unparsedxps) {
+    for (final String unparsedxp: unparsedxps) {
       /* Probably not the most efficient way */
       String val = unparsedxp.replace("\r\n", "\\n");
       val = val.replace("\n", "\\n");
@@ -1266,20 +973,20 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     sb.append("END:VEVENT\n" +
-              "END:VCALENDAR\n");
+                      "END:VCALENDAR\n");
 
-    Client cl = request.getClient();
-    IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
-    Icalendar c = trans.fromIcal(null, new StringReader(sb.toString()));
+    final Client cl = pars.request.getClient();
+    final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
+    final Icalendar c = trans.fromIcal(null, new StringReader(sb.toString()));
 
-    BwEvent ev = c.getEventInfo().getEvent();
+    final BwEvent ev = c.getEventInfo().getEvent();
 
-    List<BwXproperty> xprops = ev.getXproperties();
+    final List<BwXproperty> xprops = ev.getXproperties();
 
-    List<BwXproperty> strippedXprops = new ArrayList<>();
+    final List<BwXproperty> strippedXprops = new ArrayList<>();
 
     if (!publishEvent) {
-      for (BwXproperty xp: xprops) {
+      for (final BwXproperty xp: xprops) {
         if (xp.getSkipJsp()) {
           // Should not be here
           continue;
@@ -1307,12 +1014,12 @@ public class UpdateEventAction extends RWActionBase {
      * The request parameter xprop-preserve names a property to save.
      */
 
-    Map<String, String> plistMap = new HashMap<>();
-    for (String plistName: request.getReqPars("xprop-preserve")) {
+    final Map<String, String> plistMap = new HashMap<>();
+    for (final String plistName: pars.request.getReqPars("xprop-preserve")) {
       plistMap.put(plistName, plistName);
     }
 
-    for (BwXproperty xp: xprops) {
+    for (final BwXproperty xp: xprops) {
       if (plistMap.get(xp.getName()) != null) {
         strippedXprops.add(xp);
       }
@@ -1321,7 +1028,7 @@ public class UpdateEventAction extends RWActionBase {
     return strippedXprops;
   }
 
-  private static HashMap<String, String> validFreq = new HashMap<>();
+  private static final HashMap<String, String> validFreq = new HashMap<>();
   static {
     /* Block use of over-frequent recurrences */
     validFreq.put("HOURLY", "HOURLY");
@@ -1361,8 +1068,8 @@ public class UpdateEventAction extends RWActionBase {
    */
   public String getRrule(final BwRequest request,
                          final BwActionFormBase form) throws Throwable {
-    StringBuilder rrule = new StringBuilder();
-    String freq = request.getReqPar("freq");
+    final StringBuilder rrule = new StringBuilder();
+    final String freq = request.getReqPar("freq");
     if ((freq == null) || ("NONE".equals(freq)) ){
       return null;
     }
@@ -1375,15 +1082,16 @@ public class UpdateEventAction extends RWActionBase {
     rrule.append("FREQ=");
     rrule.append(freq);
 
-    Integer interval = request.getIntReqPar("interval",
-                                            ValidationError.invalidRecurInterval);
+    final Integer interval = request.getIntReqPar("interval",
+                                                  ValidationError.invalidRecurInterval);
     if (interval != null) {
       rrule.append(";INTERVAL=");
       rrule.append(interval);
     }
 
-    Integer count = request.getIntReqPar("count",
-                                         ValidationError.invalidRecurCount);
+    final Integer count =
+            request.getIntReqPar("count",
+                                 ValidationError.invalidRecurCount);
     String until = request.getReqPar("until");
 
     if ((count != null) && (until != null)) {
@@ -1398,7 +1106,7 @@ public class UpdateEventAction extends RWActionBase {
        *
        *  Also use the start timezone for until.
        */
-      TimeDateComponents start = form.getEventDates().getStartDate();
+      final TimeDateComponents start = form.getEventDates().getStartDate();
 
       if (DateTimeUtil.isISODate(until)) {
         if (!start.getDateOnly()) {
@@ -1429,7 +1137,7 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (!"DAILY".equals(freq)) {
-      String byday = request.getReqPar("byday");
+      final String byday = request.getReqPar("byday");
 
       if (byday != null) {
         rrule.append(";BYDAY=");
@@ -1437,20 +1145,20 @@ public class UpdateEventAction extends RWActionBase {
       }
 
       if (!"WEEKLY".equals(freq)) {
-        String bymonthday = request.getReqPar("bymonthday");
+        final String bymonthday = request.getReqPar("bymonthday");
         if (bymonthday != null) {
           rrule.append(";BYMONTHDAY=");
           rrule.append(bymonthday);
         }
 
         if (!"MONTHLY".equals(freq)) {
-          String bymonth = request.getReqPar("bymonth");
+          final String bymonth = request.getReqPar("bymonth");
           if (bymonth != null) {
             rrule.append(";BYMONTH=");
             rrule.append(bymonth);
           }
 
-          String byyearday = request.getReqPar("byyearday");
+          final String byyearday = request.getReqPar("byyearday");
           if (byyearday != null) {
             rrule.append(";BYYEARDAY=");
             rrule.append(byyearday);
@@ -1459,11 +1167,11 @@ public class UpdateEventAction extends RWActionBase {
       }
     }
 
-    String rruleStr = rrule.toString();
+    final String rruleStr = rrule.toString();
 
     try {
       new Recur(rruleStr);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       form.getErr().emit(ValidationError.invalidRecurRule);
       return null;
     }

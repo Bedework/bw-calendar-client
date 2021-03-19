@@ -5,13 +5,13 @@ package org.bedework.client.web.rw;
 
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.SelectId;
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.EventPropertiesReference;
+import org.bedework.calfacade.svc.BwView;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
@@ -65,6 +65,16 @@ public class BwRWActionForm extends BwActionFormBase {
   private Collection<DateTimeFormatter> formattedRdates;
 
   private Collection<DateTimeFormatter> formattedExdates;
+
+  /* ..............................................................
+   *                       Views
+   * .............................................................. */
+
+  private BwView view;
+
+  private String viewName;
+
+  private boolean addingView;
 
   /* ..............................................................
    *                       Collections
@@ -138,6 +148,27 @@ public class BwRWActionForm extends BwActionFormBase {
 
   private SelectId<String> locId = new SelectId<>(null,
                                                   SelectId.AHasPrecedence);
+
+  /* ..............................................................
+   *                   Preferences
+   * .............................................................. */
+
+  /** Last email address used to mail message. By default set to
+   * preferences value.
+   */
+  private String lastEmail;
+
+  private String lastSubject;
+
+  /* ..............................................................
+   *                   public events submission
+   * .............................................................. */
+
+  private String snfrom;
+
+  private String sntext;
+
+  private String snsubject;
 
   /* ==============================================================
    *                   Uploads and exports
@@ -364,6 +395,61 @@ public class BwRWActionForm extends BwActionFormBase {
   }
 
   /* ====================================================================
+   *                   Views
+   * ==================================================================== */
+
+  /** Set the view name for fetch
+   *
+   * @param val    String name
+   */
+  public void setViewName(final String val) {
+    viewName = val;
+  }
+
+  /** Get the view name
+   *
+   * @return String name
+   */
+  public String getViewName() {
+    return viewName;
+  }
+
+  /** Set the view we are editing
+   *
+   * @param val    BwView  object or null
+   */
+  public void setView(final BwView val) {
+    view = val;
+  }
+
+  /** Get the view we are editing
+   *
+   * @return BwView  object
+   */
+  public BwView getView() {
+    if (view == null) {
+      view = new BwView();
+    }
+
+    return view;
+  }
+
+  /** Not set - invisible to jsp
+   *
+   * @param val
+   */
+  public void assignAddingView(final boolean val) {
+    addingView = val;
+  }
+
+  /**
+   * @return bool
+   */
+  public boolean getAddingView() {
+    return addingView;
+  }
+
+  /* ====================================================================
    *                   Calendars
    * ==================================================================== */
 
@@ -454,14 +540,6 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public String getPrefCalendarId() {
     return getCalendar().getPath();
-  }
-
-  /** Get the preferred calendars for the current user
-   *
-   * @return Collection  preferred calendars
-   */
-  public Collection<BwCalendar> getPreferredCalendars() {
-    return getCurAuthUserPrefs().getCalendarPrefs().getPreferred();
   }
 
   /* ==============================================================
@@ -908,5 +986,57 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public String getLocationUid() {
     return Util.checkNull(locationUid);
+  }
+
+  /* ....................................................................
+   *                   public events submission
+   * .................................................................... */
+
+  /** Set submission notification from
+   *
+   * @param val
+   */
+  public void setSnfrom(final String val) {
+    snfrom = val;
+  }
+
+  /** Get submission notification from
+   *
+   * @return submission notification from
+   */
+  public String getSnfrom() {
+    return snfrom;
+  }
+
+  /** Set submission notification text
+   *
+   * @param val
+   */
+  public void setSntext(final String val) {
+    sntext = val;
+  }
+
+  /** Get submission notification text
+   *
+   * @return submission notification text
+   */
+  public String getSntext() {
+    return sntext;
+  }
+
+  /** Set submission notification subject
+   *
+   * @param val
+   */
+  public void setSnsubject(final String val) {
+    snsubject = val;
+  }
+
+  /** Get submission notification subject
+   *
+   * @return submission notification subject
+   */
+  public String getSnsubject() {
+    return snsubject;
   }
 }

@@ -11,6 +11,7 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwDuration;
@@ -27,14 +28,16 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.base.BwStringBase;
+import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.base.StartEndComponent;
-import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calfacade.util.ChangeTable;
+import org.bedework.calfacade.util.ChangeTableEntry;
+import org.bedework.calsvci.EventsI.SetEntityCategoriesResult;
 import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.RWClient;
@@ -52,7 +55,6 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
@@ -67,6 +69,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -548,14 +552,12 @@ public class EventCommon {
   /** Validate the properties of the event.
    *
    * @param cl - for system properties
-   * @param prePublish - a public event being submitted or updated before publish
-   * @param publicAdmin true fior public admin
    * @param ev event
    * @return  null for OK, validation errors otherwise.
    */
   public static List<ValidationError> validateEvent(final Client cl,
-                                                    final boolean prePublish,
-                                                    final boolean publicAdmin,
+                                                    final int maxDescLen,
+                                                    final boolean nullOk,
                                                     final BwEvent ev) {
     List<ValidationError> ves = null;
 
@@ -563,25 +565,15 @@ public class EventCommon {
 
     ev.setLink(checkNull(ev.getLink()));
 
-    /* ------------- Check summary and description ------------------ */
-    final AuthProperties apars = cl.getAuthProperties();
-    final int maxDescLen;
-    if (publicAdmin || prePublish) {
-      maxDescLen = apars.getMaxPublicDescriptionLength();
-    } else {
-      maxDescLen = apars.getMaxUserDescriptionLength();
-    }
-
     /* ------------------------- summary ------------------------------- */
 
-    final boolean nullOk = !publicAdmin && !prePublish;
     final Collection<BwString> sums = ev.getSummaries();
     if ((sums == null) || (sums.size() == 0)) {
       if (!nullOk) {
         ves = addError(ves, ValidationError.missingTitle);
       }
     } else {
-      for (BwString s: sums) {
+      for (final BwString s: sums) {
         if (s.getValue().length() > maxDescLen) {
           ves = addError(ves, ValidationError.tooLongSummary,
                          String.valueOf(maxDescLen));
@@ -604,20 +596,6 @@ public class EventCommon {
                          String.valueOf(maxDescLen));
           break;
         }
-      }
-    }
-
-    if (publicAdmin && !prePublish) {
-      /* -------------------------- Location ------------------------------ */
-
-      if (ev.getLocation() == null) {
-        ves = addError(ves, ValidationError.missingLocation);
-      }
-
-      /* -------------------------- Contact ------------------------------ */
-
-      if (ev.getContact() == null) {
-        ves = addError(ves, ValidationError.missingContact);
       }
     }
 
@@ -663,14 +641,14 @@ public class EventCommon {
     return ves;
   }
 
-  private static List<ValidationError> addError(final List<ValidationError> ves,
-                                                final String errorCode) {
+  public static List<ValidationError> addError(final List<ValidationError> ves,
+                                               final String errorCode) {
     return addError(ves, errorCode, null);
   }
 
-  private static List<ValidationError> addError(List<ValidationError> ves,
-                                                final String errorCode,
-                                                final String extra) {
+  public static List<ValidationError> addError(List<ValidationError> ves,
+                                               final String errorCode,
+                                               final String extra) {
     if (ves == null) {
       ves = new ArrayList<>();
     }
@@ -1179,6 +1157,231 @@ public class EventCommon {
     }
   }
 
+  /** Set the entity categories based on multivalued request parameter "categoryKey".
+   *
+   * <p>We build a list of categories then update the membership of the entity
+   * category collection to correspond.
+   *
+   * @param request     BwRequest for parameters
+   * @param extraCats Categories to add as a result of other operations
+   * @param ent the entity
+   * @param changes change table
+   * @return setEventCategoriesResult  with rcode = error forward or
+   *                    forwardNoAction for validated OK or
+   *                    forwardSuccess for calendar changed
+   * @throws Throwable on fatal error
+   */
+  public static SetEntityCategoriesResult setEntityCategories(
+          final BwRequest request,
+          final Set<BwCategory> extraCats,
+          final CategorisedEntity ent,
+          final ChangeTable changes) throws Throwable {
+    final RWClient cl = (RWClient)request.getClient();
+
+    // XXX We should use the change table code for this.
+    final SetEntityCategoriesResult secr = new SetEntityCategoriesResult();
+
+    /* categories already set in event */
+    final Set<BwCategory> evcats = ent.getCategories();
+
+    final Set<String> defCatuids = cl.getPreferences().getDefaultCategoryUids();
+
+    /* allDefCatUids is used to preserve the default categories for
+       calendar suites. For example we migth have an event created by
+       Admissions with a default category of .admissions.
+
+       If it was suggested to and accepted by Payroll it might have
+       .payroll applied.
+
+       The assumption (and I think experience) was that .payroll would
+       not appear in the update request so would get lost on update.
+
+       This code was being applied to all categorised entities and resulted in
+       being unable to turn off a default category on an alias.
+
+       I believe it should only be applied to events.
+     */
+    /* Get the uids of all public default categories */
+    final Set<String> allDefCatUids;
+    if (ent instanceof BwEvent) {
+      allDefCatUids = cl.getDefaultPublicCategoryUids();
+    } else {
+      allDefCatUids = null;
+    }
+
+    /* Get the uids */
+    final Collection<String> strCatUids = request.getReqPars("catUid");
+
+    /* Remove all categories if we don't supply any
+     */
+
+    if (Util.isEmpty(strCatUids) &&
+            Util.isEmpty(extraCats) &&
+            Util.isEmpty(defCatuids) &&
+            Util.isEmpty(allDefCatUids)) {
+      if (!Util.isEmpty(evcats)) {
+        if (changes != null) {
+          final ChangeTableEntry cte = changes.getEntry(PropertyInfoIndex.CATEGORIES);
+          cte.setRemovedValues(new ArrayList<>(evcats));
+        }
+
+        secr.numRemoved = evcats.size();
+        evcats.clear();
+      }
+      secr.rcode = forwardSuccess;
+      return secr;
+    }
+
+    final Set<BwCategory> cats = new TreeSet<>();
+
+    if (extraCats != null) {
+      cats.addAll(extraCats);
+    }
+
+    if (!Util.isEmpty(defCatuids)) {
+      for (final String uid: defCatuids) {
+        cats.add(cl.getPersistentCategory(uid));
+      }
+    }
+
+    /* Preserve any default public category that we have set by adding it
+       to the cats list.
+     */
+    if (!Util.isEmpty(allDefCatUids) &&
+            (evcats != null)) {
+      buildList:
+      for (final String catUid: allDefCatUids) {
+        /* If it's in the event add it to the list we're building then move on
+         * to the next requested category.
+         */
+        for (final BwCategory evcat: evcats) {
+          if (evcat.getUid().equals(catUid)) {
+            cats.add(evcat);
+            continue buildList;
+          }
+        }
+      }
+    }
+
+    if (!Util.isEmpty(strCatUids)) {
+      buildList:
+      for (final String catUid: strCatUids) {
+        /* If it's in the event add it to the list we're building then move on
+         * to the next requested category.
+         */
+        if (evcats != null) {
+          for (final BwCategory evcat: evcats) {
+            if (evcat.getUid().equals(catUid)) {
+              cats.add(evcat);
+              continue buildList;
+            }
+          }
+        }
+
+        final BwCategory cat = cl.getPersistentCategory(catUid);
+
+        if (cat != null) {
+          cats.add(cat);
+        }
+      }
+    }
+
+    /* See if the user is adding new categories
+
+    final Collection<String> reqCatKeys = request.getReqPars("categoryKey");
+
+    if (!Util.isEmpty(reqCatKeys)) {
+      final Collection<String> catKeys = new ArrayList<>();
+
+      / * request parameter can be comma delimited list * /
+      for (final String catkey: reqCatKeys) {
+        final String[] parts = catkey.split(",");
+
+        for (String part: parts) {
+          if (part == null) {
+            continue;
+          }
+
+          part = part.trim();
+
+          if (part.length() == 0) {
+            continue;
+          }
+
+          catKeys.add(part);
+        }
+      }
+
+      for (final String catkey: catKeys) {
+        // LANG - use current language code?
+        final BwString key = new BwString(null, catkey);
+
+        BwCategory cat = cl.getCategoryByName(key);
+        if (cat == null) {
+          cat = BwCategory.makeCategory();
+
+          cat.setOwnerHref(cl.getCurrentPrincipalHref());
+          cat.setWord(key);
+
+          cl.addCategory(cat);
+          secr.numCreated++;
+        }
+
+        cats.add(cat);
+      }
+    }
+    */
+
+    /* cats now contains category objects corresponding to the request parameters
+     *
+     * Now we need to add or remove any in the event but not in our list.
+     */
+
+    /* First make a list to remove - to avoid concurrent update
+     * problems with the iterator
+     */
+
+    final ArrayList<BwCategory> toRemove = new ArrayList<>();
+
+    if (evcats != null) {
+      for (final BwCategory evcat: evcats) {
+        if (cats.contains(evcat)) {
+          cats.remove(evcat);
+          continue;
+        }
+
+        toRemove.add(evcat);
+      }
+    }
+
+    for (final BwCategory cat: cats) {
+      ent.addCategory(cat);
+      secr.numAdded++;
+    }
+
+    for (final BwCategory cat: toRemove) {
+      if (evcats.remove(cat)) {
+        secr.numRemoved++;
+      }
+    }
+
+    if ((changes != null)  &&
+            (secr.numAdded > 0) && (secr.numRemoved > 0)) {
+      final ChangeTableEntry cte =
+              changes.getEntry(PropertyInfoIndex.CATEGORIES);
+      cte.setRemovedValues(toRemove);
+      cte.setAddedValues(cats);
+    }
+
+    secr.rcode = forwardSuccess;
+
+    if (secr.numCreated > 0) {
+      request.getMsg().emit(ClientMessage.addedCategories, secr.numCreated);
+    }
+
+    return secr;
+  }
+
   private static boolean eventTextChanged(final String lang,
                                           final String text,
                                           final BwStringBase<?> evText,
@@ -1256,7 +1459,7 @@ public class EventCommon {
     final String[] to = new String[]{submitterEmail};
     emsg.setMailTo(to);
 
-    final BwActionFormBase form = request.getBwForm();
+    final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
 
     emsg.setFrom(form.getSnfrom());
     emsg.setSubject(form.getSnsubject());

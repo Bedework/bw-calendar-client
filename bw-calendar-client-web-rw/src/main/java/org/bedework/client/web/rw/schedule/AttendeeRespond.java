@@ -28,6 +28,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
+import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
@@ -41,6 +42,7 @@ import java.util.Collection;
 
 import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
 import static org.bedework.client.web.rw.EventCommon.refetchEvent;
+import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
 import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
@@ -171,7 +173,7 @@ public class AttendeeRespond extends RWActionBase {
       }
 
       /* -------------------------- Categories ------------------------------ */
-      final SetEntityCategoriesResult secr =
+      final EventsI.SetEntityCategoriesResult secr =
               setEntityCategories(request, null,
                                   ev, null);
       if (secr.rcode != forwardSuccess) {
@@ -183,8 +185,9 @@ public class AttendeeRespond extends RWActionBase {
 
     final Collection<ValidationError>  ves =
             validateEvent(cl,
-                          false,
-                          false,
+                          cl.getAuthProperties()
+                                 .getMaxUserDescriptionLength(),
+                          true,
                           ev);
 
     if (ves != null) {

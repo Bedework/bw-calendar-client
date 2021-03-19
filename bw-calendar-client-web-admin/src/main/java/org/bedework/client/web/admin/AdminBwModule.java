@@ -239,7 +239,6 @@ public class AdminBwModule extends BwModule {
     if (!cl.getGroupSet()) {
       // Set default access rights.
 
-      form.assignCurUserPublicEvents(au.isPublicEventUser());
       form.assignCurUserContentAdminUser(au.isContentAdminUser());
       form.assignCurUserApproverUser(au.isApproverUser());
     }

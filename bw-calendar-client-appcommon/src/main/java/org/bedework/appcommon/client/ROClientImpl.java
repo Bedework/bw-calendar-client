@@ -390,11 +390,6 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public boolean getWebUser() {
-    return BedeworkDefs.appTypeWebuser.equals(appType);
-  }
-
-  @Override
   public boolean getPublicAuth() {
     return BedeworkDefs.appTypeWebpublicauth.equals(appType);
   }

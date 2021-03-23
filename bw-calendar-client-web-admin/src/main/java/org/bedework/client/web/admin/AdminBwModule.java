@@ -14,10 +14,10 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminClientImpl;
 import org.bedework.client.admin.AdminConfig;
+import org.bedework.client.web.rw.RwBwModule;
 import org.bedework.util.struts.Request;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwCallback;
-import org.bedework.webcommon.BwModule;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
@@ -35,7 +35,7 @@ import static org.bedework.webcommon.ForwardDefs.forwardNoGroupAssigned;
 /**
  * User: mike Date: 3/10/21 Time: 23:01
  */
-public class AdminBwModule extends BwModule {
+public class AdminBwModule extends RwBwModule {
   public AdminBwModule(final String moduleName) {
     super(moduleName);
   }
@@ -207,13 +207,11 @@ public class AdminBwModule extends BwModule {
   /** Called just before action.
    *
    * @param request wrapper
-   * @param frm action form
    * @return int foward index
    * @throws Throwable on fatal error
    */
-  protected int actionSetup(final BwRequest request,
-                            final BwActionFormBase frm) throws Throwable {
-    final BwAdminActionForm form = (BwAdminActionForm)frm;
+  protected int actionSetup(final BwRequest request) throws Throwable {
+    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final AdminClient cl = (AdminClient)request.getClient();
 
     final BwAuthUser au = cl.getAuthUser(cl.getAuthPrincipal());
@@ -258,6 +256,13 @@ public class AdminBwModule extends BwModule {
     }
 
     return forwardNoAction;
+  }
+
+  @Override
+  protected boolean shouldCheckNotifications(final BwRequest req) {
+    final AdminClient cl = (AdminClient)req.getClient();
+
+    return cl.getGroupSet();
   }
 
   /** Return no action if group is chosen else return a forward index.

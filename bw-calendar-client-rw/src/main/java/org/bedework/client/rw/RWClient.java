@@ -39,6 +39,12 @@ import java.util.List;
  */
 public interface RWClient extends Client {
   /**
+   *
+   * @return true if we are the web user client.
+   */
+  boolean getWebUser();
+
+  /**
    * @param href to be unindexed
    * @throws CalFacadeException on fatal error
    */

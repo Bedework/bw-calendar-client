@@ -4,6 +4,7 @@
 package org.bedework.client.web.rw;
 
 import org.bedework.appcommon.DateTimeFormatter;
+import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.SelectId;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -13,8 +14,10 @@ import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calsvci.SchedulingI.FbResponses;
+import org.bedework.client.rw.NotificationInfo;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.webcommon.BwModule;
 
 import org.apache.struts.upload.FormFile;
 
@@ -169,6 +172,14 @@ public class BwRWActionForm extends BwActionFormBase {
   private String sntext;
 
   private String snsubject;
+
+  /* ..............................................................
+   *                   Notifications, Inbox
+   * .............................................................. */
+
+  private NotificationInfo notificationInfo;
+
+  private InOutBoxInfo inBoxInfo;
 
   /* ==============================================================
    *                   Uploads and exports
@@ -988,9 +999,9 @@ public class BwRWActionForm extends BwActionFormBase {
     return Util.checkNull(locationUid);
   }
 
-  /* ....................................................................
+  /* ..............................................................
    *                   public events submission
-   * .................................................................... */
+   * .............................................................. */
 
   /** Set submission notification from
    *
@@ -1038,5 +1049,41 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public String getSnsubject() {
     return snsubject;
+  }
+
+  /* ==============================================================
+   *                       Modules
+   * ============================================================== */
+
+  public BwModule newModule(final String name) {
+    return new RwBwModule(name);
+  }
+
+  /**
+   * @param val NotificationInfo
+   */
+  public void setNotificationInfo(final NotificationInfo val) {
+    notificationInfo = val;
+  }
+
+  /**
+   * @return NotificationInfo
+   */
+  public NotificationInfo getNotificationInfo() {
+    return notificationInfo;
+  }
+
+  /**
+   * @param val
+   */
+  public void setInBoxInfo(final InOutBoxInfo val) {
+    inBoxInfo = val;
+  }
+
+  /**
+   * @return InOutBoxInfo
+   */
+  public InOutBoxInfo getInBoxInfo() {
+    return inBoxInfo;
   }
 }

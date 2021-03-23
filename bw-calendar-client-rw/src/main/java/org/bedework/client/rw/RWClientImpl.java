@@ -19,6 +19,7 @@
 package org.bedework.client.rw;
 
 import org.bedework.access.Ace;
+import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ROClientImpl;
@@ -126,6 +127,11 @@ public class RWClientImpl extends ROClientImpl
     copyCommon(id, cl);
 
     return cl;
+  }
+
+  @Override
+  public boolean getWebUser() {
+    return BedeworkDefs.appTypeWebuser.equals(appType);
   }
 
   @Override

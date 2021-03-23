@@ -61,8 +61,7 @@ public class DeleteEventAction extends RWActionBase {
                       final RWClient cl,
                       final BwRWActionForm form) throws Throwable {
     final boolean publicAdmin = cl.getPublicAdmin();
-    final boolean submitApp = form.getSubmitApp();
-    final boolean publicEvents = publicAdmin || submitApp;
+    final boolean publicEvents = publicAdmin || cl.getWebSubmit();
     final boolean soft = request.getBooleanReqPar("soft", false) ||
             form.getMarkDeleted();
 

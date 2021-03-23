@@ -40,8 +40,6 @@ import static org.bedework.client.web.rw.EventCommon.adminEventLocation;
 import static org.bedework.client.web.rw.EventCommon.notifyEventReg;
 import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 import static org.bedework.client.web.rw.EventCommon.resetEvent;
-import static org.bedework.client.web.rw.EventCommon.setEventContact;
-import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.validateEvent;
 import static org.bedework.util.misc.response.Response.Status.ok;
 
@@ -51,7 +49,6 @@ import static org.bedework.util.misc.response.Response.Status.ok;
 public class AdminUpdateEventAction extends UpdateEventAction {
   public static class AdminUpdatePars extends UpdatePars {
     final boolean publicAdmin;
-    final boolean submitApp;
 
     String submitterEmail;
 
@@ -72,7 +69,6 @@ public class AdminUpdateEventAction extends UpdateEventAction {
                     final BwRWActionForm form) {
       super(request, cl, form);
       publicAdmin = cl.getPublicAdmin();
-      submitApp = form.getSubmitApp();
 
       publishEvent = request.present("publishEvent");
       updateSubmitEvent = request.present("updateSubmitEvent");
@@ -117,28 +113,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
 
   @Override
   protected boolean setLocation(final UpdatePars pars) throws Throwable {
-    final AdminUpdatePars adPars = (AdminUpdatePars)pars;
-
-    if (adPars.publicAdmin) {
-      if (!adminEventLocation(adPars.request, adPars.ei)) {
-        restore(adPars);
-        return false;
-      }
-    } else {
-      setEventLocation(adPars.request, adPars.ei, adPars.form,
-                       adPars.submitApp);
-      // RFC says maybe for this.
-      //incSequence = true;
-    }
-
-    return true;
-  }
-
-  @Override
-  protected boolean setContact(final UpdatePars pars) {
-    final AdminUpdatePars adPars = (AdminUpdatePars)pars;
-
-    if (!setEventContact(adPars.request, adPars.submitApp)) {
+    if (!adminEventLocation(pars.request, pars.ei)) {
       restore(pars);
       return false;
     }
@@ -150,34 +125,27 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   protected Set<BwCategory> doAliases(final UpdatePars pars) {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
-    Set<BwCategory> cats = null;
-    if (pars.cl.getPublicAdmin() ||
-            pars.request.getBwForm().getSubmitApp()) {
-      final RealiasResult resp = pars.cl.reAlias(pars.ev);
-      if (resp.getStatus() != ok) {
-        if (debug()) {
-          debug("Failed to get topical areas? " + resp);
-        }
-        pars.cl.rollback();
-        pars.request.error(ValidationError.missingTopic);
-        restore(pars);
-        return null;
+    final RealiasResult resp = pars.cl.reAlias(pars.ev);
+    if (resp.getStatus() != ok) {
+      if (debug()) {
+        debug("Failed to get topical areas? " + resp);
       }
-
-      cats = resp.getCats();
-
-      if (adPars.publicAdmin &&
-              !adPars.updateSubmitEvent && Util.isEmpty(cats)) {
-        if (debug()) {
-          debug("No topical areas? " + resp);
-        }
-        pars.request.error(ValidationError.missingTopic);
-        restore(pars);
-        return null;
-      }
+      pars.cl.rollback();
+      pars.request.error(ValidationError.missingTopic);
+      restore(pars);
+      return null;
     }
 
-    return cats;
+    if (!adPars.updateSubmitEvent && Util.isEmpty(resp.getCats())) {
+      if (debug()) {
+        debug("No topical areas? " + resp);
+      }
+      pars.request.error(ValidationError.missingTopic);
+      restore(pars);
+      return null;
+    }
+
+    return resp.getCats();
   }
 
   @Override
@@ -217,7 +185,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   protected List<ValidationError> validate(final UpdatePars pars) throws Throwable {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
-    final boolean prePublish =   adPars.updateSubmitEvent || adPars.submitApp;
+    final boolean prePublish = adPars.updateSubmitEvent;
 
     final BwEvent ev = pars.ev;
 
@@ -225,14 +193,14 @@ public class AdminUpdateEventAction extends UpdateEventAction {
             validateEvent(pars.cl,
                           pars.cl.getAuthProperties()
                                  .getMaxPublicDescriptionLength(),
-                          !adPars.publicAdmin && !prePublish,
+                          false,
                           ev);
 
     if (!Util.isEmpty(ves)) {
       return ves;
     }
 
-    if (adPars.publicAdmin && !prePublish) {
+    if (!prePublish) {
       /* -------------------------- Location ------------------------------ */
 
       if (ev.getLocation() == null) {

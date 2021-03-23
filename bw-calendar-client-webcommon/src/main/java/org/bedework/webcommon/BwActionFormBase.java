@@ -23,7 +23,6 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
-import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
@@ -38,7 +37,6 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.client.rw.NotificationInfo;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
@@ -211,14 +209,6 @@ public class BwActionFormBase extends UtilActionForm
   private BwPreferences preferences;
 
   private BwPreferences userPreferences;
-
-  /* ....................................................................
-   *                   Notifications, Inbox
-   * .................................................................... */
-
-  private NotificationInfo notificationInfo;
-
-  private InOutBoxInfo inBoxInfo;
 
   private UpdateFromTimeZonesInfo updateFromTimeZonesInfo;
 
@@ -1053,34 +1043,6 @@ public class BwActionFormBase extends UtilActionForm
     return minIncrement;
   }
 
-  /**
-   * @param val
-   */
-  public void setNotificationInfo(final NotificationInfo val) {
-    notificationInfo = val;
-  }
-
-  /**
-   * @return NotificationInfo
-   */
-  public NotificationInfo getNotificationInfo() {
-    return notificationInfo;
-  }
-
-  /**
-   * @param val
-   */
-  public void setInBoxInfo(final InOutBoxInfo val) {
-    inBoxInfo = val;
-  }
-
-  /**
-   * @return InOutBoxInfo
-   */
-  public InOutBoxInfo getInBoxInfo() {
-    return inBoxInfo;
-  }
-
   /** Return an object representing an events start date.
    *
    * @return TimeDateComponents  object representing date and time
@@ -1181,7 +1143,7 @@ public class BwActionFormBase extends UtilActionForm
   public boolean publicAdmin() {
     try {
       return getConfig().getPublicAdmin();
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       t.printStackTrace();
       return false;
     }

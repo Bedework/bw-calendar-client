@@ -24,8 +24,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventKey;
-import org.bedework.appcommon.ImageProcessing;
-import org.bedework.appcommon.InOutBoxInfo;
 import org.bedework.appcommon.MyCalendarVO;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
@@ -42,7 +40,6 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calfacade.filter.BwCollectionFilter;
 import org.bedework.calfacade.filter.BwCreatorFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.locale.BwLocale;
@@ -50,9 +47,6 @@ import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.client.admin.AdminClient;
-import org.bedework.client.rw.NotificationInfo;
-import org.bedework.client.rw.RWClient;
 import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
@@ -65,11 +59,8 @@ import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.config.ClientConfigurations;
 
-import org.apache.struts.upload.FormFile;
 import org.apache.struts.util.MessageResources;
 
-import java.io.ByteArrayInputStream;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -285,13 +276,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    /* Set up ready for the action - may reset svci */
-
-    final int temp = bwreq.getModule().actionSetup(bwreq, form);
-    if (temp != forwardNoAction) {
-      return forwards[temp];
-    }
-
     /* see if we got cancelled */
 
     final String reqpar = request.getReqPar("cancelled");
@@ -299,34 +283,19 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (reqpar != null) {
       /* Set the objects to null so we get new ones.
        */
-      form.getMsg().emit(ClientMessage.cancelled);
+      request.error(ClientMessage.cancelled);
       return forwards[forwardCancelled];
     }
 
-    if (!form.getGuest()) {
-      final RWClient rwcl = (RWClient)cl;
+    /* Set up ready for the action - may reset svci */
+    final BwModule mdl = bwreq.getModule();
 
-      if (!cl.getPublicAdmin()) {
-        InOutBoxInfo ib = form.getInBoxInfo();
-        if (ib == null) {
-          ib = new InOutBoxInfo(cl, true);
-          form.setInBoxInfo(ib);
-        } else {
-          ib.refresh(cl, false);
-        }
-      }
-
-      if ((!cl.getPublicAdmin() ||
-                   ((AdminClient)cl).getGroupSet())) {
-        NotificationInfo ni = form.getNotificationInfo();
-        if (ni == null) {
-          ni = new NotificationInfo();
-          form.setNotificationInfo(ni);
-        }
-
-        ni.refresh(rwcl, false);
-      }
+    final int temp = mdl.actionSetup(bwreq);
+    if (temp != forwardNoAction) {
+      return forwards[temp];
     }
+
+    mdl.checkMessaging(bwreq);
 
     String forward;
 
@@ -345,15 +314,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
 //      bsess.prepareRender(bwreq);
     } catch (final CalFacadeAccessException cfae) {
-      form.getErr().emit(ClientError.noAccess);
+      request.error(ClientError.noAccess);
       if (debug()) {
         error(cfae);
       }
       forward = forwards[forwardNoAccess];
       cl.rollback();
     } catch (final CalFacadeException cfe) {
-      form.getErr().emit(cfe.getMessage(), cfe.getExtra());
-      form.getErr().emit(cfe);
+      request.error(cfe.getMessage(), cfe.getExtra());
+      request.error(cfe);
       if (debug()) {
         error(cfe);
       }
@@ -361,7 +330,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       forward = forwards[forwardError];
       cl.rollback();
     } catch (final Throwable t) {
-      form.getErr().emit(t);
+      request.error(t);
       if (debug()) {
         error(t);
       }
@@ -663,19 +632,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
     }
 
-    /*
-       Not sure this is the best place...
-       If the filter is null for a user calendar - add a filter to
-       exclude the inbox.
-     */
-
-    if (cl.getWebUser() && (filter == null)) {
-      final var inBoxInfo = form.getInBoxInfo();
-      if ((inBoxInfo != null) && (inBoxInfo.getColPath() != null)) {
-        filter = new BwCollectionFilter(null,
-                                        inBoxInfo.getColPath());
-        filter.setNot(true);
-      }
+    if (filter == null) {
+      filter = request.getModule().defaultSearchFilter(request);
     }
 
     params.setFilter(filter);
@@ -688,7 +646,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final ParseResult pr = cl.parseSort(sort);
     if (!pr.ok) {
-      form.getErr().emit(pr.message);
+      request.error(pr.message);
       params.setStatus(Response.Status.failed);
       params.setMessage(pr.message);
       return false;
@@ -924,199 +882,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /** Reduced to a thumbnail */
     public BwResource thumbnail;
-  }
-
-  /** Create resource entities based on the uploaded file.
-   *
-   * @param request BwRequest object
-   * @param file - uploaded
-   * @return never null.
-   */
-  protected ProcessedImage processImage(final BwRequest request,
-                                        final FormFile file) {
-    final ProcessedImage pi = new ProcessedImage();
-    final RWClient cl = (RWClient)request.getClient();
-
-    try {
-      final long maxSize = cl.getUserMaxEntitySize();
-
-      if (file.getFileSize() > maxSize) {
-        request.getErr().emit(ValidationError.tooLarge, file.getFileSize(), maxSize);
-        pi.retry = true;
-        return pi;
-      }
-
-      /* If the user has set a default images directory preference it must exist.
-       * Otherwise we use a system default. For the moment we
-       * try to create a folder called "Images"
-       */
-
-      BwCalendar imageCol;
-
-      String imagecolPath = cl.getPreferences().getDefaultImageDirectory();
-      if (imagecolPath == null) {
-        final BwCalendar home = cl.getHome();
-
-        final String imageColName = "Images";
-
-        imagecolPath = Util.buildPath(false, home.getPath(), "/",
-                                      imageColName);
-
-//        for (BwCalendar col: cl.getChildren(home)) {
-//          if (col.getName().equals(imageColName)) {
-//            imageCol = col;
-//            break;
-//          }
-//        }
-
-        imageCol = cl.getCollection(imagecolPath);
-
-        if (imageCol == null) {
-          imageCol = new BwCalendar();
-
-          imageCol.setSummary(imageColName);
-          imageCol.setName(imageColName);
-          imageCol = cl.addCollection(imageCol, home.getPath());
-        }
-      } else {
-        imageCol = cl.getCollection(imagecolPath);
-        if (imageCol == null) {
-          request.getErr().emit(ClientError.missingImageDirectory);
-          return pi;
-        }
-      }
-
-      final String thumbType = "png";
-      final Filenames fns = makeFilenames(file.getFileName(),
-                                          thumbType);
-
-      /* See if the resource exists already */
-
-      boolean replace = false;
-      boolean replaceThumb = false;
-
-      pi.image = cl.getResource(
-              Util.buildPath(false, imageCol.getPath(), "/", fns.fn));
-
-      if (pi.image != null) {
-        if (!request.getBooleanReqPar("replaceImage", false)) {
-          request.getErr().emit(ClientError.duplicateImage);
-          pi.retry = true;
-          return pi;
-        }
-
-        replace = true;
-        
-        if (!cl.getResourceContent(pi.image)) {
-          request.getErr().emit("Missing content for " +
-                                        imageCol.getPath() + "/" + fns.fn);
-          pi.retry = true;
-          return pi;
-        }
-      } else {
-        pi.image = new BwResource();
-        pi.image.setColPath(imagecolPath);
-        pi.image.setName(fns.fn);
-      }
-
-      final byte[] fileData = file.getFileData();
-      final byte[] thumbContent;
-
-      try {
-        thumbContent = ImageProcessing.createThumbnail(
-               new ByteArrayInputStream(fileData),
-               thumbType, 160);
-      } catch (final Throwable t) {
-        /* Probably an image type we can't process or maybe not an image at all
-         */
-        if (debug()) {
-          error(t);
-        }
-
-        request.getErr().emit(ClientError.imageError);
-        pi.retry = true;
-        return pi;
-      }
-
-      cl.setResourceValue(pi.image, fileData);
-      pi.image.setContentType(file.getContentType());
-
-      /* Make a thumbnail */
-
-      pi.thumbnail = cl.getResource(
-              Util.buildPath(false, imageCol.getPath(), "/",
-                             fns.thumbFn));
-
-      if (pi.thumbnail != null) {
-        replaceThumb = true;
-        if (!cl.getResourceContent(pi.image)) {
-          request.getErr().emit("Missing content for " +
-                                        imageCol.getPath() + "/" + 
-                                        fns.thumbFn);
-          pi.retry = true;
-          return pi;
-        }
-      } else {
-        pi.thumbnail = new BwResource();
-        pi.thumbnail.setName(fns.thumbFn);
-        pi.thumbnail.setColPath(imagecolPath);
-      }
-
-      pi.thumbnail.setContentType("image/" + thumbType);
-      
-      cl.setResourceValue(pi.thumbnail, thumbContent);
-
-      if (!replace) {
-        cl.saveResource(pi.image);
-      } else {
-        cl.updateResource(pi.image, true);
-      }
-
-      if (!replaceThumb) {
-        cl.saveResource(pi.thumbnail);
-      } else {
-        cl.updateResource(pi.thumbnail, true);
-      }
-
-      pi.OK = true;
-    } catch (final Throwable t) {
-      if (debug()) {
-        error(t);
-        request.getErr().emit(t);
-      }
-    }
-
-    return pi;
-  }
-
-  private static class Filenames {
-    String fn;
-    String thumbFn;
-  }
-
-  /**
-   *
-   * @param imageName from upload
-   * @param thumbType "png" etc
-   * @return datestamped names
-   */
-  private Filenames makeFilenames(final String imageName,
-                                  final String thumbType) {
-    final int dotPos = imageName.lastIndexOf('.');
-    final Filenames fns = new Filenames();
-
-    final String dt = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-
-    if (dotPos < 0) {
-      fns.fn = imageName + "-" + dt;
-      fns.thumbFn = fns.fn + "-thumb" + "." + thumbType;
-    } else {
-      final String namePart = imageName.substring(0, dotPos) + "-" + dt;
-      fns.fn = namePart + imageName.substring(dotPos);
-      fns.thumbFn =  namePart + "-thumb" + "." + thumbType;
-    }
-
-    return fns;
   }
 
   @Override

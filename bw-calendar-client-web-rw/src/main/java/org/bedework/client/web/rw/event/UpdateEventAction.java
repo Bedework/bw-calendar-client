@@ -22,20 +22,24 @@ import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAttendee;
+import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
+import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.base.StartEndComponent;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
+import org.bedework.calfacade.svc.RealiasResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
@@ -58,9 +62,12 @@ import org.bedework.webcommon.TimeDateComponents;
 import net.fortuna.ical4j.model.Recur;
 import org.apache.struts.upload.FormFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +82,7 @@ import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
 import static org.bedework.client.web.rw.EventCommon.validateEvent;
 import static org.bedework.client.web.rw.EventCommon.validateEventDates;
+import static org.bedework.util.misc.response.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
  * distinguish.
@@ -111,6 +119,8 @@ public class UpdateEventAction extends RWActionBase {
     public final EventInfo ei;
     public final BwEvent ev;
 
+    final boolean submitApp;
+
     public String preserveColPath;
 
     public final ChangeTable changes;
@@ -127,6 +137,7 @@ public class UpdateEventAction extends RWActionBase {
       this.request = request;
       this.cl = cl;
       this.form = form;
+      submitApp = cl.getWebSubmit();
 
       ei = form.getEventInfo();
       ev = ei.getEvent();
@@ -600,14 +611,14 @@ public class UpdateEventAction extends RWActionBase {
   }
 
   protected boolean setLocation(final UpdatePars pars) throws Throwable {
-    setEventLocation(pars.request, pars.ei, pars.form, false);
+    setEventLocation(pars.request, pars.ei, pars.form, pars.submitApp);
     return true;
   }
 
   /* -------------------------- Contact ------------------------------ */
 
   protected boolean setContact(final UpdatePars pars) {
-    if (!setEventContact(pars.request, false)) {
+    if (!setEventContact(pars.request, pars.submitApp)) {
       restore(pars);
       return false;
     }
@@ -616,7 +627,22 @@ public class UpdateEventAction extends RWActionBase {
   }
 
   protected Set<BwCategory> doAliases(final UpdatePars pars) {
-    return null;
+    if (!pars.submitApp) {
+      return null;
+    }
+
+    final RealiasResult resp = pars.cl.reAlias(pars.ev);
+    if (resp.getStatus() != ok) {
+      if (debug()) {
+        debug("Failed to get topical areas? " + resp);
+      }
+      pars.cl.rollback();
+      pars.request.error(ValidationError.missingTopic);
+      restore(pars);
+      return null;
+    }
+
+    return resp.getCats();
   }
 
   protected boolean doAdditional(final UpdatePars pars) throws Throwable {
@@ -934,10 +960,213 @@ public class UpdateEventAction extends RWActionBase {
   }
 
   protected List<ValidationError> validate(final UpdatePars pars) throws Throwable {
+    final int maxDescLen;
+
+    if (pars.submitApp) {
+      maxDescLen = pars.cl.getAuthProperties()
+                          .getMaxPublicDescriptionLength();
+    } else {
+      maxDescLen = pars.cl.getAuthProperties()
+                          .getMaxUserDescriptionLength();
+    }
+
     return validateEvent(pars.cl,
-                         pars.cl.getAuthProperties()
-                                .getMaxUserDescriptionLength(),
-                         true, pars.ev);
+                         maxDescLen,
+                         !pars.submitApp,
+                         pars.ev);
+  }
+
+  /** Create resource entities based on the uploaded file.
+   *
+   * @param request BwRequest object
+   * @param file - uploaded
+   * @return never null.
+   */
+  protected ProcessedImage processImage(final BwRequest request,
+                                        final FormFile file) {
+    final ProcessedImage pi = new ProcessedImage();
+    final RWClient cl = (RWClient)request.getClient();
+
+    try {
+      final long maxSize = cl.getUserMaxEntitySize();
+
+      if (file.getFileSize() > maxSize) {
+        request.getErr().emit(ValidationError.tooLarge, file.getFileSize(), maxSize);
+        pi.retry = true;
+        return pi;
+      }
+
+      /* If the user has set a default images directory preference it must exist.
+       * Otherwise we use a system default. For the moment we
+       * try to create a folder called "Images"
+       */
+
+      BwCalendar imageCol;
+
+      String imagecolPath = cl.getPreferences().getDefaultImageDirectory();
+      if (imagecolPath == null) {
+        final BwCalendar home = cl.getHome();
+
+        final String imageColName = "Images";
+
+        imagecolPath = Util.buildPath(false, home.getPath(), "/",
+                                      imageColName);
+
+//        for (BwCalendar col: cl.getChildren(home)) {
+//          if (col.getName().equals(imageColName)) {
+//            imageCol = col;
+//            break;
+//          }
+//        }
+
+        imageCol = cl.getCollection(imagecolPath);
+
+        if (imageCol == null) {
+          imageCol = new BwCalendar();
+
+          imageCol.setSummary(imageColName);
+          imageCol.setName(imageColName);
+          imageCol = cl.addCollection(imageCol, home.getPath());
+        }
+      } else {
+        imageCol = cl.getCollection(imagecolPath);
+        if (imageCol == null) {
+          request.getErr().emit(ClientError.missingImageDirectory);
+          return pi;
+        }
+      }
+
+      final String thumbType = "png";
+      final Filenames fns = makeFilenames(file.getFileName(),
+                                          thumbType);
+
+      /* See if the resource exists already */
+
+      boolean replace = false;
+      boolean replaceThumb = false;
+
+      pi.image = cl.getResource(
+              Util.buildPath(false, imageCol.getPath(), "/", fns.fn));
+
+      if (pi.image != null) {
+        if (!request.getBooleanReqPar("replaceImage", false)) {
+          request.getErr().emit(ClientError.duplicateImage);
+          pi.retry = true;
+          return pi;
+        }
+
+        replace = true;
+
+        if (!cl.getResourceContent(pi.image)) {
+          request.getErr().emit("Missing content for " +
+                                        imageCol.getPath() + "/" + fns.fn);
+          pi.retry = true;
+          return pi;
+        }
+      } else {
+        pi.image = new BwResource();
+        pi.image.setColPath(imagecolPath);
+        pi.image.setName(fns.fn);
+      }
+
+      final byte[] fileData = file.getFileData();
+      final byte[] thumbContent;
+
+      try {
+        thumbContent = ImageProcessing.createThumbnail(
+                new ByteArrayInputStream(fileData),
+                thumbType, 160);
+      } catch (final Throwable t) {
+        /* Probably an image type we can't process or maybe not an image at all
+         */
+        if (debug()) {
+          error(t);
+        }
+
+        request.getErr().emit(ClientError.imageError);
+        pi.retry = true;
+        return pi;
+      }
+
+      cl.setResourceValue(pi.image, fileData);
+      pi.image.setContentType(file.getContentType());
+
+      /* Make a thumbnail */
+
+      pi.thumbnail = cl.getResource(
+              Util.buildPath(false, imageCol.getPath(), "/",
+                             fns.thumbFn));
+
+      if (pi.thumbnail != null) {
+        replaceThumb = true;
+        if (!cl.getResourceContent(pi.image)) {
+          request.getErr().emit("Missing content for " +
+                                        imageCol.getPath() + "/" +
+                                        fns.thumbFn);
+          pi.retry = true;
+          return pi;
+        }
+      } else {
+        pi.thumbnail = new BwResource();
+        pi.thumbnail.setName(fns.thumbFn);
+        pi.thumbnail.setColPath(imagecolPath);
+      }
+
+      pi.thumbnail.setContentType("image/" + thumbType);
+
+      cl.setResourceValue(pi.thumbnail, thumbContent);
+
+      if (!replace) {
+        cl.saveResource(pi.image);
+      } else {
+        cl.updateResource(pi.image, true);
+      }
+
+      if (!replaceThumb) {
+        cl.saveResource(pi.thumbnail);
+      } else {
+        cl.updateResource(pi.thumbnail, true);
+      }
+
+      pi.OK = true;
+    } catch (final Throwable t) {
+      if (debug()) {
+        error(t);
+        request.getErr().emit(t);
+      }
+    }
+
+    return pi;
+  }
+
+  private static class Filenames {
+    String fn;
+    String thumbFn;
+  }
+
+  /**
+   *
+   * @param imageName from upload
+   * @param thumbType "png" etc
+   * @return datestamped names
+   */
+  private Filenames makeFilenames(final String imageName,
+                                  final String thumbType) {
+    final int dotPos = imageName.lastIndexOf('.');
+    final Filenames fns = new Filenames();
+
+    final String dt = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+
+    if (dotPos < 0) {
+      fns.fn = imageName + "-" + dt;
+      fns.thumbFn = fns.fn + "-thumb" + "." + thumbType;
+    } else {
+      final String namePart = imageName.substring(0, dotPos) + "-" + dt;
+      fns.fn = namePart + imageName.substring(dotPos);
+      fns.thumbFn =  namePart + "-thumb" + "." + thumbType;
+    }
+
+    return fns;
   }
 
   /* This is a bit bogus but it will get us going. Make up a fake calendar,

@@ -23,6 +23,7 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ROClientImpl;
+import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.client.rw.RWClientImpl;
 import org.bedework.util.logging.BwLogger;
@@ -298,48 +299,46 @@ public class BwModule implements Logged, Serializable {
       return false;
     }
 
-    try {
-      /* Make some checks to see if this is an old - restarted session.
-       */
-      if (client != null) {
-        /* Not the first time through here so for a public admin client we
-         * already have the authorised user's rights set in the form.
-         */
-
-        /* Already there and already opened */
-        if (debug()) {
-          debug("Client interface -- Obtained from session for user " +
-                        client.getCurrentPrincipalHref());
-        }
-      } else {
-        if (debug()) {
-          debug("Client-- getResource new object for user " + user);
-        }
-
-        if (readWrite) {
-          client = new RWClientImpl(conf,
-                                    getModuleName(),
-                                    form.getCurrentUser(),
-                                    user,
-                                    form.getAppType());
-        } else {
-          client = new ROClientImpl(conf,
-                                    getModuleName(),
-                                    form.getCurrentUser(),
-                                    user,
-                                    calSuiteName,
-                                    form.getAppType(),
-                                    true);
-        }
-
-        setClient(client);
-        setRequest(request);
-
-        // Didn't release module - just reflag entry
-        requestIn();
-        mstate.setRefresh(true);
-        sess.reset(request);
+    /* Make some checks to see if this is an old - restarted session.
+     */
+    if (client != null) {
+      /* Already there and already opened */
+      if (debug()) {
+        debug("Client interface -- Obtained from session for user " +
+                      client.getCurrentPrincipalHref());
       }
+
+      return true;
+    }
+
+    try {
+      if (debug()) {
+        debug("Client-- getResource new object for user " + user);
+      }
+
+      if (readWrite) {
+        client = new RWClientImpl(conf,
+                                  getModuleName(),
+                                  form.getCurrentUser(),
+                                  user,
+                                  form.getAppType());
+      } else {
+        client = new ROClientImpl(conf,
+                                  getModuleName(),
+                                  form.getCurrentUser(),
+                                  user,
+                                  calSuiteName,
+                                  form.getAppType(),
+                                  true);
+      }
+
+      setClient(client);
+      setRequest(request);
+
+      // Didn't release module - just reflag entry
+      requestIn();
+      mstate.setRefresh(true);
+      sess.reset(request);
     } catch (final CalFacadeException cfe) {
       throw cfe;
     } catch (final Throwable t) {
@@ -352,13 +351,12 @@ public class BwModule implements Logged, Serializable {
   /** Called just before action.
    *
    * @param request wrapper
-   * @param form action form
    * @return int foward index
    * @throws Throwable on fatal error
    */
-  protected int actionSetup(final BwRequest request,
-                            final BwActionFormBase form) throws Throwable {
+  protected int actionSetup(final BwRequest request) throws Throwable {
     final Client cl = request.getClient();
+    final BwActionFormBase form = request.getBwForm();
 
     // Not public admin.
 
@@ -403,6 +401,19 @@ public class BwModule implements Logged, Serializable {
     //}
 
     return forwardNoAction;
+  }
+
+  protected void checkMessaging(final BwRequest req) throws Throwable {
+    // Nothing to do for read-only
+  }
+
+  /** Called if no filter is set. May be used to exclude unwanted items
+   *
+   * @param req current request
+   * @return filter or null
+   */
+  protected FilterBase defaultSearchFilter(final BwRequest req) {
+    return null;
   }
 
   /** Check request for refresh interval

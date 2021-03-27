@@ -4,8 +4,9 @@
 package org.bedework.client.web.rw;
 
 import org.bedework.appcommon.DateTimeFormatter;
-import org.bedework.appcommon.InOutBoxInfo;
+import org.bedework.client.rw.InOutBoxInfo;
 import org.bedework.appcommon.SelectId;
+import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEvent;
@@ -82,6 +83,8 @@ public class BwRWActionForm extends BwActionFormBase {
   /* ..............................................................
    *                       Collections
    * .............................................................. */
+
+  private BwCalendar meetingCal;
 
   private String parentCalendarPath;
 
@@ -218,8 +221,6 @@ public class BwRWActionForm extends BwActionFormBase {
    * ==================================================================== */
 
   /** Not set - invisible to jsp
-   */
-  /**
    * @param val
    */
   public void assignAddingEvent(final boolean val) {
@@ -463,6 +464,21 @@ public class BwRWActionForm extends BwActionFormBase {
   /* ====================================================================
    *                   Calendars
    * ==================================================================== */
+
+  /** Calendar containing copy of current in/outbox event.
+   * @param val
+   */
+  public void setMeetingCal(final BwCalendar val) {
+    meetingCal = val;
+  }
+
+  /** Calendar containing copy of current in/outbox event.
+   *
+   * @return BwCalendar
+   */
+  public BwCalendar getMeetingCal() {
+    return meetingCal;
+  }
 
   /** Return the encoded root of the submissions calendars
    *

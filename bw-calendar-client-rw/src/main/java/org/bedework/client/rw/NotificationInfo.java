@@ -18,7 +18,6 @@
 */
 package org.bedework.client.rw;
 
-import org.bedework.appcommon.NotifyResource;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.CalFacadeException;

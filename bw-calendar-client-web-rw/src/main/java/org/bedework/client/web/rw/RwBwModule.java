@@ -3,7 +3,7 @@
 */
 package org.bedework.client.web.rw;
 
-import org.bedework.appcommon.InOutBoxInfo;
+import org.bedework.client.rw.InOutBoxInfo;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.filter.BwCollectionFilter;
 import org.bedework.client.rw.NotificationInfo;

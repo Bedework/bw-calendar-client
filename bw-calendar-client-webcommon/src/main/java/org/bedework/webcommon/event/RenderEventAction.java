@@ -129,10 +129,10 @@ public class RenderEventAction extends BwAbstractAction {
       }
     }
 
-    if (ev.getScheduleMethod() != ScheduleMethods.methodTypeNone) {
+    //if (ev.getScheduleMethod() != ScheduleMethods.methodTypeNone) {
       // Assume we need the collection containing the meeting
-      form.setMeetingCal(cl.getCollection(ev.getColPath()));
-    }
+    //  form.setMeetingCal(cl.getCollection(ev.getColPath()));
+    //}
 
     return forwardSuccess;
   }

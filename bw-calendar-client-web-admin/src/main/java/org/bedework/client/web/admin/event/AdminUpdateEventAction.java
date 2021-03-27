@@ -48,8 +48,6 @@ import static org.bedework.util.misc.response.Response.Status.ok;
  */
 public class AdminUpdateEventAction extends UpdateEventAction {
   public static class AdminUpdatePars extends UpdatePars {
-    final boolean publicAdmin;
-
     String submitterEmail;
 
     final boolean publishEvent;
@@ -68,7 +66,6 @@ public class AdminUpdateEventAction extends UpdateEventAction {
                     final RWClient cl,
                     final BwRWActionForm form) {
       super(request, cl, form);
-      publicAdmin = cl.getPublicAdmin();
 
       publishEvent = request.present("publishEvent");
       updateSubmitEvent = request.present("updateSubmitEvent");
@@ -98,9 +95,9 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       return forwardError;
     }
 
-    pars.ev.setPublick(pars.publicAdmin);
-
     final int fwd = super.doUpdate(request, cl, form, pars);
+
+    pars.ev.setPublick(true);
 
     return fwd;
   }
@@ -152,7 +149,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   protected boolean doAdditional(final UpdatePars pars) throws Throwable {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
-    if (adPars.publicAdmin && isOwner(pars)) {
+    if (isOwner(pars)) {
       adPars.suggestedTo = doSuggested(adPars);
     }
 
@@ -293,22 +290,20 @@ public class AdminUpdateEventAction extends UpdateEventAction {
 
     boolean clearForm = false;
 
-    if (adPars.publicAdmin) {
-      final String clearFormPref = adcl.getCalsuitePreferences().
-              getClearFormsOnSubmit();
+    final String clearFormPref = adcl.getCalsuitePreferences().
+            getClearFormsOnSubmit();
 
-      if (clearFormPref == null) {
-        clearForm = ((AdminConfig)form.getConfig())
-                .getDefaultClearFormsOnSubmit();
-      } else {
-        clearForm = Boolean.parseBoolean(clearFormPref);
-      }
+    if (clearFormPref == null) {
+      clearForm = ((AdminConfig)form.getConfig())
+              .getDefaultClearFormsOnSubmit();
+    } else {
+      clearForm = Boolean.parseBoolean(clearFormPref);
+    }
 
-      if (clearForm) {
-        form.setLocation(null);
-        form.setContact(null);
-        form.resetSelectIds();
-      }
+    if (clearForm) {
+      form.setLocation(null);
+      form.setContact(null);
+      form.resetSelectIds();
     }
 
     if ((adPars.publishEvent || adPars.updateSubmitEvent) &&
@@ -356,40 +351,38 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       adcl.postNotification(sev);
     }
 
-    if (adPars.publicAdmin) {
-      if (!Util.isEmpty(adPars.suggestedTo)) {
-        for (final SuggestedTo st: adPars.suggestedTo) {
-          final BwAdminGroup grp =
-                  (BwAdminGroup)adcl.getAdminGroup(st.getGroupHref());
+    if (!Util.isEmpty(adPars.suggestedTo)) {
+      for (final SuggestedTo st: adPars.suggestedTo) {
+        final BwAdminGroup grp =
+                (BwAdminGroup)adcl.getAdminGroup(st.getGroupHref());
 
-          if (grp == null) {
-            warn("Unable to locate group " + st.getGroupHref());
-            continue;
-          }
-
-          final EntitySuggestedEvent ese =
-                  new EntitySuggestedEvent(
-                          SysEventBase.SysCode.SUGGESTED,
-                          adcl.getCurrentPrincipalHref(),
-                          ev.getCreatorHref(),
-                          ev.getHref(),
-                          null,
-                          grp.getOwnerHref());
-          adcl.postNotification(ese);
+        if (grp == null) {
+          warn("Unable to locate group " + st.getGroupHref());
+          continue;
         }
+
+        final EntitySuggestedEvent ese =
+                new EntitySuggestedEvent(
+                        SysEventBase.SysCode.SUGGESTED,
+                        adcl.getCurrentPrincipalHref(),
+                        ev.getCreatorHref(),
+                        ev.getHref(),
+                        null,
+                        grp.getOwnerHref());
+        adcl.postNotification(ese);
       }
-
-      /* See if we need to notify event registration system for add/update */
-      final BwXproperty evregprop =
-              ev.findXproperty(BwXproperty.bedeworkEventRegStart);
-
-      if (evregprop != null) {
-        // Registerable event
-        notifyEventReg(pars.request, pars.ei);
-      }
-
-      resetEvent(pars.request, clearForm);
     }
+
+    /* See if we need to notify event registration system for add/update */
+    final BwXproperty evregprop =
+            ev.findXproperty(BwXproperty.bedeworkEventRegStart);
+
+    if (evregprop != null) {
+      // Registerable event
+      notifyEventReg(pars.request, pars.ei);
+    }
+
+    resetEvent(pars.request, clearForm);
 
     return forwardSuccess;
   }
@@ -425,8 +418,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   private List<SuggestedTo> doSuggested(final AdminUpdatePars pars) throws Throwable {
     final AdminClient cl = (AdminClient)pars.cl;
 
-    if (!cl.getPublicAdmin() ||
-            !cl.getSystemProperties().getSuggestionEnabled()) {
+    if (!cl.getSystemProperties().getSuggestionEnabled()) {
       return null;
     }
 

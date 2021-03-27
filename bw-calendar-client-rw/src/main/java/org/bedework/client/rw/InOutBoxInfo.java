@@ -16,9 +16,10 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.appcommon;
+package org.bedework.client.rw;
 
 import org.bedework.access.CurrentAccess;
+import org.bedework.appcommon.FormattedEvents;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;

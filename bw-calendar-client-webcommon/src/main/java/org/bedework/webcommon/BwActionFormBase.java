@@ -200,8 +200,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   private boolean addingCalendar;
 
-  private BwCalendar meetingCal;
-
   /* ..............................................................
    *                   Preferences
    * .............................................................. */
@@ -818,21 +816,6 @@ public class BwActionFormBase extends UtilActionForm
     return calendar;
   }
 
-  /** Calendar containing copy of current in/outbox event.
-   * @param val
-   */
-  public void setMeetingCal(final BwCalendar val) {
-    meetingCal = val;
-  }
-
-  /** Calendar containing copy of current in/outbox event.
-   *
-   * @return BwCalendar
-   */
-  public BwCalendar getMeetingCal() {
-    return meetingCal;
-  }
-
   /* ====================================================================
    *                   preferences
    * ==================================================================== */
@@ -894,9 +877,9 @@ public class BwActionFormBase extends UtilActionForm
 
   /** Set an object containing the dates.
    *
-   * @return EventDates  object representing date/times and duration
+   * @param val object representing date/times and duration
    */
-  public void assignEventDates(EventDates val) {
+  public void assignEventDates(final EventDates val) {
     eventDates = val;
   }
 
@@ -1074,7 +1057,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val event end type
    */
   public void setEventEndType(final String val) {
     getEventDates().setEndType(val);
@@ -1097,7 +1080,8 @@ public class BwActionFormBase extends UtilActionForm
   public String[] getYearVals() {
     if (yearVals == null) {
       yearVals = new String[numYearVals];
-      int year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+      final int year = java.util.Calendar.getInstance()
+                                         .get(java.util.Calendar.YEAR);
       //curYear = String.valueOf(year);
 
       for (int i = 0; i < numYearVals; i++) {
@@ -1109,7 +1093,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val session
    */
   public void setSession(final BwSession val) {
     sess = val;

@@ -100,21 +100,9 @@ public class RWClientImpl extends ROClientImpl
     currentPrincipal = null;
     this.appType = appType;
 
-    pars = new CalSvcIPars("client-" + id,
-                           authUser,
-                           runAsUser,
-                           null,  // calSuiteName,
-                           false, // publicAdmin,
-                           false, // publicauth
-                           false, // Allow non-admin super user
-                           false, // service
-                           getWebSubmit(),
-                           false, // adminCanEditAllPublicCategories,
-                           false, // adminCanEditAllPublicLocations,
-                           false, // adminCanEditAllPublicSponsors,
-                           false, // sessionless
-                           false, // system
-                           false); // readonly
+    pars = CalSvcIPars.getRwClientPars(id,
+                                       authUser,
+                                       runAsUser);
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
     resetIndexers();

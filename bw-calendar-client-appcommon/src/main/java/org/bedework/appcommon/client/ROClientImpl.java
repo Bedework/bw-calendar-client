@@ -200,21 +200,11 @@ public class ROClientImpl implements Logged, Client {
     currentPrincipal = null;
     this.appType = appType;
 
-    pars = new CalSvcIPars("roclient-" + id,
-                           authUser,
-                           runAsUser,
-                           calSuiteName,
-                           false, // publicAdmin,
-                           getPublicAuth(),
-                           false, // Allow non-admin super user
-                           false, // service
-                           getWebSubmit(),
-                           false, // adminCanEditAllPublicCategories,
-                           false, // adminCanEditAllPublicLocations,
-                           false, // adminCanEditAllPublicSponsors,
-                           false, // sessionless
-                           false, // system
-                           true); // readonly
+    pars = CalSvcIPars.getRoClientPars(id,
+                                       authUser,
+                                       runAsUser,
+                                       calSuiteName,
+                                       getPublicAuth());
     svci = new CalSvcFactoryDefault().getSvc(pars);
     this.publicView = publicView;
     resetIndexers();

@@ -102,21 +102,13 @@ public class AdminClientImpl extends RWClientImpl
 
     final AdminConfig admconf = (AdminConfig)conf;
 
-    pars = new CalSvcIPars("admin-client-" + id,
-                           authUser,
-                           runAsUser,
-                           calSuiteName,
-                           true,
-                           false, // publicauth
-                           false, // Allow non-admin super user
-                           false, // service
-                           false, // public submission
-                           admconf.getAllowEditAllCategories(),
-                           admconf.getAllowEditAllLocations(),
-                           admconf.getAllowEditAllContacts(),
-                           false, // sessionless
-                           false, // system
-                           false); // readonly
+    pars = CalSvcIPars.getAdminClientPars(id,
+                                          authUser,
+                                          runAsUser,
+                                          calSuiteName,
+                                          admconf.getAllowEditAllCategories(),
+                                          admconf.getAllowEditAllLocations(),
+                                          admconf.getAllowEditAllContacts());
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
 

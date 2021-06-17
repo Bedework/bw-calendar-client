@@ -677,9 +677,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String key = null;
 
     if (ekey.getGuid() != null) {
-      if (debug()) {
-        debug("Get event by guid");
-      }
       key = ekey.getGuid();
       String rid = ekey.getRecurrenceId();
       // DORECUR is this right?
@@ -689,6 +686,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         rid = null;
       } else {
         rrm = RecurringRetrievalMode.expanded;
+      }
+
+      if (debug()) {
+        debug("Get event by guid with rid " + rid + " and rrm " + rrm);
       }
 
       final Collection<EventInfo> evs =

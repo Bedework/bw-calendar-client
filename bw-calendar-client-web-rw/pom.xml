@@ -18,32 +18,4 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.bedework</groupId>
-        <artifactId>bw-util-maven-deploy-wfmodule</artifactId>
-
-        <executions>
-          <execution>
-            <phase>install</phase>
-            <goals>
-              <goal>bw-deploy-wfmodule</goal>
-            </goals>
-          </execution>
-        </executions>
-
-        <configuration>
-          <moduleName>org.bedework.calendar.client.web.rw</moduleName>
-
-          <moduleDependencies>
-            <moduleDependency>
-              <name>org.bedework.calendar.client.webcommon</name>
-            </moduleDependency>
-          </moduleDependencies>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

@@ -481,9 +481,8 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public boolean deleteEvent(final EventInfo ei,
-                             final boolean sendSchedulingMessage)
-          throws CalFacadeException {
+  public Response deleteEvent(final EventInfo ei,
+                             final boolean sendSchedulingMessage) {
     return update(svci.getEventsHandler().delete(ei,
                                                  sendSchedulingMessage));
   }

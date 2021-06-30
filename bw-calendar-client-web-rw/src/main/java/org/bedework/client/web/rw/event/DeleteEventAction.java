@@ -90,16 +90,18 @@ public class DeleteEventAction extends RWActionBase {
     boolean deleted = false;
 
     if (!soft) {
-      try {
-        if (!cl.deleteEvent(ei, !publicEvents)) {
+        final Response resp = cl.deleteEvent(ei, !publicEvents);
+
+        if (resp.getStatus() == Response.Status.notFound) {
           form.getErr().emit(ClientError.unknownEvent);
           return forwardNoAction;
         }
 
-        deleted = true;
-      } catch (final CalFacadeAccessException ignored) {
-        // No access to delete - make it a soft delete
-      }
+        if (resp.isOk()) {
+          deleted = true;
+        }
+
+        // else No access to delete - make it a soft delete
     }
 
     if (!deleted) {

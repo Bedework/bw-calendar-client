@@ -30,6 +30,7 @@ import org.bedework.calfacade.svc.SharingReplyResult;
 import org.bedework.calfacade.svc.SubscribeResult;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.SchedulingI;
+import org.bedework.util.misc.response.Response;
 
 import java.util.Collection;
 import java.util.List;
@@ -305,11 +306,10 @@ public interface RWClient extends Client {
    *
    * @param ei                 BwEvent object to be deleted
    * @param sendSchedulingMessage   Send a declined or cancel scheduling message
-   * @return true if event deleted
-   * @throws CalFacadeException on fatal error
+   * @return Response with status ok  if event deleted
    */
-  boolean deleteEvent(EventInfo ei,
-                      boolean sendSchedulingMessage) throws CalFacadeException;
+  Response deleteEvent(EventInfo ei,
+                       boolean sendSchedulingMessage);
 
   /** For an event to which we have write access we simply mark it deleted.
    *

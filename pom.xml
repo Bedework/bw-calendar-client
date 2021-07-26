@@ -27,8 +27,8 @@
     <bw-util-tz.version>4.1.2</bw-util-tz.version>
     <bw-util2.version>4.0.8</bw-util2.version>
     <bw-access.version>4.0.9</bw-access.version>
-    <bw-webdav.version>4.0.11</bw-webdav.version>
-    <bw-caldav.version>4.0.13</bw-caldav.version>
+    <bw-webdav.version>4.0.12-SNAPSHOT</bw-webdav.version>
+    <bw-caldav.version>4.0.14-SNAPSHOT</bw-caldav.version>
     <bw-calendar-common.version>4.0.0-SNAPSHOT</bw-calendar-common.version>
 
     <ical4j.groupId>org.bedework.ical4j</ical4j.groupId>

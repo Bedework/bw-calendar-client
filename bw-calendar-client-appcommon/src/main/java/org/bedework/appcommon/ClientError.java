@@ -164,9 +164,6 @@ public interface ClientError extends Serializable {
       You must remove the subscription from this view before deleting. */
   public static final String referencedSubscription = prefix + "referenced.subscription";
 
-  /** Timzone error: could not read file. */
-  public static final String timezonesReadError = prefix + "timezones.readerror";
-
   /** Not found: there is no attendee identified by the uri. */
   public static final String unknownAttendee = prefix + "unknown.attendee";
 

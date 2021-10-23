@@ -23,9 +23,11 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwPreferences;
+import org.bedework.calfacade.svc.BwPreferences.CategoryMappings;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
+import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwRequest;
 
@@ -96,6 +98,19 @@ public class UpdatePrefsAction extends RWActionBase {
     }
 
     if (cl.getPublicAdmin() && cl.isSuperUser()) {
+      if (request.present("categoryMapping")) {
+        // Preserve any old value while we check the new
+        final GetEntityResponse<CategoryMappings> ger =
+                prefs.checkCategoryMappings(
+                        request.getReqPar("categoryMapping"));
+        if (!ger.isOk()) {
+          request.error(ValidationError.invalidPref,
+                        "categoryMapping");
+          return forwardBadPref;
+        }
+        prefs.setCategoryMapping(request.getReqPar("categoryMapping"));
+      }
+
       if (request.present("approvers")) {
         prefs.setCalsuiteApprovers(request.getReqPar("approvers"));
       }

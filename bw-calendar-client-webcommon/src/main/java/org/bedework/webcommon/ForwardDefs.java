@@ -198,7 +198,7 @@ public interface ForwardDefs {
     "notAdded",
     "baddata",
     "referenced", //30
-    "badPref",
+    "retry",   // was badPref
     "cancelled",
     "badRequest",
     "nochange",

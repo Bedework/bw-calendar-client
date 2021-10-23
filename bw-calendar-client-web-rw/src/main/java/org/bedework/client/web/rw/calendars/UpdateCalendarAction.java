@@ -312,14 +312,19 @@ public class UpdateCalendarAction extends RWActionBase {
       }
     }
 
-    final boolean orgSyncV2 = request.present("orgSyncV2");
-    if (orgSyncV2) {
-      cal.setSubscriptionTargetType("orgSyncV2");
+    final boolean campusGroups = request.present("campusGroups");
+    if (campusGroups) {
+      cal.setSubscriptionTargetType("campusGroups");
     } else {
-      cal.setSubscriptionTargetType("file");
+      final boolean orgSyncV2 = request.present("orgSyncV2");
+      if (orgSyncV2) {
+        cal.setSubscriptionTargetType("orgSyncV2");
+        cal.setOrgSyncPublicOnly(request.present("orgSyncPublicOnly"));
+      } else {
+        cal.setSubscriptionTargetType("read-only-file");
+      }
     }
 
-    cal.setOrgSyncPublicOnly(request.present("orgSyncPublicOnly"));
     cal.setLocationKey(request.getReqPar("locKey"));
 
     /* Set the  etag and last refresh to null to force a refresh */

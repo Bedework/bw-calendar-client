@@ -20,8 +20,7 @@ package org.bedework.webcommon.taglib;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.base.BwShareableContainedDbentity;
-
-import org.apache.log4j.Logger;
+import org.bedework.util.logging.BwLogger;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -75,7 +74,7 @@ public class EmitContainerTag extends EmitCollectionTag {
         }
       }
 
-      JspWriter out = pageContext.getOut();
+      final JspWriter out = pageContext.getOut();
 
       String indent = getIndent();
       if (indent == null) {
@@ -87,11 +86,9 @@ public class EmitContainerTag extends EmitCollectionTag {
       emitCollection(col, out, indent);
 
       outerTagEnd(out, outerTag, indent);
-    } catch(Throwable t) {
-      Logger log = getLog();
-
-      if (log.isDebugEnabled()) {
-        log.error("Error", t);
+    } catch(final Throwable t) {
+      if (getLog().isDebugEnabled()) {
+        getLog().error("Error", t);
       }
 
       throw new JspTagException("Error: " + t.getMessage());
@@ -101,7 +98,10 @@ public class EmitContainerTag extends EmitCollectionTag {
     return EVAL_PAGE;
   }
 
-  private static Logger getLog() {
-    return Logger.getLogger(EmitContainerTag.class);
+  private final static BwLogger logger =
+          new BwLogger().setLoggedClass(EmitContainerTag.class);
+
+  private static BwLogger getLog() {
+    return logger;
   }
 }

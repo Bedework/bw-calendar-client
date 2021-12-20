@@ -5,12 +5,11 @@
   <parent>
     <groupId>org.bedework.bwwebcl</groupId>
     <artifactId>bw-calendar-client</artifactId>
-    <version>3.14.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>bw-calendar-client-util</artifactId>
-
-  <packaging>jar</packaging>
+  <name>Bedework web client: utils</name>
 
   <dependencies>
     <!-- Bedework -->

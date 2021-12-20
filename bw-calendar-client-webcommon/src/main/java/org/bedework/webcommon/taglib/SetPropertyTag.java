@@ -21,8 +21,8 @@ package org.bedework.webcommon.taglib;
 
 import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.base.PropertiesEntity;
+import org.bedework.util.logging.BwLogger;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.taglib.TagUtils;
 
 import javax.servlet.jsp.JspException;
@@ -55,9 +55,9 @@ public class SetPropertyTag extends NameScopePropertyTag {
   }
 
   /**
-   * @param val
+   * @param val property name
    */
-  public void setPname(String val) {
+  public void setPname(final String val) {
     pname = val;
   }
 
@@ -69,9 +69,9 @@ public class SetPropertyTag extends NameScopePropertyTag {
   }
 
   /**
-   * @param val
+   * @param val property value
    */
-  public void setPval(String val) {
+  public void setPval(final String val) {
     pval = val;
   }
 
@@ -89,29 +89,36 @@ public class SetPropertyTag extends NameScopePropertyTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the value */
-      Object o = getObject(false);
+      final Object o = getObject(false);
       if (!(o instanceof PropertiesEntity)) {
-        JspException e =
+        final JspException e =
           new JspException("Property is not instance of PropertiesEntity");
         TagUtils.getInstance().saveException(pageContext, e);
         throw e;
       }
 
-      PropertiesEntity pe = (PropertiesEntity)o;
+      final PropertiesEntity pe = (PropertiesEntity)o;
 
-      BwProperty prop = pe.findProperty(pname);
+      final BwProperty prop = pe.findProperty(pname);
 
       if (prop == null) {
         pe.addProperty(new BwProperty(pname, pval));
       } else {
         prop.setValue(pval);
       }
-    } catch(Throwable t) {
-      Logger.getLogger(getClass()).debug(this, t);
+    } catch(final Throwable t) {
+      getLog().error(t);
       throw new JspTagException("Error: " + t.getMessage());
     } finally {
     }
 
     return EVAL_PAGE;
+  }
+
+  private final static BwLogger logger =
+          new BwLogger().setLoggedClass(SetPropertyTag.class);
+
+  private static BwLogger getLog() {
+    return logger;
   }
 }

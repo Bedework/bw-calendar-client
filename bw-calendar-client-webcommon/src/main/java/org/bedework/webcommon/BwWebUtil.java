@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon;
 
-import org.apache.log4j.Logger;
+import org.bedework.util.logging.BwLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -85,8 +85,9 @@ public class BwWebUtil {
   }
 
   private static void noSession() {
-    Logger.getLogger("org.bedework.webcommon.BwWebUtil").warn(
-            "No session!!!!!!!");
+    new BwLogger().
+            setLoggedClass(BwWebUtil.class).
+            warn("No session!!!!!!!");
   }
 }
 

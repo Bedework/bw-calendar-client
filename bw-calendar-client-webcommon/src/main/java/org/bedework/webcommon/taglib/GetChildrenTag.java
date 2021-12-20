@@ -20,8 +20,8 @@
 package org.bedework.webcommon.taglib;
 
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.util.logging.BwLogger;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.taglib.TagUtils;
 
 import java.util.ArrayList;
@@ -135,16 +135,23 @@ public class GetChildrenTag extends NameScopePropertyTag {
           inScope = TagUtils.getInstance().getScope(getScope());
         }
       } catch (final JspException e) {
-        Logger.getLogger(getClass()).warn("toScope was invalid name " +
-                                          "so we default to PAGE_SCOPE", e);
+        getLog().warn("toScope was invalid name " +
+                              "so we default to PAGE_SCOPE. " + e);
       }
 
       pageContext.setAttribute(id, cs, inScope);
     } catch(final Throwable t) {
-      Logger.getLogger(getClass()).debug(this, t);
+      getLog().error(t);
       throw new JspTagException("Error: " + t.getMessage());
     }
 
     return EVAL_PAGE;
+  }
+
+  private final static BwLogger logger =
+          new BwLogger().setLoggedClass(GetChildrenTag.class);
+
+  private static BwLogger getLog() {
+    return logger;
   }
 }

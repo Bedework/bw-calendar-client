@@ -12,7 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="bw-calendar-client-appcommon" />
-    <orderEntry type="library" name="Maven: org.bedework.bwwebcl:bw-calendar-client-util:3.14.0-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="bw-calendar-client-util" />
     <orderEntry type="module" module-name="bw-util-servlet" />
     <orderEntry type="module" module-name="bw-util-servlet-filters" />
     <orderEntry type="module" module-name="bw-util-config" />

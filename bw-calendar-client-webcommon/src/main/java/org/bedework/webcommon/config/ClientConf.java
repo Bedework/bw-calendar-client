@@ -271,6 +271,7 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
     return getConfig().getSubmissionRoot();
   }
 
+  /*
   @Override
   public void setPortalPlatform(final String val) {
     getConfig().setPortalPlatform(val);
@@ -279,7 +280,7 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
   @Override
   public String getPortalPlatform() {
     return getConfig().getPortalPlatform();
-  }
+  }*/
 
   @Override
   public String loadConfig() {

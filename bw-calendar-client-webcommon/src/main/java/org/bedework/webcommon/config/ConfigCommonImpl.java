@@ -72,7 +72,7 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
 
   private String submissionRoot;
 
-  private String portalPlatform;
+  //private String portalPlatform;
 
   @Override
   public void setMbeanClassName(final String val) {
@@ -294,6 +294,7 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
     return submissionRoot;
   }
 
+  /*
   @Override
   public void setPortalPlatform(final String val) {
     portalPlatform = val;
@@ -302,7 +303,7 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
   @Override
   public String getPortalPlatform() {
     return portalPlatform;
-  }
+  }*/
 
   /** Copy this object to val.
    *
@@ -329,7 +330,7 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
     val.setRefreshInterval(getRefreshInterval());
     val.setCalSuite(getCalSuite());
     val.setSubmissionRoot(getSubmissionRoot());
-    val.setPortalPlatform(getPortalPlatform());
+    //val.setPortalPlatform(getPortalPlatform());
   }
 
   @Override

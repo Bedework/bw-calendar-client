@@ -1270,13 +1270,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /* If we're running as a portlet change the app root to point to a
      * portlet specific directory.
-     */
+     *
+     * DISABLED - probably not working
     final String portalPlatform = form.getConfig().getPortalPlatform();
 
     if (isPortlet && (portalPlatform != null)) {
       sb.append(".");
       sb.append(portalPlatform);
     }
+     */
 
     if (!appTypeWebsubmit.equals(form.getConfig().getAppType())) { 
       /* If calendar suite is non-null append that. */

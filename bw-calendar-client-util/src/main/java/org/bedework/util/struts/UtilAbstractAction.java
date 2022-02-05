@@ -147,7 +147,7 @@ public abstract class UtilAbstractAction extends Action
 
   private boolean noActionErrors = false;
 
-  protected boolean isPortlet;
+  //protected boolean isPortlet;
 
   /** This is the routine which does the work.
    *
@@ -175,7 +175,7 @@ public abstract class UtilAbstractAction extends Action
     try {
       messages = getResources(request);
 
-      isPortlet = isPortletRequest(request);
+      //isPortlet = isPortletRequest(request);
 
       noActionErrors = StrutsUtil.getProperty(messages,
                                               "edu.rpi.sss.util.action.noactionerrors",
@@ -192,7 +192,7 @@ public abstract class UtilAbstractAction extends Action
       if (debug()) {
         debug("entry");
         debug("================================");
-        debug("isPortlet=" + isPortlet);
+        //debug("isPortlet=" + isPortlet);
 
         Enumeration en = servlet.getInitParameterNames();
 
@@ -258,19 +258,24 @@ public abstract class UtilAbstractAction extends Action
          Everything is set up and ready to go. Execute something
          ---------------------------------------------------------------- */
 
+      /* NO portlet
       if (!isPortlet) {
         forward = checkLogOut(request, form);
       } else {
         forward = null;
       }
+      */
+
+      forward = checkLogOut(request, form);
 
       if (forward != null) {
         // Disable xslt filters
         response.setContentType("text/html");
       } else {
-        if (!isPortlet) {
-          response.setContentType(defaultContentType);
-        }
+        //if (!isPortlet) {
+        //  response.setContentType(defaultContentType);
+        //}
+        response.setContentType(defaultContentType);
         forward = checkVarReq(req, form);
 
         if (forward == null) {
@@ -935,14 +940,14 @@ public abstract class UtilAbstractAction extends Action
     return StrutsUtil.getReqProperty(messages, resName);
   }
 
-  /**
+  /* *
    * @param req
    * @return boolean true for portlet
-   */
   public boolean isPortletRequest(final HttpServletRequest req) {
     // JSR 168 requires this attribute be present
     return req.getAttribute("javax.portlet.request") != null;
   }
+   */
 
   /** Get a request parameter stripped of white space. Return null for zero
    * length.

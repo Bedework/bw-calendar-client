@@ -89,16 +89,18 @@
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
+    <!--
 		<dependency>
 			<groupId>javax.portlet</groupId>
 			<artifactId>portlet-api</artifactId>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>javax.servlet.jsp-api</artifactId>
 		</dependency>
 
+    <!--
 		<dependency>
 			<groupId>org.apache.portals.bridges</groupId>
 			<artifactId>portals-bridges-common</artifactId>
@@ -110,5 +112,6 @@
 			<artifactId>portals-bridges-struts-1.2.7</artifactId>
 			<version>1.0.4</version>
 		</dependency>
+		-->
 	</dependencies>
 </project>

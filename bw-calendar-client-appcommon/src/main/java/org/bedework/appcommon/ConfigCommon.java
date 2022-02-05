@@ -275,14 +275,14 @@ public interface ConfigCommon extends Serializable {
    */
   String getSubmissionRoot();
 
-  /** portalPlatform.
+  /* * portalPlatform.
    *
    * @param val
-   */
+   * /
   void setPortalPlatform(String val);
 
-  /**
+  /* *
    * @return String
-   */
   String getPortalPlatform();
+   */
 }

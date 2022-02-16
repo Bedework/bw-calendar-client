@@ -9,7 +9,7 @@
 
   <groupId>org.bedework.bwwebcl</groupId>
   <artifactId>bw-calendar-client</artifactId>
-  <version>4.0.1</version>
+  <version>4.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Bedework: calendar web client</name>
   <description>Calendar web client code for bedework</description>

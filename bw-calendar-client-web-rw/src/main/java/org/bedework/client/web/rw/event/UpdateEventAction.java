@@ -53,6 +53,8 @@ import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
+import org.bedework.util.misc.response.GetEntityResponse;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwActionFormBase;
@@ -356,10 +358,11 @@ public class UpdateEventAction extends RWActionBase {
 
     /* -------------------------- Aliases ------------------------------ */
 
-    final Set<BwCategory> cats = doAliases(pars);
-    if (cats == null) {
+    final var aliasGer = doAliases(pars);
+    if (!aliasGer.isOk()) {
       return forwardRetry;
     }
+    final Set<BwCategory> cats = aliasGer.getEntity();
 
     /* -------------------------- Categories ------------------------------ */
 
@@ -626,9 +629,11 @@ public class UpdateEventAction extends RWActionBase {
     return true;
   }
 
-  protected Set<BwCategory> doAliases(final UpdatePars pars) {
+  protected GetEntityResponse<Set<BwCategory>> doAliases(final UpdatePars pars) {
+    final var ger = new GetEntityResponse<Set<BwCategory>>();
+
     if (!pars.submitApp) {
-      return null;
+      return ger;
     }
 
     final RealiasResult resp = pars.cl.reAlias(pars.ev);
@@ -639,10 +644,11 @@ public class UpdateEventAction extends RWActionBase {
       pars.cl.rollback();
       pars.request.error(ValidationError.missingTopic);
       restore(pars);
-      return null;
+      return Response.error(ger, ValidationError.missingTopic);
     }
 
-    return resp.getCats();
+    ger.setEntity(resp.getCats());
+    return ger;
   }
 
   protected boolean doAdditional(final UpdatePars pars) throws Throwable {

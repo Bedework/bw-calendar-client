@@ -26,6 +26,8 @@ import org.bedework.sysevents.events.publicAdmin.EntityApprovalResponseEvent;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
+import org.bedework.util.misc.response.GetEntityResponse;
+import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.ArrayList;
@@ -119,7 +121,8 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   }
 
   @Override
-  protected Set<BwCategory> doAliases(final UpdatePars pars) {
+  protected GetEntityResponse<Set<BwCategory>> doAliases(final UpdatePars pars) {
+    final var ger = new GetEntityResponse<Set<BwCategory>>();
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
     final RealiasResult resp = pars.cl.reAlias(pars.ev);
@@ -130,7 +133,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       pars.cl.rollback();
       pars.request.error(ValidationError.missingTopic);
       restore(pars);
-      return null;
+      return Response.error(ger, ValidationError.missingTopic);
     }
 
     if (!adPars.updateSubmitEvent && Util.isEmpty(resp.getCats())) {
@@ -139,10 +142,11 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       }
       pars.request.error(ValidationError.missingTopic);
       restore(pars);
-      return null;
+      return Response.error(ger, ValidationError.missingTopic);
     }
 
-    return resp.getCats();
+    ger.setEntity(resp.getCats());
+    return ger;
   }
 
   @Override

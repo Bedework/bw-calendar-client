@@ -29,6 +29,7 @@
     <orderEntry type="module" module-name="bw-util-jmx" />
     <orderEntry type="module" module-name="bw-calendar-client-rw" />
     <orderEntry type="module" module-name="bw-access" />
+    <orderEntry type="library" name="Maven: org.dom4j:dom4j:2.1.3" level="project" />
     <orderEntry type="module" module-name="bw-calendar-client-appcommon" />
     <orderEntry type="module" module-name="bw-util-indexing" />
     <orderEntry type="module" module-name="bw-calendar-api" />

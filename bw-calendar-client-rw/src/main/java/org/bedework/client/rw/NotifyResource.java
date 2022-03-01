@@ -35,13 +35,21 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.util.misc.Util;
 
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /** Class to hold info about a notification.
  *
@@ -266,6 +274,50 @@ public class NotifyResource implements Serializable {
         ri.error = true;
       }
     }
+  }
+
+  /** Output in jsp
+   * @return formatted xml without the header
+   */
+  @SuppressWarnings("unused")
+  public String getXmlFragment() {
+    if (xmlFragment != null) {
+      return xmlFragment;
+    }
+
+    try {
+      final OutputFormat format = OutputFormat.createPrettyPrint();
+      format.setTrimText(false);
+      format.setSuppressDeclaration(true);
+
+      final StringWriter sw = new StringWriter();
+      final XMLWriter writer = new XMLWriter(sw, format);
+      writer.write(DocumentHelper.parseText(content));
+
+      xmlFragment = sw.toString();
+
+      return xmlFragment;
+    } catch (final Throwable t){
+      return "<error>" + t.getLocalizedMessage() + "</error>";
+    }
+  }
+
+  /**
+   * @param rdr for content
+   * @return parsed Document
+   * @throws Throwable
+   */
+  private Document parseXml(final Reader rdr) throws Throwable {
+    if (rdr == null) {
+      return null;
+    }
+
+    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+
+    final DocumentBuilder builder = factory.newDocumentBuilder();
+
+    return builder.parse(new InputSource(rdr));
   }
 
   /**

@@ -214,7 +214,6 @@ public abstract class UtilAbstractAction extends Action
         form.setInitialised(true);
       }
 
-      form.setMres(messages);
       form.setBrowserType(StrutsUtil.getBrowserType(request));
       form.assignCurrentUser(HttpServletUtils.remoteUser(request));
       form.setUrl(StrutsUtil.getUrl(request));

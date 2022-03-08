@@ -22,7 +22,6 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.MessageEmit;
 
 import org.apache.struts.action.ActionForm;
-import org.apache.struts.util.MessageResources;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,10 +64,6 @@ public class UtilActionForm extends ActionForm {
   /** A message object reinitialised at each entry to the abstract action
    */
   protected transient MessageEmit msg;
-
-  /** So we can get hold of properties
-   */
-  protected MessageResources mres;
 
   /** Application variables. These can be set with request parameters and
    * dumped into the page for use by jsp and xslt.
@@ -261,20 +256,6 @@ public class UtilActionForm extends ActionForm {
   }
 
   /**
-   * @return MessageResources
-   */
-  public MessageResources getMres() {
-    return mres;
-  }
-
-  /**
-   * @param val
-   */
-  public void setMres(MessageResources val) {
-    mres = val;
-  }
-
-  /**
    * @param val
    */
   public void setErr(MessageEmit val) {
@@ -343,73 +324,6 @@ public class UtilActionForm extends ActionForm {
       return new HashMap().entrySet();
     }
     return appVars.entrySet();
-  }
-
-  /** Get a list of property values and return as a string array. The
-   *  properties are stored with consectutively numbered names as in
-   *  <pre>
-   *     prop1=aval
-   *     prop2=bval
-   *  </pre>
-   *  There can be no gaps in the sequence.
-   *  setMres must have been called previously.
-   *
-   * @param prop       Property name
-   * @return String[]  values as a String array
-   */
-  public String[] getVals(String prop) {
-    return getVals(null, prop, null);
-  }
-
-  /** Get a list of property values and return as a string array. The
-   *  properties are stored with consectutively numbered names as in
-   *  <pre>
-   *     prop1=aval
-   *     prop2=bval
-   *  </pre>
-   *  There can be no gaps in the sequence.
-   *  If pre or post are non-null they are the property names of values to
-   *  be added to the beginning or end.
-   *  setMres must have been called previously.
-   *
-   * @param pre        Property name of prefix
-   * @param prop       Property name
-   * @param post       Property name of postfix
-   * @return String[]  values as a String array
-   */
-  public String[] getVals(String pre, String prop, String post) {
-    ArrayList<String> al = new ArrayList<String>();
-
-    if (pre != null) {
-      // Add at the front.
-      String s = mres.getMessage(pre);
-      if (s != null) {
-        al.add(s);
-      }
-    }
-
-    int i = 1;
-
-    for (;;) {
-      String u = mres.getMessage(prop + i);
-      if (u == null) {
-        // No more
-        break;
-      }
-
-      al.add(u);
-      i++;
-    }
-
-    if (post != null) {
-      // Add at the front.
-      String s = mres.getMessage(post);
-      if (s != null) {
-        al.add(s);
-      }
-    }
-
-    return (String[])al.toArray(new String[al.size()]);
   }
 
   /**

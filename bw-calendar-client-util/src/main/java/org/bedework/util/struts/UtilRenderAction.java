@@ -35,8 +35,7 @@ public class UtilRenderAction extends UtilAbstractAction {
     return "UtilRenderAction";
   }
 
-  public String performAction(Request request,
-                              MessageResources messages)
+  public String performAction(Request request)
                throws Throwable {
     return "success";
   }

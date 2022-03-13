@@ -101,8 +101,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                BwActionFormBase frm) throws Throwable;
 
   @Override
-  public String performAction(final Request request,
-                              final MessageResources messages) throws Throwable {
+  public String performAction(final Request request) throws Throwable {
     final BwActionFormBase form = (BwActionFormBase)request.getForm();
     String adminUserId = null;
 

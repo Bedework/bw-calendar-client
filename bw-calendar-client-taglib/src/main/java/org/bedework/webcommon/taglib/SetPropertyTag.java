@@ -23,8 +23,6 @@ import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.base.PropertiesEntity;
 import org.bedework.util.logging.BwLogger;
 
-import org.apache.struts.taglib.TagUtils;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
@@ -91,10 +89,7 @@ public class SetPropertyTag extends NameScopePropertyTag {
       /* Try to retrieve the value */
       final Object o = getObject(false);
       if (!(o instanceof PropertiesEntity)) {
-        final JspException e =
-          new JspException("Property is not instance of PropertiesEntity");
-        TagUtils.getInstance().saveException(pageContext, e);
-        throw e;
+        throw new JspException("Property is not instance of PropertiesEntity");
       }
 
       final PropertiesEntity pe = (PropertiesEntity)o;

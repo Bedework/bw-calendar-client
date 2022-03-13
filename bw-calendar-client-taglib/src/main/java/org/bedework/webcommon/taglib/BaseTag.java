@@ -23,9 +23,10 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.webcommon.BwRequest;
 
-import org.apache.struts.taglib.TagUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -46,11 +47,13 @@ public class BaseTag extends TagSupport {
    * @return Object   null if none found.
    * @throws JspTagException
    */
-  protected Object getObject(String name, String scope,
-                             String property, boolean required)
+  protected Object getObject(final String name, 
+                             final String scope,
+                             final String property,
+                             final boolean required)
       throws JspTagException {
     try {
-      Object o = TagUtils.getInstance().lookup(pageContext, name, property, scope);
+      final Object o = lookup(pageContext, name, property, scope);
       if (o == null) {
         if (required) {
           throw new JspTagException("Unable to find " + name +
@@ -62,10 +65,91 @@ public class BaseTag extends TagSupport {
       }
 
       return o;
-    } catch (JspTagException jte) {
+    } catch (final JspTagException jte) {
       throw jte;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       throw new JspTagException(t.getMessage());
+    }
+  }
+
+  protected Object lookup(final PageContext pageContext,
+                          final String name,
+                          final String scopeName)
+          throws JspException {
+    if (scopeName == null) {
+      return pageContext.findAttribute(name);
+    }
+
+    return pageContext.getAttribute(name, getScope(scopeName));
+  }
+
+  protected Object lookup(final PageContext pageContext,
+                          final String name,
+                          final String property,
+                          final String scope) throws JspException {
+    // Look up the requested bean, and return if requested
+    final Object bean = lookup(pageContext, name, scope);
+
+    if (bean == null) {
+      throw new JspException("missing.bean " + name);
+    }
+
+    if (property == null) {
+      return bean;
+    }
+
+    // Locate and return the specified property
+    try {
+      return PropertyUtils.getProperty(bean, property);
+    } catch (final Throwable t) {
+      throw new JspException("lookup.propterty.failed bean/property " +
+                                                 name + "/" + property);
+    }
+  }
+
+  public static String filter(final String value) {
+    if (value != null && value.length() != 0) {
+      StringBuilder result = null;
+      String filtered;
+
+      for (int i = 0; i < value.length(); ++i) {
+        filtered = null;
+        switch(value.charAt(i)) {
+          case '"':
+            filtered = "&quot;";
+            break;
+          case '&':
+            filtered = "&amp;";
+            break;
+          case '\'':
+            filtered = "&#39;";
+            break;
+          case '<':
+            filtered = "&lt;";
+            break;
+          case '>':
+            filtered = "&gt;";
+        }
+
+        if (result == null) {
+          if (filtered != null) {
+            result = new StringBuilder(value.length() + 50);
+            if (i > 0) {
+              result.append(value.substring(0, i));
+            }
+
+            result.append(filtered);
+          }
+        } else if (filtered == null) {
+          result.append(value.charAt(i));
+        } else {
+          result.append(filtered);
+        }
+      }
+
+      return result == null ? value : result.toString();
+    } else {
+      return value;
     }
   }
 
@@ -74,7 +158,7 @@ public class BaseTag extends TagSupport {
   }
 
   protected BwPreferences getPreferences() {
-    HttpSession sess = pageContext.getSession();
+    final HttpSession sess = pageContext.getSession();
 
     return (BwPreferences)sess.getAttribute(BwRequest.bwPreferencesName);
   }
@@ -90,8 +174,8 @@ public class BaseTag extends TagSupport {
    * @return int      0 if none found.
    * @throws JspTagException
    */
-  protected int getInt(String name, String scope,
-                       String property, boolean required)
+  protected int getInt(final String name, final String scope,
+                       final String property, final boolean required)
       throws JspTagException {
     Object o = getObject(name, scope, property, required);
 
@@ -109,9 +193,9 @@ public class BaseTag extends TagSupport {
    *
    * @param scopeName   String - same as struts values
    * @return int        value defined in PageContext
-   * @throws JspTagException
+   * @throws JspTagException for invalid scope
    */
-  protected int getScope(String scopeName) throws JspTagException {
+  protected int getScope(final String scopeName) throws JspTagException {
     if (scopeName == null) {
       return PageContext.PAGE_SCOPE;
     }

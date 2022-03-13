@@ -23,7 +23,6 @@ import org.bedework.util.servlet.MessageEmit;
 
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionMessage;
-import org.apache.struts.util.MessageResources;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 public class ErrorEmitSvlt implements MessageEmit {
   transient protected String id;
   transient protected Object caller;
-  transient protected MessageResources messages;
   transient protected ActionErrors errors;
   transient protected String exceptionPname;
 
@@ -45,47 +43,37 @@ public class ErrorEmitSvlt implements MessageEmit {
    * generation.
    */
   @SuppressWarnings("unused")
-  public class Msg implements Serializable {
-    private ArrayList<Object> params = new ArrayList<>();
+  public static class Msg implements Serializable {
+    private final ArrayList<Object> params = new ArrayList<>();
     private Object p1;
     private Object p2;
     private Object p3;
 
-    private String msgId;
-    protected MessageResources messages;
+    private final String msgId;
 
     /**
-     * @param messages MessageResources object
      * @param msgId id
      */
-    public Msg(final MessageResources messages,
-               final String msgId) {
-      this.messages = messages;
+    public Msg(final String msgId) {
       this.msgId = msgId;
     }
 
     /**
-     * @param messages MessageResources object
      * @param msgId id
      * @param o object to output
      */
-    public Msg(final MessageResources messages,
-               final String msgId, final Object o) {
-      this.messages = messages;
+    public Msg(final String msgId, final Object o) {
       this.msgId = msgId;
       addParam(o);
       p1 = o;
     }
 
     /**
-     * @param messages MessageResources object
      * @param msgId id
      * @param o1 object to output
      * @param o2 object to output
      */
-    public Msg(final MessageResources messages,
-               final String msgId, final Object o1, final Object o2) {
-      this.messages = messages;
+    public Msg(final String msgId, final Object o1, final Object o2) {
       this.msgId = msgId;
       addParam(o1);
       addParam(o2);
@@ -94,15 +82,12 @@ public class ErrorEmitSvlt implements MessageEmit {
     }
 
     /**
-     * @param messages MessageResources object
      * @param msgId id
      * @param o1 object to output
      * @param o2 object to output
      * @param o3 object to output
      */
-    public Msg(final MessageResources messages,
-               final String msgId, final Object o1, final Object o2, final Object o3) {
-      this.messages = messages;
+    public Msg(final String msgId, final Object o1, final Object o2, final Object o3) {
       this.msgId = msgId;
       addParam(o1);
       addParam(o2);
@@ -122,19 +107,8 @@ public class ErrorEmitSvlt implements MessageEmit {
     /**
      * @return params
      */
-    public ArrayList getParams() {
+    public ArrayList<?> getParams() {
       return params;
-    }
-
-    /**
-     * @return expanded message
-     */
-    public String getMsg() {
-      if (messages == null) {
-        return "";
-      }
-
-      return messages.getMessage(msgId, p1, p2, p3);
     }
 
     private void addParam(final Object o) {
@@ -158,20 +132,17 @@ public class ErrorEmitSvlt implements MessageEmit {
    *
    * @param id       An identifying name
    * @param caller   Used for log identification
-   * @param messages Resources
    * @param errors   Error message will be appended on failure.
    * @param exceptionPname Property name for exceptions
    * @param clear true to clear list
    */
   public void reinit(final String id,
                      final Object caller,
-                     final MessageResources messages,
                      final ActionErrors errors,
                      final String exceptionPname,
                      final boolean clear) {
     this.id = id;
     this.caller = caller;
-    this.messages = messages;
     this.errors = errors;
     this.exceptionPname = exceptionPname;
 
@@ -193,15 +164,15 @@ public class ErrorEmitSvlt implements MessageEmit {
       debugMsg(pname, null, null);
     }
 
-    msgList.add(new Msg(messages, pname));
+    msgList.add(new Msg(pname));
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       errors.add(id, new ActionMessage(pname));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ": exception adding Action message", t);
     }
   }
@@ -212,7 +183,7 @@ public class ErrorEmitSvlt implements MessageEmit {
       debugMsg(pname, "int", String.valueOf(num));
     }
 
-    emit(pname, new Integer(num));
+    emit(pname, Integer.valueOf(num));
   }
 
   @Override
@@ -247,18 +218,18 @@ public class ErrorEmitSvlt implements MessageEmit {
     }
 
     if (o == null) {
-      msgList.add(new Msg(messages, pname));
+      msgList.add(new Msg(pname));
     } else {
-      msgList.add(new Msg(messages, pname, o));
+      msgList.add(new Msg(pname, o));
     }
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       errors.add(id, new ActionMessage(pname, o));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ": exception adding Action error", t);
     }
   }
@@ -267,19 +238,19 @@ public class ErrorEmitSvlt implements MessageEmit {
   public void emit(final String pname, final Object o1, final Object o2){
     if (debug()) {
       debugMsg(pname, "2objects",
-               String.valueOf(o1) + "; " +
-               String.valueOf(o2));
+               o1 + "; " +
+                       o2);
     }
 
-    msgList.add(new Msg(messages, pname, o1, o2));
+    msgList.add(new Msg(pname, o1, o2));
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       errors.add(id, new ActionMessage(pname, o1, o2));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ": exception adding Action error", t);
     }
   }
@@ -288,20 +259,20 @@ public class ErrorEmitSvlt implements MessageEmit {
   public void emit(final String pname, final Object o1, final Object o2, final Object o3){
     if (debug()) {
       debugMsg(pname, "2objects",
-               String.valueOf(o1) + "; " +
-               String.valueOf(o2) + "; " +
-               String.valueOf(o3));
+               o1 + "; " +
+                       o2 + "; " +
+                       o3);
     }
 
-    msgList.add(new Msg(messages, pname, o1, o2, o3));
+    msgList.add(new Msg(pname, o1, o2, o3));
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       errors.add(id, new ActionMessage(pname, o1, o2, o3));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ":exception adding Action error" + pname, t);
     }
   }
@@ -345,7 +316,7 @@ public class ErrorEmitSvlt implements MessageEmit {
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

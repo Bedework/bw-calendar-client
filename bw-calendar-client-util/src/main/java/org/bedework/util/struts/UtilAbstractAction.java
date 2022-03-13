@@ -32,17 +32,15 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.config.ActionConfig;
-import org.apache.struts.util.MessageResources;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 
-import javax.servlet.ServletException;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -135,8 +133,6 @@ import javax.servlet.http.HttpSession;
  */
 public abstract class UtilAbstractAction extends Action
          implements HttpAppLogger, Logged {
-  transient MessageResources messages;
-
   private transient String logPrefix;
 
   protected String requestLogout = "logout";
@@ -145,44 +141,33 @@ public abstract class UtilAbstractAction extends Action
    */
   public final String forwardLoggedOut = "loggedOut";
 
-  private boolean noActionErrors = false;
-
   //protected boolean isPortlet;
 
   /** This is the routine which does the work.
    *
    * @param request  Provide http request/response and form
-   * @param messages Resources
    * @return String  forward name
    * @throws Throwable
    */
-  public abstract String performAction(Request request,
-                                       MessageResources messages)
+  public abstract String performAction(Request request)
                throws Throwable;
 
   @Override
   public ActionForward execute(final ActionMapping mapping,
                                final ActionForm frm,
                                final HttpServletRequest request,
-                               final HttpServletResponse response)
-                               throws IOException, ServletException {
+                               final HttpServletResponse response) {
     ErrorEmitSvlt err = null;
     MessageEmitSvlt msg = null;
 
     String forward = "success";
-    UtilActionForm form = (UtilActionForm)frm;
+    final UtilActionForm form = (UtilActionForm)frm;
 
     try {
-      messages = getResources(request);
-
       //isPortlet = isPortletRequest(request);
 
-      noActionErrors = StrutsUtil.getProperty(messages,
-                                              "edu.rpi.sss.util.action.noactionerrors",
-                                              "no").equals("yes");
-
-      err = getErrorObj(request, messages);
-      msg = getMessageObj(request, messages);
+      err = getErrorObj(request);
+      msg = getMessageObj(request);
 
       /* Log the request - virtual domains can make it difficult to
        *  distinguish applications.
@@ -194,7 +179,7 @@ public abstract class UtilAbstractAction extends Action
         debug("================================");
         //debug("isPortlet=" + isPortlet);
 
-        Enumeration en = servlet.getInitParameterNames();
+        final Enumeration<?> en = servlet.getInitParameterNames();
 
         while (en.hasMoreElements()) {
           debug("attr name=" + en.nextElement());
@@ -206,10 +191,7 @@ public abstract class UtilAbstractAction extends Action
 
       if (!form.getInitialised()) {
         // Do one time settings
-        form.setNocache(
-                StrutsUtil.getProperty(messages,
-                                       "edu.rpi.sss.util.action.nocache",
-                                       "no").equals("yes"));
+        form.setNocache(false);
 
         form.setInitialised(true);
       }
@@ -226,15 +208,10 @@ public abstract class UtilAbstractAction extends Action
 
       checkNocache(request, response, form);
 
-      String defaultContentType =
-          StrutsUtil.getProperty(messages,
-                                 "edu.rpi.sss.util.action.contenttype",
-                                 "text/html");
+      final Request req = new Request(request, response, form,
+                                      this, mapping);
 
-      Request req = new Request(request, response, form,
-                                this, mapping);
-
-      /** Set up presentation values from request
+      /* Set up presentation values from request
        */
       doPresentation(req);
 
@@ -266,15 +243,12 @@ public abstract class UtilAbstractAction extends Action
       */
 
       forward = checkLogOut(request, form);
+      response.setContentType("text/html");
 
-      if (forward != null) {
-        // Disable xslt filters
-        response.setContentType("text/html");
-      } else {
+      if (forward == null) {
         //if (!isPortlet) {
         //  response.setContentType(defaultContentType);
         //}
-        response.setContentType(defaultContentType);
         forward = checkVarReq(req, form);
 
         if (forward == null) {
@@ -282,7 +256,7 @@ public abstract class UtilAbstractAction extends Action
         }
 
         if (forward == null) {
-          forward = performAction(req, messages);
+          forward = performAction(req);
         }
       }
 
@@ -297,11 +271,8 @@ public abstract class UtilAbstractAction extends Action
       if (err == null) {
         warn("No errors object");
       } else if (err.messagesEmitted()) {
-        if (noActionErrors) {
-        } else {
-          ActionErrors aes = err.getErrors();
-          saveErrors(request, aes);
-        }
+        ActionErrors aes = err.getErrors();
+        saveErrors(request, aes);
 
         if (debug()) {
           debug(err.getMsgList().size() + " errors emitted");
@@ -326,7 +297,7 @@ public abstract class UtilAbstractAction extends Action
       if (debug()) {
         debug("exit to " + forward);
       }
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       if (debug()) {
         error("Action exception: ", t);
       }
@@ -456,21 +427,6 @@ public abstract class UtilAbstractAction extends Action
     return PresentationState.presentationAttrName;
   }
 
-  /**
-   * @return message resources
-   */
-  public MessageResources getMessages() {
-    return messages;
-  }
-
-  /**
-   * @param name
-   * @return message identified by name
-   */
-  public String getMessage(final String name) {
-    return messages.getMessage(name);
-  }
-
   /* ====================================================================
    *               Log request
    * ==================================================================== */
@@ -479,16 +435,17 @@ public abstract class UtilAbstractAction extends Action
   public String getLogPrefix(final HttpServletRequest request) {
     try {
       if (logPrefix == null) {
-        logPrefix = StrutsUtil.getProperty(getMessages(),
-                                           "edu.rpi.sss.util.action.logprefix",
-                                           "unknown");
+        final HttpSession session = request.getSession();
+        final ServletContext sc = session.getServletContext();
+
+        logPrefix = sc.getInitParameter("bwappname");
       }
 
-      return logPrefix;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(t);
-      return "LOG-PREFIX-EXCEPTION";
+      logPrefix = "unknown";
     }
+    return logPrefix;
   }
 
   /* ====================================================================
@@ -876,77 +833,15 @@ public abstract class UtilAbstractAction extends Action
    * @return PresentationState
    */
   protected void initPresentationState(final Request request,
-                                       PresentationState ps) {
-    UtilActionForm form = request.getForm();
+                                       final PresentationState ps) {
 
-    ps.setBrowserType(form.getBrowserType());
-
-    try {
-      ps.setNoXSLTSticky(StrutsUtil.getProperty(messages,
-                                                "edu.rpi.sss.util.action.noxslt",
-                                                "no").equals("yes"));
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }
+    ps.setBrowserType(request.getForm().getBrowserType());
+    ps.setNoXSLTSticky(false);
   }
 
   /* ==================================================================
                 Various utility methods
      ================================================================== */
-
-  /* * Set the value of a named session attribute.
-   *
-   * @param request     Needed to locate session
-   * @param attrName    Name of the attribute
-   * @param val         Object
-   * /
-  public void setSessionAttr(HttpServletRequest request,
-                             String attrName,
-                             Object val) {
-    HttpSession sess = request.getSession(false);
-
-    if (sess == null) {
-      return;
-    }
-
-    sess.setAttribute(attrName, val);
-  }
-
-  /* * Return the value of a named session attribute.
-   *
-   * @param request     Needed to locate session
-   * @param attrName    Name of the attribute
-   * @return Object     Attribute value or null
-   * /
-  public Object getSessionAttr(HttpServletRequest request,
-                               String attrName) {
-    HttpSession sess = request.getSession(false);
-
-    if (sess == null) {
-      return null;
-    }
-
-    return sess.getAttribute(attrName);
-  } */
-
-  /** Return the value of a required named resource.
-   *
-   * @param resName     Name of the property
-   * @return String     Resource value or null
-   * @throws Throwable
-   */
-  public String getReqRes(final String resName) throws Throwable {
-    return StrutsUtil.getReqProperty(messages, resName);
-  }
-
-  /* *
-   * @param req
-   * @return boolean true for portlet
-  public boolean isPortletRequest(final HttpServletRequest req) {
-    // JSR 168 requires this attribute be present
-    return req.getAttribute("javax.portlet.request") != null;
-  }
-   */
 
   /** Get a request parameter stripped of white space. Return null for zero
    * length.
@@ -991,158 +886,6 @@ public abstract class UtilAbstractAction extends Action
     return res;
   }
 
-  /* * Get an Integer request parameter or null.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @return  Integer   value or null
-   * @throws Throwable
-   * /
-  protected Integer getIntReqPar(HttpServletRequest req,
-                                 String name) throws Throwable {
-    String reqpar = getReqPar(req, name);
-
-    if (reqpar == null) {
-      return null;
-    }
-
-    return Integer.valueOf(reqpar);
-  }
-
-  /* * Get an Integer request parameter or null. Emit error for non-null and
-   * non integer
-   *
-   * @param req
-   * @param name    name of parameter
-   * @param err     name of parameter
-   * @param errProp
-   * @return  Integer   value or null
-   * @throws Throwable
-   * /
-  protected Integer getIntReqPar(HttpServletRequest req,
-                                 String name,
-                                 MessageEmit err,
-                                 String errProp) throws Throwable {
-    String reqpar = getReqPar(req, name);
-
-    if (reqpar == null) {
-      return null;
-    }
-
-    try {
-      return Integer.valueOf(reqpar);
-    } catch (Throwable t) {
-      err.emit(errProp, reqpar);
-      return null;
-    }
-  }
-
-  /* * Get an integer valued request parameter.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @param defaultVal
-   * @return  int   value
-   * @throws Throwable
-   * /
-  protected int getIntReqPar(HttpServletRequest req, String name,
-                             int defaultVal) throws Throwable {
-    String reqpar = req.getParameter(name);
-
-    if (reqpar == null) {
-      return defaultVal;
-    }
-
-    try {
-      return Integer.parseInt(reqpar);
-    } catch (Throwable t) {
-      return defaultVal; // XXX exception?
-    }
-  }
-
-  /* * Get a Long request parameter or null.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @return  Long   value or null
-   * @throws Throwable
-   * /
-  protected Long getLongReqPar(HttpServletRequest req,
-                               String name) throws Throwable {
-    String reqpar = getReqPar(req, name);
-
-    if (reqpar == null) {
-      return null;
-    }
-
-    return Long.valueOf(reqpar);
-  }
-
-  /* * Get an long valued request parameter.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @param defaultVal
-   * @return  long  value
-   * @throws Throwable
-   * /
-  protected long getLongReqPar(HttpServletRequest req, String name,
-                             long defaultVal) throws Throwable {
-    String reqpar = req.getParameter(name);
-
-    if (reqpar == null) {
-      return defaultVal;
-    }
-
-    try {
-      return Long.parseLong(reqpar);
-    } catch (Throwable t) {
-      return defaultVal; // XXX exception?
-    }
-  }
-
-  /* * Get a boolean valued request parameter.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @return  Boolean   value or null for absent parameter
-   * @throws Throwable
-   * /
-  protected Boolean getBooleanReqPar(HttpServletRequest req, String name)
-               throws Throwable {
-    String reqpar = req.getParameter(name);
-
-    if (reqpar == null) {
-      return null;
-    }
-
-    try {
-      return Boolean.valueOf(reqpar);
-    } catch (Throwable t) {
-      return null; // XXX exception?
-    }
-  }
-
-  /* * Get a boolean valued request parameter giving a default value.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @param defVal default value for absent parameter
-   * @return  boolean   value
-   * @throws Throwable
-   * /
-  protected boolean getBooleanReqPar(HttpServletRequest req, String name,
-                                     boolean defVal) throws Throwable {
-    boolean val = defVal;
-    Boolean valB = getBooleanReqPar(req, name);
-    if (valB != null) {
-      val = valB.booleanValue();
-    }
-
-    return val;
-  }
-  */
-
   /* ==================================================================
                 Private methods
      ================================================================== */
@@ -1152,17 +895,13 @@ public abstract class UtilAbstractAction extends Action
    * the session.
    *
    * @param request  Needed to locate session
-   * @param messages Resources
    * @return ErrorEmitSvlt
    */
-  private ErrorEmitSvlt getErrorObj(final HttpServletRequest request,
-                                    final MessageResources messages) {
+  private ErrorEmitSvlt getErrorObj(final HttpServletRequest request) {
     return (ErrorEmitSvlt)StrutsUtil.getErrorObj(getId(), this,
                                                  request,
-                                                 messages,
                                                  getErrorObjAttrName(),
                                                  getErrorObjErrProp(),
-                                                 noActionErrors,
                                                  clearMessages());
   }
 
@@ -1171,14 +910,11 @@ public abstract class UtilAbstractAction extends Action
    * the session.
    *
    * @param request  Needed to locate session
-   * @param messages Resources
    * @return MessageEmitSvlt
    */
-  private MessageEmitSvlt getMessageObj(final HttpServletRequest request,
-                                        final MessageResources messages) {
+  private MessageEmitSvlt getMessageObj(final HttpServletRequest request) {
     return (MessageEmitSvlt)StrutsUtil
             .getMessageObj(getId(), this, request,
-                           messages,
                            getMessageObjAttrName(),
                            getErrorObjErrProp(),
                            clearMessages());

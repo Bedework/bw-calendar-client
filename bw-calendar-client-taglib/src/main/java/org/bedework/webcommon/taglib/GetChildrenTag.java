@@ -22,8 +22,6 @@ package org.bedework.webcommon.taglib;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.util.logging.BwLogger;
 
-import org.apache.struts.taglib.TagUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -94,10 +92,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
         cs = new ArrayList<>();
       } else {
         if (!(o instanceof BwCalendar)) {
-          final JspException e =
-                  new JspException("Property is not instance of BwCalendar");
-          TagUtils.getInstance().saveException(pageContext, e);
-          throw e;
+          throw new JspException("Property is not instance of BwCalendar");
         }
 
         final BwCalendar col = (BwCalendar)o;
@@ -132,7 +127,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
       int inScope = PageContext.PAGE_SCOPE;
       try {
         if (getScope() != null) {
-          inScope = TagUtils.getInstance().getScope(getScope());
+          inScope = getScope(getScope());
         }
       } catch (final JspException e) {
         getLog().warn("toScope was invalid name " +

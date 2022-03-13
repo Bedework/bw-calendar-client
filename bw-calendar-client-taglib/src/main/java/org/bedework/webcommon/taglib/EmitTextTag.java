@@ -19,8 +19,6 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.apache.struts.taglib.TagUtils;
-
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 
@@ -59,9 +57,9 @@ public class EmitTextTag extends NameScopePropertyTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the value */
-      String val = getString(false);
+      final String val = getString(false);
 
-      JspWriter out = pageContext.getOut();
+      final JspWriter out = pageContext.getOut();
 
       if (tagName == null) {
         tagName = property;
@@ -94,7 +92,7 @@ public class EmitTextTag extends NameScopePropertyTag {
 
       out.print(tagName);
       out.println('>');
-    } catch(Throwable t) {
+    } catch(final Throwable t) {
       t.printStackTrace();
       throw new JspTagException("Error: " + t.getMessage());
     } finally {
@@ -108,7 +106,7 @@ public class EmitTextTag extends NameScopePropertyTag {
   /**
    * @param val String name
    */
-  public void setTagName(String val) {
+  public void setTagName(final String val) {
     tagName = val;
   }
 
@@ -122,7 +120,7 @@ public class EmitTextTag extends NameScopePropertyTag {
   /**
    * @param val String indent
    */
-  public void setIndent(String val) {
+  public void setIndent(final String val) {
     indent = val;
   }
 
@@ -137,7 +135,7 @@ public class EmitTextTag extends NameScopePropertyTag {
    *
    * @param val boolean
    */
-  public void setFilter(boolean val) {
+  public void setFilter(final boolean val) {
     filter = val;
   }
 
@@ -149,9 +147,9 @@ public class EmitTextTag extends NameScopePropertyTag {
     return filter;
   }
 
-  private String formatted(String val) {
+  private String formatted(final String val) {
     if (filter) {
-      return TagUtils.getInstance().filter(val);
+      return filter(val);
     }
 
     return val;

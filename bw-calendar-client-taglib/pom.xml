@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>bw-calendar-client</artifactId>
+    <groupId>org.bedework.bwwebcl</groupId>
+    <version>4.0.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>bw-calendar-client-taglib</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-appcommon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-webcommon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Third Party -->
+
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+    </dependency>
+  </dependencies>
+</project>

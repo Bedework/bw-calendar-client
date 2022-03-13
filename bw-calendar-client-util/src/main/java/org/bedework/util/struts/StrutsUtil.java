@@ -87,17 +87,16 @@ public class StrutsUtil extends HttpServletUtils {
    * @param pname    String name of the property
    * @param def      boolean default value
    * @return boolean property value or default
-   * @throws Throwable on error
    */
   public static boolean getBoolProperty(final MessageResources msg,
                                         final String pname,
-                                        final boolean def) throws Throwable {
-    String p = msg.getMessage(pname);
+                                        final boolean def) {
+    final String p = msg.getMessage(pname);
     if (p == null) {
       return def;
     }
 
-    return Boolean.valueOf(p);
+    return Boolean.parseBoolean(p);
   }
 
   /** Return an int property value or the default
@@ -106,17 +105,16 @@ public class StrutsUtil extends HttpServletUtils {
    * @param pname    String name of the property
    * @param def      int default value
    * @return int     property value or default
-   * @throws Throwable on error
    */
   public static int getIntProperty(final MessageResources msg,
                                    final String pname,
-                                   final int def) throws Throwable {
-    String p = msg.getMessage(pname);
+                                   final int def) {
+    final String p = msg.getMessage(pname);
     if (p == null) {
       return def;
     }
 
-    return Integer.valueOf(p);
+    return Integer.parseInt(p);
   }
 
   /* ==================================================================
@@ -130,39 +128,35 @@ public class StrutsUtil extends HttpServletUtils {
    * @param id       Identifying string for messages
    * @param caller   Used for log identification
    * @param request  Needed to locate session
-   * @param messages MessageResources object for creating new object
    * @param errorObjAttrName  name of session attribute
    * @param errProp  name of exception message property
-   * @param noActionErrors true/false
    * @param clear list
    * @return MessageEmit null on failure
    */
   public static MessageEmit getErrorObj(final String id,
                                         final Object caller,
                                         final HttpServletRequest request,
-                                        final MessageResources messages,
                                         final String errorObjAttrName,
                                         final String errProp,
-                                        final boolean noActionErrors,
                                         final boolean clear) {
     if (errorObjAttrName == null) {
       // don't set
       return null;
     }
 
-    HttpSession sess = request.getSession(false);
+    final HttpSession sess = request.getSession(false);
 
     if (sess == null) {
       logger.error("No session!!!!!!!");
       return null;
     }
 
-    Object o = sess.getAttribute(errorObjAttrName);
+    final Object o = sess.getAttribute(errorObjAttrName);
     MessageEmit err = null;
 
     // Ensure it's initialised correctly
-    if ((o != null) && (o instanceof ErrorEmitSvlt)) {
-      if (noActionErrors || (((ErrorEmitSvlt)o).getErrors() != null)) {
+    if (o instanceof ErrorEmitSvlt) {
+      if (((ErrorEmitSvlt)o).getErrors() != null) {
         err = (MessageEmit)o;
       }
     }
@@ -171,12 +165,11 @@ public class StrutsUtil extends HttpServletUtils {
       err = new ErrorEmitSvlt();
     }
 
-    ActionErrors ae = null;
-    if (!noActionErrors) {
-      ae = new ActionErrors();
-    }
-
-    ((ErrorEmitSvlt)err).reinit(id, caller, messages, ae, errProp, clear);
+    ((ErrorEmitSvlt)err).reinit(id,
+                                caller,
+                                new ActionErrors(),
+                                errProp,
+                                clear);
 
     // Implant in session
 
@@ -198,15 +191,15 @@ public class StrutsUtil extends HttpServletUtils {
       return null;
     }
 
-    HttpSession sess = request.getSession(false);
+    final HttpSession sess = request.getSession(false);
 
     if (sess == null) {
       logger.error("No session!!!!!!!");
       return null;
     }
 
-    Object o = sess.getAttribute(errorObjAttrName);
-    if ((o != null) && (o instanceof MessageEmit)) {
+    final Object o = sess.getAttribute(errorObjAttrName);
+    if (o instanceof MessageEmit) {
       return (MessageEmit)o;
     }
 
@@ -224,7 +217,6 @@ public class StrutsUtil extends HttpServletUtils {
    * @param id                Identifying string for messages
    * @param caller            Used for log identification
    * @param request           Needed to locate session
-   * @param messages           MessageResources object for creating new object
    * @param messageObjAttrName  name of session attribute
    * @param errProp           name of exception message property
    * @param clear             the list
@@ -233,7 +225,6 @@ public class StrutsUtil extends HttpServletUtils {
   public static MessageEmit getMessageObj(final String id,
                                           final Object caller,
                                           final HttpServletRequest request,
-                                          final MessageResources messages,
                                           final String messageObjAttrName,
                                           final String errProp,
                                           final boolean clear) {
@@ -242,18 +233,18 @@ public class StrutsUtil extends HttpServletUtils {
       return null;
     }
 
-    HttpSession sess = request.getSession(false);
+    final HttpSession sess = request.getSession(false);
 
     if (sess == null) {
       logger.error("No session!!!!!!!");
       return null;
     }
 
-    Object o = sess.getAttribute(messageObjAttrName);
+    final Object o = sess.getAttribute(messageObjAttrName);
     MessageEmit msg = null;
 
     // Ensure it's initialised correctly
-    if ((o != null) && (o instanceof MessageEmitSvlt)) {
+    if (o instanceof MessageEmitSvlt) {
       if (((MessageEmitSvlt)o).getMessages() != null) {
         msg = (MessageEmit)o;
       }
@@ -263,7 +254,8 @@ public class StrutsUtil extends HttpServletUtils {
       msg = new MessageEmitSvlt();
     }
 
-    ((MessageEmitSvlt)msg).reinit(id, caller, messages, new ActionMessages(),
+    ((MessageEmitSvlt)msg).reinit(id, caller,
+                                  new ActionMessages(),
                                   errProp, clear);
 
     // Implant in session
@@ -286,15 +278,15 @@ public class StrutsUtil extends HttpServletUtils {
       return null;
     }
 
-    HttpSession sess = request.getSession(false);
+    final HttpSession sess = request.getSession(false);
 
     if (sess == null) {
       logger.error("No session!!!!!!!");
       return null;
     }
 
-    Object o = sess.getAttribute(messageObjAttrName);
-    if ((o != null) && (o instanceof MessageEmit)) {
+    final Object o = sess.getAttribute(messageObjAttrName);
+    if (o instanceof MessageEmit) {
       return (MessageEmit)o;
     }
 

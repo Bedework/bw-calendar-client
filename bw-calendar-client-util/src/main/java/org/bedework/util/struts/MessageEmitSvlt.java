@@ -20,7 +20,6 @@ package org.bedework.util.struts;
 
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.apache.struts.util.MessageResources;
 
 /** This class allows informational message generation in the struts world.
  *
@@ -42,18 +41,16 @@ public class MessageEmitSvlt extends ErrorEmitSvlt {
    *
    * @param id       An identifying name
    * @param caller   Used for log identification
-   * @param messages Resources
    * @param msgs     Error message will be appended on failure.
    * @param exceptionPname Property name for exceptions
    * @param clear clear list if true
    */
   public void reinit(final String id,
                      final Object caller,
-                     final MessageResources messages,
                      final ActionMessages msgs,
                      final String exceptionPname,
                      final boolean clear) {
-    super.reinit(id, caller, messages, null, exceptionPname, clear);
+    super.reinit(id, caller, null, exceptionPname, clear);
     this.msgs = msgs;
   }
 
@@ -63,15 +60,15 @@ public class MessageEmitSvlt extends ErrorEmitSvlt {
       debugMsg(pname, null, null);
     }
 
-    msgList.add(new Msg(messages, pname));
+    msgList.add(new Msg(pname));
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       msgs.add(id, new ActionMessage(pname));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ": exception adding Action message", t);
     }
   }
@@ -82,15 +79,15 @@ public class MessageEmitSvlt extends ErrorEmitSvlt {
       debugMsg(pname, "object", String.valueOf(o));
     }
 
-    msgList.add(new Msg(messages, pname, o));
+    msgList.add(new Msg(pname, o));
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       msgs.add(id, new ActionMessage(pname, o));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ": exception adding Action message", t);
     }
   }
@@ -99,19 +96,19 @@ public class MessageEmitSvlt extends ErrorEmitSvlt {
   public void emit(final String pname, final Object o1, final Object o2){
     if (debug()) {
       debugMsg(pname, "2objects",
-               String.valueOf(o1) + "; " +
-               String.valueOf(o2));
+               o1 + "; " +
+                       o2);
     }
 
-    msgList.add(new Msg(messages, pname, o1, o2));
+    msgList.add(new Msg(pname, o1, o2));
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       msgs.add(id, new ActionMessage(pname, o1, o2));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ": exception adding Action message", t);
     }
   }
@@ -120,20 +117,20 @@ public class MessageEmitSvlt extends ErrorEmitSvlt {
   public void emit(final String pname, final Object o1, final Object o2, final Object o3){
     if (debug()) {
       debugMsg(pname, "2objects",
-               String.valueOf(o1) + "; " +
-               String.valueOf(o2) + "; " +
-               String.valueOf(o3));
+               o1 + "; " +
+                       o2 + "; " +
+                       o3);
     }
 
-    msgList.add(new Msg(messages, pname, o1, o2, o3));
+    msgList.add(new Msg(pname, o1, o2, o3));
 
-    if ((messages == null) || !haveOutputObject()) {
+    if (!haveOutputObject()) {
       return;
     }
 
     try {
       msgs.add(id, new ActionMessage(pname, o1, o2, o3));
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(className() + ": exception adding Action message", t);
     }
   }

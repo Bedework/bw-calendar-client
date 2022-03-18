@@ -68,7 +68,7 @@ public class FetchEventAction extends RWActionBase {
       return forwardNoAccess;
     }
 
-    return doAction(request, cl, form);
+    return doTheAction(request, cl, form);
   }
 
   protected int doTheAction(final BwRequest request,

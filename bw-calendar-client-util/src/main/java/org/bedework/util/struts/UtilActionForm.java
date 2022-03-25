@@ -20,8 +20,10 @@ package org.bedework.util.struts;
 
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.MessageEmit;
+import org.bedework.util.webaction.TimeDateFormatter;
 
 import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionMapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +31,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * This class provides some convenience methods for use by ActionForm objects.
@@ -546,6 +550,16 @@ public class UtilActionForm extends ActionForm {
    * @param ve
    */
   public void processError(MessageEmit err, ValError ve) {
+  }
+
+  @Override
+  public void reset(final ActionMapping mapping,
+                    final HttpServletRequest request) {
+    reset(request);
+  }
+
+  public void reset(final HttpServletRequest request) {
+    // Default implementation does nothing
   }
 
   /* Current time and date formatting

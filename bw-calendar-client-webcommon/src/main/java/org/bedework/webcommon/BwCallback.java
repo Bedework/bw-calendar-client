@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 
 import java.io.Serializable;
 

@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.util.struts;
+package org.bedework.util.webaction;
 
 import java.io.Serializable;
 import java.text.DateFormatSymbols;

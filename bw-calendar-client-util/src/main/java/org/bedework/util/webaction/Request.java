@@ -16,10 +16,11 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.util.struts;
+package org.bedework.util.webaction;
 
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.servlet.ReqUtil;
+import org.bedework.util.struts.UtilActionForm;
 
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionMapping;

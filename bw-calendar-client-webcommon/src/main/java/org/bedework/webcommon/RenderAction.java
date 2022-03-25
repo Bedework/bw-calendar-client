@@ -19,7 +19,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.util.servlet.filters.PresentationState;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 import org.bedework.util.struts.UtilActionForm;
 
 /** This is a no-op action

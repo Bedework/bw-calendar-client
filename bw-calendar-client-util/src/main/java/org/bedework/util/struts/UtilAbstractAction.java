@@ -24,13 +24,14 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.servlet.filters.PresentationState;
+import org.bedework.util.webaction.ErrorEmitSvlt;
+import org.bedework.util.webaction.MessageEmitSvlt;
+import org.bedework.util.webaction.Request;
 
 import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessages;
 import org.apache.struts.config.ActionConfig;
 
 import java.io.ByteArrayOutputStream;
@@ -196,12 +197,12 @@ public abstract class UtilAbstractAction extends Action
         form.setInitialised(true);
       }
 
-      form.setBrowserType(StrutsUtil.getBrowserType(request));
+      form.setBrowserType(HttpServletUtils.getBrowserType(request));
       form.assignCurrentUser(HttpServletUtils.remoteUser(request));
-      form.setUrl(StrutsUtil.getUrl(request));
-      form.setSchemeHostPort(StrutsUtil.getURLshp(request));
-      form.setContext(StrutsUtil.getContext(request));
-      form.setUrlPrefix(StrutsUtil.getURLPrefix(request));
+      form.setUrl(HttpServletUtils.getUrl(request));
+      form.setSchemeHostPort(HttpServletUtils.getURLshp(request));
+      form.setContext(HttpServletUtils.getContext(request));
+      form.setUrlPrefix(HttpServletUtils.getURLPrefix(request));
       form.setErr(err);
       form.setMsg(msg);
       form.assignSessionId(getSessionId(request));
@@ -271,9 +272,6 @@ public abstract class UtilAbstractAction extends Action
       if (err == null) {
         warn("No errors object");
       } else if (err.messagesEmitted()) {
-        ActionErrors aes = err.getErrors();
-        saveErrors(request, aes);
-
         if (debug()) {
           debug(err.getMsgList().size() + " errors emitted");
         }
@@ -284,11 +282,8 @@ public abstract class UtilAbstractAction extends Action
       if (msg == null) {
         warn("No messages object");
       } else if (msg.messagesEmitted()) {
-        ActionMessages ams = msg.getMessages();
-        saveMessages(request, ams);
-
         if (debug()) {
-          debug(ams.size() + " messages emitted");
+          debug(msg.getMsgList().size() + " messages emitted");
         }
       } else if (debug()) {
         debug("No messages emitted");
@@ -898,11 +893,40 @@ public abstract class UtilAbstractAction extends Action
    * @return ErrorEmitSvlt
    */
   private ErrorEmitSvlt getErrorObj(final HttpServletRequest request) {
-    return (ErrorEmitSvlt)StrutsUtil.getErrorObj(getId(), this,
-                                                 request,
-                                                 getErrorObjAttrName(),
-                                                 getErrorObjErrProp(),
-                                                 clearMessages());
+    final String errorObjAttrName = getErrorObjAttrName();
+    if (errorObjAttrName == null) {
+      // don't set
+      return null;
+    }
+
+    final HttpSession sess = request.getSession(false);
+
+    if (sess == null) {
+      logger.error("No session!!!!!!!");
+      return null;
+    }
+
+    final Object o = sess.getAttribute(errorObjAttrName);
+    ErrorEmitSvlt err = null;
+
+    // Ensure it's initialised correctly
+    if (o instanceof ErrorEmitSvlt) {
+      err = (ErrorEmitSvlt)o;
+    }
+
+    if (err == null) {
+      err = new ErrorEmitSvlt();
+    }
+
+    err.reinit(getId(),
+               getErrorObjErrProp(),
+               clearMessages());
+
+    // Implant in session
+
+    sess.setAttribute(errorObjAttrName, err);
+
+    return err;
   }
 
   /** Get the message object. If we haven't already got one and
@@ -913,11 +937,40 @@ public abstract class UtilAbstractAction extends Action
    * @return MessageEmitSvlt
    */
   private MessageEmitSvlt getMessageObj(final HttpServletRequest request) {
-    return (MessageEmitSvlt)StrutsUtil
-            .getMessageObj(getId(), this, request,
-                           getMessageObjAttrName(),
-                           getErrorObjErrProp(),
-                           clearMessages());
+    final String messageObjAttrName = getMessageObjAttrName();
+    if (messageObjAttrName == null) {
+      // don't set
+      return null;
+    }
+
+    final HttpSession sess = request.getSession(false);
+
+    if (sess == null) {
+      logger.error("No session!!!!!!!");
+      return null;
+    }
+
+    final Object o = sess.getAttribute(messageObjAttrName);
+    MessageEmitSvlt msg = null;
+
+    // Ensure it's initialised correctly
+    if (o instanceof MessageEmitSvlt) {
+      msg = (MessageEmitSvlt)o;
+    }
+
+    if (msg == null) {
+      msg = new MessageEmitSvlt();
+    }
+
+    msg.reinit(getId(),
+               getErrorObjErrProp(),
+               clearMessages());
+
+    // Implant in session
+
+    sess.setAttribute(messageObjAttrName, msg);
+
+    return msg;
   }
 
   /**
@@ -925,9 +978,9 @@ public abstract class UtilAbstractAction extends Action
    */
   public void dumpRequest(final HttpServletRequest req) {
     try {
-      Enumeration names = req.getParameterNames();
+      final Enumeration<String> names = req.getParameterNames();
 
-      String title = "Request parameters";
+      final String title = "Request parameters";
 
       debug(title + " - global info and uris");
       debug("getRequestURI = " + req.getRequestURI());
@@ -944,9 +997,9 @@ public abstract class UtilAbstractAction extends Action
       debug(title);
 
       while (names.hasMoreElements()) {
-        String key = (String)names.nextElement();
-        String[] vals = req.getParameterValues(key);
-        for (String val: vals) {
+        final String key = names.nextElement();
+        final String[] vals = req.getParameterValues(key);
+        for (final String val: vals) {
           debug("  " + key + " = \"" + val + "\"");
         }
       }
@@ -958,7 +1011,7 @@ public abstract class UtilAbstractAction extends Action
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

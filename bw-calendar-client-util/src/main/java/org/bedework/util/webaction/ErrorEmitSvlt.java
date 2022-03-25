@@ -16,13 +16,10 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.util.struts;
+package org.bedework.util.webaction;
 
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.servlet.MessageEmit;
-
-import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,13 +31,10 @@ import java.util.ArrayList;
  */
 public class ErrorEmitSvlt implements MessageEmit {
   transient protected String id;
-  transient protected Object caller;
-  transient protected ActionErrors errors;
   transient protected String exceptionPname;
 
   /** We save the message property and the parameters in the following
-   * class which we can return as an alternative to the struts message
-   * generation.
+   * class used for message generation.
    */
   @SuppressWarnings("unused")
   public static class Msg implements Serializable {
@@ -131,19 +125,13 @@ public class ErrorEmitSvlt implements MessageEmit {
    *  application
    *
    * @param id       An identifying name
-   * @param caller   Used for log identification
-   * @param errors   Error message will be appended on failure.
    * @param exceptionPname Property name for exceptions
    * @param clear true to clear list
    */
   public void reinit(final String id,
-                     final Object caller,
-                     final ActionErrors errors,
                      final String exceptionPname,
                      final boolean clear) {
     this.id = id;
-    this.caller = caller;
-    this.errors = errors;
     this.exceptionPname = exceptionPname;
 
     if (clear) {
@@ -165,16 +153,6 @@ public class ErrorEmitSvlt implements MessageEmit {
     }
 
     msgList.add(new Msg(pname));
-
-    if (!haveOutputObject()) {
-      return;
-    }
-
-    try {
-      errors.add(id, new ActionMessage(pname));
-    } catch (final Throwable t) {
-      error(className() + ": exception adding Action message", t);
-    }
   }
 
   @Override
@@ -222,16 +200,6 @@ public class ErrorEmitSvlt implements MessageEmit {
     } else {
       msgList.add(new Msg(pname, o));
     }
-
-    if (!haveOutputObject()) {
-      return;
-    }
-
-    try {
-      errors.add(id, new ActionMessage(pname, o));
-    } catch (final Throwable t) {
-      error(className() + ": exception adding Action error", t);
-    }
   }
 
   @Override
@@ -243,16 +211,6 @@ public class ErrorEmitSvlt implements MessageEmit {
     }
 
     msgList.add(new Msg(pname, o1, o2));
-
-    if (!haveOutputObject()) {
-      return;
-    }
-
-    try {
-      errors.add(id, new ActionMessage(pname, o1, o2));
-    } catch (final Throwable t) {
-      error(className() + ": exception adding Action error", t);
-    }
   }
 
   @Override
@@ -265,16 +223,6 @@ public class ErrorEmitSvlt implements MessageEmit {
     }
 
     msgList.add(new Msg(pname, o1, o2, o3));
-
-    if (!haveOutputObject()) {
-      return;
-    }
-
-    try {
-      errors.add(id, new ActionMessage(pname, o1, o2, o3));
-    } catch (final Throwable t) {
-      error(className() + ":exception adding Action error" + pname, t);
-    }
   }
 
   /** Indicate no messages emitted. Null in this implementation.
@@ -287,17 +235,6 @@ public class ErrorEmitSvlt implements MessageEmit {
   @Override
   public boolean messagesEmitted() {
     return !msgList.isEmpty();
-  }
-
-  /**
-   * @return errors
-   */
-  public ActionErrors getErrors() {
-    return errors;
-  }
-
-  protected boolean haveOutputObject() {
-    return errors != null;
   }
 
   protected String className() {

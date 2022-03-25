@@ -25,7 +25,7 @@ import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.responses.CollectionsResponse;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 
 import java.io.Serializable;
 import java.util.Collection;

@@ -20,7 +20,7 @@ package org.bedework.webcommon;
 
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.servlet.HttpAppLogger;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -29,7 +29,7 @@ import org.apache.struts.util.RequestUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Abstract class an instance of which is used to signal open and close
+/** Class an instance of which is used to signal open and close
  * events to the web application.
  *
  * @author Mike Douglass douglm@rpi.edu

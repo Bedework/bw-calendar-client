@@ -44,8 +44,6 @@ import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 
-import org.apache.struts.action.ActionMapping;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1106,15 +1104,8 @@ public class BwActionFormBase extends UtilActionForm
     return  sess;
   }
 
-  /**
-   * Reset properties to their default values.
-   *
-   * @param mapping The mapping used to select this instance
-   * @param request The servlet request we are processing
-   */
   @Override
-  public void reset(final ActionMapping mapping,
-                    final HttpServletRequest request) {
+  public void reset(final HttpServletRequest request) {
     today = null;
 
     //key.reset();

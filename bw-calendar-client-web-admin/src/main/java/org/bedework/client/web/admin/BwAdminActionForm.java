@@ -14,8 +14,6 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.webcommon.BwModule;
 
-import org.apache.struts.action.ActionMapping;
-
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -554,16 +552,9 @@ public class BwAdminActionForm extends BwRWActionForm {
   /* ==============================================================
    * ============================================================== */
 
-  /**
-   * Reset properties to their default values.
-   *
-   * @param mapping The mapping used to select this instance
-   * @param request The servlet request we are processing
-   */
   @Override
-  public void reset(final ActionMapping mapping,
-                    final HttpServletRequest request) {
-    super.reset(mapping, request);
+  public void reset(final HttpServletRequest request) {
+    super.reset(request);
 
     editAuthUserType = 0;
   }

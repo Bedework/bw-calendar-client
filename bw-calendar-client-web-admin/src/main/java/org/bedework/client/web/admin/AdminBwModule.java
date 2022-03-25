@@ -15,7 +15,7 @@ import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminClientImpl;
 import org.bedework.client.admin.AdminConfig;
 import org.bedework.client.web.rw.RwBwModule;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwCallback;
 import org.bedework.webcommon.BwModuleState;

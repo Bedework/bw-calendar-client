@@ -52,7 +52,7 @@ import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.response.Response;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 
 import java.util.ArrayList;
 import java.util.Collection;

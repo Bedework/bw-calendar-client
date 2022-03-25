@@ -25,7 +25,7 @@ import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.util.logging.BwLogger;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.ForwardDefs;
 

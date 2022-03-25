@@ -36,7 +36,7 @@ import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.Util;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 import org.bedework.util.timezones.Timezones;
 
 import org.apache.struts.action.Action;

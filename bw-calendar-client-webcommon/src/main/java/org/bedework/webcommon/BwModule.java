@@ -29,7 +29,7 @@ import org.bedework.client.rw.RWClientImpl;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 import org.bedework.util.struts.UtilActionForm;
 
 import java.io.Serializable;

@@ -52,14 +52,12 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
 import org.bedework.util.servlet.filters.ConfiguredXSLTFilter.XSLTConfig;
 import org.bedework.util.servlet.filters.PresentationState;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 import org.bedework.util.struts.UtilAbstractAction;
 import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.config.ClientConfigurations;
-
-import org.apache.struts.util.MessageResources;
 
 import java.util.Calendar;
 import java.util.Collection;

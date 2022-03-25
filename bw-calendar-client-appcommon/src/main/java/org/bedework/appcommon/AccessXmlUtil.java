@@ -26,7 +26,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.xml.XmlEmit;
 
-import org.apache.struts.taglib.TagUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -43,7 +43,6 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
    */
   public static class Cb implements AccessXmlCb, Serializable {
     private final Client cl;
-    private final TagUtils tagUtil = TagUtils.getInstance();
 
     QName errorTag;
     String errorMsg;
@@ -53,7 +52,7 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
     }
 
     public String makeHref(final String id, final int whoType) {
-      return tagUtil.filter(cl.makePrincipalUri(id, whoType));
+      return StringEscapeUtils.escapeHtml4(cl.makePrincipalUri(id, whoType));
     }
 
     public AccessPrincipal getPrincipal() {

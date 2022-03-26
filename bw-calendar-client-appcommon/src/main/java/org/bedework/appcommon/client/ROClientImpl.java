@@ -68,7 +68,7 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.util.misc.response.Response;
-import org.bedework.util.struts.Request;
+import org.bedework.util.webaction.Request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -20,6 +20,7 @@
 package org.bedework.client.web.admin.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
+import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.exc.ValidationError;
@@ -80,6 +81,7 @@ public class AddResourceAction extends AdminActionBase {
     if (rclass.equals(CalSuiteResource.resourceClassGlobal) ||
             rclass.equals(CalSuiteResource.resourceClassAdmin)) {
       if (!form.getCurUserSuperUser()) {
+        request.error(ClientError.noAccess);
         return forwardNoAccess;
       }
     }
@@ -87,6 +89,7 @@ public class AddResourceAction extends AdminActionBase {
     BwResource r = cl.getCSResource(form.getCurrentCalSuite(),
                                     name, rclass);
     if (r != null) {
+      request.error(ClientError.duplicateResource);
       return forwardDuplicate;
     }
 

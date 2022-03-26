@@ -87,4 +87,9 @@ public class RenderResourcesAction extends AdminActionBase {
 
     return resources;
   }
+
+  @Override
+  public boolean clearMessages() {
+    return false;
+  }
 }

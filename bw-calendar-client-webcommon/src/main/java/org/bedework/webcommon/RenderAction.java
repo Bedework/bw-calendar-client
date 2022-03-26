@@ -54,11 +54,7 @@ public class RenderAction extends BwAbstractAction {
     return contentName;
   }
 
-  /** In a portlet environment a render action should override this to return
-   * false to preserve messages.
-   *
-   * @return boolean   true to clear messages
-   */
+  @Override
   public boolean clearMessages() {
     return false;
   }

@@ -206,6 +206,8 @@ public interface ClientError extends Serializable {
   /** Not found: there is no resource identified by the name . */
   public static final String unknownResource = prefix + "unknown.resource";
 
+  public static final String duplicateResource = prefix + "duplicateresource";
+
   /** Error: view not added. */
   public static final String viewNotAdded = prefix + "viewnotadded";
 

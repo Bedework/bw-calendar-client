@@ -33,15 +33,10 @@ import java.util.TreeSet;
 
 /** A wrapper around date/time objects that is used to generate form elements
 
-   @author   Mike Douglass douglm   rpi.edu
+   @author   Mike Douglass douglm
    @author   Greg Barnes
  */
-/* Note:  because this is commonly (exclusively) used as a Struts bean,
-   throwing exceptions from the setter methods leads to errors that
-   are hard to catch (they are called by BeanUtils.populate, which
-   is executed even before Struts lets you validate).
-
-   Presumably, bad values (e.g., setYear("blxk")) are mostly due to
+/* Note:  Presumably, bad values (e.g., setYear("blxk")) are mostly due to
    malicious or erroneous form input, so we will turn them into default
    values instead.
 

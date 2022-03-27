@@ -22,29 +22,30 @@ import org.bedework.util.logging.BwLogger;
 import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.webaction.Request;
 
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.util.RequestUtils;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /** Class an instance of which is used to signal open and close
  * events to the web application.
  *
- * @author Mike Douglass douglm@rpi.edu
+ * @author Mike Douglass douglm
  */
 public class BwCallbackImpl extends BwCallback implements
         HttpAppLogger {
   final BwActionFormBase form;
-  ActionForward errorForward;
+  final String errorForward;
 
-  BwCallbackImpl(final BwActionFormBase form,
-                 final ActionMapping mapping) {
+  BwCallbackImpl(final BwActionFormBase form) {
     this.form = form;
-    errorForward = mapping.findForward("error");
-    if (errorForward == null) {
-      throw new RuntimeException("Forward \"error\" must be defined in struts-comfig");
+    final var ef = form.getErrorForward();
+    if (ef == null) {
+      throw new RuntimeException("\"errorForward\" must be defined for servlet");
+    }
+
+    if (!ef.startsWith("/")) {
+      errorForward = "/" + ef;
+    } else {
+      errorForward = ef;
     }
   }
 
@@ -106,26 +107,12 @@ public class BwCallbackImpl extends BwCallback implements
                     final Throwable t) throws Throwable {
     form.getErr().emit(t);
 
-      /* Redirect to an error action
+    /* Redirect to an error action
        */
 
-    final String forwardPath = errorForward.getPath();
-    String uri;
-
-    // paths not starting with / should be passed through without any processing
-    // (ie. they're absolute)
-    if (forwardPath.startsWith("/")) {
-      uri = RequestUtils.forwardURL(hreq, errorForward, null);    // get module relative uri
-    } else {
-      uri = forwardPath;
-    }
-
-    // only prepend context path for relative uri
-    if (uri.startsWith("/")) {
-      uri = hreq.getContextPath() + uri;
-    }
     try {
-      hresp.sendRedirect(hresp.encodeRedirectURL(uri));
+      hresp.sendRedirect(hresp.encodeRedirectURL(
+              hreq.getContextPath() + errorForward));
     } catch (final Throwable ignored) {
       // Presumably illegal state
     }
@@ -135,7 +122,7 @@ public class BwCallbackImpl extends BwCallback implements
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

@@ -79,7 +79,7 @@ public abstract class BwCallback implements Serializable {
     if (cb == null) {
       /* create a call back object for the filter */
 
-      cb = new BwCallbackImpl(form, request.getMapping());
+      cb = new BwCallbackImpl(form);
       hsess.setAttribute(BwCallback.cbAttrName, cb);
     }
 

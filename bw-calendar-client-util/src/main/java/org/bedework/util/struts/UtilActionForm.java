@@ -109,6 +109,11 @@ public class UtilActionForm extends ActionForm {
   protected String sessionId;
 
   /**
+   * provided by servlet parameter - minus context
+   */
+  private String errorForward;
+
+  /**
    * Confirmation id - require this on forms
    */
   protected String confirmationId;
@@ -438,6 +443,14 @@ public class UtilActionForm extends ActionForm {
    */
   public String getSessionId() {
     return sessionId;
+  }
+
+  public void assignErrorForward(final String val) {
+    errorForward = val;
+  }
+
+  public String getErrorForward() {
+    return errorForward;
   }
 
   /** This should not be setConfirmationId as that exposes it to the incoming

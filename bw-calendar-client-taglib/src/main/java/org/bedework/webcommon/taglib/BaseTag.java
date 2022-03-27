@@ -191,7 +191,7 @@ public class BaseTag extends TagSupport {
 
   /** Return the int scopeindex given a scope name
    *
-   * @param scopeName   String - same as struts values
+   * @param scopeName   String - null, "page", "request", "session", "application"
    * @return int        value defined in PageContext
    * @throws JspTagException for invalid scope
    */

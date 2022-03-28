@@ -39,9 +39,9 @@ public class RenderAction extends BwAbstractAction {
   }
 
   @Override
-  public String getContentName(final Request req) throws Throwable {
-    UtilActionForm form = req.getForm();
-    PresentationState ps = getPresentationState(req);
+  public String getContentName(final Request req) {
+    final UtilActionForm form = req.getForm();
+    final PresentationState ps = getPresentationState(req);
     String contentName = ps.getContentName();
 
     if (contentName != null) {

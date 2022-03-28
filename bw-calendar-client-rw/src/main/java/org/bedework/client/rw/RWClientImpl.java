@@ -64,6 +64,7 @@ import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.util.misc.response.Response;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.util.Collection;
@@ -603,7 +604,7 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public void setResourceValue(final BwResource val,
-                               final String content) throws CalFacadeException {
+                               final String content) {
     final byte[] bytes;
     bytes = content.getBytes(StandardCharsets.UTF_8);
 
@@ -612,7 +613,7 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public void setResourceValue(final BwResource val,
-                               final byte[] content) throws CalFacadeException {
+                               final byte[] content) {
     BwResourceContent resContent = val.getContent();
 
     if (resContent == null) {
@@ -623,6 +624,21 @@ public class RWClientImpl extends ROClientImpl
     final Blob blob = svci.getBlob(content);
     resContent.setValue(blob);
     val.setContentLength(content.length);
+  }
+
+  public void setResourceValue(final BwResource val,
+                               final InputStream content,
+                               final long length) {
+    BwResourceContent resContent = val.getContent();
+
+    if (resContent == null) {
+      resContent = new BwResourceContent();
+      val.setContent(resContent);
+    }
+
+    final Blob blob = svci.getBlob(content, length);
+    resContent.setValue(blob);
+    val.setContentLength(length);
   }
 
   /* ------------------------------------------------------------

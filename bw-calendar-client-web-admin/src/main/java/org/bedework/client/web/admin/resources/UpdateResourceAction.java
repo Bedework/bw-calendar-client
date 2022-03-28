@@ -26,9 +26,8 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.BwAdminActionForm;
+import org.bedework.client.web.rw.UploadFileInfo;
 import org.bedework.webcommon.BwRequest;
-
-import org.apache.struts.upload.FormFile;
 
 /** Update a resource - add/remove subscription.
  * ADMIN ONLY
@@ -88,12 +87,13 @@ public class UpdateResourceAction extends AdminActionBase {
 
     // Update the resource content
     final String content = request.getReqPar("content");
-    final FormFile formFile = form.getUploadFile();
+    final UploadFileInfo formFile = form.getUploadFileInfo();
 
     if (content != null) {
       cl.setResourceValue(r, content);
     } else if (formFile != null) {
-      cl.setResourceValue(r, formFile.getFileData());
+      cl.setResourceValue(r, formFile.getContent(),
+                          formFile.getLength());
     } else {
       form.getErr().emit(ClientError.unknownResource, name);
       return forwardNotFound;

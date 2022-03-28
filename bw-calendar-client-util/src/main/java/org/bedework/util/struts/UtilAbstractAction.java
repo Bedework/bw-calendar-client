@@ -36,10 +36,7 @@ import org.apache.struts.config.ActionConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -167,8 +164,12 @@ public abstract class UtilAbstractAction extends Action
     try {
       //isPortlet = isPortletRequest(request);
 
-      err = getErrorObj(request);
-      msg = getMessageObj(request);
+      err = ErrorEmitSvlt.getErrorObj(request, getId(),
+                                      getErrorObjErrProp(),
+                                      clearMessages());
+      msg = MessageEmitSvlt.getMessageObj(request, getId(),
+                                          getErrorObjErrProp(),
+                                          clearMessages());
 
       /* Log the request - virtual domains can make it difficult to
        *  distinguish applications.
@@ -211,7 +212,7 @@ public abstract class UtilAbstractAction extends Action
       checkNocache(request, response, form);
 
       final Request req = new Request(request, response, form,
-                                      this, mapping);
+                                      mapping);
 
       /* Set up presentation values from request
        */
@@ -251,10 +252,10 @@ public abstract class UtilAbstractAction extends Action
         //if (!isPortlet) {
         //  response.setContentType(defaultContentType);
         //}
-        forward = checkVarReq(req, form);
+        forward = req.checkVarReq();
 
         if (forward == null) {
-          forward = checkForwardto(request);
+          forward = req.checkForwardto();
         }
 
         if (forward == null) {
@@ -364,10 +365,10 @@ public abstract class UtilAbstractAction extends Action
    * @return String name of content
    * @throws Throwable
    */
-  public String getContentName(final Request req) throws Throwable {
-    UtilActionForm form = req.getForm();
-    PresentationState ps = getPresentationState(req);
-    String contentName = ps.getContentName();
+  public String getContentName(final Request req) {
+    final UtilActionForm form = req.getForm();
+    final PresentationState ps = getPresentationState(req);
+    final String contentName = ps.getContentName();
 
     form.setContentName(contentName);
 
@@ -387,22 +388,6 @@ public abstract class UtilAbstractAction extends Action
    */
   public boolean clearMessages() {
     return true;
-  }
-
-  /** Override to return the name of the error object session attribute.
-   *
-   * @return String   request attribute name. Null to suppress.
-   */
-  public String getErrorObjAttrName() {
-    return "edu.rpi.sss.util.errorobj";
-  }
-
-  /** Override to return the name of the messages object session attribute.
-   *
-   * @return String   request attribute name. Null to suppress.
-   */
-  public String getMessageObjAttrName() {
-    return "edu.rpi.sss.util.messageobj";
   }
 
   /** Override to return a different name for the error exception property.
@@ -495,7 +480,7 @@ public abstract class UtilAbstractAction extends Action
 
   /* We handle our own nocache headers instead of letting struts do it.
    * Struts does it on every response but, if we are running with nocache,
-   * we need to be able to disable it for the occassional response.
+   * we need to be able to disable it for the occasional response.
    *
    * <p>This gets around an IE problem when attempting to deliver files.
    * IE requires caching on or it is unable to locate the file it is
@@ -512,7 +497,7 @@ public abstract class UtilAbstractAction extends Action
       form.setNocache(reqpar.equals("yes"));
     }
 
-    /** Look for a one-shot setting
+    /* Look for a one-shot setting
      */
 
     reqpar = request.getParameter("nocache");
@@ -521,7 +506,7 @@ public abstract class UtilAbstractAction extends Action
       return;
     }
 
-    /** If we got a request parameter it overrides the default
+    /* If we got a request parameter it overrides the default
      */
     boolean nocache = form.getNocache();
 
@@ -582,194 +567,14 @@ public abstract class UtilAbstractAction extends Action
   }
 
   /* ====================================================================
-   *                       Response methods
-   * ==================================================================== */
-
-  /* ====================================================================
-   *                  Application variable methods
-   * ==================================================================== */
-
-  /**
-   * @param request
-   * @return app vars
-   */
-  @SuppressWarnings("unchecked")
-  public HashMap<String, String> getAppVars(final Request request) {
-    Object o = request.getSessionAttr("edu.rpi.sss.util.UtilAbstractAction.appVars");
-    if ((o == null) || (!(o instanceof HashMap))) {
-      o = new HashMap<String, String>();
-      request.setSessionAttr("edu.rpi.sss.util.UtilAbstractAction.appVars", o);
-    }
-
-    return (HashMap<String, String>)o;
-  }
-
-  private static final int maxAppVars = 50; // Stop screwing around.
-
-  /** Check for action setting a variable
-   * We expect the request parameter to be of the form<br/>
-   * setappvar=name(value) or <br/>
-   * setappvar=name{value}<p>.
-   *  Currently we're not escaping characters so if you want both right
-   *  terminators in the value you're out of luck - actually we cheat a bit
-   *  We just look at the last char and then look for that from the start.
-   *
-   * @param request  Needed to locate session
-   * @param form     Action form
-   * @return String  forward to here. null if no error found.
-   * @throws Throwable
-   */
-  private String checkVarReq(final Request request,
-                             final UtilActionForm form) throws Throwable {
-    Collection<String> avs = request.getReqPars("setappvar");
-    if (avs == null) {
-      return null;
-    }
-
-    HashMap<String, String> appVars = getAppVars(request);
-
-    for (String reqpar: avs) {
-      int start;
-
-      if (reqpar.endsWith("}")) {
-        start = reqpar.indexOf('{');
-      } else if (reqpar.endsWith(")")) {
-        start = reqpar.indexOf('(');
-      } else {
-        return "badRequest";
-      }
-
-      if (start < 0) {
-        return "badRequest";
-      }
-
-      String varName = reqpar.substring(0, start);
-      String varVal = reqpar.substring(start + 1, reqpar.length() - 1);
-
-      if (varVal.length() == 0) {
-        varVal = null;
-      }
-
-      if (!setAppVar(varName, varVal, appVars)) {
-        return "badRequest";
-      }
-    }
-
-    form.setAppVarsTbl(appVars);
-
-    return null;
-  }
-
-  /** Called to set an application variable to a value
-   *
-   * @param   name     name of variable
-   * @param   val      new value of variable - null means remove.
-   * @param appVars
-   * @return  boolean  True if ok - false for too many vars
-   */
-  public boolean setAppVar(final String name, final String val,
-                           final HashMap<String, String> appVars) {
-    if (val == null) {
-      appVars.remove(name);
-      return true;
-    }
-
-    if (appVars.size() > maxAppVars) {
-      return false;
-    }
-
-    appVars.put(name, val);
-    return true;
-  }
-
-  /* ====================================================================
-   *               Forward methods
-   * ==================================================================== */
-
-  /** Check for action forwarding
-   * We expect the request parameter to be of the form<br/>
-   * forward=name<p>.
-   *
-   * @param request  Needed to locate session
-   * @return String  forward to here. null if no forward found.
-   * @throws Throwable
-   */
-  private String checkForwardto(final HttpServletRequest request) throws Throwable {
-    String reqpar = request.getParameter("forwardto");
-    return reqpar;
-  }
-
-  /* ====================================================================
-   *               Confirmation id methods
-   * ==================================================================== */
-
-  /** Check for a confirmation id. This is a random string embedded
-   * in some requests to confirm that the incoming request came from a page
-   * we generated. Not all pages will have such an id but if we do it must
-   * match.
-   *
-   * We expect the request parameter to be of the form<br/>
-   * confirmationid=id<p>.
-   *
-   * @param request  Needed to locate session
-   * @param form
-   * @return String  forward to here on error. null for OK.
-   * @throws Throwable
-   */
-  protected String checkConfirmationId(final HttpServletRequest request,
-                                       final UtilActionForm form)
-          throws Throwable {
-    String reqpar = request.getParameter("confirmationid");
-
-    if (reqpar == null) {
-      return null;
-    }
-
-    if (!reqpar.equals(form.getConfirmationId())) {
-      return "badConformationId";
-    }
-
-    return null;
-  }
-
-  /** Require a confirmation id. This is a random string embedded
-   * in some requests to confirm that the incoming request came from a page
-   * we generated. Not all pages will have such an id but if we do it must
-   * match.
-   *
-   * We expect the request parameter to be of the form<br/>
-   * confirmationid=id<p>.
-   *
-   * @param request  Needed to locate session
-   * @param form
-   * @return String  forward to here on error. null for OK.
-   * @throws Throwable
-   */
-  protected String requireConfirmationId(final HttpServletRequest request,
-                                         final UtilActionForm form)
-          throws Throwable {
-    String reqpar = request.getParameter("confirmationid");
-
-    if (reqpar == null) {
-      return "missingConformationId";
-    }
-
-    if (!reqpar.equals(form.getConfirmationId())) {
-      return "badConformationId";
-    }
-
-    return null;
-  }
-
-  /* ====================================================================
    *               Presentation state methods
    * ==================================================================== */
 
   /**
    * @param request
    */
-  public void doPresentation(final Request request) throws Throwable {
-    PresentationState ps = getPresentationState(request);
+  public void doPresentation(final Request request) {
+    final PresentationState ps = getPresentationState(request);
 
     if (ps == null) {
       if (debug()) {
@@ -782,7 +587,7 @@ public abstract class UtilAbstractAction extends Action
       debug("Set presentation state");
     }
 
-    HttpServletRequest req = request.getRequest();
+    final HttpServletRequest req = request.getRequest();
 
     ps.checkBrowserType(req);
     ps.checkContentType(req);
@@ -803,16 +608,16 @@ public abstract class UtilAbstractAction extends Action
    * @return PresentationState
    */
   public PresentationState getPresentationState(final Request request) {
-    String attrName = getPresentationAttrName();
+    final String attrName = getPresentationAttrName();
 
     if ((attrName == null) || (attrName.equals("NONE"))) {
       return null;
     }
 
     Object o = request.getSessionAttr(attrName);
-    PresentationState ps;
+    final PresentationState ps;
 
-    if ((o == null) || (!(o instanceof PresentationState))) {
+    if (!(o instanceof PresentationState)) {
       ps = new PresentationState();
       initPresentationState(request, ps);
 
@@ -839,143 +644,8 @@ public abstract class UtilAbstractAction extends Action
                 Various utility methods
      ================================================================== */
 
-  /** Get a request parameter stripped of white space. Return null for zero
-   * length.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @return  String   value
-   * @throws Throwable
-   */
-  protected String getReqPar(final HttpServletRequest req, final String name) throws Throwable {
-    return Util.checkNull(req.getParameter(name));
-  }
-
-  /** Get a multi-valued request parameter stripped of white space.
-   * Return null for zero length.
-   *
-   * @param req
-   * @param name    name of parameter
-   * @return  Collection<String> or null
-   * @throws Throwable
-   */
-  protected Collection<String> getReqPars(final HttpServletRequest req,
-                                          final String name) throws Throwable {
-    String[] s = req.getParameterValues(name);
-    ArrayList<String> res = null;
-
-    if ((s == null) || (s.length == 0)) {
-      return null;
-    }
-
-    for (String par: s) {
-      par = Util.checkNull(par);
-      if (par != null) {
-        if (res == null) {
-          res = new ArrayList<String>();
-        }
-
-        res.add(par);
-      }
-    }
-
-    return res;
-  }
-
-  /* ==================================================================
-                Private methods
-     ================================================================== */
-
-  /** Get the error object. If we haven't already got one and
-   * getErrorObjAttrName returns non-null create one and implant it in
-   * the session.
-   *
-   * @param request  Needed to locate session
-   * @return ErrorEmitSvlt
-   */
-  private ErrorEmitSvlt getErrorObj(final HttpServletRequest request) {
-    final String errorObjAttrName = getErrorObjAttrName();
-    if (errorObjAttrName == null) {
-      // don't set
-      return null;
-    }
-
-    final HttpSession sess = request.getSession(false);
-
-    if (sess == null) {
-      logger.error("No session!!!!!!!");
-      return null;
-    }
-
-    final Object o = sess.getAttribute(errorObjAttrName);
-    ErrorEmitSvlt err = null;
-
-    // Ensure it's initialised correctly
-    if (o instanceof ErrorEmitSvlt) {
-      err = (ErrorEmitSvlt)o;
-    }
-
-    if (err == null) {
-      err = new ErrorEmitSvlt();
-    }
-
-    err.reinit(getId(),
-               getErrorObjErrProp(),
-               clearMessages());
-
-    // Implant in session
-
-    sess.setAttribute(errorObjAttrName, err);
-
-    return err;
-  }
-
-  /** Get the message object. If we haven't already got one and
-   * getMessageObjAttrName returns non-null create one and implant it in
-   * the session.
-   *
-   * @param request  Needed to locate session
-   * @return MessageEmitSvlt
-   */
-  private MessageEmitSvlt getMessageObj(final HttpServletRequest request) {
-    final String messageObjAttrName = getMessageObjAttrName();
-    if (messageObjAttrName == null) {
-      // don't set
-      return null;
-    }
-
-    final HttpSession sess = request.getSession(false);
-
-    if (sess == null) {
-      logger.error("No session!!!!!!!");
-      return null;
-    }
-
-    final Object o = sess.getAttribute(messageObjAttrName);
-    MessageEmitSvlt msg = null;
-
-    // Ensure it's initialised correctly
-    if (o instanceof MessageEmitSvlt) {
-      msg = (MessageEmitSvlt)o;
-    }
-
-    if (msg == null) {
-      msg = new MessageEmitSvlt();
-    }
-
-    msg.reinit(getId(),
-               getErrorObjErrProp(),
-               clearMessages());
-
-    // Implant in session
-
-    sess.setAttribute(messageObjAttrName, msg);
-
-    return msg;
-  }
-
   /**
-   * @param req
+   * @param req the http request
    */
   public void dumpRequest(final HttpServletRequest req) {
     try {

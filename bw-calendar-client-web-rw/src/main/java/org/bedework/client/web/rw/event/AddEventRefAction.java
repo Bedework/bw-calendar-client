@@ -104,7 +104,7 @@ public class AddEventRefAction extends RWActionBase {
     final EventInfo eref = new EventInfo(proxy);
     form.setEventInfo(eref, false); // Make it available
 
-    String calPath = getReqPar(request.getRequest(), "newCalPath");
+    String calPath = request.getReqPar("newCalPath");
 
     if (calPath == null) {
       final String icalName = IcalDefs.entityTypeIcalNames[proxy.getEntityType()];

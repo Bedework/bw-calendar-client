@@ -18,12 +18,60 @@
 */
 package org.bedework.util.webaction;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 /** This class allows informational message generation.
  *
  * @author Mike Douglass douglm@rpi.edu
  * @version 1.0
  */
 public class MessageEmitSvlt extends ErrorEmitSvlt {
+  public static final String messageObjAttrName =
+          "org.bedework.client.messageobj";
+
+  /** Get the message object. If we haven't already got one and
+   * getMessageObjAttrName returns non-null create one and implant it in
+   * the session.
+   *
+   * @param request  Needed to locate session
+   * @param id       An identifying name
+   * @param exceptionPname Property name for exceptions
+   * @param clear clear list if true
+   * @return MessageEmitSvlt
+   */
+  public static MessageEmitSvlt getMessageObj(
+          final HttpServletRequest request,
+          final String id,
+          final String exceptionPname,
+          final boolean clear) {
+    final HttpSession sess = request.getSession(false);
+
+    if (sess == null) {
+      throw new RuntimeException("No session!");
+    }
+
+    final Object o = sess.getAttribute(messageObjAttrName);
+    MessageEmitSvlt msg = null;
+
+    // Ensure it's initialised correctly
+    if (o instanceof MessageEmitSvlt) {
+      msg = (MessageEmitSvlt)o;
+    }
+
+    if (msg == null) {
+      msg = new MessageEmitSvlt();
+    }
+
+    msg.reinit(id, exceptionPname, clear);
+
+    // Implant in session
+
+    sess.setAttribute(messageObjAttrName, msg);
+
+    return msg;
+  }
+
   /**
    *
    */

@@ -22,8 +22,10 @@ import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.servlet.ReqUtil;
 import org.bedework.util.struts.UtilActionForm;
 
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionMapping;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,9 +36,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Request extends ReqUtil {
   protected UtilActionForm form;
-  protected Action action;
-
   protected ActionMapping mapping;
+
+  public final static String appvarsAttrName =
+          "org.bedework.client.appvars";
 
   /** */
   public final static int actionTypeUnknown = 0;
@@ -55,7 +58,7 @@ public class Request extends ReqUtil {
 
   protected int actionType;
 
-  /** request parameter names */
+  /* request parameter names */
 
   /** */
   public static final String refreshIntervalReqPar = "refinterval";
@@ -121,17 +124,14 @@ public class Request extends ReqUtil {
    * @param request the http request
    * @param response the response
    * @param form form object
-   * @param action the actions
    * @param mapping  and the mapping
    */
   public Request(final HttpServletRequest request,
                  final HttpServletResponse response,
                  final UtilActionForm form,
-                 final Action action,
                  final ActionMapping mapping) {
     super(request, response);
     this.form = form;
-    this.action = action;
     this.mapping = mapping;
 
     final String at = getStringActionPar(actionTypeKey);
@@ -162,13 +162,6 @@ public class Request extends ReqUtil {
    */
   public UtilActionForm getForm() {
     return form;
-  }
-
-  /**
-   * @return Action
-   */
-  public Action getAction() {
-    return action;
   }
 
   /**
@@ -285,6 +278,16 @@ public class Request extends ReqUtil {
     return nm;
   }
 
+  /** Check for action forwarding
+   * We expect the request parameter to be of the form<br/>
+   * forward=name<p>.
+   *
+   * @return String  forward to here. null if no forward found.
+   */
+  public String checkForwardto() {
+    return request.getParameter("forwardto");
+  }
+
   public Integer getRefreshInt() {
     try {
       final Integer res = super.getIntReqPar(refreshIntervalReqPar);
@@ -383,5 +386,98 @@ public class Request extends ReqUtil {
       form.getErr().emit("edu.rpi.bad.actionparameter", par);
       return null;
     }
+  }
+
+  /* ====================================================================
+   *                  Application variable methods
+   * ==================================================================== */
+
+  /**
+   * @return app vars
+   */
+  @SuppressWarnings("unchecked")
+  public HashMap<String, String> getAppVars() {
+    Object o = getSessionAttr(appvarsAttrName);
+    if (!(o instanceof HashMap)) {
+      o = new HashMap<String, String>();
+      setSessionAttr(appvarsAttrName, o);
+    }
+
+    return (HashMap<String, String>)o;
+  }
+
+  private static final int maxAppVars = 50; // Stop screwing around.
+
+  /** Check for action setting a variable
+   * We expect the request parameter to be of the form<br/>
+   * setappvar=name(value) or <br/>
+   * setappvar=name{value}<p>.
+   *  Currently, we're not escaping characters so if you want both right
+   *  terminators in the value you're out of luck - actually we cheat a bit
+   *  We just look at the last char and then look for that from the start.
+   *
+   * @return String  forward to here. null if no error found.
+   */
+  public String checkVarReq() {
+    final Collection<String> avs = getReqPars("setappvar");
+    if (avs == null) {
+      return null;
+    }
+
+    final HashMap<String, String> appVars = getAppVars();
+
+    for (final String reqpar: avs) {
+      final int start;
+
+      if (reqpar.endsWith("}")) {
+        start = reqpar.indexOf('{');
+      } else if (reqpar.endsWith(")")) {
+        start = reqpar.indexOf('(');
+      } else {
+        return "badRequest";
+      }
+
+      if (start < 0) {
+        return "badRequest";
+      }
+
+      final String varName = reqpar.substring(0, start);
+      String varVal = reqpar.substring(start + 1, reqpar.length() - 1);
+
+      if (varVal.length() == 0) {
+        varVal = null;
+      }
+
+      if (!setAppVar(varName, varVal, appVars)) {
+        return "badRequest";
+      }
+    }
+
+    getForm().setAppVarsTbl(appVars);
+
+    return null;
+  }
+
+  /** Called to set an application variable to a value
+   *
+   * @param   name     name of variable
+   * @param   val      new value of variable - null means remove.
+   * @param appVars    application variables map
+   * @return  boolean  True if ok - false for too many vars
+   */
+  public boolean setAppVar(final String name,
+                           final String val,
+                           final HashMap<String, String> appVars) {
+    if (val == null) {
+      appVars.remove(name);
+      return true;
+    }
+
+    if (appVars.size() > maxAppVars) {
+      return false;
+    }
+
+    appVars.put(name, val);
+    return true;
   }
 }

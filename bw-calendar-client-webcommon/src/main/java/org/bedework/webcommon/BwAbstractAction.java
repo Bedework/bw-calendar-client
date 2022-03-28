@@ -146,7 +146,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     form.setSession(bsess);
 
-    final BwRequest bwreq = new BwRequest(request, bsess, this);
+    final BwRequest bwreq = new BwRequest(request, bsess);
 
     if (bwreq.present("refresh")) {
       bwreq.refresh();

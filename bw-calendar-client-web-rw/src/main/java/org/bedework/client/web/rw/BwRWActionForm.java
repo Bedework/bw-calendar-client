@@ -22,6 +22,7 @@ import org.bedework.webcommon.BwModule;
 
 import org.apache.struts.upload.FormFile;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -214,6 +215,19 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public FormFile getUploadFile() {
     return uploadFile;
+  }
+
+  public UploadFileInfo getUploadFileInfo() {
+    if (uploadFile == null) {
+      return null;
+    }
+
+    try {
+      return new UploadFileInfo(uploadFile.getInputStream(),
+                                uploadFile.getFileSize());
+    } catch (final IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
   }
 
   /* ====================================================================

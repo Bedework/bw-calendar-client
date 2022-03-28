@@ -32,6 +32,7 @@ import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.util.misc.response.Response;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -421,19 +422,26 @@ public interface RWClient extends Client {
    *
    * @param val the resource object
    * @param content to embed
-   * @throws CalFacadeException for errors
    */
   void setResourceValue(BwResource val,
-                        String content) throws CalFacadeException;
+                        String content);
 
   /**
    *
    * @param val the resource object
    * @param content to embed
-   * @throws CalFacadeException for errors
    */
   void setResourceValue(BwResource val,
-                        byte[] content) throws CalFacadeException;
+                        byte[] content);
+
+  /**
+   *
+   * @param val the resource object
+   * @param content input stream with content
+   */
+  void setResourceValue(BwResource val,
+                        InputStream content,
+                        long length);
 
   /* ------------------------------------------------------------
    *                     Scheduling

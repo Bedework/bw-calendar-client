@@ -29,17 +29,15 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.util.misc.response.Response;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.Util;
-import org.bedework.util.webaction.Request;
+import org.bedework.util.misc.response.Response;
 import org.bedework.util.timezones.Timezones;
-
-import org.apache.struts.action.Action;
+import org.bedework.util.webaction.Request;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -173,15 +171,13 @@ public class BwRequest extends Request {
   public final static String bwSubscriptionStatus = "bw_subscription_status";
 
   /**
-   * @param request
-   * @param sess
-   * @param action
+   * @param request wrapper
+   * @param sess current bedework session
    */
   public BwRequest(final Request request,
-                   final BwSession sess,
-                   final Action action) {
+                   final BwSession sess) {
     super(request.getRequest(), request.getResponse(), request.getForm(),
-          action, request.getMapping());
+          request.getMapping());
     this.req = request;
     this.sess = sess;
   }

@@ -24,12 +24,18 @@ import org.bedework.util.servlet.MessageEmit;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 /** This class allows error message generation in the servlet world.
  *
  * @author Mike Douglass douglm@rpi.edu
  * @version 1.0
  */
 public class ErrorEmitSvlt implements MessageEmit {
+  public static final String errorObjAttrName =
+          "org.bedework.client.errorobj";
+
   transient protected String id;
   transient protected String exceptionPname;
 
@@ -113,6 +119,48 @@ public class ErrorEmitSvlt implements MessageEmit {
   }
 
   protected ArrayList<Msg> msgList = new ArrayList<>();
+
+  /** Get the error object. If we haven't already got one and
+   * getErrorObjAttrName returns non-null create one and implant it in
+   * the session.
+   *
+   * @param request  Needed to locate session
+   * @param id       An identifying name
+   * @param exceptionPname Property name for exceptions
+   * @param clear true to clear list
+   * @return ErrorEmitSvlt
+   */
+  public static ErrorEmitSvlt getErrorObj(
+          final HttpServletRequest request,
+          final String id,
+          final String exceptionPname,
+          final boolean clear) {
+    final HttpSession sess = request.getSession(false);
+
+    if (sess == null) {
+      throw new RuntimeException("No session!");
+    }
+
+    final Object o = sess.getAttribute(errorObjAttrName);
+    ErrorEmitSvlt err = null;
+
+    // Ensure it's initialised correctly
+    if (o instanceof ErrorEmitSvlt) {
+      err = (ErrorEmitSvlt)o;
+    }
+
+    if (err == null) {
+      err = new ErrorEmitSvlt();
+    }
+
+    err.reinit(id, exceptionPname, clear);
+
+    // Implant in session
+
+    sess.setAttribute(errorObjAttrName, err);
+
+    return err;
+  }
 
   /**
    *

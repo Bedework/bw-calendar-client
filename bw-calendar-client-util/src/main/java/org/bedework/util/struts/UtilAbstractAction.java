@@ -37,6 +37,8 @@ import org.apache.struts.config.ActionConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -131,6 +133,8 @@ import javax.servlet.http.HttpSession;
  */
 public abstract class UtilAbstractAction extends Action
          implements HttpAppLogger, Logged {
+  private static boolean configTraced;
+
   private transient String logPrefix;
 
   protected String requestLogout = "logout";
@@ -196,6 +200,11 @@ public abstract class UtilAbstractAction extends Action
         form.setNocache(false);
 
         form.setInitialised(true);
+
+        if (debug() && !configTraced) {
+          traceConfig(mapping);
+          configTraced = true;
+        }
       }
 
       form.assignErrorForward(servlet.getInitParameter("errorForward"));
@@ -211,14 +220,17 @@ public abstract class UtilAbstractAction extends Action
 
       checkNocache(request, response, form);
 
-      final Request req = new Request(request, response, form,
-                                      mapping);
+      final Request req =
+              new Request(request, response,
+                          getActionParams(mapping),
+                          mapping.getPath(),
+                          form);
 
       /* Set up presentation values from request
        */
       doPresentation(req);
 
-      String contentName = getContentName(req);
+      final String contentName = getContentName(req);
 
       if (contentName != null) {
         /* Indicate we have a file attachment with the given name
@@ -310,29 +322,53 @@ public abstract class UtilAbstractAction extends Action
     return (mapping.findForward(forward));
   }
 
-  protected void traceConfig(final Request req) {
+  private Map<String, String> getActionParams(final ActionConfig config) {
+    final Map<String, String> res = new HashMap<>();
+    final String paramsStr = config.getParameter();
+
+    if (paramsStr == null) {
+      return res;
+    }
+
+    for (final String param: paramsStr.split(";")) {
+      final String[] nv = param.split("=");
+      if (nv.length == 1) {
+//        debug(format("param %s", nv[0]));
+        res.put(nv[0], "");
+      } else {
+//        debug(format("param %s=\"%s\"", nv[0], nv[1]));
+        res.put(nv[0], nv[1]);
+      }
+    }
+
+    return res;
+  }
+
+  protected void traceConfig(final ActionMapping mapping) {
     if (!debug()) {
       return;
     }
 
-    ActionConfig[] actions = req.getMapping().getModuleConfig().findActionConfigs();
+    final ActionConfig[] actions = mapping.getModuleConfig()
+                                          .findActionConfigs();
 
     debug("========== Action configs ===========");
 
-    for (ActionConfig aconfig: actions) {
-      StringBuilder sb = new StringBuilder();
+    for (final ActionConfig aconfig: actions) {
+      final StringBuilder sb = new StringBuilder();
 
       sb.append(aconfig.getPath());
 
-      String param = aconfig.getParameter();
+      final Map<String, String> params =
+              getActionParams(aconfig);
 
-      boolean noActionType = traceConfigParam(req, sb,
-                                              Request.actionTypeKey,
-                                              param) == null;
-      traceConfigParam(req, sb, Request.conversationKey, param);
+      final boolean noActionType = traceConfigParam(sb,
+                                                    Request.actionTypeKey,
+                                                    params) == null;
+      traceConfigParam(sb, Request.conversationKey, params);
 
-      traceConfigParam(req, sb, Request.refreshIntervalKey, param);
-      traceConfigParam(req, sb, Request.refreshActionKey, param);
+      traceConfigParam(sb, Request.refreshIntervalKey, params);
+      traceConfigParam(sb, Request.refreshActionKey, params);
 
       debug(sb.toString());
 
@@ -342,18 +378,16 @@ public abstract class UtilAbstractAction extends Action
     }
   }
 
-  private String traceConfigParam(final Request req,
-                                  final StringBuilder sb,
+  private String traceConfigParam(final StringBuilder sb,
                                   final String name,
-                                  final String param) {
-    String res = req.getStringActionPar(name, param);
+                                  final Map<String, String> params) {
+    String res = params.get(name);
     if (res == null) {
       return null;
     }
 
     sb.append(",\t");
     sb.append(name);
-
     sb.append(res);
 
     return res;

@@ -331,7 +331,7 @@ public class BwSessionImpl implements Logged, BwSession {
   public CollectionsResponse getCollections(final BwRequest req) {
     final CollectionsResponse cols = new CollectionsResponse();
 
-    if ("true".equals(req.getStringActionPar("public="))) {
+    if ("true".equals(req.getStringActionPar("public"))) {
       if (req.getReqPar("cs") != null) {
         cols.setCollections(getUserCollections(req));
       } else {

@@ -22,10 +22,9 @@ import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.servlet.ReqUtil;
 import org.bedework.util.struts.UtilActionForm;
 
-import org.apache.struts.action.ActionMapping;
-
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +35,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Request extends ReqUtil {
   protected UtilActionForm form;
-  protected ActionMapping mapping;
+  protected final Map<String, String> params;
+  private final String actionPath;
 
   public final static String appvarsAttrName =
           "org.bedework.client.appvars";
@@ -63,16 +63,16 @@ public class Request extends ReqUtil {
   /** */
   public static final String refreshIntervalReqPar = "refinterval";
 
-  /** action mapping keys - note the "=" */
-  public static final String actionTypeKey = "actionType=";
+  /** action mapping keys */
+  public static final String actionTypeKey = "actionType";
   /** */
-  public static final String conversationKey = "conversation=";
+  public static final String conversationKey = "conversation";
   /** */
-  public static final String refreshIntervalKey = refreshIntervalReqPar + "=";
+  public static final String refreshIntervalKey = refreshIntervalReqPar;
   /** */
-  public static final String refreshActionKey = "refaction=";
+  public static final String refreshActionKey = "refaction";
     /** */
-    public static final String moduleNameKey = "mdl=";
+    public static final String moduleNameKey = "mdl";
 
   /** In the absence of a conversation parameter we assume that a conversation
    * starts with actionType=action and ends with actionType=render.
@@ -124,17 +124,18 @@ public class Request extends ReqUtil {
    * @param request the http request
    * @param response the response
    * @param form form object
-   * @param mapping  and the mapping
    */
   public Request(final HttpServletRequest request,
                  final HttpServletResponse response,
-                 final UtilActionForm form,
-                 final ActionMapping mapping) {
+                 final Map<String, String> params,
+                 final String actionPath,
+                 final UtilActionForm form) {
     super(request, response);
+    this.params = params;
+    this.actionPath = actionPath;
     this.form = form;
-    this.mapping = mapping;
 
-    final String at = getStringActionPar(actionTypeKey);
+    final String at = params.get(actionTypeKey);
     if (at != null) {
       for (int ati = 0; ati < actionTypes.length; ati++) {
         if (Request.actionTypes[ati].equals(at)) {
@@ -144,7 +145,7 @@ public class Request extends ReqUtil {
       }
     }
 
-    final String convType = getStringActionPar(conversationKey);
+    final String convType = params.get(conversationKey);
     if (convType != null) {
       for (int ati = 0; ati < Request.conversationTypes.length; ati++) {
         if (Request.conversationTypes[ati].equals(convType)) {
@@ -154,7 +155,11 @@ public class Request extends ReqUtil {
       }
     }
 
-    moduleName = getStringActionPar(Request.moduleNameKey); // <-- Note it's key for the "="
+    moduleName = getStringActionPar(moduleNameKey);
+  }
+
+  public Map<String, String> getParams() {
+    return params;
   }
 
   /**
@@ -162,13 +167,6 @@ public class Request extends ReqUtil {
    */
   public UtilActionForm getForm() {
     return form;
-  }
-
-  /**
-   * @return ActionMapping
-   */
-  public ActionMapping getMapping() {
-    return mapping;
   }
 
   /** Emit message with given throwable
@@ -248,14 +246,7 @@ public class Request extends ReqUtil {
    * @return the part of the URL that identifies the action.
    */
   public String getActionPath() {
-    return mapping.getPath();
-  }
-
-  /**
-   * @return the action parameter if any.
-   */
-  public String getActionParameter() {
-    return mapping.getParameter();
+    return actionPath;
   }
 
   /**
@@ -322,12 +313,18 @@ public class Request extends ReqUtil {
     }
   }
 
-  /**
-   * @param name of parameter
-   * @return value of given parameter or null
-   */
   public Integer getIntActionPar(final String name) {
-    return getIntActionPar(name, getActionParameter());
+    final String par = params.get(name);
+    if (par == null) {
+      return null;
+    }
+
+    try {
+      return Integer.valueOf(par);
+    } catch (final Throwable t) {
+      form.getErr().emit("org.bedework.bad.actionparameter", par);
+      return null;
+    }
   }
 
   /**
@@ -335,57 +332,7 @@ public class Request extends ReqUtil {
    * @return value of given parameter or null
    */
   public String getStringActionPar(final String name) {
-    return getStringActionPar(name, getActionParameter());
-  }
-
-  protected Integer getIntActionPar(final String name,
-                                    final String par) {
-    if (par == null) {
-      return null;
-    }
-
-    try {
-      int pos = par.indexOf(name);
-      if (pos < 0) {
-        return null;
-      }
-
-      pos += name.length();
-      int epos = par.indexOf(";", pos);
-      if (epos < 0) {
-        epos = par.length();
-      }
-
-      return Integer.valueOf(par.substring(pos, epos));
-    } catch (final Throwable t) {
-      form.getErr().emit("edu.rpi.bad.actionparameter", par);
-      return null;
-    }
-  }
-
-  public String getStringActionPar(final String name,
-                                   final String par) {
-    if (par == null) {
-      return null;
-    }
-
-    try {
-      int pos = par.indexOf(name);
-      if (pos < 0) {
-        return null;
-      }
-
-      pos += name.length();
-      int epos = par.indexOf(";", pos);
-      if (epos < 0) {
-        epos = par.length();
-      }
-
-      return par.substring(pos, epos);
-    } catch (final Throwable t) {
-      form.getErr().emit("edu.rpi.bad.actionparameter", par);
-      return null;
-    }
+    return params.get(name);
   }
 
   /* ====================================================================

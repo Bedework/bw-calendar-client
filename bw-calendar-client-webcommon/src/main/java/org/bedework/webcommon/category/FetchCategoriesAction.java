@@ -43,7 +43,7 @@ public class FetchCategoriesAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
-    if (!"true".equals(request.getStringActionPar("catlist="))) {
+    if (!"true".equals(request.getStringActionPar("catlist"))) {
       request.getSess().embedCategories(request, true,
                                         BwSession.editableEntity);
 
@@ -57,7 +57,7 @@ public class FetchCategoriesAction extends BwAbstractAction {
 
     final HttpServletResponse resp = request.getResponse();
 
-    if (!"true".equals(request.getStringActionPar("catnofile="))) {
+    if (!"true".equals(request.getStringActionPar("catnofile"))) {
       resp.setHeader("Content-Disposition",
                      "Attachment; Filename=\"categoryList.json\"");
     }

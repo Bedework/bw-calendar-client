@@ -80,7 +80,7 @@ public class SearchParamsAction extends BwAbstractAction {
     final Client cl = request.getClient();
     final boolean forFeederOneShot =
             "y".equals(request.getReqPar("f")) ||
-                    "y".equals(request.getStringActionPar("f="));
+                    "y".equals(request.getStringActionPar("f"));
 
     if (request.getBooleanReqPar("listMode", false)) {
       cl.setViewMode(Client.listViewMode);

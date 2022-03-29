@@ -81,8 +81,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "bwappname";
   
-  private static boolean configTraced;
-
   @Override
   public String getId() {
     return getClass().getName();
@@ -182,11 +180,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (form.getNewSession()) {
-      if (debug() && !configTraced) {
-        traceConfig(request);
-        configTraced = true;
-      }
-
       form.setHour24(form.getConfig().getHour24());
       if (!cl.getPublicAdmin() &&
               !form.getSubmitApp() &&

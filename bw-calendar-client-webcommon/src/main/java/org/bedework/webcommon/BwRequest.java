@@ -176,8 +176,11 @@ public class BwRequest extends Request {
    */
   public BwRequest(final Request request,
                    final BwSession sess) {
-    super(request.getRequest(), request.getResponse(), request.getForm(),
-          request.getMapping());
+    super(request.getRequest(),
+          request.getResponse(),
+          request.getParams(),
+          request.getActionPath(),
+          request.getForm());
     this.req = request;
     this.sess = sess;
   }
@@ -336,23 +339,21 @@ public class BwRequest extends Request {
   /**
    * @param evDateOnly  true if event says date only values
    * @return Collection of BwDateTime or null
-   * @throws Throwable on error
    */
-  public Collection<BwDateTime> getRdates(final boolean evDateOnly) throws Throwable {
+  public Collection<BwDateTime> getRdates(final boolean evDateOnly) {
     return getRExdates(true, evDateOnly);
   }
 
   /**
    * @param evDateOnly  true if event says date only values
    * @return (possibly empty) Collection of BwDateTime, never null
-   * @throws Throwable
    */
-  public Collection<BwDateTime> getExdates(final boolean evDateOnly) throws Throwable {
+  public Collection<BwDateTime> getExdates(final boolean evDateOnly) {
     return getRExdates(false, evDateOnly);
   }
 
   private Collection<BwDateTime> getRExdates(final boolean rdates,
-                                             final boolean evDateOnly) throws Throwable {
+                                             final boolean evDateOnly) {
     String reqPar;
     String token = "DATE\t";
     Collection<BwDateTime> bwdts = new ArrayList<>();

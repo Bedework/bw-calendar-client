@@ -20,7 +20,6 @@ package org.bedework.util.struts;
 
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
-import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.servlet.filters.PresentationState;
@@ -137,12 +136,6 @@ public abstract class UtilAbstractAction extends Action
 
   private transient String logPrefix;
 
-  protected String requestLogout = "logout";
-
-  /** Forward to here for logged out
-   */
-  public final String forwardLoggedOut = "loggedOut";
-
   //protected boolean isPortlet;
 
   /** This is the routine which does the work.
@@ -218,13 +211,13 @@ public abstract class UtilAbstractAction extends Action
       form.setMsg(msg);
       form.assignSessionId(getSessionId(request));
 
-      checkNocache(request, response, form);
-
       final Request req =
-              new Request(request, response,
-                          getActionParams(mapping),
-                          mapping.getPath(),
-                          form);
+              getRequest(request, response,
+                         getActionParams(mapping),
+                         mapping.getPath(),
+                         form);
+
+      req.checkNocache();
 
       /* Set up presentation values from request
        */
@@ -257,7 +250,7 @@ public abstract class UtilAbstractAction extends Action
       }
       */
 
-      forward = checkLogOut(request, form);
+      forward = req.checkLogOut();
       response.setContentType("text/html");
 
       if (forward == null) {
@@ -320,6 +313,23 @@ public abstract class UtilAbstractAction extends Action
     }
 
     return (mapping.findForward(forward));
+  }
+
+  /**
+   *
+   * @param request the http request
+   * @param response the response
+   * @param params action parameters
+   * @param actionPath from mapping
+   * @param form form object
+   * @return
+   */
+  protected Request getRequest(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final Map<String, String> params,
+                               final String actionPath,
+                               final UtilActionForm form) {
+    return new Request(request, response, params, actionPath, form);
   }
 
   private Map<String, String> getActionParams(final ActionConfig config) {
@@ -464,99 +474,6 @@ public abstract class UtilAbstractAction extends Action
   }
 
   /* ====================================================================
-   *               Check logout
-   * ==================================================================== */
-
-  /** Clean up - we're about to logout
-   *
-   * @param request    HttpServletRequest
-   * @param form
-   * @return boolean true for OK to log out. False - not allowed - ignore it.
-   */
-  protected boolean logOutCleanup(final HttpServletRequest request,
-                                  final UtilActionForm form) {
-    return true;
-  }
-
-  /** Check for logout request.
-   *
-   * @param request    HttpServletRequest
-   * @param form
-   * @return null for continue, forwardLoggedOut to end session.
-   * @throws Throwable
-   */
-  protected String checkLogOut(final HttpServletRequest request,
-                               final UtilActionForm form)
-               throws Throwable {
-    final String reqUser = HttpServletUtils.remoteUser(request);
-
-    final boolean forceLogout =
-            !Util.equalsString(reqUser, form.getCurrentUser());
-
-    final String temp = request.getParameter(requestLogout);
-
-
-    if (forceLogout || (temp != null)) {
-      final HttpSession sess = request.getSession(false);
-
-      if ((sess != null) && logOutCleanup(request, form)) {
-        sess.invalidate();
-      }
-      return forwardLoggedOut;
-    }
-
-    return null;
-  }
-
-  /* ====================================================================
-   *               Check nocache
-   * ==================================================================== */
-
-  /* We handle our own nocache headers instead of letting struts do it.
-   * Struts does it on every response but, if we are running with nocache,
-   * we need to be able to disable it for the occasional response.
-   *
-   * <p>This gets around an IE problem when attempting to deliver files.
-   * IE requires caching on or it is unable to locate the file it is
-   * supposed to be delivering.
-   *
-   */
-  private void checkNocache(final HttpServletRequest request,
-                            final HttpServletResponse response,
-                            final UtilActionForm form) {
-    String reqpar = request.getParameter("nocacheSticky");
-
-    if (reqpar != null) {
-      /* (re)set the default */
-      form.setNocache(reqpar.equals("yes"));
-    }
-
-    /* Look for a one-shot setting
-     */
-
-    reqpar = request.getParameter("nocache");
-
-    if ((reqpar == null) && (!form.getNocache())) {
-      return;
-    }
-
-    /* If we got a request parameter it overrides the default
-     */
-    boolean nocache = form.getNocache();
-
-    if (reqpar != null) {
-      nocache = reqpar.equals("yes");
-    }
-
-    if (nocache) {
-      response.setHeader("Pragma", "No-cache");
-      //response.setHeader("Cache-Control", "no-cache");
-      response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-      response.setDateHeader("Expires", 1);
-    }
-  }
-
-  /* ====================================================================
    *               Check serialization
    * ==================================================================== */
 
@@ -565,13 +482,16 @@ public abstract class UtilAbstractAction extends Action
    * unserializable object class gets embedded in the session somewhere
    */
   private void checkSerialize(final HttpServletRequest request) {
-    String reqpar = request.getParameter("serialize");
+    final String reqpar = request.getParameter("serialize");
 
     if (reqpar == null) {
       return;
     }
 
     HttpSession sess = request.getSession(false);
+    if (sess == null) {
+      info("No session to test");
+    }
     Enumeration en = sess.getAttributeNames();
 
     while (en.hasMoreElements()) {

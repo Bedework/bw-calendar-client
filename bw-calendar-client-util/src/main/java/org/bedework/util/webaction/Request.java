@@ -18,6 +18,8 @@
 */
 package org.bedework.util.webaction;
 
+import org.bedework.util.misc.Util;
+import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.servlet.ReqUtil;
 import org.bedework.util.struts.UtilActionForm;
@@ -28,6 +30,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /** Class to handle the incoming request.
  *
@@ -115,6 +118,12 @@ public class Request extends ReqUtil {
   /** Request parameter to specify which module */
   public final static String moduleNamePar = "mdl";
 
+  public final String requestLogout = "logout";
+
+  /** Forward to here for logged out
+   */
+  public final String forwardLoggedOut = "loggedOut";
+
   /** May be specified as an action parameter or overriddem by the
    * request parameter.
    */
@@ -123,6 +132,8 @@ public class Request extends ReqUtil {
   /**
    * @param request the http request
    * @param response the response
+   * @param params action parameters
+   * @param actionPath from mapping
    * @param form form object
    */
   public Request(final HttpServletRequest request,
@@ -335,9 +346,81 @@ public class Request extends ReqUtil {
     return params.get(name);
   }
 
-  /* ====================================================================
+  /* We handle our own nocache headers but, if we are running with nocache,
+   * we need to be able to disable it for the occasional response.
+   *
+   * <p>This gets around an IE problem when attempting to deliver files.
+   * IE requires caching on or it is unable to locate the file it is
+   * supposed to be delivering.
+   */
+  public void checkNocache() {
+    String reqpar = getReqPar("nocacheSticky");
+
+    if (reqpar != null) {
+      /* (re)set the default */
+      form.setNocache(reqpar.equals("yes"));
+    }
+
+    /* Look for a one-shot setting
+     */
+
+    reqpar = getReqPar("nocache");
+
+    if ((reqpar == null) && (!form.getNocache())) {
+      return;
+    }
+
+    /* If we got a request parameter it overrides the default
+     */
+    boolean nocache = form.getNocache();
+
+    if (reqpar != null) {
+      nocache = reqpar.equals("yes");
+    }
+
+    if (nocache) {
+      response.setHeader("Pragma", "No-cache");
+      //response.setHeader("Cache-Control", "no-cache");
+      response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      response.setDateHeader("Expires", 1);
+    }
+  }
+
+  /** Check for logout request.
+   *
+   * @return null for continue, forwardLoggedOut to end session.
+   */
+  public String checkLogOut() {
+    final String reqUser = HttpServletUtils.remoteUser(request);
+
+    final boolean forceLogout =
+            !Util.equalsString(reqUser, form.getCurrentUser());
+
+    final String temp = request.getParameter(requestLogout);
+
+    if (forceLogout || (temp != null)) {
+      final HttpSession sess = request.getSession(false);
+
+      if ((sess != null) && logOutCleanup()) {
+        sess.invalidate();
+      }
+      return forwardLoggedOut;
+    }
+
+    return null;
+  }
+
+  /** Clean up - we're about to logout
+   *
+   * @return boolean true for OK to log out. False - not allowed - ignore it.
+   */
+  protected boolean logOutCleanup() {
+    return true;
+  }
+
+  /* ==============================================================
    *                  Application variable methods
-   * ==================================================================== */
+   * ============================================================== */
 
   /**
    * @return app vars

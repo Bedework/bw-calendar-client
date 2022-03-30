@@ -36,12 +36,18 @@ import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
+import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.Request;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author douglm
@@ -49,8 +55,6 @@ import java.util.HashMap;
  */
 public class BwRequest extends Request {
   private BwSession sess;
-
-  private Request req;
 
   private BwModule module;
 
@@ -171,18 +175,22 @@ public class BwRequest extends Request {
   public final static String bwSubscriptionStatus = "bw_subscription_status";
 
   /**
-   * @param request wrapper
-   * @param sess current bedework session
+   * @param request the http request
+   * @param response the response
+   * @param params action parameters
+   * @param actionPath from mapping
+   * @param form form object
    */
-  public BwRequest(final Request request,
-                   final BwSession sess) {
-    super(request.getRequest(),
-          request.getResponse(),
-          request.getParams(),
-          request.getActionPath(),
-          request.getForm());
-    this.req = request;
-    this.sess = sess;
+  public BwRequest(final HttpServletRequest request,
+                   final HttpServletResponse response,
+                   final Map<String, String> params,
+                   final String actionPath,
+                   final UtilActionForm form) {
+    super(request, response, params, actionPath, form);
+  }
+
+  void setSess(final BwSession val) {
+    sess = val;
   }
 
   /**
@@ -194,16 +202,35 @@ public class BwRequest extends Request {
 
   public BwModule getModule() {
     if (module == null) {
-      module = getBwForm().fetchModule(req.getModuleName());
+      module = getBwForm().fetchModule(getModuleName());
       request.setAttribute(moduleStateName, module.getState());
     }
 
     return module;
   }
 
+  @Override
+  protected boolean logOutCleanup() {
+    final HttpSession hsess = request.getSession();
+    final BwCallback cb =
+            (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
+
+    if (cb != null) {
+      try {
+        cb.out(request);
+      } catch (final Throwable ignored) {}
+
+      try {
+        cb.close(request, true);
+      } catch (final Throwable ignored) {}
+    }
+
+    return true;
+  }
+
   public Client getClient() {
     if (cl == null) {
-      cl = getBwForm().fetchClient(req.getModuleName());
+      cl = getBwForm().fetchClient(getModuleName());
       request.setAttribute(embeddedClientName, cl);
     }
 
@@ -354,9 +381,9 @@ public class BwRequest extends Request {
 
   private Collection<BwDateTime> getRExdates(final boolean rdates,
                                              final boolean evDateOnly) {
-    String reqPar;
-    String token = "DATE\t";
-    Collection<BwDateTime> bwdts = new ArrayList<>();
+    final String reqPar;
+    final String token = "DATE\t";
+    final Collection<BwDateTime> bwdts = new ArrayList<>();
 
     if (rdates) {
       reqPar = "rdates";
@@ -364,23 +391,23 @@ public class BwRequest extends Request {
       reqPar = "exdates";
     }
 
-    String dtsPar = getReqPar(reqPar);
+    final String dtsPar = getReqPar(reqPar);
     if (dtsPar == null) {
       return bwdts;
     }
 
-    String[] dts = dtsPar.split(token);
+    final String[] dts = dtsPar.split(token);
 
-    for (String dtVal: dts) {
+    for (final String dtVal: dts) {
       if ((dtVal == null) || (dtVal.length() == 0)) {
         continue;
       }
 
-      String[] dtParts = dtVal.split("\t");
+      final String[] dtParts = dtVal.split("\t");
 
       /* date, time, tzid */
 
-      StringBuilder dtm = new StringBuilder(dtParts[0]);
+      final StringBuilder dtm = new StringBuilder(dtParts[0]);
       boolean dateOnly = true;
 
       if (!evDateOnly && (Util.checkNull(dtParts[1]) != null)) {
@@ -421,9 +448,8 @@ public class BwRequest extends Request {
 
   /**
    * @return view type - "monthView" etc
-   * @throws Throwable
    */
-  public String getViewType() throws Throwable {
+  public String getViewType() {
     final String vt = getReqPar("viewType");
 
     if (vt == null) {
@@ -442,11 +468,10 @@ public class BwRequest extends Request {
    * @param dtPar
    * @param tzidPar
    * @return date/time
-   * @throws Throwable
    */
   public BwDateTime getDateTime(final String dtPar,
-                                final String tzidPar) throws Throwable {
-    String dt = getReqPar(dtPar);
+                                final String tzidPar) {
+    final String dt = getReqPar(dtPar);
     if (dt == null) {
       return null;
     }
@@ -456,7 +481,8 @@ public class BwRequest extends Request {
       tzid = Timezones.getThreadDefaultTzid();
     }
 
-    return BwDateTime.makeBwDateTime(dt.indexOf("T") < 0, dt, tzid);
+    return BwDateTime.makeBwDateTime(!dt.contains("T"),
+                                     dt, tzid);
   }
 
   /** Get calendar identified by newCalPath. Emits error message for invalid path

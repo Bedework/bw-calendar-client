@@ -63,6 +63,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -144,7 +145,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     form.setSession(bsess);
 
-    final BwRequest bwreq = new BwRequest(request, bsess);
+    final BwRequest bwreq = (BwRequest)request;
+    bwreq.setSess(bsess);
 
     if (bwreq.present("refresh")) {
       bwreq.refresh();
@@ -329,6 +331,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return forward;
+  }
+
+  protected Request getRequest(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final Map<String, String> params,
+                               final String actionPath,
+                               final UtilActionForm form) {
+    return new BwRequest(request, response, params, actionPath, form);
   }
 
   private void setLocale(final BwRequest request,
@@ -873,76 +883,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     /** Reduced to a thumbnail */
     public BwResource thumbnail;
-  }
-
-  @Override
-  protected boolean logOutCleanup(final HttpServletRequest request,
-                                  final UtilActionForm form) {
-    final HttpSession hsess = request.getSession();
-    final BwCallback cb =
-            (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
-
-    if (cb == null) {
-      if (form.getDebug()) {
-        debug("No cb object for logout");
-      }
-    } else {
-      if (form.getDebug()) {
-        debug("cb object found for logout");
-      }
-      try {
-        cb.out(request);
-      } catch (final Throwable ignored) {}
-
-      try {
-        cb.close(request, true);
-      } catch (final Throwable ignored) {}
-    }
-
-    return true;
-  }
-
-  /** Check for logout request. Overridden so we can close anything we
-   * need to before the session is invalidated.
-   *
-   * @param request    HttpServletRequest
-   * @return null for continue, forwardLoggedOut to end session.
-   */
-  protected String checkLogOut(final Request request) {
-    final String temp = request.getReqPar(requestLogout);
-    if (temp != null) {
-      final HttpSession sess = request.getRequest().getSession(false);
-
-      if (sess != null) {
-        /* I don't think I need this - we didn't come through the svci filter on the
-           way in?
-        UWCalCallback cb = (UWCalCallback)sess.getAttribute(UWCalCallback.cbAttrName);
-
-        try {
-          if (cb != null) {
-            cb.out();
-          }
-        } catch (Throwable t) {
-          error("Callback exception: ", t);
-          /* Probably no point in throwing it. We're leaving anyway. * /
-        } finally {
-          if (cb != null) {
-            try {
-              cb.close();
-            } catch (Throwable t) {
-              error("Callback exception: ", t);
-              /* Probably no point in throwing it. We're leaving anyway. * /
-            }
-          }
-        }
-        */
-
-        sess.invalidate();
-      }
-      return forwardLoggedOut;
-    }
-
-    return null;
   }
 
   /** Invalidate session.

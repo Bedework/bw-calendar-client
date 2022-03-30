@@ -200,7 +200,7 @@ public abstract class UtilAbstractAction extends Action
         }
       }
 
-      form.assignErrorForward(servlet.getInitParameter("errorForward"));
+      getErrorForward(request, form);
       form.setBrowserType(HttpServletUtils.getBrowserType(request));
       form.assignCurrentUser(HttpServletUtils.remoteUser(request));
       form.setUrl(HttpServletUtils.getUrl(request));
@@ -452,24 +452,31 @@ public abstract class UtilAbstractAction extends Action
     return PresentationState.presentationAttrName;
   }
 
+  public void getErrorForward(final HttpServletRequest request,
+                                final UtilActionForm form) {
+    if (form.getErrorForward() != null) {
+      return;
+    }
+
+    final HttpSession session = request.getSession();
+    final ServletContext sc = session.getServletContext();
+
+    form.assignErrorForward(sc.getInitParameter("errorForward"));
+  }
+
   /* ====================================================================
    *               Log request
    * ==================================================================== */
 
   @Override
   public String getLogPrefix(final HttpServletRequest request) {
-    try {
-      if (logPrefix == null) {
-        final HttpSession session = request.getSession();
-        final ServletContext sc = session.getServletContext();
+    if (logPrefix == null) {
+      final HttpSession session = request.getSession();
+      final ServletContext sc = session.getServletContext();
 
-        logPrefix = sc.getInitParameter("bwappname");
-      }
-
-    } catch (final Throwable t) {
-      error(t);
-      logPrefix = "unknown";
+      logPrefix = sc.getInitParameter("bwappname");
     }
+
     return logPrefix;
   }
 

@@ -39,7 +39,7 @@ public class BwCallbackImpl extends BwCallback implements
     this.form = form;
     final var ef = form.getErrorForward();
     if (ef == null) {
-      throw new RuntimeException("\"errorForward\" must be defined for servlet");
+      throw new RuntimeException("\"errorForward\" must be defined for servlet context");
     }
 
     if (!ef.startsWith("/")) {

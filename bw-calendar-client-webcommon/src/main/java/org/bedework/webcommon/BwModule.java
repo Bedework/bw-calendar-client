@@ -266,12 +266,12 @@ public class BwModule implements Logged, Serializable {
    * @return boolean      false for problems.
    * @throws Throwable on fatal error
    */
-  public boolean checkClient(final Request request,
+  public boolean checkClient(final BwRequest request,
                              final BwSession sess,
                              final String user,
                              boolean canSwitch,
                              final ConfigCommon conf) throws Throwable {
-    final BwActionFormBase form = (BwActionFormBase)request.getForm();
+    final BwActionFormBase form = request.getBwForm();
 
     if (conf.getPublicAdmin()) {
       throw new RuntimeException("Non-admin client called for admin app");

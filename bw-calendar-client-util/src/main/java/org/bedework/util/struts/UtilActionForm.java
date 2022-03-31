@@ -20,16 +20,14 @@ package org.bedework.util.struts;
 
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.MessageEmit;
-import org.bedework.util.webaction.TimeDateFormatter;
+import org.bedework.util.webaction.WebActionForm;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,11 +37,8 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Mike Douglass
  */
-public class UtilActionForm extends ActionForm {
-  /** Are we debugging?
-   */
-  protected boolean debug;
-
+public class UtilActionForm extends ActionForm
+        implements WebActionForm {
   /** Have we initialised?
    */
   protected boolean initialised;
@@ -72,7 +67,7 @@ public class UtilActionForm extends ActionForm {
   /** Application variables. These can be set with request parameters and
    * dumped into the page for use by jsp and xslt.
    */
-  protected HashMap appVars;
+  protected HashMap<String, String> appVars;
 
   /** One shot content name.
    */
@@ -119,51 +114,9 @@ public class UtilActionForm extends ActionForm {
   protected String confirmationId;
 
   /**
-   * General yes/no answer
-   */
-  protected String yesno;
-
-  /**
    * Browser type
    */
   protected String browserType = "default";
-
-  /** We accumulate errors in this Collection as the form is processed.
-   * We use processErrors to emit actual messages
-   */
-  private Collection<IntValError> valErrors = new ArrayList<IntValError>();
-
-  /**
-   * Value error
-   */
-  public static class ValError {
-    /** */
-    public String fldName;
-    /** */
-    public String badVal;
-
-    /**
-     * @param fldName
-     * @param badVal
-     */
-    public ValError(String fldName, String badVal) {
-      this.fldName = fldName;
-      this.badVal = badVal;
-    }
-  }
-
-  /**
-   * ????
-   */
-  public static class IntValError extends ValError {
-    /**
-     * @param fldName
-     * @param badVal
-     */
-    public IntValError(String fldName, String badVal) {
-      super(fldName, badVal);
-    }
-  }
 
   /** Inc waiting for resource
    *
@@ -187,62 +140,34 @@ public class UtilActionForm extends ActionForm {
     return waiters;
   }
 
-  /** Set inuse flag
-   *
-   * @param val
-   */
-  public void assignInuse(boolean val) {
+  @Override
+  public void assignInuse(final boolean val) {
     inuse = val;
   }
 
-  /**
-   * @return boolean value of inuse flag
-   */
+  @Override
   public boolean getInuse() {
     return inuse;
   }
 
-  /** ================ Properties methods ============== */
+  /* ================ Properties methods ============== */
 
-  /**
-   * @param val
-   */
-  public void setDebug(boolean val) {
-    debug = val;
-  }
-
-  /**
-   * @return true for debugging on
-   */
-  public boolean getDebug() {
-    return debug;
-  }
-
-  /** Set initialised state
-   *
-   * @param val
-   */
-  public void setInitialised(boolean val) {
+  @Override
+  public void setInitialised(final boolean val) {
     initialised = val;
   }
 
-  /**
-   * @return initialised state
-   */
+  @Override
   public boolean getInitialised() {
     return initialised;
   }
 
-  /**
-   * @param val
-   */
-  public void setCurrentLocale(Locale val) {
+  @Override
+  public void setCurrentLocale(final Locale val) {
     currentLocale = val;
   }
 
-  /**
-   * @return current locale
-   */
+  @Override
   public Locale getCurrentLocale() {
     if (currentLocale == null) {
       return Locale.getDefault();
@@ -250,67 +175,48 @@ public class UtilActionForm extends ActionForm {
     return currentLocale;
   }
 
-  /**
-   * @param val
-   */
-  public void setNocache(boolean val) {
+  @Override
+  public void setNocache(final boolean val) {
     nocache = val;
   }
 
-  /**
-   * @return boolean true for nocache
-   */
+  @Override
   public boolean getNocache() {
     return nocache;
   }
 
-  /**
-   * @param val
-   */
-  public void setErr(MessageEmit val) {
+  @Override
+  public void setErr(final MessageEmit val) {
     err = val;
   }
 
-  /**
-   * @return MessageEmit
-   */
+  @Override
   public MessageEmit getErr() {
     return err;
   }
 
-  /**
-   * @return boolean
-   */
+  @Override
   public boolean getErrorsEmitted() {
     return err.messagesEmitted();
   }
 
-  /**
-   * @param val
-   */
-  public void setMsg(MessageEmit val) {
+  @Override
+  public void setMsg(final MessageEmit val) {
     msg = val;
   }
 
-  /**
-   * @return boolean
-   */
+  @Override
   public MessageEmit getMsg() {
     return msg;
   }
 
-  /**
-   * @return boolean
-   */
+  @Override
   public boolean getMessagesEmitted() {
     return msg.messagesEmitted();
   }
 
-  /** Can be called by a page to signal an exceptiuon
-   *
-   * @param t
-   */
-  public void setException(Throwable t) {
+  @Override
+  public void setException(final Throwable t) {
     if (err == null) {
       t.printStackTrace();
     } else {
@@ -318,153 +224,106 @@ public class UtilActionForm extends ActionForm {
     }
   }
 
-  /**
-   * @param val
-   */
-  public void setAppVarsTbl(HashMap val) {
+  @Override
+  public void setAppVarsTbl(final HashMap<String, String> val) {
     appVars = val;
   }
 
-  /**
-   * @return Set
-   */
-  public Set getAppVars() {
+  @Override
+  @SuppressWarnings("unused")
+  public Set<Map.Entry<String, String>> getAppVars() {
     if (appVars == null) {
-      return new HashMap().entrySet();
+      return new HashMap<String, String>().entrySet();
     }
     return appVars.entrySet();
   }
 
-  /**
-   * @param val
-   */
-  public void setContentName(String val) {
+  @Override
+  public void setContentName(final String val) {
     contentName = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getContentName() {
     return contentName;
   }
 
-  /**
-   * @param val
-   */
-  public void setUrl(String val) {
+  @Override
+  public void setUrl(final String val) {
     url = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getUrl() {
     return url;
   }
 
-  /**
-   * @param val
-   */
-  public void setSchemeHostPort(String val) {
+  @Override
+  public void setSchemeHostPort(final String val) {
     schemeHostPort = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getSchemeHostPort() {
     return schemeHostPort;
   }
 
-  /** Set the part of the URL that identifies the application.
-   *
-   * @param val       context path in form "/" + name-of-app, e.g. /kiosk
-   */
-  public void setContext(String val) {
+  @Override
+  public void setContext(final String val) {
     context = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getContext() {
     return context;
   }
 
-  /** Sets the scheme + host + port part of the url together with the
-   *  path up to the servlet path. This allows us to append a new action to
-   *  the end.
-   *  <p>For example, we want val="http://myhost.com:8080/myapp"
-   *
-   *  @param  val   the URL prefix
-   */
-  public void setUrlPrefix(String val) {
+  @Override
+  public void setUrlPrefix(final String val) {
     urlPrefix = val;
   }
 
-  /** Returns the scheme + host + port part of the url together with the
-   *  path up to the servlet path. This allows us to append a new action to
-   *  the end.
-   *
-   *  @return  String   the URL prefix
-   */
+  @Override
   public String getUrlPrefix() {
     return urlPrefix;
   }
 
-  /** This should not be setCurrentUser as that exposes it to the incoming
-   * request.
-   *
-   * @param val      String user id
-   */
-  public void assignCurrentUser(String val) {
+  @Override
+  public void assignCurrentUser(final String val) {
     currentUser = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getCurrentUser() {
     return currentUser;
   }
 
-  /** This should not be setSessionId as that exposes it to the incoming
-   * request.
-   *
-   * @param val      String session id
-   */
-  public void assignSessionId(String val) {
+  @Override
+  public void assignSessionId(final String val) {
     sessionId = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getSessionId() {
     return sessionId;
   }
 
+  @Override
   public void assignErrorForward(final String val) {
     errorForward = val;
   }
 
+  @Override
   public String getErrorForward() {
     return errorForward;
   }
 
-  /** This should not be setConfirmationId as that exposes it to the incoming
-   * request.
-   *
-   * @param val      String confirmation id
-   */
-  public void assignConfirmationId(String val) {
+  @Override
+  public void assignConfirmationId(final String val) {
     confirmationId = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getConfirmationId() {
     if (confirmationId == null) {
       confirmationId = Util.makeRandomString(16, 35);
@@ -473,96 +332,14 @@ public class UtilActionForm extends ActionForm {
     return confirmationId;
   }
 
-  /**
-   * @param val
-   */
-  public void setYesno(String val) {
-    yesno = val;
-  }
-
-  /**
-   * @return String
-   */
-  public String getYesno() {
-    return yesno;
-  }
-
-  /**
-   * @return String
-   */
-  public boolean isYes() {
-    return ((yesno != null) && (yesno.equalsIgnoreCase("yes")));
-  }
-
-  /**
-   * @param val
-   */
-  public void setBrowserType(String val) {
+  @Override
+  public void setBrowserType(final String val) {
     browserType = val;
   }
 
-  /**
-   * @return String
-   */
+  @Override
   public String getBrowserType() {
     return browserType;
-  }
-
-  /** ----------------------------------------------------------------
-   *      <center>Value conversion and error processing.</center>
-   *  ---------------------------------------------------------------- */
-
-  /** Convert a string parameter so we can add an
-   * error message for incorrect formats (instead of relying on Struts).
-   *
-   * <p>Struts tends to return 0 or null for illegal values, e.g., alpha
-   * characters for a number.
-   *
-   * @param newVal
-   * @param curVal
-   * @param name
-   * @return String
-   */
-  public int intVal(String newVal, int curVal, String name) {
-    int newInt;
-
-    try {
-      newInt = Integer.parseInt(newVal);
-    } catch (Exception e) {
-      valErrors.add(new IntValError(name, newVal));
-      newInt = curVal;
-    }
-
-    return newInt;
-  }
-
-  /** processErrors is called to determine if there were any errors.
-   * If so processError is called for each error adn the errors vector
-   * is cleared.
-   * Override the processError method to emit custom messages.
-   *
-   * @param err      MessageEmit object
-   * @return boolean True if there were errors
-   */
-  public boolean processErrors(MessageEmit err) {
-    if (valErrors.size() == 0) {
-      return false;
-    }
-
-    for (ValError ve: valErrors) {
-      processError(err, ve);
-    }
-
-    valErrors.clear();
-    return true;
-  }
-
-  /** Override this to emit messages
-   *
-   * @param err
-   * @param ve
-   */
-  public void processError(MessageEmit err, ValError ve) {
   }
 
   @Override
@@ -571,51 +348,9 @@ public class UtilActionForm extends ActionForm {
     reset(request);
   }
 
+  @Override
   public void reset(final HttpServletRequest request) {
     // Default implementation does nothing
-  }
-
-  /* Current time and date formatting
-   */
-
-  /**
-   * @return String
-   */
-  public String getCurTime() {
-    return new TimeDateFormatter(TimeDateFormatter.time,
-                                 getCurrentLocale()).format(new Date());
-  }
-
-  /**
-   * @return String
-   */
-  public String getCurDate() {
-    return new TimeDateFormatter(TimeDateFormatter.date,
-                                 getCurrentLocale()).format(new Date());
-  }
-
-  /**
-   * @return String
-   */
-  public String getCurDateTime() {
-    return new TimeDateFormatter(TimeDateFormatter.timeDate,
-                                 getCurrentLocale()).format(new Date());
-  }
-
-  /**
-   * @return String
-   */
-  public String getCurShortDate() {
-    return new TimeDateFormatter(TimeDateFormatter.dateShort,
-                                 getCurrentLocale()).format(new Date());
-  }
-
-  /**
-   * @return String
-   */
-  public String getCurShortDateTime() {
-    return new TimeDateFormatter(TimeDateFormatter.dateTimeShort,
-                                 getCurrentLocale()).format(new Date());
   }
 }
 

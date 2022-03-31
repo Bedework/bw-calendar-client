@@ -33,8 +33,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.config.ActionConfig;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -142,7 +140,7 @@ public abstract class UtilAbstractAction extends Action
    *
    * @param request  Provide http request/response and form
    * @return String  forward name
-   * @throws Throwable
+   * @throws Throwable on fatal error
    */
   public abstract String performAction(Request request)
                throws Throwable;
@@ -152,42 +150,40 @@ public abstract class UtilAbstractAction extends Action
                                final ActionForm frm,
                                final HttpServletRequest request,
                                final HttpServletResponse response) {
-    ErrorEmitSvlt err = null;
-    MessageEmitSvlt msg = null;
+    final ErrorEmitSvlt err;
+    final MessageEmitSvlt msg;
 
-    String forward = "success";
+    String forward;
     final UtilActionForm form = (UtilActionForm)frm;
 
-    try {
-      //isPortlet = isPortletRequest(request);
+    //isPortlet = isPortletRequest(request);
 
-      err = ErrorEmitSvlt.getErrorObj(request, getId(),
-                                      getErrorObjErrProp(),
-                                      clearMessages());
-      msg = MessageEmitSvlt.getMessageObj(request, getId(),
-                                          getErrorObjErrProp(),
-                                          clearMessages());
+    err = ErrorEmitSvlt.getErrorObj(request, getId(),
+                                    getErrorObjErrProp(),
+                                    clearMessages());
+    msg = MessageEmitSvlt.getMessageObj(request, getId(),
+                                        getErrorObjErrProp(),
+                                        clearMessages());
 
-      /* Log the request - virtual domains can make it difficult to
+    /* Log the request - virtual domains can make it difficult to
        *  distinguish applications.
        */
-      logRequest(request);
+    logRequest(request);
 
-      if (debug()) {
-        debug("entry");
-        debug("================================");
-        //debug("isPortlet=" + isPortlet);
+    if (debug()) {
+      debug("entry");
+      debug("================================");
+      //debug("isPortlet=" + isPortlet);
 
-        final Enumeration<?> en = servlet.getInitParameterNames();
+      final Enumeration<?> en = servlet.getInitParameterNames();
 
-        while (en.hasMoreElements()) {
-          debug("attr name=" + en.nextElement());
-        }
-        debug("================================");
-
-        dumpRequest(request);
+      while (en.hasMoreElements()) {
+        debug("attr name=" + en.nextElement());
       }
+      debug("================================");
+    }
 
+    try {
       if (!form.getInitialised()) {
         // Do one time settings
         form.setNocache(false);
@@ -202,7 +198,9 @@ public abstract class UtilAbstractAction extends Action
 
       getErrorForward(request, form);
       form.setBrowserType(HttpServletUtils.getBrowserType(request));
-      form.assignCurrentUser(HttpServletUtils.remoteUser(request));
+      if (form.getCurrentUser() == null) {
+        form.assignCurrentUser(HttpServletUtils.remoteUser(request));
+      } // Otherwise we check it later in checklogout.
       form.setUrl(HttpServletUtils.getUrl(request));
       form.setSchemeHostPort(HttpServletUtils.getURLshp(request));
       form.setContext(HttpServletUtils.getContext(request));
@@ -217,11 +215,15 @@ public abstract class UtilAbstractAction extends Action
                          mapping.getPath(),
                          form);
 
+      if (debug()) {
+        req.dumpRequest();
+      }
+
       req.checkNocache();
 
       /* Set up presentation values from request
        */
-      doPresentation(req);
+      req.doPresentation();
 
       final String contentName = getContentName(req);
 
@@ -231,11 +233,6 @@ public abstract class UtilAbstractAction extends Action
 
         response.setHeader("Content-Disposition",
                            "Attachment; Filename=\"" + contentName + "\"");
-      }
-
-      // Debugging action to test session serialization
-      if (debug()) {
-        checkSerialize(request);
       }
 
       /* ----------------------------------------------------------------
@@ -276,9 +273,7 @@ public abstract class UtilAbstractAction extends Action
         forward = null;
       }
 
-      if (err == null) {
-        warn("No errors object");
-      } else if (err.messagesEmitted()) {
+      if (err.messagesEmitted()) {
         if (debug()) {
           debug(err.getMsgList().size() + " errors emitted");
         }
@@ -286,9 +281,7 @@ public abstract class UtilAbstractAction extends Action
         debug("No errors emitted");
       }
 
-      if (msg == null) {
-        warn("No messages object");
-      } else if (msg.messagesEmitted()) {
+      if (msg.messagesEmitted()) {
         if (debug()) {
           debug(msg.getMsgList().size() + " messages emitted");
         }
@@ -322,7 +315,7 @@ public abstract class UtilAbstractAction extends Action
    * @param params action parameters
    * @param actionPath from mapping
    * @param form form object
-   * @return
+   * @return a Request object
    */
   protected Request getRequest(final HttpServletRequest request,
                                final HttpServletResponse response,
@@ -391,7 +384,7 @@ public abstract class UtilAbstractAction extends Action
   private String traceConfigParam(final StringBuilder sb,
                                   final String name,
                                   final Map<String, String> params) {
-    String res = params.get(name);
+    final String res = params.get(name);
     if (res == null) {
       return null;
     }
@@ -405,13 +398,12 @@ public abstract class UtilAbstractAction extends Action
 
   /** Override this to get the contentName from different sources
    *
-   * @param req
+   * @param req the Request object
    * @return String name of content
-   * @throws Throwable
    */
   public String getContentName(final Request req) {
-    final UtilActionForm form = req.getForm();
-    final PresentationState ps = getPresentationState(req);
+    final var form = req.getForm();
+    final PresentationState ps = req.getPresentationState();
     final String contentName = ps.getContentName();
 
     form.setContentName(contentName);
@@ -440,16 +432,7 @@ public abstract class UtilAbstractAction extends Action
    * @return error exception property name
    */
   public String getErrorObjErrProp() {
-    return "edu.rpi.sss.util.error.exc";
-  }
-
-  /** Overide this to set the value or turn off presentation support
-   * by returning null or the value "NONE".
-   *
-   * @return presentation attr name
-   */
-  public String getPresentationAttrName() {
-    return PresentationState.presentationAttrName;
+    return "org.bedework.util.error.exc";
   }
 
   public void getErrorForward(final HttpServletRequest request,
@@ -478,165 +461,6 @@ public abstract class UtilAbstractAction extends Action
     }
 
     return logPrefix;
-  }
-
-  /* ====================================================================
-   *               Check serialization
-   * ==================================================================== */
-
-  /* Debugging routine to see if we can serialize the session.
-   * We see session serialization errors in the web container if an
-   * unserializable object class gets embedded in the session somewhere
-   */
-  private void checkSerialize(final HttpServletRequest request) {
-    final String reqpar = request.getParameter("serialize");
-
-    if (reqpar == null) {
-      return;
-    }
-
-    HttpSession sess = request.getSession(false);
-    if (sess == null) {
-      info("No session to test");
-    }
-    Enumeration en = sess.getAttributeNames();
-
-    while (en.hasMoreElements()) {
-      String attrname = (String)en.nextElement();
-      ObjectOutputStream oo = null;
-
-      info("Attempt to serialize attr " + attrname);
-      Object o = sess.getAttribute(attrname);
-
-      try {
-        ByteArrayOutputStream bo = new ByteArrayOutputStream();
-        oo = new ObjectOutputStream(bo);
-        oo.writeObject(o);
-        oo.flush();
-
-        info("Serialized object " + attrname + " has size: " + bo.size());
-      } catch (Throwable t) {
-        t.printStackTrace();
-      } finally {
-        if (oo != null) {
-          try {
-            oo.close();
-          } catch (Throwable t) {}
-        }
-      }
-    }
-  }
-
-  /* ====================================================================
-   *               Presentation state methods
-   * ==================================================================== */
-
-  /**
-   * @param request
-   */
-  public void doPresentation(final Request request) {
-    final PresentationState ps = getPresentationState(request);
-
-    if (ps == null) {
-      if (debug()) {
-        debug("No presentation state");
-      }
-      return;
-    }
-
-    if (debug()) {
-      debug("Set presentation state");
-    }
-
-    final HttpServletRequest req = request.getRequest();
-
-    ps.checkBrowserType(req);
-    ps.checkContentType(req);
-    ps.checkContentName(req);
-    ps.checkNoXSLT(req);
-    ps.checkRefreshXslt(req);
-    ps.checkSkinName(req);
-
-    request.setRequestAttr(getPresentationAttrName(), ps);
-
-    if (debug()) {
-      ps.debugDump("action");
-    }
-  }
-
-  /**
-   * @param request
-   * @return PresentationState
-   */
-  public PresentationState getPresentationState(final Request request) {
-    final String attrName = getPresentationAttrName();
-
-    if ((attrName == null) || (attrName.equals("NONE"))) {
-      return null;
-    }
-
-    Object o = request.getSessionAttr(attrName);
-    final PresentationState ps;
-
-    if (!(o instanceof PresentationState)) {
-      ps = new PresentationState();
-      initPresentationState(request, ps);
-
-      request.setSessionAttr(attrName, ps);
-    } else {
-      ps = (PresentationState)o;
-    }
-
-    return  ps;
-  }
-
-  /**
-   * @param request
-   * @return PresentationState
-   */
-  protected void initPresentationState(final Request request,
-                                       final PresentationState ps) {
-
-    ps.setBrowserType(request.getForm().getBrowserType());
-    ps.setNoXSLTSticky(false);
-  }
-
-  /* ==================================================================
-                Various utility methods
-     ================================================================== */
-
-  /**
-   * @param req the http request
-   */
-  public void dumpRequest(final HttpServletRequest req) {
-    try {
-      final Enumeration<String> names = req.getParameterNames();
-
-      final String title = "Request parameters";
-
-      debug(title + " - global info and uris");
-      debug("getRequestURI = " + req.getRequestURI());
-      debug("getRemoteUser = " + req.getRemoteUser());
-      debug("getUserPrincipal.name = " + req.getUserPrincipal().getName());
-      debug("getRequestedSessionId = " + req.getRequestedSessionId());
-      debug("HttpUtils.getRequestURL(req) = " + req.getRequestURL());
-      debug("query=" + req.getQueryString());
-      debug("contentlen=" + req.getContentLength());
-      debug("request=" + req);
-      debug("host=" + req.getHeader("host"));
-      debug("parameters:");
-
-      debug(title);
-
-      while (names.hasMoreElements()) {
-        final String key = names.nextElement();
-        final String[] vals = req.getParameterValues(key);
-        for (final String val: vals) {
-          debug("  " + key + " = \"" + val + "\"");
-        }
-      }
-    } catch (final Throwable ignored) {
-    }
   }
 
   /* ====================================================================

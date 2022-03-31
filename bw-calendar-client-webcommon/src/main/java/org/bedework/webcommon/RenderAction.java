@@ -20,7 +20,6 @@ package org.bedework.webcommon;
 
 import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.webaction.Request;
-import org.bedework.util.struts.UtilActionForm;
 
 /** This is a no-op action
  *
@@ -40,8 +39,8 @@ public class RenderAction extends BwAbstractAction {
 
   @Override
   public String getContentName(final Request req) {
-    final UtilActionForm form = req.getForm();
-    final PresentationState ps = getPresentationState(req);
+    final BwActionFormBase form = (BwActionFormBase)req.getForm();
+    final PresentationState ps = req.getPresentationState();
     String contentName = ps.getContentName();
 
     if (contentName != null) {

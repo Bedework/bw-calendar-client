@@ -36,6 +36,8 @@ import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
+import org.bedework.util.servlet.filters.ConfiguredXSLTFilter;
+import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.Request;
@@ -739,5 +741,46 @@ public class BwRequest extends Request {
   public void embedAdminGroups() throws Throwable {
     setSessionAttr(bwAdminGroupsInfoName,
                    getClient().getAdminGroups());
+  }
+
+  /* ====================================================================
+   *               Presentation state methods
+   * ==================================================================== */
+
+  @Override
+  public PresentationState getPresentationState() {
+    /* First try to get it from the module. */
+
+    final BwActionFormBase form = getBwForm();
+
+    final BwModule module = form.fetchModule(getModuleName());
+    final BwModuleState mstate = module.getState();
+
+    PresentationState ps = mstate.getPresentationState();
+
+    if (ps == null) {
+      ps = new PresentationState();
+      initPresentationState(ps);
+
+      mstate.setPresentationState(ps);
+    }
+
+    ConfiguredXSLTFilter.XSLTConfig xc = mstate.getXsltConfig();
+
+    if (xc == null) {
+      final Object o = getRequestAttr(ModuleXsltFilter.globalsName);
+
+      if (o instanceof ConfiguredXSLTFilter.XSLTConfig) {
+        xc = (ConfiguredXSLTFilter.XSLTConfig)o;
+      } else {
+        xc = new ConfiguredXSLTFilter.XSLTConfig();
+      }
+
+      mstate.setXsltConfig(xc);
+    }
+
+    setRequestAttr(ModuleXsltFilter.globalsName, xc);
+
+    return ps;
   }
 }

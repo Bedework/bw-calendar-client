@@ -18,13 +18,16 @@
 */
 package org.bedework.util.webaction;
 
+import org.bedework.util.logging.BwLogger;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.servlet.ReqUtil;
-import org.bedework.util.struts.UtilActionForm;
+import org.bedework.util.servlet.filters.PresentationState;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,8 +39,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author Mike Douglass
  */
-public class Request extends ReqUtil {
-  protected UtilActionForm form;
+public class Request extends ReqUtil implements Logged {
+  protected WebActionForm form;
   protected final Map<String, String> params;
   private final String actionPath;
 
@@ -140,7 +143,7 @@ public class Request extends ReqUtil {
                  final HttpServletResponse response,
                  final Map<String, String> params,
                  final String actionPath,
-                 final UtilActionForm form) {
+                 final WebActionForm form) {
     super(request, response);
     this.params = params;
     this.actionPath = actionPath;
@@ -176,7 +179,7 @@ public class Request extends ReqUtil {
   /**
    * @return UtilActionForm
    */
-  public UtilActionForm getForm() {
+  public WebActionForm getForm() {
     return form;
   }
 
@@ -306,6 +309,37 @@ public class Request extends ReqUtil {
     return getStringActionPar(refreshActionKey);
   }
 
+  /**
+   */
+  public void dumpRequest() {
+    final HttpServletRequest req = getRequest();
+
+    final String title = "Request parameters";
+
+    debug(title + " - global info and uris");
+    debug("getRequestURI = " + req.getRequestURI());
+    debug("getRemoteUser = " + req.getRemoteUser());
+    debug("getUserPrincipal.name = " + req.getUserPrincipal().getName());
+    debug("getRequestedSessionId = " + req.getRequestedSessionId());
+    debug("HttpUtils.getRequestURL(req) = " + req.getRequestURL());
+    debug("query=" + req.getQueryString());
+    debug("contentlen=" + req.getContentLength());
+    debug("request=" + req);
+    debug("host=" + req.getHeader("host"));
+    debug("parameters:");
+
+    debug(title);
+
+    final Enumeration<String> names = req.getParameterNames();
+    while (names.hasMoreElements()) {
+      final String key = names.nextElement();
+      final String[] vals = req.getParameterValues(key);
+      for (final String val: vals) {
+        debug("  " + key + " = \"" + val + "\"");
+      }
+    }
+  }
+
   /** Get an Integer request parameter or null. Emit error for non-null and
    * non integer
    *
@@ -333,7 +367,7 @@ public class Request extends ReqUtil {
     try {
       return Integer.valueOf(par);
     } catch (final Throwable t) {
-      form.getErr().emit("org.bedework.bad.actionparameter", par);
+      getErr().emit("org.bedework.bad.actionparameter", par);
       return null;
     }
   }
@@ -386,7 +420,7 @@ public class Request extends ReqUtil {
     }
   }
 
-  /** Check for logout request.
+  /** Check for logout request or force logout if user changed.
    *
    * @return null for continue, forwardLoggedOut to end session.
    */
@@ -396,9 +430,7 @@ public class Request extends ReqUtil {
     final boolean forceLogout =
             !Util.equalsString(reqUser, form.getCurrentUser());
 
-    final String temp = request.getParameter(requestLogout);
-
-    if (forceLogout || (temp != null)) {
+    if (forceLogout || (request.getParameter(requestLogout) != null)) {
       final HttpSession sess = request.getSession(false);
 
       if ((sess != null) && logOutCleanup()) {
@@ -509,5 +541,86 @@ public class Request extends ReqUtil {
 
     appVars.put(name, val);
     return true;
+  }
+
+  /* ====================================================================
+   *               Presentation state methods
+   * ==================================================================== */
+
+  /**
+   */
+  public void doPresentation() {
+    final PresentationState ps = getPresentationState();
+
+    if (ps == null) {
+      if (debug()) {
+        debug("No presentation state");
+      }
+      return;
+    }
+
+    if (debug()) {
+      debug("Set presentation state");
+    }
+
+    final HttpServletRequest req = getRequest();
+
+    ps.checkBrowserType(req);
+    ps.checkContentType(req);
+    ps.checkContentName(req);
+    ps.checkNoXSLT(req);
+    ps.checkRefreshXslt(req);
+    ps.checkSkinName(req);
+
+    setRequestAttr(PresentationState.presentationAttrName, ps);
+
+    if (debug()) {
+      ps.debugDump("action");
+    }
+  }
+
+  /**
+   * @return PresentationState
+   */
+  public PresentationState getPresentationState() {
+    final String attrName = PresentationState.presentationAttrName;
+
+    final Object o = getSessionAttr(attrName);
+    final PresentationState ps;
+
+    if (!(o instanceof PresentationState)) {
+      ps = new PresentationState();
+      initPresentationState(ps);
+
+      setSessionAttr(attrName, ps);
+    } else {
+      ps = (PresentationState)o;
+    }
+
+    return  ps;
+  }
+
+  /**
+   * @param ps PresentationState
+   */
+  protected void initPresentationState(final PresentationState ps) {
+
+    ps.setBrowserType(getForm().getBrowserType());
+    ps.setNoXSLTSticky(false);
+  }
+
+  /* ====================================================================
+   *                   Logged methods
+   * ==================================================================== */
+
+  private final BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
   }
 }

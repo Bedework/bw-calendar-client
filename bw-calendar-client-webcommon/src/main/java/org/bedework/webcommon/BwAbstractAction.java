@@ -50,13 +50,12 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
-import org.bedework.util.servlet.filters.ConfiguredXSLTFilter.XSLTConfig;
 import org.bedework.util.servlet.filters.PresentationState;
-import org.bedework.util.webaction.Request;
 import org.bedework.util.struts.UtilAbstractAction;
 import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.util.webaction.Request;
 import org.bedework.webcommon.config.ClientConfigurations;
 
 import java.util.Calendar;
@@ -99,13 +98,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   @Override
   public String performAction(final Request request) throws Throwable {
-    final BwActionFormBase form = (BwActionFormBase)request.getForm();
+    final BwRequest bwreq = (BwRequest)request;
+    final BwActionFormBase form = bwreq.getBwForm();
     String adminUserId = null;
 
     final BwCallback cb = BwCallback.getCb(request, form);
 
     final int status;
-    
+
     try {
       status = cb.in(request);
     } catch (final Throwable t) {
@@ -121,7 +121,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardError];
     }
 
-    final ConfigCommon conf = setConfig(request);
+    final ConfigCommon conf = setConfig(bwreq);
 
     if (conf.getGuestMode()) {
       form.assignCurrentUser(null);
@@ -136,7 +136,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       debug("About to get state");
     }
 
-    final BwSession bsess = getState(request, form,
+    final BwSession bsess = getState(bwreq, form,
                                      adminUserId, conf);
 
     if (debug()) {
@@ -145,7 +145,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     form.setSession(bsess);
 
-    final BwRequest bwreq = (BwRequest)request;
     bwreq.setSess(bsess);
 
     if (bwreq.present("refresh")) {
@@ -249,12 +248,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setDirInfo(cl.getDirectoryInfo());
     }
 
-    final PresentationState ps = getPresentationState(request);
+    final PresentationState ps = request.getPresentationState();
 
     if (ps.getAppRoot() == null) {
-      ps.setAppRoot(suffixRoot(request,
+      ps.setAppRoot(suffixRoot(bwreq,
                                form.getConfig().getAppRoot()));
-      ps.setBrowserResourceRoot(suffixRoot(request,
+      ps.setBrowserResourceRoot(suffixRoot(bwreq,
                                            form.getConfig().getBrowserResourceRoot()));
 
       // Set the default skin
@@ -380,8 +379,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @return config object
    * @throws Throwable on fatal error
    */
-  public ConfigCommon setConfig(final Request request) throws Throwable {
-    final BwActionFormBase form = (BwActionFormBase)request.getForm();
+  public ConfigCommon setConfig(final BwRequest request) throws Throwable {
+    final BwActionFormBase form = request.getBwForm();
 
     if (form.configSet()) {
       return form.getConfig();
@@ -405,43 +404,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 //    conf = (ConfigCommon)conf.clone();
     form.setConfig(conf); // So we can get an svci object and set defaults
     return conf;
-  }
-
-  @Override
-  public PresentationState getPresentationState(final Request req) {
-    /* First try to get it from the module. */
-
-    final BwActionFormBase form = (BwActionFormBase)req.getForm();
-
-    final BwModule module = form.fetchModule(req.getModuleName());
-    final BwModuleState mstate = module.getState();
-
-    PresentationState ps = mstate.getPresentationState();
-
-    if (ps == null) {
-      ps = new PresentationState();
-      initPresentationState(req, ps);
-
-      mstate.setPresentationState(ps);
-    }
-
-    XSLTConfig xc = mstate.getXsltConfig();
-
-    if (xc == null) {
-      final Object o = req.getRequestAttr(ModuleXsltFilter.globalsName);
-
-      if (o instanceof XSLTConfig) {
-        xc = (XSLTConfig)o;
-      } else {
-        xc = new XSLTConfig();
-      }
-
-      mstate.setXsltConfig(xc);
-    }
-
-    req.setRequestAttr(ModuleXsltFilter.globalsName, xc);
-
-    return ps;
   }
 
   protected int setSearchParams(final BwRequest request,
@@ -596,7 +558,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   private boolean filterAndQuery(final BwRequest request,
-                                 final SearchParams params) throws Throwable {
+                                 final SearchParams params) {
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
@@ -787,8 +749,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                        ekey.getRecurrenceId());
 
       if (ev == null) {
-        request.getForm().getErr().emit(ClientError.unknownEvent,
-                                        /*eid*/ekey.getName());
+        request.getErr().emit(ClientError.unknownEvent,
+                /*eid*/ekey.getName());
         return null;
       } else if (debug()) {
         debug("Get event found " + ev.getEvent());
@@ -847,8 +809,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (ev == null) {
-      request.getForm().getErr().emit(ClientError.unknownEvent, /*eid*/
-                                      guid);
+      request.getErr().emit(ClientError.unknownEvent, /*eid*/
+                            guid);
       return null;
     } else if (debug()) {
       debug("Get event found " + ev.getEvent());
@@ -1086,7 +1048,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @return BwSession never null
    * @throws Throwable on fatal error
    */
-  private BwSession getState(final Request request,
+  private BwSession getState(final BwRequest request,
                              final BwActionFormBase form,
                              final String adminUserId,
                              final ConfigCommon conf) throws Throwable {
@@ -1192,9 +1154,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return true;
   }
 
-  private String suffixRoot(final Request req,
+  private String suffixRoot(final BwRequest req,
                             final String val) {
-    final BwActionFormBase form = (BwActionFormBase)req.getForm();
+    final BwActionFormBase form = req.getBwForm();
 
     final StringBuilder sb = new StringBuilder(val);
 

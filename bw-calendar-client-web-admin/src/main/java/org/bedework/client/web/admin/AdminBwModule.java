@@ -15,7 +15,6 @@ import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminClientImpl;
 import org.bedework.client.admin.AdminConfig;
 import org.bedework.client.web.rw.RwBwModule;
-import org.bedework.util.webaction.Request;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwCallback;
 import org.bedework.webcommon.BwModuleState;
@@ -54,7 +53,7 @@ public class AdminBwModule extends RwBwModule {
    * @throws Throwable on fatal error
    */
   @Override
-  public boolean checkClient(final Request request,
+  public boolean checkClient(final BwRequest request,
                              final BwSession sess,
                              final String user,
                              boolean canSwitch,
@@ -63,7 +62,7 @@ public class AdminBwModule extends RwBwModule {
       throw new RuntimeException("Admin client called for non admin app");
     }
 
-    final BwAdminActionForm form = (BwAdminActionForm)request.getForm();
+    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final BwModuleState mstate = getState();
     AdminClient client = (AdminClient)getClient();
     final BwCallback cb = BwCallback.getCb(request, form);
@@ -274,7 +273,7 @@ public class AdminBwModule extends RwBwModule {
    */
   public int checkGroup(final BwRequest request,
                         final boolean initCheck) {
-    final BwAdminActionForm form = (BwAdminActionForm)request.getForm();
+    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
 
     final AdminClient cl = (AdminClient)request.getClient();
 

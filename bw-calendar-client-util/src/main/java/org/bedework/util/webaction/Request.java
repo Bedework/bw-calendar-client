@@ -319,7 +319,12 @@ public class Request extends ReqUtil implements Logged {
     debug(title + " - global info and uris");
     debug("getRequestURI = " + req.getRequestURI());
     debug("getRemoteUser = " + req.getRemoteUser());
-    debug("getUserPrincipal.name = " + req.getUserPrincipal().getName());
+    if (req.getUserPrincipal() == null) {
+      debug("getUserPrincipal = null");
+    } else {
+      debug("getUserPrincipal.name = " + req.getUserPrincipal()
+                                            .getName());
+    }
     debug("getRequestedSessionId = " + req.getRequestedSessionId());
     debug("HttpUtils.getRequestURL(req) = " + req.getRequestURL());
     debug("query=" + req.getQueryString());

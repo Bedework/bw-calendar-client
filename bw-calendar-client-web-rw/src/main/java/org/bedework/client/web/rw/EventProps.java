@@ -24,7 +24,7 @@ public class EventProps {
   }
 
   /**
-   * @param form struts form
+   * @param form action form
    * @return ValidateResult
    */
   public static ValidateResult validateLocation(final BwRequest request,

@@ -39,8 +39,6 @@ import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.webcommon.BwRequest;
 
-import org.apache.struts.upload.FormFile;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -90,7 +88,7 @@ public class UploadAction extends RWActionBase {
 
     final String newCalPath = request.getReqPar("newCalPath");
 
-    final FormFile upFile = form.getUploadFile();
+    final var upFile = form.getUploadFileInfo();
 
     if (upFile == null) {
       // Just forget it
@@ -113,7 +111,7 @@ public class UploadAction extends RWActionBase {
     try {
       // To catch some of the parser errors
 
-      final InputStream is = upFile.getInputStream();
+      final InputStream is = upFile.getContentStream();
 
       final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 

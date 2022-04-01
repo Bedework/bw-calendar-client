@@ -4,7 +4,6 @@
 package org.bedework.client.web.rw;
 
 import org.bedework.appcommon.DateTimeFormatter;
-import org.bedework.client.rw.InOutBoxInfo;
 import org.bedework.appcommon.SelectId;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -15,14 +14,12 @@ import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calsvci.SchedulingI.FbResponses;
+import org.bedework.client.rw.InOutBoxInfo;
 import org.bedework.client.rw.NotificationInfo;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModule;
 
-import org.apache.struts.upload.FormFile;
-
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -31,14 +28,6 @@ import java.util.Collection;
  * User: mike Date: 3/11/21 Time: 23:53
  */
 public class BwRWActionForm extends BwActionFormBase {
-  /* ..............................................................
-   *                       Uploads and exports
-   * .............................................................. */
-
-  private FormFile eventImageUpload;
-
-  private FormFile uploadFile;
-
   /* ..............................................................
    *           Fields for creating or editing objects
    * .............................................................. */
@@ -184,51 +173,6 @@ public class BwRWActionForm extends BwActionFormBase {
   private NotificationInfo notificationInfo;
 
   private InOutBoxInfo inBoxInfo;
-
-  /* ==============================================================
-   *                   Uploads and exports
-   * ============================================================== */
-
-  /**
-   * @param val FormFile
-   */
-  public void setEventImageUpload(final FormFile val) {
-    eventImageUpload = val;
-  }
-
-  /**
-   * @return FormFile
-   */
-  public FormFile getEventImageUpload() {
-    return eventImageUpload;
-  }
-
-  /**
-   * @param val
-   */
-  public void setUploadFile(final FormFile val) {
-    uploadFile = val;
-  }
-
-  /**
-   * @return FormFile
-   */
-  public FormFile getUploadFile() {
-    return uploadFile;
-  }
-
-  public UploadFileInfo getUploadFileInfo() {
-    if (uploadFile == null) {
-      return null;
-    }
-
-    try {
-      return new UploadFileInfo(uploadFile.getInputStream(),
-                                uploadFile.getFileSize());
-    } catch (final IOException ioe) {
-      throw new RuntimeException(ioe);
-    }
-  }
 
   /* ====================================================================
    *                   Events

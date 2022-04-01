@@ -26,6 +26,7 @@ import org.bedework.appcommon.ImageProcessing;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.appcommon.Images;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -57,14 +58,13 @@ import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.util.misc.response.Response;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.TimeDateComponents;
 
 import net.fortuna.ical4j.model.Recur;
-import org.apache.struts.upload.FormFile;
 
-import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -290,9 +290,9 @@ public class UpdateEventAction extends RWActionBase {
     /* ---------------------- Uploaded image ----------------------------- */
 
     final List<BwXproperty> extras = new ArrayList<>();
-    final FormFile ff = form.getEventImageUpload();
+    final UploadFileInfo ff = form.getImageUploadInfo();
 
-    if ((ff != null) && (ff.getFileSize() > 0)) {
+    if ((ff != null) && (ff.getLength() > 0)) {
       final ProcessedImage pi = processImage(request, ff);
 
       if (!pi.OK) {
@@ -989,15 +989,15 @@ public class UpdateEventAction extends RWActionBase {
    * @return never null.
    */
   protected ProcessedImage processImage(final BwRequest request,
-                                        final FormFile file) {
+                                        final UploadFileInfo file) {
     final ProcessedImage pi = new ProcessedImage();
     final RWClient cl = (RWClient)request.getClient();
 
     try {
       final long maxSize = cl.getUserMaxEntitySize();
 
-      if (file.getFileSize() > maxSize) {
-        request.getErr().emit(ValidationError.tooLarge, file.getFileSize(), maxSize);
+      if (file.getLength() > maxSize) {
+        request.getErr().emit(ValidationError.tooLarge, file.getLength(), maxSize);
         pi.retry = true;
         return pi;
       }
@@ -1075,12 +1075,11 @@ public class UpdateEventAction extends RWActionBase {
         pi.image.setName(fns.fn);
       }
 
-      final byte[] fileData = file.getFileData();
-      final byte[] thumbContent;
+      final Images images;
 
       try {
-        thumbContent = ImageProcessing.createThumbnail(
-                new ByteArrayInputStream(fileData),
+        images = ImageProcessing.createImages(
+                file.getContentStream(),
                 thumbType, 160);
       } catch (final Throwable t) {
         /* Probably an image type we can't process or maybe not an image at all
@@ -1094,7 +1093,9 @@ public class UpdateEventAction extends RWActionBase {
         return pi;
       }
 
-      cl.setResourceValue(pi.image, fileData);
+      cl.setResourceValue(pi.image,
+                          images.getInputStream(),
+                          file.getLength());
       pi.image.setContentType(file.getContentType());
 
       /* Make a thumbnail */
@@ -1120,7 +1121,9 @@ public class UpdateEventAction extends RWActionBase {
 
       pi.thumbnail.setContentType("image/" + thumbType);
 
-      cl.setResourceValue(pi.thumbnail, thumbContent);
+      cl.setResourceValue(pi.thumbnail,
+                          images.getThumbInputStream(),
+                          images.getThumbLength());
 
       if (!replace) {
         cl.saveResource(pi.image);

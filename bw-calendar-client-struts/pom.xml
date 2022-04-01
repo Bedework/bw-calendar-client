@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.bedework.bwwebcl</groupId>
     <artifactId>bw-calendar-client</artifactId>
+    <groupId>org.bedework.bwwebcl</groupId>
     <version>4.0.3-SNAPSHOT</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>bw-calendar-client-util</artifactId>
-  <name>Bedework web client: utils</name>
+  <artifactId>bw-calendar-client-struts</artifactId>
+  <name>Bedework web client: Struts 1 classes</name>
 
   <dependencies>
-    <!-- Bedework -->
+    <dependency>
+      <groupId>org.bedework.bwwebcl</groupId>
+      <artifactId>bw-calendar-client-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.bedework</groupId>
@@ -38,6 +43,11 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts-core</artifactId>
     </dependency>
   </dependencies>
 </project>

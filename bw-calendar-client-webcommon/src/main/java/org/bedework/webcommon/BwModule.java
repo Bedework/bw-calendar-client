@@ -30,12 +30,9 @@ import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.webaction.Request;
-import org.bedework.util.struts.UtilActionForm;
 
 import java.io.Serializable;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static org.bedework.webcommon.ForwardDefs.forwardNoAction;
@@ -378,8 +375,8 @@ public class BwModule implements Logged, Serializable {
         refreshInt =  conf.getRefreshInterval();
       }
 
-      setRefreshInterval(request.getRequest(), request.getResponse(),
-                         refreshInt, refreshAction, form);
+      setRefreshInterval(request,
+                         refreshInt, refreshAction);
 
       /* Ensure the session timeout interval is longer than our refresh period
        */
@@ -418,28 +415,24 @@ public class BwModule implements Logged, Serializable {
 
   /** Check request for refresh interval
    *
-   * @param request http request
-   * @param response http response
+   * @param request bedework request object
    * @param refreshInterval seconds
    * @param refreshAction action to call
-   * @param form our form
    */
-  public void setRefreshInterval(final HttpServletRequest request,
-                                 final HttpServletResponse response,
+  public void setRefreshInterval(final BwRequest request,
                                  final int refreshInterval,
-                                 final String refreshAction,
-                                 final UtilActionForm form) {
+                                 final String refreshAction) {
     if (refreshInterval != 0) {
       final StringBuilder sb = new StringBuilder(250);
 
       sb.append(refreshInterval);
       sb.append("; URL=");
-      sb.append(form.getUrlPrefix());
+      sb.append(request.getForm().getUrlPrefix());
       if (!refreshAction.startsWith("/")) {
         sb.append("/");
       }
       sb.append(refreshAction);
-      response.setHeader("Refresh", sb.toString());
+      request.getResponse().setHeader("Refresh", sb.toString());
     }
   }
 

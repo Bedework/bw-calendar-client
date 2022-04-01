@@ -26,6 +26,7 @@ import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.webaction.ErrorEmitSvlt;
 import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
+import org.bedework.util.webaction.WebActionForm;
 
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -321,7 +322,7 @@ public abstract class UtilAbstractAction extends Action
                                final HttpServletResponse response,
                                final Map<String, String> params,
                                final String actionPath,
-                               final UtilActionForm form) {
+                               final WebActionForm form) {
     return new Request(request, response, params, actionPath, form);
   }
 

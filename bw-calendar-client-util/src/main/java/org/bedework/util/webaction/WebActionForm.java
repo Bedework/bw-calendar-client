@@ -230,4 +230,18 @@ public interface WebActionForm {
   String getBrowserType();
 
   void reset(HttpServletRequest request);
+
+  /**
+   *
+   * @return null if no request parameter named imageUpload otherwise
+   *               an UploadFileInfo object
+   */
+  UploadFileInfo getImageUploadInfo();
+
+  /**
+   *
+   * @return null if no request parameter named uploadFile otherwise
+   *               an UploadFileInfo object
+   */
+  UploadFileInfo getUploadFileInfo();
 }

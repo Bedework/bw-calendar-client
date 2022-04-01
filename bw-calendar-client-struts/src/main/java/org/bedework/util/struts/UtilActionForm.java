@@ -20,10 +20,12 @@ package org.bedework.util.struts;
 
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.MessageEmit;
+import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.util.webaction.WebActionForm;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.upload.FormFile;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -45,7 +47,7 @@ public class UtilActionForm extends ActionForm
 
   private Locale currentLocale;
 
-  /* ..................... fields associated with locking ............... */
+  /* ............... fields associated with locking ........... */
 
   /** Requests waiting */
   private int waiters;
@@ -117,6 +119,18 @@ public class UtilActionForm extends ActionForm
    * Browser type
    */
   protected String browserType = "default";
+
+  /* ...........................................................
+   *                       Uploads and exports
+   * ........................................................... */
+
+  private FormFile imageUpload;
+
+  private FormFile uploadFile;
+
+  /* ==========================================================
+   *                          Methods
+     ========================================================== */
 
   /** Inc waiting for resource
    *
@@ -351,6 +365,56 @@ public class UtilActionForm extends ActionForm
   @Override
   public void reset(final HttpServletRequest request) {
     // Default implementation does nothing
+  }
+
+  /* ==========================================================
+   *                   Uploads and exports
+   * ========================================================== */
+
+  /**
+   * @param val FormFile
+   */
+  public void setImageUpload(final FormFile val) {
+    imageUpload = val;
+  }
+
+  /**
+   * @return FormFile
+   */
+  public FormFile getImageUpload() {
+    return imageUpload;
+  }
+
+  @Override
+  public UploadFileInfo getImageUploadInfo() {
+    if (imageUpload == null) {
+      return null;
+    }
+
+    return new UploadFileInfoImpl(imageUpload);
+  }
+
+  /**
+   * @param val the form file
+   */
+  public void setUploadFile(final FormFile val) {
+    uploadFile = val;
+  }
+
+  /**
+   * @return FormFile
+   */
+  public FormFile getUploadFile() {
+    return uploadFile;
+  }
+
+  @Override
+  public UploadFileInfo getUploadFileInfo() {
+    if (uploadFile == null) {
+      return null;
+    }
+
+    return new UploadFileInfoImpl(uploadFile);
   }
 }
 

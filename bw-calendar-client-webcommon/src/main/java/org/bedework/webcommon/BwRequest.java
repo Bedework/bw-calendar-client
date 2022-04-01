@@ -38,9 +38,9 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
 import org.bedework.util.servlet.filters.ConfiguredXSLTFilter;
 import org.bedework.util.servlet.filters.PresentationState;
-import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.Request;
+import org.bedework.util.webaction.WebActionForm;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,7 +187,7 @@ public class BwRequest extends Request {
                    final HttpServletResponse response,
                    final Map<String, String> params,
                    final String actionPath,
-                   final UtilActionForm form) {
+                   final WebActionForm form) {
     super(request, response, params, actionPath, form);
   }
 

@@ -52,10 +52,10 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
 import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.struts.UtilAbstractAction;
-import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.Request;
+import org.bedework.util.webaction.WebActionForm;
 import org.bedework.webcommon.config.ClientConfigurations;
 
 import java.util.Calendar;
@@ -336,7 +336,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                final HttpServletResponse response,
                                final Map<String, String> params,
                                final String actionPath,
-                               final UtilActionForm form) {
+                               final WebActionForm form) {
     return new BwRequest(request, response, params, actionPath, form);
   }
 

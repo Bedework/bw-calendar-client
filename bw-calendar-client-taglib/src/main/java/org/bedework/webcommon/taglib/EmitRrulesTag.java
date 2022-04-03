@@ -3,10 +3,10 @@
 */
 package org.bedework.webcommon.taglib;
 
-import org.bedework.calfacade.BwXproperty;
+import org.bedework.convert.RecurRuleComponents;
 import org.bedework.webcommon.tagcommon.BwTagUtils;
 
-import java.util.List;
+import java.util.Collection;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -14,12 +14,10 @@ import javax.servlet.jsp.JspWriter;
 /**
  * User: mike Date: 4/2/22 Time: 14:32
  */
-public class EmitXpropsTag extends NameScopePropertyTag {
+public class EmitRrulesTag extends NameScopePropertyTag {
   /** Optional attribute: for those who like tidy xml
    * If specified we add the value after a new line. */
   private String indent;
-
-  private boolean skipNonJsp = true;
 
   /** Called at end of Tag
    *
@@ -28,12 +26,12 @@ public class EmitXpropsTag extends NameScopePropertyTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the value */
-      final List<BwXproperty> xprops =
-              (List<BwXproperty>)getObject(false);
+      final Collection<RecurRuleComponents> rrules =
+              (Collection<RecurRuleComponents>)getObject(false);
 
       final JspWriter out = pageContext.getOut();
 
-      BwTagUtils.OutXprops(out, indent, skipNonJsp, xprops);
+      BwTagUtils.OutRrules(out, indent, rrules);
     } catch(final Throwable t) {
       t.printStackTrace();
       throw new JspTagException("Error: " + t.getMessage());

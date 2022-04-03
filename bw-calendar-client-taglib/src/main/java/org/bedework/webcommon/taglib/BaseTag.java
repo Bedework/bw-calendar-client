@@ -107,52 +107,6 @@ public class BaseTag extends TagSupport {
     }
   }
 
-  public static String filter(final String value) {
-    if (value != null && value.length() != 0) {
-      StringBuilder result = null;
-      String filtered;
-
-      for (int i = 0; i < value.length(); ++i) {
-        filtered = null;
-        switch(value.charAt(i)) {
-          case '"':
-            filtered = "&quot;";
-            break;
-          case '&':
-            filtered = "&amp;";
-            break;
-          case '\'':
-            filtered = "&#39;";
-            break;
-          case '<':
-            filtered = "&lt;";
-            break;
-          case '>':
-            filtered = "&gt;";
-        }
-
-        if (result == null) {
-          if (filtered != null) {
-            result = new StringBuilder(value.length() + 50);
-            if (i > 0) {
-              result.append(value.substring(0, i));
-            }
-
-            result.append(filtered);
-          }
-        } else if (filtered == null) {
-          result.append(value.charAt(i));
-        } else {
-          result.append(filtered);
-        }
-      }
-
-      return result == null ? value : result.toString();
-    } else {
-      return value;
-    }
-  }
-
   protected Client getClient() {
     return (Client)pageContext.getRequest().getAttribute(BwRequest.embeddedClientName);
   }

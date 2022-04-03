@@ -1,0 +1,41 @@
+<xproperties>
+  <X-BEDEWORK-ALIAS>
+    <parameters>
+      <X-BEDEWORK-PARAM-DISPLAYNAME><![CDATA[Holidays]]></X-BEDEWORK-PARAM-DISPLAYNAME>
+
+      <X-BEDEWORK-PARAM-PATH><![CDATA[/public/aliases/Academic Calendar/Holidays]]></X-BEDEWORK-PARAM-PATH>
+
+      <X-BEDEWORK-PARAM-ALIASPATH><![CDATA[/public/cals/MainCal]]></X-BEDEWORK-PARAM-ALIASPATH>
+    </parameters>
+    <values>
+      <text><![CDATA[/user/agrp_calsuite-MainCampus/Academic Calendar/Holidays]]></text>
+    </values>
+  </X-BEDEWORK-ALIAS>
+
+  <X-BEDEWORK-ALIAS>
+    <parameters>
+      <X-BEDEWORK-PARAM-DISPLAYNAME>
+        <![CDATA[Lectures]]></X-BEDEWORK-PARAM-DISPLAYNAME>
+      <X-BEDEWORK-PARAM-PATH><![CDATA[/public/aliases/Lectures and Seminars/Lectures]]></X-BEDEWORK-PARAM-PATH>
+      <X-BEDEWORK-PARAM-ALIASPATH>
+        <![CDATA[/public/cals/MainCal]]></X-BEDEWORK-PARAM-ALIASPATH>
+    </parameters>
+
+    <values>
+      <text><![CDATA[/user/agrp_calsuite-MainCampus/Lectures and Seminars/Lectures]]></text>
+    </values>
+  </X-BEDEWORK-ALIAS>
+
+  <X-BEDEWORK-SUBMITTEDBY>
+    <values>
+      <text><![CDATA[admin for calsuite-MainCampus (agrp_calsuite-MainCampus)]]></text>
+    </values>
+  </X-BEDEWORK-SUBMITTEDBY>
+
+  <X-BEDEWORK-CALSUITE>
+    <values>
+      <text><![CDATA[MainCampus]]></text>
+    </values>
+  </X-BEDEWORK-CALSUITE>
+</xproperties>
+

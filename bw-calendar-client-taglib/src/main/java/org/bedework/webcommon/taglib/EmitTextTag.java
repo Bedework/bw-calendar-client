@@ -19,6 +19,8 @@
 
 package org.bedework.webcommon.taglib;
 
+import org.bedework.webcommon.tagcommon.BwTagUtils;
+
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 
@@ -39,7 +41,7 @@ public class EmitTextTag extends NameScopePropertyTag {
   private String tagName;
 
   /** Optional attribute: for those who like tidy xml
-   * If specified we add teh value after a new line. */
+   * If specified we add the value after a new line. */
   private String indent = null;
 
   private boolean filter = true;
@@ -149,7 +151,7 @@ public class EmitTextTag extends NameScopePropertyTag {
 
   private String formatted(final String val) {
     if (filter) {
-      return filter(val);
+      return BwTagUtils.filter(val);
     }
 
     return val;

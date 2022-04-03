@@ -6,8 +6,8 @@
         version="2.1">
   <display-name>Bedework Tag library</display-name>
   <tlib-version>1.2</tlib-version>
-  <short-name>bedework</short-name>
-  <uri>https://bedework.org/jsp/jstl/bedework</uri>
+  <short-name>bw</short-name>
+  <uri>https://bedework.org/jsp/taglib/bedework</uri>
 
   <tag>
     <description>Set a PropertiesEntity value</description>
@@ -121,6 +121,49 @@
 
     <attribute>
       <name>filter</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <description>Emit bw xproperties</description>
+    <name>emitXprops</name>
+    <tag-class>org.bedework.webcommon.taglib.EmitXpropsTag</tag-class>
+    <body-content>empty</body-content>
+
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>property</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>tagName</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>indent</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>skipNonJsp</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>

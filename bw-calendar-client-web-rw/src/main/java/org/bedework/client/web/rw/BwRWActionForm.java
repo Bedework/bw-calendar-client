@@ -1030,7 +1030,10 @@ public class BwRWActionForm extends BwActionFormBase {
    * ============================================================== */
 
   public BwModule newModule(final String name) {
-    return new RwBwModule(name);
+    final var m = new RwBwModule(name);
+    m.getState().setYearVals(getYearVals());
+
+    return m;
   }
 
   /**

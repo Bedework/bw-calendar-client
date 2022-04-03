@@ -220,7 +220,10 @@ public class BwActionFormBase extends UtilActionForm
    * .................................................................... */
 
   public BwModule newModule(final String name) {
-    return new BwModule(name);
+    final var m = new BwModule(name);
+    m.getState().setYearVals(getYearVals());
+
+    return m;
   }
 
   public void setModule(final String name, final BwModule module) {

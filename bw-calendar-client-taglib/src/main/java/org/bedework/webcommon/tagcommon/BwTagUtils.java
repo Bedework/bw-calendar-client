@@ -7,6 +7,7 @@ import org.bedework.calfacade.BwXproperty;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.misc.Util;
 import org.bedework.util.webaction.ErrorEmitSvlt;
+import org.bedework.webcommon.BwModuleState;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -48,8 +49,7 @@ public class BwTagUtils {
         outTagged(out, curIndent, "param", param.toString());
       }
 
-      curIndent = popIndent(curIndent);
-      closeTag(out, curIndent, tagName);
+      curIndent = closeTag(out, curIndent, tagName);
     }
   }
 
@@ -98,92 +98,78 @@ public class BwTagUtils {
       // byHour --%>
 
       if (!Util.isEmpty(rrc.getByDay())) {
-        openTag(out, curIndent, "byday", true);
-        curIndent = pushIndent(curIndent);
+        curIndent = openTag(out, curIndent, "byday", true);
 
         for (final var posdays: rrc.getByDay()) {
-          openTag(out, curIndent, "pos", true,
-                  new Attribute("val", posdays.getPos().toString()));
-          curIndent = pushIndent(curIndent);
+          curIndent = openTag(out, curIndent, "pos", true,
+                              new Attribute("val",
+                                            posdays.getPos().toString()));
 
           for (final var day: posdays.getDays()) {
             outTagged(out, curIndent, "day", day);
           }
 
-          curIndent = popIndent(curIndent);
-          closeTag(out, curIndent, "pos");
+          curIndent = closeTag(out, curIndent, "pos");
         }
 
-        curIndent = popIndent(curIndent);
-        closeTag(out, curIndent, "byday");
+        curIndent = closeTag(out, curIndent, "byday");
       }
 
       if (!Util.isEmpty(rrc.getByMonthDay())) {
-        openTag(out, curIndent, "bymonthday", true);
-        curIndent = pushIndent(curIndent);
+        curIndent = openTag(out, curIndent, "bymonthday", true);
 
         for (final var val: rrc.getByMonthDay()) {
           outTagged(out, curIndent, "val", val.toString());
         }
 
-        curIndent = popIndent(curIndent);
-        closeTag(out, curIndent, "bymonthday");
+        curIndent = closeTag(out, curIndent, "bymonthday");
       }
 
       if (!Util.isEmpty(rrc.getByYearDay())) {
-        openTag(out, curIndent, "byyearday", true);
-        curIndent = pushIndent(curIndent);
+        curIndent = openTag(out, curIndent, "byyearday", true);
 
         for (final var val: rrc.getByYearDay()) {
           outTagged(out, curIndent, "val", val.toString());
         }
 
-        curIndent = popIndent(curIndent);
-        closeTag(out, curIndent, "byyearday");
+        curIndent = closeTag(out, curIndent, "byyearday");
       }
 
       if (!Util.isEmpty(rrc.getByWeekNo())) {
-        openTag(out, curIndent, "byweekno", true);
-        curIndent = pushIndent(curIndent);
+        curIndent = openTag(out, curIndent, "byweekno", true);
 
         for (final var val: rrc.getByWeekNo()) {
           outTagged(out, curIndent, "val", val.toString());
         }
 
-        curIndent = popIndent(curIndent);
-        closeTag(out, curIndent, "byweekno");
+        curIndent = closeTag(out, curIndent, "byweekno");
       }
 
       if (!Util.isEmpty(rrc.getByMonth())) {
-        openTag(out, curIndent, "bymonth", true);
-        curIndent = pushIndent(curIndent);
+        curIndent = openTag(out, curIndent, "bymonth", true);
 
         for (final var val: rrc.getByMonth()) {
           outTagged(out, curIndent, "val", val.toString());
         }
 
-        curIndent = popIndent(curIndent);
-        closeTag(out, curIndent, "bymonth");
+        curIndent = closeTag(out, curIndent, "bymonth");
       }
 
       if (!Util.isEmpty(rrc.getBySetPos())) {
-        openTag(out, curIndent, "bysetpos", true);
-        curIndent = pushIndent(curIndent);
+        curIndent = openTag(out, curIndent, "bysetpos", true);
 
         for (final var val: rrc.getBySetPos()) {
           outTagged(out, curIndent, "val", val.toString());
         }
 
-        curIndent = popIndent(curIndent);
-        closeTag(out, curIndent, "bysetpos");
+        curIndent = closeTag(out, curIndent, "bysetpos");
       }
 
       if (rrc.getWkst() != null) {
         outTagged(out, curIndent, "wkst", rrc.getWkst());
       }
 
-      curIndent = popIndent(curIndent);
-      closeTag(out, curIndent, "recurrence");
+      curIndent = closeTag(out, curIndent, "recurrence");
     }
   }
 
@@ -213,36 +199,130 @@ public class BwTagUtils {
       if (skipNonJsp && xprop.getSkipJsp()) {
         continue;
       }
-      openTag(out, curIndent, xprop.getName(), true);
-      curIndent = pushIndent(curIndent);
+      curIndent = openTag(out, curIndent, xprop.getName(), true);
 
       if (!Util.isEmpty(xprop.getParameters())) {
-        openTag(out, curIndent, "parameters", true);
-        curIndent = pushIndent(curIndent);
+        curIndent = openTag(out, curIndent, "parameters", true);
 
         for (final var param: xprop.getParameters()) {
           outTagged(out, curIndent, param.getName(),
                     param.getValue(), false, true);
         }
 
-        curIndent = popIndent(curIndent);
-        closeTag(out, curIndent, "parameters");
+        curIndent = closeTag(out, curIndent, "parameters");
       }
 
-      openTag(out, curIndent, "values", true);
-      curIndent = pushIndent(curIndent);
+      curIndent = openTag(out, curIndent, "values", true);
 
       outTagged(out, curIndent, "text",
                 xprop.getValue(), false, true);
 
-      curIndent = popIndent(curIndent);
-      closeTag(out, curIndent, "values");
+      curIndent = closeTag(out, curIndent, "values");
 
-      curIndent = popIndent(curIndent);
-      closeTag(out, curIndent, xprop.getName());
+      curIndent = closeTag(out, curIndent, xprop.getName());
     }
 
     closeTag(out, indent, "xproperties");
+  }
+
+  public static void outLabels(final JspWriter out,
+                               final String indent,
+                               final BwModuleState mstate)
+          throws IOException {
+    var curIndent = pushIndent(indent);
+    final var calInfo = mstate.getCalInfo();
+    final var forLabels = mstate.getEventDates().getForLabels();
+
+    // Assume indented for first
+    openTag(out, null, "daylabels", true);
+
+    for (final var dayLabel: calInfo.getDayLabels()) {
+      outTagged(out, indent, "val", dayLabel);
+    }
+
+    curIndent = closeTag(out, curIndent, "daylabels");
+
+    curIndent = openTag(out, curIndent, "dayvalues", true);
+    for (final var dayVal: calInfo.getDayVals()) {
+      outTagged(out, indent, "val", dayVal);
+    }
+    outTagged(out, indent, "start",
+              mstate.getViewStartDate().getDay());
+    curIndent = closeTag(out, curIndent, "dayvalues");
+
+    curIndent = openTag(out, curIndent, "daynames", true);
+    for (final var dayName: calInfo.getDayNamesAdjusted()) {
+      outTagged(out, indent, "val", dayName);
+    }
+    curIndent = closeTag(out, curIndent, "daynames");
+
+    curIndent = openTag(out, curIndent, "shortdaynames", true);
+    for (final var shortDayName: calInfo.getShortDayNamesAdjusted()) {
+      outTagged(out, indent, "val", shortDayName);
+    }
+    curIndent = closeTag(out, curIndent, "shortdaynames");
+
+    curIndent = openTag(out, curIndent, "recurdayvals", true);
+    for (final var recurDayName: calInfo.getRecurDayNamesAdjusted()) {
+      outTagged(out, indent, "val", recurDayName);
+    }
+    curIndent = closeTag(out, curIndent, "recurdayvals");
+    curIndent = openTag(out, curIndent, "monthlabels", true);
+    for (final var monthLabel: calInfo.getMonthLabels()) {
+      outTagged(out, indent, "val", monthLabel);
+    }
+    curIndent = closeTag(out, curIndent, "monthlabels");
+
+    curIndent = openTag(out, curIndent, "monthvalues", true);
+    for (final var monthVal: calInfo.getMonthVals()) {
+      outTagged(out, indent, "val", monthVal);
+    }
+    outTagged(out, indent, "start", mstate.getViewStartDate().getMonth());
+    curIndent = closeTag(out, curIndent, "monthvalues");
+
+    curIndent = openTag(out, curIndent, "yearvalues", true);
+    for (final var yearVals: mstate.getYearVals()) {
+      outTagged(out, indent, "val", yearVals);
+    }
+    outTagged(out, indent, "start", mstate.getViewStartDate().getYear());
+    curIndent = closeTag(out, curIndent, "yearvalues");
+
+    curIndent = openTag(out, curIndent, "hourlabels", true);
+    for (final var hourLabel: forLabels.getHourLabels()) {
+      outTagged(out, indent, "val", hourLabel);
+    }
+    curIndent = closeTag(out, curIndent, "hourlabels");
+
+    curIndent = openTag(out, curIndent, "hourvalues", true);
+    for (final var hourVal: forLabels.getHourVals()) {
+      outTagged(out, indent, "val", hourVal);
+    }
+    outTagged(out, indent, "start", mstate.getViewStartDate().getHour());
+    curIndent = closeTag(out, curIndent, "hourvalues");
+
+    curIndent = openTag(out, curIndent, "minvalues", true);
+    for (final var minuteVals: forLabels.getMinuteLabels()) {
+      outTagged(out, indent, "val", minuteVals);
+    }
+    outTagged(out, indent, "start", mstate.getViewStartDate().getMinute());
+//   for (final var minuteVals: forLabels.getMinuteLabels()) {
+    curIndent = closeTag(out, curIndent, "minvalues");
+
+    curIndent = openTag(out, curIndent, "ampmvalues", true);
+    for (final var ampmVals: forLabels.getAmpmLabels()) {
+      outTagged(out, indent, "val", ampmVals);
+    }
+    outTagged(out, indent, "start", mstate.getViewStartDate().getAmpm());
+    curIndent = closeTag(out, curIndent, "ampmvalues");
+  }
+
+  public static void outTagged(final JspWriter out,
+                               final String indent,
+                               final String tagName,
+                               final int value)
+          throws IOException {
+    outTagged(out, indent, tagName, String.valueOf(value),
+              false, false, null);
   }
 
   public static void outTagged(final JspWriter out,
@@ -295,8 +375,8 @@ public class BwTagUtils {
       boolean cdata = alwaysCdata;
       if (!cdata && !filtered) {
         cdata = value.contains("&") ||
-              value.contains("<") ||
-              value.contains("<![CDATA[");
+                value.contains("<") ||
+                value.contains("<![CDATA[");
       }
 
       if (!cdata) {
@@ -344,19 +424,19 @@ public class BwTagUtils {
     closeTag(out, null, tagName);
   }
 
-  public static void openTag(final JspWriter out,
-                             final String indent,
-                             final String tagName,
-                             final boolean newline)
+  public static String openTag(final JspWriter out,
+                               final String indent,
+                               final String tagName,
+                               final boolean newline)
           throws IOException {
-    openTag(out, indent, tagName, newline, null);
+    return openTag(out, indent, tagName, newline, null);
   }
 
-  public static void openTag(final JspWriter out,
-                             final String indent,
-                             final String tagName,
-                             final boolean newline,
-                             final Attribute attr)
+  public static String openTag(final JspWriter out,
+                               final String indent,
+                               final String tagName,
+                               final boolean newline,
+                               final Attribute attr)
           throws IOException {
     if (indent != null) {
       out.print(indent);
@@ -376,11 +456,13 @@ public class BwTagUtils {
     if (newline) {
       out.newLine();
     }
+
+    return pushIndent(indent);
   }
 
-  public static void closeTag(final JspWriter out,
-                              final String indent,
-                              final String tagName)
+  public static String closeTag(final JspWriter out,
+                                final String indent,
+                                final String tagName)
           throws IOException {
     if (indent != null) {
       out.print(indent);
@@ -388,6 +470,8 @@ public class BwTagUtils {
     out.print("</");
     out.print(tagName);
     out.println('>');
+
+    return popIndent(indent);
   }
 
   public static String filter(final String value) {

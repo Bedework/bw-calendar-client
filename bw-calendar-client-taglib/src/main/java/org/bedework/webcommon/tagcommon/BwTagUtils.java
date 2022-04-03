@@ -6,7 +6,7 @@ package org.bedework.webcommon.tagcommon;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.misc.Util;
-import org.bedework.util.webaction.MessageEmitSvlt;
+import org.bedework.util.webaction.ErrorEmitSvlt;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -21,13 +21,13 @@ public class BwTagUtils {
    *
    * @param out writer
    * @param indent starting indent level or null
-   * @param rrules the rules
+   * @param msgs the message object
    * @throws IOException on write error
    */
   public static void OutMsgErr(final JspWriter out,
                                final String indent,
                                final String tagName,
-                               final MessageEmitSvlt msgs)
+                               final ErrorEmitSvlt msgs)
           throws IOException {
     var curIndent = indent;
     boolean first = true;

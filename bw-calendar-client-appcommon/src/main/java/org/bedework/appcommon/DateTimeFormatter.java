@@ -19,7 +19,6 @@
 package org.bedework.appcommon;
 
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.timezones.DateTimeUtil;
@@ -567,7 +566,8 @@ public class DateTimeFormatter implements Comparable, Comparator, Serializable {
       if (tzIsLocal) {
         formatted = tzFormatted;
       } else {
-        String localIso = DateTimeUtil.isoDateTime(dt, Timezones.getDefaultTz());
+        final String localIso =
+                DateTimeUtil.isoDateTime(dt, Timezones.getDefaultTz());
         formatted = new FormattedDate(dt, localIso, date.getDateType(),
                                       Timezones.getDefaultTz());
       }
@@ -638,18 +638,16 @@ public class DateTimeFormatter implements Comparable, Comparator, Serializable {
   /** Return the unformatted date
    *
    * @return String
-   * @throws CalFacadeException
    */
-  public String getUnformatted() throws CalFacadeException {
+  public String getUnformatted() {
     return date.getDtval();
   }
 
   /** Return the utc formatted date
    *
    * @return String (possibly adjusted) date in the rfc format yyyymmddThhmmssZ
-   * @throws CalFacadeException
    */
-  public String getUtcDate() throws CalFacadeException {
+  public String getUtcDate() {
     return date.getDate();
   }
 

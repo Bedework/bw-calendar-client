@@ -3,6 +3,7 @@
 */
 package org.bedework.webcommon.tagcommon;
 
+import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.convert.RecurRuleComponents;
@@ -19,6 +20,77 @@ import javax.servlet.jsp.JspWriter;
  * User: mike Date: 4/2/22 Time: 11:52
  */
 public class BwTagUtils {
+  /**
+   *
+   * @param out writer
+   * @param indent starting indent level or null
+   * @param date the formatted date
+   * @throws IOException on write error
+   */
+  public static void outFormattedDate(final JspWriter out,
+                                      final String indent,
+                                      final String tagName,
+                                      final DateTimeFormatter date)
+          throws IOException {
+    var curIndent = indent;
+    // All date/time information below is in "local" time
+    outTagged(out, curIndent, "allday", date.getDateType());
+    outTagged(out, curIndent, "floating", date.getFloating());
+    outTagged(out, curIndent, "utc", date.getUtc());
+    outTagged(out, curIndent, "utcdate", date.getUtcDate());
+    outTagged(out, curIndent, "unformatted", date.getUnformatted());
+    final var fmtdate = date.getFormatted();
+
+    outTagged(out, curIndent, "year", fmtdate.getYear());
+    outTagged(out, curIndent, "year", fmtdate.getFourDigitYear());
+    outTagged(out, curIndent, "month", fmtdate.getMonth());
+    outTagged(out, curIndent, "twodigitmonth", fmtdate.getTwoDigitMonth());
+    outTagged(out, curIndent, "monthname", fmtdate.getMonthName());
+    outTagged(out, curIndent, "day", fmtdate.getDay());
+    outTagged(out, curIndent, "dayname", fmtdate.getDayName());
+    outTagged(out, curIndent, "twodigitday", fmtdate.getTwoDigitDay());
+    outTagged(out, curIndent, "hour24", fmtdate.getHour24());
+    outTagged(out, curIndent, "twodigithour24", fmtdate.getTwoDigitHour24());
+    outTagged(out, curIndent, "hour", fmtdate.getHour());
+    outTagged(out, curIndent, "twodigithour", fmtdate.getTwoDigitHour());
+    outTagged(out, curIndent, "minute", fmtdate.getMinute());
+    outTagged(out, curIndent, "twodigitminute", fmtdate.getTwoDigitMinute());
+    outTagged(out, curIndent, "ampm", fmtdate.getAmPm());
+    outTagged(out, curIndent, "longdate", fmtdate.getLongDateString());
+    outTagged(out, curIndent, "shortdate", fmtdate.getDateString());
+    outTagged(out, curIndent, "time", fmtdate.getTimeString());
+    curIndent = openTag(out, curIndent, "timezone", true);
+
+    outTagged(out, curIndent, "id", date.getTzid());
+    outTagged(out, curIndent, "islocal", date.getTzIsLocal());
+    if (!date.getTzIsLocal()) {
+      final var tzdate = date.getTzFormatted();
+
+      outTagged(out, curIndent, "date", tzdate.getDate());
+      outTagged(out, curIndent, "year", tzdate.getYear());
+      outTagged(out, curIndent, "fourdigityear", tzdate.getFourDigitYear());
+      outTagged(out, curIndent, "month", tzdate.getMonth());
+      outTagged(out, curIndent, "twodigitmonth", tzdate.getTwoDigitMonth());
+      outTagged(out, curIndent, "monthname", tzdate.getMonthName());
+      outTagged(out, curIndent, "day", tzdate.getDay());
+      outTagged(out, curIndent, "dayname", tzdate.getDayName());
+      outTagged(out, curIndent, "twodigitday", tzdate.getTwoDigitDay());
+      outTagged(out, curIndent, "hour24", tzdate.getHour24());
+      outTagged(out, curIndent, "twodigithour24", tzdate.getTwoDigitHour24());
+      outTagged(out, curIndent, "hour", tzdate.getHour());
+      outTagged(out, curIndent, "twodigithour", tzdate.getTwoDigitHour());
+      outTagged(out, curIndent, "minute", tzdate.getMinute());
+      outTagged(out, curIndent, "twodigitminute", tzdate.getTwoDigitMinute());
+      outTagged(out, curIndent, "ampm", tzdate.getAmPm());
+      outTagged(out, curIndent, "longdate", tzdate.getLongDateString());
+      outTagged(out, curIndent, "shortdate", tzdate.getDateString());
+      outTagged(out, curIndent, "", tzdate.getTimeString());
+
+    }
+
+    curIndent = closeTag(out, curIndent, "timezone");
+  }
+
   /**
    *
    * @param out writer
@@ -384,6 +456,15 @@ public class BwTagUtils {
     }
     outTagged(out, indent, "start", mstate.getViewStartDate().getAmpm());
     curIndent = closeTag(out, curIndent, "ampmvalues");
+  }
+
+  public static void outTagged(final JspWriter out,
+                               final String indent,
+                               final String tagName,
+                               final boolean value)
+          throws IOException {
+    outTagged(out, indent, tagName, String.valueOf(value),
+              false, false, null);
   }
 
   public static void outTagged(final JspWriter out,

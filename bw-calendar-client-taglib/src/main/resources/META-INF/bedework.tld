@@ -196,6 +196,43 @@
 
   <tag>
     <description>Emit categories</description>
+    <name>emitFormattedDates</name>
+    <tag-class>org.bedework.webcommon.taglib.EmitFormattedDatesTag</tag-class>
+    <body-content>empty</body-content>
+
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>property</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>tagName</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>indent</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <description>Emit categories</description>
     <name>emitCategories</name>
     <tag-class>org.bedework.webcommon.taglib.EmitCategoriesTag</tag-class>
     <body-content>empty</body-content>

@@ -31,7 +31,7 @@ public class EmitRrulesTag extends NameScopePropertyTag {
 
       final JspWriter out = pageContext.getOut();
 
-      BwTagUtils.OutRrules(out, indent, rrules);
+      BwTagUtils.outRrules(out, indent, rrules);
     } catch(final Throwable t) {
       t.printStackTrace();
       throw new JspTagException("Error: " + t.getMessage());

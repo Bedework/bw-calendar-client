@@ -3,6 +3,7 @@
 */
 package org.bedework.webcommon.tagcommon;
 
+import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.misc.Util;
@@ -22,10 +23,79 @@ public class BwTagUtils {
    *
    * @param out writer
    * @param indent starting indent level or null
+   * @param cats the categories
+   * @throws IOException on write error
+   */
+  public static void outCategories(final JspWriter out,
+                                   final String indent,
+                                   final String tagName,
+                                   final boolean full,
+                                   final Collection<BwCategory> cats)
+          throws IOException {
+    var curIndent = pushIndent(indent);
+
+    // Assume indented for first
+    openTag(out, null, tagName, true);
+
+    if (!Util.isEmpty(cats)) {
+      for (final var category: cats) {
+        outCategory(out, curIndent, null, full, category);
+      }
+    }
+
+    curIndent = closeTag(out, curIndent, tagName);
+  }
+
+  /** Output with surrounding tag
+   *
+   * @param out writer
+   * @param indent starting indent level or null
+   * @param category the category
+   * @throws IOException on write error
+   */
+  public static void outCategory(final JspWriter out,
+                                 final String indent,
+                                 final String tagName,
+                                 final boolean full,
+                                 final BwCategory category)
+          throws IOException {
+    var curIndent = pushIndent(indent);
+
+    if (tagName != null) {
+      // Assume indented for first
+      openTag(out, null, tagName, true);
+    }
+
+    curIndent = openTag(out, curIndent, "category", true);
+
+    outTagged(out, curIndent, "uid", category.getUid());
+    outTagged(out, curIndent, "value",
+              category.getWordVal());
+    outTagged(out, curIndent, "description", category.getDescriptionVal());
+
+    if (full) {
+      outTagged(out, curIndent, "href", category.getHref());
+      outTagged(out, curIndent, "colPath", category.getColPath());
+      outTagged(out, curIndent, "name", category.getName());
+      outTagged(out, curIndent, "status", category.getStatus());
+      outTagged(out, curIndent, "creator", category.getCreatorHref());
+    }
+
+    curIndent = closeTag(out, curIndent, "category");
+
+    if (tagName != null) {
+      curIndent = closeTag(out, curIndent, tagName);
+    }
+  }
+
+  /**
+   *
+   * @param out writer
+   * @param indent starting indent level or null
    * @param msgs the message object
    * @throws IOException on write error
    */
-  public static void OutMsgErr(final JspWriter out,
+  public static void outMsgErr(final JspWriter out,
                                final String indent,
                                final String tagName,
                                final ErrorEmitSvlt msgs)
@@ -60,7 +130,7 @@ public class BwTagUtils {
    * @param rrules the rules
    * @throws IOException on write error
    */
-  public static void OutRrules(final JspWriter out,
+  public static void outRrules(final JspWriter out,
                                final String indent,
                                final Collection<RecurRuleComponents> rrules)
           throws IOException {
@@ -119,7 +189,7 @@ public class BwTagUtils {
         curIndent = openTag(out, curIndent, "bymonthday", true);
 
         for (final var val: rrc.getByMonthDay()) {
-          outTagged(out, curIndent, "val", val.toString());
+          outTagged(out, curIndent, "val", val);
         }
 
         curIndent = closeTag(out, curIndent, "bymonthday");
@@ -129,7 +199,7 @@ public class BwTagUtils {
         curIndent = openTag(out, curIndent, "byyearday", true);
 
         for (final var val: rrc.getByYearDay()) {
-          outTagged(out, curIndent, "val", val.toString());
+          outTagged(out, curIndent, "val", val);
         }
 
         curIndent = closeTag(out, curIndent, "byyearday");
@@ -139,7 +209,7 @@ public class BwTagUtils {
         curIndent = openTag(out, curIndent, "byweekno", true);
 
         for (final var val: rrc.getByWeekNo()) {
-          outTagged(out, curIndent, "val", val.toString());
+          outTagged(out, curIndent, "val", val);
         }
 
         curIndent = closeTag(out, curIndent, "byweekno");
@@ -149,7 +219,7 @@ public class BwTagUtils {
         curIndent = openTag(out, curIndent, "bymonth", true);
 
         for (final var val: rrc.getByMonth()) {
-          outTagged(out, curIndent, "val", val.toString());
+          outTagged(out, curIndent, "val", val);
         }
 
         curIndent = closeTag(out, curIndent, "bymonth");
@@ -159,7 +229,7 @@ public class BwTagUtils {
         curIndent = openTag(out, curIndent, "bysetpos", true);
 
         for (final var val: rrc.getBySetPos()) {
-          outTagged(out, curIndent, "val", val.toString());
+          outTagged(out, curIndent, "val", val);
         }
 
         curIndent = closeTag(out, curIndent, "bysetpos");
@@ -333,6 +403,15 @@ public class BwTagUtils {
     outTagged(out, indent, tagName, value, false, false, null);
   }
 
+  public static void outTaggedIfPresent(final JspWriter out,
+                                        final String indent,
+                                        final String tagName,
+                                        final String value)
+          throws IOException {
+    outTagged(out, indent, tagName, value, false, false,
+              true, null);
+  }
+
   public static void outTagged(final JspWriter out,
                                final String indent,
                                final String tagName,
@@ -369,6 +448,23 @@ public class BwTagUtils {
                                final boolean alwaysCdata,
                                final Attribute attr)
           throws IOException {
+    outTagged(out, indent, tagName, value, filtered, alwaysCdata,
+              false, attr);
+  }
+
+  public static void outTagged(final JspWriter out,
+                               final String indent,
+                               final String tagName,
+                               final String value,
+                               final boolean filtered,
+                               final boolean alwaysCdata,
+                               final boolean skipIfNull,
+                               final Attribute attr)
+          throws IOException {
+    if (skipIfNull && (value == null)) {
+      return;
+    }
+
     openTag(out, indent, tagName, false, attr);
 
     if (value != null) {

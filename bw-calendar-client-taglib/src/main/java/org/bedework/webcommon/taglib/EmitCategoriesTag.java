@@ -19,17 +19,19 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.bedework.util.webaction.ErrorEmitSvlt;
+import org.bedework.calfacade.BwCategory;
 import org.bedework.webcommon.tagcommon.BwTagUtils;
+
+import java.util.Collection;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 
-/** Emitany messages and errors.
+/** Emit categories collection.
  *
  * @author Mike Douglass
  */
-public class EmitMsgErrTag extends NameScopePropertyTag {
+public class EmitCategoriesTag extends NameScopePropertyTag {
   /** Optional attribute: name of outer tag */
   private String tagName;
 
@@ -37,10 +39,13 @@ public class EmitMsgErrTag extends NameScopePropertyTag {
    * If specified we add the value after a new line. */
   private String indent = null;
 
+  /** Optional attribute: true for all fields. */
+  private boolean full = true;
+
   /**
    * Constructor
    */
-  public EmitMsgErrTag() {
+  public EmitCategoriesTag() {
   }
 
   /** Called at end of Tag
@@ -50,11 +55,12 @@ public class EmitMsgErrTag extends NameScopePropertyTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the value */
-      final var val = (ErrorEmitSvlt)getObject(false);
+      final var val = (Collection<BwCategory>)getObject(false);
 
       final JspWriter out = pageContext.getOut();
 
-      BwTagUtils.outMsgErr(out, getIndent(), getTagName(), val);
+      BwTagUtils.outCategories(out, getIndent(), getTagName(),
+                               getFull(), val);
     } catch(final Throwable t) {
       t.printStackTrace();
       throw new JspTagException("Error: " + t.getMessage());
@@ -92,5 +98,19 @@ public class EmitMsgErrTag extends NameScopePropertyTag {
    */
   public String getIndent() {
     return indent;
+  }
+
+  /**
+   * @param val true for all fields
+   */
+  public void setFull(final boolean val) {
+    full = val;
+  }
+
+  /**
+   * @return  true for all fields
+   */
+  public boolean getFull() {
+    return full;
   }
 }

@@ -1080,6 +1080,7 @@ public class UpdateEventAction extends RWActionBase {
       try {
         images = ImageProcessing.createImages(
                 file.getContentStream(),
+                fns.fnSuffix,
                 thumbType, 160);
       } catch (final Throwable t) {
         /* Probably an image type we can't process or maybe not an image at all
@@ -1150,6 +1151,7 @@ public class UpdateEventAction extends RWActionBase {
 
   private static class Filenames {
     String fn;
+    String fnSuffix;
     String thumbFn;
   }
 
@@ -1168,9 +1170,11 @@ public class UpdateEventAction extends RWActionBase {
 
     if (dotPos < 0) {
       fns.fn = imageName + "-" + dt;
+      fns.fnSuffix = null;
       fns.thumbFn = fns.fn + "-thumb" + "." + thumbType;
     } else {
       final String namePart = imageName.substring(0, dotPos) + "-" + dt;
+      fns.fnSuffix = imageName.substring(dotPos + 1);
       fns.fn = namePart + imageName.substring(dotPos);
       fns.thumbFn =  namePart + "-thumb" + "." + thumbType;
     }

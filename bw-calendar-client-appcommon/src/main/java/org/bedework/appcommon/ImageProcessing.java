@@ -23,43 +23,39 @@ import org.imgscalr.Scalr;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
 
 /** Some image processing code -makes use of the library from
  * http://www.thebuzzmedia.com/software/imgscalr-java-image-scaling-library/
  *
- * @author  Mike Douglass douglm  rpi.edu
+ * <p>We need to avoid storing the entire image in memory as it
+ * could be very large.</p>
+ *
+ * <p>These images will also be written to a Blob via an InputTsream</p>
+ *
+ * <p>Unfortunately none of the image classes provide a way to get
+ * an InputStream so we're forced to write out the image to a file
+ * so we can get a FileInputStream - even though a BufferedImage is
+ * probably already in a file.</p>
+ *
+ * @author  Mike Douglass douglm
  */
 public class ImageProcessing {
   private ImageProcessing() {}
-
-  private static class ImageInputStreamWrapper extends InputStream {
-    private final ImageInputStream iis;
-
-    private ImageInputStreamWrapper(final ImageInputStream iis) {
-      this.iis = iis;
-    }
-
-    @Override
-    public int read() throws IOException {
-      return iis.read();
-    }
-
-    public void close() throws IOException {
-      iis.close();
-    }
-  }
 
   private static class ImagesImpl implements Images {
     private BufferedImage image;
     private BufferedImage thumbImage;
 
-    private ImageInputStream imageIs;
-    private ImageInputStream thumbIs;
+    private File imageFile;
+    private File thumbFile;
 
     @Override
     public Image getImage() {
@@ -73,11 +69,7 @@ public class ImageProcessing {
 
     @Override
     public long getLength() {
-      try {
-        return getIs().length();
-      } catch (final IOException ioe) {
-        throw new RuntimeException(ioe);
-      }
+      return imageFile.length();
     }
 
     @Override
@@ -86,16 +78,16 @@ public class ImageProcessing {
         return 0;
       }
 
-      try {
-        return getThumbIs().length();
-      } catch (final IOException ioe) {
-        throw new RuntimeException(ioe);
-      }
+      return thumbFile.length();
     }
 
     @Override
     public InputStream getInputStream() {
-      return new ImageInputStreamWrapper(getIs());
+      try {
+        return new FileInputStream(imageFile);
+      } catch (final FileNotFoundException fnfe) {
+        throw new RuntimeException(fnfe);
+      }
     }
 
     @Override
@@ -104,68 +96,58 @@ public class ImageProcessing {
         return null;
       }
 
-      return new ImageInputStreamWrapper(getThumbIs());
+      try {
+        return new FileInputStream(thumbFile);
+      } catch (final FileNotFoundException fnfe) {
+        throw new RuntimeException(fnfe);
+      }
     }
 
     @Override
     public void close() throws IOException {
-      if (imageIs != null) {
-        imageIs.close();
-      }
-
-      if (thumbIs != null) {
-        thumbIs.close();
-      }
-    }
-
-    private ImageInputStream getIs() {
-      if (imageIs != null) {
-        return imageIs;
-      }
-
-      try {
-        imageIs = ImageIO.createImageInputStream(image);
-      } catch (final IOException ioe) {
-        throw new RuntimeException(ioe);
-      }
-
-      return imageIs;
-    }
-
-    private ImageInputStream getThumbIs() {
-      if (thumbIs != null) {
-        return thumbIs;
-      }
-
-      try {
-        thumbIs = ImageIO.createImageInputStream(image);
-      } catch (final IOException ioe) {
-        throw new RuntimeException(ioe);
-      }
-
-      return thumbIs;
     }
   }
 
   /**
    * @param fileContent for full image
-   * @param imageType for thumb - null if none desired
+   * @param imageType for image, e.g "jpeg"
+   * @param thumbType for thumb - null if none desired
    * @param targetSize for thumb
    * @return Object with one or more images
    */
   public static Images createImages(
           final InputStream fileContent,
           final String imageType,
+          final String thumbType,
           final int targetSize) {
     final ImagesImpl ii = new ImagesImpl();
     try {
       ii.image = ImageIO.read(fileContent);
+      final String itype;
+
+      if (imageType == null) {
+        itype = "png";
+      } else {
+        itype = imageType;
+      }
+
+      ii.imageFile = File.createTempFile("uploadedImage", itype);
+
+      final var fileOut = new FileOutputStream(ii.imageFile);
+      ImageIO.write(ii.image, imageType, fileOut);
+      fileOut.close();
+
+      if (thumbType != null) {
+        ii.thumbImage = Scalr.resize(ii.image, targetSize);
+        ii.thumbFile = File.createTempFile("generatedThumbnail",
+                                           thumbType);
+
+        final var thumbOut = new FileOutputStream(ii.thumbFile);
+        ImageIO.write(ii.thumbImage, thumbType, thumbOut);
+        thumbOut.close();
+      }
     } catch (final IOException ioe) {
       throw new RuntimeException(ioe);
-    }
-
-    if (imageType != null) {
-      ii.thumbImage = Scalr.resize(ii.image, targetSize);
     }
 
     return ii;

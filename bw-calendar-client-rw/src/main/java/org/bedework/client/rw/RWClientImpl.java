@@ -64,6 +64,7 @@ import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SchedulingI;
 import org.bedework.util.misc.response.Response;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
@@ -636,9 +637,21 @@ public class RWClientImpl extends ROClientImpl
       val.setContent(resContent);
     }
 
-    final Blob blob = svci.getBlob(content, length);
-    resContent.setValue(blob);
-    val.setContentLength(length);
+    /* It turns out there are bugs in handling InputStreams:
+       https://hibernate.atlassian.net/browse/HHH-14725
+       For the moment(?) read the entire stream into a byte buffer
+     */
+
+    try {
+      final byte[] byteContent = content.readAllBytes();
+
+      //final Blob blob = svci.getBlob(content, length);
+      final Blob blob = svci.getBlob(byteContent);
+      resContent.setValue(blob);
+      val.setContentLength(length);
+    } catch (final IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
   }
 
   /* ------------------------------------------------------------

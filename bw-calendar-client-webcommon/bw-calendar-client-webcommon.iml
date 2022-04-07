@@ -9,6 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="bw-calendar-client-struts" />
     <orderEntry type="module" module-name="bw-calendar-client-util" />
     <orderEntry type="module" module-name="bw-util-logging" />
     <orderEntry type="module" module-name="bw-util-servlet" />

@@ -45,6 +45,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-calendar-facade</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
     </dependency>

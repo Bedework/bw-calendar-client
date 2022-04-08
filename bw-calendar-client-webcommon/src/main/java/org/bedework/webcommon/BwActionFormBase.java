@@ -215,6 +215,19 @@ public class BwActionFormBase extends UtilActionForm
    *                   Property methods
    * ==================================================================== */
 
+  /** This allows us to add "calForm." to form fields. For Struts 1
+   * the actual form is specified in the action mapping. In struts 2
+   * every action is the bean.
+   *
+   * This allows modifying the jsp and xsl ahead of switching to
+   * struts 2.
+   *
+   * @return this form
+   */
+  public BwActionFormBase getCalForm() {
+    return this;
+  }
+
   /* ....................................................................
    *                       Modules
    * .................................................................... */

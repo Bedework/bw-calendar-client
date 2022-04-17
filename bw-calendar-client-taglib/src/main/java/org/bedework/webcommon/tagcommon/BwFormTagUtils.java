@@ -47,7 +47,13 @@ public class BwFormTagUtils extends BwTagUtilCommon {
 
     for (int i= 0; i<optionLabels.length; i++) {
       final var label = optionLabels[i];
-      final var val = optionValues[i];
+      final String val;
+
+      if (optionValues == null) {
+        val = label;
+      } else {
+        val = optionValues[i];
+      }
 
       if (val.equals(value)) {
         outTagged(out, curIndent, "option", label, false, false,

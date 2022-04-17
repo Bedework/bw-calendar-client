@@ -164,7 +164,7 @@
 
     <attribute>
       <name>optionLabels</name>
-      <required>false</required>
+      <required>true</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
 

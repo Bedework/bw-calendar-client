@@ -59,8 +59,13 @@ public class SelectTag extends NameScopePropertyTag {
       final var val = getString(false);
       final var optlabels = (String[])getObject(
               getName(), getScope(), getOptionLabels(), true);
-      final var optvalues = (String[])getObject(
-              getName(), getScope(), getOptionValues(), true);
+      final String[] optvalues;
+      if (getOptionValues() == null) {
+        optvalues = optlabels;
+      } else {
+        optvalues = (String[])getObject(
+                getName(), getScope(), getOptionValues(), false);
+      }
 
       final JspWriter out = pageContext.getOut();
 

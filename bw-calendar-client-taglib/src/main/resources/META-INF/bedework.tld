@@ -176,6 +176,37 @@
   </tag>
 
   <tag>
+    <description>Create html form select field for date and time</description>
+    <name>selectDateTime</name>
+    <tag-class>org.bedework.webcommon.taglib.SelectDateTimeTag</tag-class>
+    <body-content>empty</body-content>
+
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>property</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>indent</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
     <description>Emit messages or errors</description>
     <name>emitMsgErr</name>
     <tag-class>org.bedework.webcommon.taglib.EmitMsgErrTag</tag-class>

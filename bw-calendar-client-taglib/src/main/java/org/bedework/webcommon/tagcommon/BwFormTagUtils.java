@@ -3,6 +3,8 @@
 */
 package org.bedework.webcommon.tagcommon;
 
+import org.bedework.webcommon.TimeDateComponents;
+
 import java.io.IOException;
 
 import javax.servlet.jsp.JspWriter;
@@ -45,7 +47,7 @@ public class BwFormTagUtils extends BwTagUtilCommon {
     openTag(out, selectIndent, "select", true,
             new Attribute("name", name));
 
-    for (int i= 0; i<optionLabels.length; i++) {
+    for (int i = 0; i<optionLabels.length; i++) {
       final var label = optionLabels[i];
       final String val;
 
@@ -69,6 +71,58 @@ public class BwFormTagUtils extends BwTagUtilCommon {
     curIndent = closeTag(out, curIndent, "select");
     if (tagName != null) {
       closeTag(out, curIndent, tagName);
+    }
+  }
+
+  public static void outDateSelect(final JspWriter out,
+                                   final String indent,
+                                   final String name,
+                                   final TimeDateComponents tdc,
+                                   final String[] yearVals)
+          throws IOException {
+    outSelect(out, indent, "month",
+              String.valueOf(tdc.getMonth()),
+              name + ".month",
+              tdc.getMonthLabels(),
+              tdc.getMonthVals());
+
+    outSelect(out, indent, "day",
+              String.valueOf(tdc.getDay()),
+              name + ".day",
+              tdc.getDayLabels(),
+              tdc.getDayVals());
+
+    outSelect(out, indent, "year",
+              String.valueOf(tdc.getYear()),
+              name + ".year",
+              yearVals,
+              null);
+  }
+
+  public static void outTimeSelect(final JspWriter out,
+                                   final String indent,
+                                   final String name,
+                                   final TimeDateComponents tdc,
+                                   final boolean hour24)
+          throws IOException {
+    outSelect(out, indent, "hour",
+              String.valueOf(tdc.getHour()),
+              name + ".hour",
+              tdc.getHourLabels(),
+              tdc.getHourVals());
+
+    outSelect(out, indent, "minute",
+              String.valueOf(tdc.getMinute()),
+              name + ".minute",
+              tdc.getMinuteLabels(),
+              tdc.getMinuteVals());
+
+    if (!hour24) {
+      outSelect(out, indent, "ampm",
+                String.valueOf(tdc.getAmpm()),
+                name + ".ampm",
+                tdc.getAmpmLabels(),
+                null);
     }
   }
 }

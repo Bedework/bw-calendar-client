@@ -29,7 +29,7 @@ import javax.servlet.jsp.JspWriter;
  *
  * @author Mike Douglass
  */
-public class SelectDateTimeTag extends NameScopePropertyTag {
+public class SelectTimeTag extends NameScopePropertyTag {
   /** Optional attribute: for those who like tidy xml
    * If specified we add the value after a new line. */
   private String indent = null;
@@ -39,7 +39,7 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
   /**
    * Constructor
    */
-  public SelectDateTimeTag() {
+  public SelectTimeTag() {
   }
 
   /** Called at end of Tag
@@ -50,18 +50,8 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
     try {
       /* Try to retrieve the value */
       final var val = (TimeDateComponents)getObject(true);
-      final var yearVals = (String[])getObject(
-              getName(), getScope(), "yearVals", true);
 
       final JspWriter out = pageContext.getOut();
-
-      BwFormTagUtils.outDateSelect(out,
-                                   getIndent(),
-                                   getProperty(),
-                                   val,
-                                   yearVals,
-                                   getNotag(),
-                                   false);
 
       BwFormTagUtils.outTimeSelect(out,
                                    getIndent(),

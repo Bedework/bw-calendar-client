@@ -29,17 +29,19 @@ import javax.servlet.jsp.JspWriter;
  *
  * @author Mike Douglass
  */
-public class SelectDateTimeTag extends NameScopePropertyTag {
+public class SelectDateTag extends NameScopePropertyTag {
   /** Optional attribute: for those who like tidy xml
    * If specified we add the value after a new line. */
   private String indent = null;
 
   private boolean notag;
 
+  private boolean noyear;
+
   /**
    * Constructor
    */
-  public SelectDateTimeTag() {
+  public SelectDateTag() {
   }
 
   /** Called at end of Tag
@@ -61,13 +63,7 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
                                    val,
                                    yearVals,
                                    getNotag(),
-                                   false);
-
-      BwFormTagUtils.outTimeSelect(out,
-                                   getIndent(),
-                                   getProperty(),
-                                   val,
-                                   getNotag());
+                                   getNoyear());
     } catch(final Throwable t) {
       t.printStackTrace();
       throw new JspTagException("Error: " + t.getMessage());
@@ -75,6 +71,7 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
       indent = null;
       property = null;
       notag = false;
+      noyear = false;
     }
 
     return EVAL_PAGE;
@@ -100,5 +97,13 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
 
   public boolean getNotag() {
     return notag;
+  }
+
+  public void setNoyear(final boolean val) {
+    noyear = val;
+  }
+
+  public boolean getNoyear() {
+    return noyear;
   }
 }

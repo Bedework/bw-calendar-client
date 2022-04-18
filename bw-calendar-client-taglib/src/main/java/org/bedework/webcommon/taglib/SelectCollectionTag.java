@@ -19,8 +19,10 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.bedework.webcommon.TimeDateComponents;
+import org.bedework.calfacade.BwCalendar;
 import org.bedework.webcommon.tagcommon.BwFormTagUtils;
+
+import java.util.Collection;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -29,17 +31,17 @@ import javax.servlet.jsp.JspWriter;
  *
  * @author Mike Douglass
  */
-public class SelectDateTimeTag extends NameScopePropertyTag {
+public class SelectCollectionTag extends NameScopePropertyTag {
   /** Optional attribute: for those who like tidy xml
    * If specified we add the value after a new line. */
   private String indent = null;
 
-  private boolean notag;
+  private String cols;
 
   /**
    * Constructor
    */
-  public SelectDateTimeTag() {
+  public SelectCollectionTag() {
   }
 
   /** Called at end of Tag
@@ -49,32 +51,24 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the value */
-      final var val = (TimeDateComponents)getObject(true);
-      final var yearVals = (String[])getObject(
-              getName(), getScope(), "yearVals", true);
+      final var val = getString(false);
+      final var cols = (Collection<BwCalendar>)getObject(
+              getCols(), getScope(), null, true);
 
       final JspWriter out = pageContext.getOut();
 
-      BwFormTagUtils.outDateSelect(out,
-                                   getIndent(),
-                                   getProperty(),
-                                   val,
-                                   yearVals,
-                                   getNotag(),
-                                   false);
-
-      BwFormTagUtils.outTimeSelect(out,
-                                   getIndent(),
-                                   getProperty(),
-                                   val,
-                                   getNotag());
+      BwFormTagUtils.outCollectionSelect(out,
+                                         getIndent(),
+                                         getProperty(),
+                                         val,
+                                         cols);
     } catch(final Throwable t) {
       t.printStackTrace();
       throw new JspTagException("Error: " + t.getMessage());
     } finally {
       indent = null;
       property = null;
-      notag = false;
+      cols = null;
     }
 
     return EVAL_PAGE;
@@ -94,11 +88,11 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
     return indent;
   }
 
-  public void setNotag(final boolean val) {
-    notag = val;
+  public void setCols(final String val) {
+    cols = val;
   }
 
-  public boolean getNotag() {
-    return notag;
+  public String getCols() {
+    return cols;
   }
 }

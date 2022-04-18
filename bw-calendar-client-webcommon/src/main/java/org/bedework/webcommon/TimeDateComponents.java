@@ -203,6 +203,10 @@ public class TimeDateComponents implements Serializable {
     return getCalInfo().getHourVals();
   }
 
+  public boolean getHour24() {
+    return hour24;
+  }
+
   /**
    * @return labels
    */

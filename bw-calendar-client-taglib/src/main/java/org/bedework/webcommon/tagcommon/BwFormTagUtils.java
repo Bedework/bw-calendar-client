@@ -3,9 +3,11 @@
 */
 package org.bedework.webcommon.tagcommon;
 
+import org.bedework.calfacade.BwCalendar;
 import org.bedework.webcommon.TimeDateComponents;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.servlet.jsp.JspWriter;
 
@@ -78,51 +80,84 @@ public class BwFormTagUtils extends BwTagUtilCommon {
                                    final String indent,
                                    final String name,
                                    final TimeDateComponents tdc,
-                                   final String[] yearVals)
+                                   final String[] yearVals,
+                                   final boolean notag,
+                                   final boolean noyear)
           throws IOException {
-    outSelect(out, indent, "month",
+    outSelect(out, indent, tag("month", notag),
               String.valueOf(tdc.getMonth()),
               name + ".month",
               tdc.getMonthLabels(),
               tdc.getMonthVals());
 
-    outSelect(out, indent, "day",
+    outSelect(out, indent, tag("day", notag),
               String.valueOf(tdc.getDay()),
               name + ".day",
               tdc.getDayLabels(),
               tdc.getDayVals());
 
-    outSelect(out, indent, "year",
-              String.valueOf(tdc.getYear()),
-              name + ".year",
-              yearVals,
-              null);
+    if (!noyear) {
+      outSelect(out, indent, tag("year", notag),
+                String.valueOf(tdc.getYear()),
+                name + ".year",
+                yearVals,
+                null);
+    }
   }
 
   public static void outTimeSelect(final JspWriter out,
                                    final String indent,
                                    final String name,
                                    final TimeDateComponents tdc,
-                                   final boolean hour24)
+                                   final boolean notag)
           throws IOException {
-    outSelect(out, indent, "hour",
+    outSelect(out, indent, tag("hour", notag),
               String.valueOf(tdc.getHour()),
               name + ".hour",
               tdc.getHourLabels(),
               tdc.getHourVals());
 
-    outSelect(out, indent, "minute",
+    outSelect(out, indent, tag("minute", notag),
               String.valueOf(tdc.getMinute()),
               name + ".minute",
               tdc.getMinuteLabels(),
               tdc.getMinuteVals());
 
-    if (!hour24) {
-      outSelect(out, indent, "ampm",
+    if (!tdc.getHour24()) {
+      outSelect(out, indent, tag("ampm", notag),
                 String.valueOf(tdc.getAmpm()),
                 name + ".ampm",
                 tdc.getAmpmLabels(),
                 null);
     }
+  }
+
+  public static void outCollectionSelect(
+          final JspWriter out,
+          final String indent,
+          final String name,
+          final String curval,
+          final Collection<BwCalendar> cols)
+          throws IOException {
+    final String[] labels = new String[cols.size()];
+    int i = 0;
+    for (final var col: cols) {
+      labels[i] = col.getPath();
+      i++;
+    }
+
+    outSelect(out, indent,
+              null,
+              curval,
+              name,
+              labels, null);
+  }
+
+  private static String tag(final String val,
+                            final boolean notag) {
+    if (notag) {
+      return null;
+    }
+    return val;
   }
 }

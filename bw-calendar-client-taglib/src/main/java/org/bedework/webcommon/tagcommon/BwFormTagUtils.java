@@ -27,6 +27,50 @@ public class BwFormTagUtils extends BwTagUtilCommon {
    * @param name non-null
    * @throws IOException on write error
    */
+  public static void outCheckbox(final JspWriter out,
+                                  final String indent,
+                                  final String tagName,
+                                  final boolean value,
+                                  final String name)
+          throws IOException {
+    String curIndent;
+    final String firstIndent;
+
+    if (tagName == null) {
+      firstIndent = null;
+      curIndent = pushIndent(indent);
+    } else {
+      firstIndent = pushIndent(indent);
+      curIndent = pushIndent(firstIndent);
+      openTag(out, null, tagName, indent != null);
+    }
+
+    // Assume indented for first
+    startTag(out, firstIndent, "input", false);
+    outAttribute(out, null, false, new Attribute("type", "checkbox"));
+    outAttribute(out, null, false, new Attribute("name", name));
+    outAttribute(out, null, false, new Attribute("value", "on"));
+
+    if (value) {
+      outAttribute(out, null, false,
+                   new Attribute("checked", "checked"));
+    }
+
+    curIndent = endTag(out, null, indent != null);
+
+    if (tagName != null) {
+      closeTag(out, curIndent, tagName, false);
+    }
+  }
+  /**
+   *
+   * @param out writer
+   * @param indent starting indent level or null
+   * @param tagName non-null for surrounding tag
+   * @param value non-null for current value
+   * @param name non-null
+   * @throws IOException on write error
+   */
   public static void outTextField(final JspWriter out,
                                   final String indent,
                                   final String tagName,

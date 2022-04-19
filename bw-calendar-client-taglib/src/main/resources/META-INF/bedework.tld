@@ -127,6 +127,43 @@
   </tag>
 
   <tag>
+    <description>Emit checkbox optionally in a tag</description>
+    <name>checkbox</name>
+    <tag-class>org.bedework.webcommon.taglib.EmitCheckboxTag</tag-class>
+    <body-content>empty</body-content>
+
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>property</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>tagName</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>indent</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
     <description>Emit text field optionally in a tag</description>
     <name>textField</name>
     <tag-class>org.bedework.webcommon.taglib.EmitTextFieldTag</tag-class>

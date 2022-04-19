@@ -194,18 +194,88 @@ public class BwTagUtilCommon {
     return pushIndent(indent);
   }
 
-  public static String closeTag(final JspWriter out,
+  public static String startTag(final JspWriter out,
                                 final String indent,
-                                final String tagName)
+                                final String tagName,
+                                final boolean newline)
           throws IOException {
     if (indent != null) {
       out.print(indent);
     }
-    out.print("</");
+    out.print('<');
     out.print(tagName);
-    out.println('>');
+    out.print(' ');
+
+    if (newline) {
+      out.newLine();
+    }
+
+    return pushIndent(indent);
+  }
+
+  public static void outAttribute(final JspWriter out,
+                                  final String indent,
+                                  final boolean newline,
+                                  final Attribute attr)
+          throws IOException {
+    if (indent != null) {
+      out.print(indent);
+    }
+
+    out.print(attr.getName());
+    out.print("=\"");
+    if (attr.getVal() != null) {
+      out.print(attr.getVal());
+    }
+    out.print('"');
+    out.print(' ');
+
+    if (newline) {
+      out.newLine();
+    }
+  }
+
+  public static String endTag(final JspWriter out,
+                              final String indent,
+                              final boolean newline)
+          throws IOException {
+    if (indent != null) {
+      out.print(indent);
+    }
+    out.print("/>");
+
+    if (newline) {
+      out.newLine();
+    }
 
     return popIndent(indent);
+  }
+
+  public static String closeTag(final JspWriter out,
+                                final String indent,
+                                final String tagName)
+          throws IOException {
+    return closeTag(out, indent, tagName, true);
+  }
+
+  public static String closeTag(final JspWriter out,
+                                final String indent,
+                                final String tagName,
+                                final boolean newline)
+          throws IOException {
+    final var curIndent = popIndent(indent);
+    if (curIndent != null) {
+      out.print(curIndent);
+    }
+    out.print("</");
+    out.print(tagName);
+    out.print('>');
+
+    if (newline) {
+      out.newLine();
+    }
+
+    return curIndent;
   }
 
   public static String filter(final String value) {

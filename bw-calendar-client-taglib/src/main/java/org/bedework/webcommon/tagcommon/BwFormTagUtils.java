@@ -4,6 +4,9 @@
 package org.bedework.webcommon.tagcommon;
 
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwContact;
+import org.bedework.calfacade.BwLocation;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.TimeDateComponents;
 
 import java.io.IOException;
@@ -15,6 +18,53 @@ import javax.servlet.jsp.JspWriter;
  * User: mike Date: 4/8/22 Time: 14:38
  */
 public class BwFormTagUtils extends BwTagUtilCommon {
+  /**
+   *
+   * @param out writer
+   * @param indent starting indent level or null
+   * @param tagName non-null for surrounding tag
+   * @param value non-null for current value
+   * @param name non-null
+   * @throws IOException on write error
+   */
+  public static void outTextField(final JspWriter out,
+                                  final String indent,
+                                  final String tagName,
+                                  final String value,
+                                  final String name,
+                                  final Collection<Attribute> attrs)
+          throws IOException {
+    String curIndent;
+    final String firstIndent;
+
+    if (tagName == null) {
+      firstIndent = null;
+      curIndent = pushIndent(indent);
+    } else {
+      firstIndent = pushIndent(indent);
+      curIndent = pushIndent(firstIndent);
+      openTag(out, null, tagName, indent != null);
+    }
+
+    // Assume indented for first
+    startTag(out, firstIndent, "input", false);
+    outAttribute(out, null, false, new Attribute("type", "text"));
+    outAttribute(out, null, false, new Attribute("name", name));
+    outAttribute(out, null, false, new Attribute("value", value));
+
+    if (!Util.isEmpty(attrs)) {
+      for (final var attr: attrs) {
+        outAttribute(out, null, false, attr);
+      }
+    }
+
+    curIndent = endTag(out, null, indent != null);
+
+    if (tagName != null) {
+      closeTag(out, curIndent, tagName, false);
+    }
+  }
+
   /**
    *
    * @param out writer
@@ -151,6 +201,52 @@ public class BwFormTagUtils extends BwTagUtilCommon {
               curval,
               name,
               labels, null);
+  }
+
+  public static void outLocationSelect(
+          final JspWriter out,
+          final String indent,
+          final String name,
+          final String curval,
+          final Collection<BwLocation> locs)
+          throws IOException {
+    final String[] labels = new String[locs.size()];
+    final String[] vals = new String[locs.size()];
+    int i = 0;
+    for (final var loc: locs) {
+      labels[i] = loc.getAddress().getValue();
+      vals[i] = loc.getUid();
+      i++;
+    }
+
+    outSelect(out, indent,
+              null,
+              curval,
+              name,
+              labels, vals);
+  }
+
+  public static void outContactSelect(
+          final JspWriter out,
+          final String indent,
+          final String name,
+          final String curval,
+          final Collection<BwContact> contacts)
+          throws IOException {
+    final String[] labels = new String[contacts.size()];
+    final String[] vals = new String[contacts.size()];
+    int i = 0;
+    for (final var contact: contacts) {
+      labels[i] = contact.getCn().getValue();
+      vals[i] = contact.getUid();
+      i++;
+    }
+
+    outSelect(out, indent,
+              null,
+              curval,
+              name,
+              labels, vals);
   }
 
   private static String tag(final String val,

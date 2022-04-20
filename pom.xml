@@ -25,6 +25,7 @@
     <module>bw-calendar-client-web-rw</module>
     <module>bw-calendar-client-taglib</module>
     <module>bw-calendar-client-struts</module>
+    <module>bw-calendar-client-struts2</module>
   </modules>
 
   <scm>

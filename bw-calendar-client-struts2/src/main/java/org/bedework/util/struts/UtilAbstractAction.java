@@ -20,6 +20,7 @@ package org.bedework.util.struts;
 
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
+import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.servlet.filters.PresentationState;
@@ -179,7 +180,13 @@ public abstract class UtilAbstractAction
     final MessageEmitSvlt msg;
 
     String forward;
-    final UtilActionForm form = (UtilActionForm)session.get("calForm");
+    UtilActionForm form = (UtilActionForm)session.get("calForm");
+    if (form == null) {
+      form = (UtilActionForm)Util.getObject(
+              getFormClass(request),
+              UtilActionForm.class);
+      session.put("calForm", form);
+    }
 
     //isPortlet = isPortletRequest(request);
 
@@ -230,6 +237,7 @@ public abstract class UtilAbstractAction
 
       if (debug()) {
         req.dumpRequest();
+        dumpParams(params);
       }
 
       req.checkNocache();
@@ -385,6 +393,13 @@ public abstract class UtilAbstractAction
     form.assignErrorForward(sc.getInitParameter("errorForward"));
   }
 
+  public String getFormClass(final HttpServletRequest request) {
+    final HttpSession session = request.getSession();
+    final ServletContext sc = session.getServletContext();
+
+    return sc.getInitParameter("formClass");
+  }
+
   /* ====================================================================
    *               Log request
    * ==================================================================== */
@@ -399,6 +414,17 @@ public abstract class UtilAbstractAction
     }
 
     return logPrefix;
+  }
+
+  private void dumpParams(final Map<String, String> params) {
+    debug("============== params ============");
+    if (params == null) {
+      return;
+    }
+
+    for (final var k: params.keySet()) {
+      debug(k + ": " + params.get(k));
+    }
   }
 
   /* ====================================================================

@@ -24,7 +24,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.0" level="project" />
     <orderEntry type="module" module-name="bw-util-servlet-filters" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:javax.servlet-api:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.struts:struts2-core:2.5.29" level="project" />
+    <orderEntry type="module" module-name="struts2-core" />
     <orderEntry type="library" name="Maven: org.freemarker:freemarker:2.3.31" level="project" />
     <orderEntry type="library" name="Maven: ognl:ognl:3.1.29" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.20.0-GA" level="project" />

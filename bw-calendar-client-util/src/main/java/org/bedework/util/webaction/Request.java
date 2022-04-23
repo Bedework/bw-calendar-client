@@ -27,8 +27,10 @@ import org.bedework.util.servlet.ReqUtil;
 import org.bedework.util.servlet.filters.PresentationState;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -336,8 +338,10 @@ public class Request extends ReqUtil implements Logged {
     debug(title);
 
     final Enumeration<String> names = req.getParameterNames();
-    while (names.hasMoreElements()) {
-      final String key = names.nextElement();
+    final List<String> snames = Collections.list(names);
+    Collections.sort(snames);
+
+    for (final String key: snames) {
       final String[] vals = req.getParameterValues(key);
       for (final String val: vals) {
         debug("  " + key + " = \"" + val + "\"");

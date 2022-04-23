@@ -102,8 +102,7 @@ public class BaseTag extends TagSupport {
     try {
       return PropertyUtils.getProperty(bean, property);
     } catch (final Throwable t) {
-      throw new JspException("lookup.propterty.failed bean/property " +
-                                                 name + "/" + property);
+      throw new JspException(t);
     }
   }
 

@@ -138,6 +138,8 @@ public abstract class UtilAbstractAction
   private Map<String, Object> session;
   private Map<String, String> params;
 
+  protected UtilActionForm form;
+
   @Override
   public void setServletResponse(final HttpServletResponse val) {
     response = val;
@@ -160,10 +162,43 @@ public abstract class UtilAbstractAction
 
   public void setSession(final Map<String, Object> val) {
     session = val;
+    form = (UtilActionForm)session.get("calForm");
+    if (form == null) {
+      if (debug()) {
+        debug("No form in session - creating " +
+                      getFormClass(request));
+      }
+      form = (UtilActionForm)Util.getObject(
+              getFormClass(request),
+              UtilActionForm.class);
+      session.put("calForm", form);
+    } else if (debug()) {
+      debug("Found form in session with class " +
+                    form.getClass());
+    }
+  }
+
+  public void addParam(final String name,
+                       final String value) {
+    if (debug()) {
+      debug("addParam " + name + " = " + value);
+    }
+//    params.put(name, value);
   }
 
   public void setParams(final Map<String, String> val) {
     params = val;
+    if (debug()) {
+      dumpParams(params);
+    }
+  }
+
+  public Map<String, String> getParams() {
+    return params;
+  }
+
+  public UtilActionForm getForm() {
+    return form;
   }
 
   /** This is the routine which does the work.
@@ -180,13 +215,6 @@ public abstract class UtilAbstractAction
     final MessageEmitSvlt msg;
 
     String forward;
-    UtilActionForm form = (UtilActionForm)session.get("calForm");
-    if (form == null) {
-      form = (UtilActionForm)Util.getObject(
-              getFormClass(request),
-              UtilActionForm.class);
-      session.put("calForm", form);
-    }
 
     //isPortlet = isPortletRequest(request);
 
@@ -237,7 +265,7 @@ public abstract class UtilAbstractAction
 
       if (debug()) {
         req.dumpRequest();
-        dumpParams(params);
+//        dumpParams(params);
       }
 
       req.checkNocache();

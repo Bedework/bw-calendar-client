@@ -31,7 +31,7 @@ public class RenderAction extends BwAbstractAction {
                       final BwActionFormBase form) throws Throwable {
     if (form.getNewSession()) {
       request.refresh();
-      return forwardGotomain;
+//      return forwardGotomain;
     }
 
     return forwardSuccess;

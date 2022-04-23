@@ -20,7 +20,7 @@
 
     <dependency>
       <groupId>org.bedework.bwwebcl</groupId>
-      <artifactId>bw-calendar-client-struts</artifactId>
+      <artifactId>bw-calendar-client-struts2</artifactId>
       <version>${project.version}</version>
     </dependency>
 

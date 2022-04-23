@@ -23,10 +23,10 @@ import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.ImageProcessing;
+import org.bedework.appcommon.Images;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
-import org.bedework.appcommon.Images;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -61,6 +61,7 @@ import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+import org.bedework.webcommon.DurationBean;
 import org.bedework.webcommon.TimeDateComponents;
 
 import net.fortuna.ical4j.model.Recur;
@@ -377,7 +378,7 @@ public class UpdateEventAction extends RWActionBase {
 
     /* ------------------------- Link ---------------------------- */
 
-    final String link = Util.checkNull(form.getEventLink());
+    final String link = Util.checkNull(request.getReqPar("eventLink"));
     if ((link != null) && (Util.validURI(link) == null)) {
       form.getErr().emit(ValidationError.invalidUri);
       restore(pars);
@@ -391,7 +392,7 @@ public class UpdateEventAction extends RWActionBase {
 
     /* ------------------------- Cost ---------------------------- */
 
-    final String cost = Util.checkNull(form.getEventCost());
+    final String cost = Util.checkNull(request.getReqPar("eventCost"));
     if (!Util.equalsString(ev.getCost(), cost)) {
       pars.changes.changed(PropertyInfoIndex.COST, ev.getCost(), cost);
       ev.setCost(cost);
@@ -399,7 +400,7 @@ public class UpdateEventAction extends RWActionBase {
 
     /* ------------------------- Transparency ---------------------------- */
 
-    final String transp = Util.checkNull(form.getTransparency());
+    final String transp = Util.checkNull(request.getReqPar("transparency"));
     if (!Util.equalsString(ev.getTransparency(), transp)) {
       pars.changes.changed(PropertyInfoIndex.TRANSP, ev.getTransparency(),
                            transp);
@@ -411,7 +412,7 @@ public class UpdateEventAction extends RWActionBase {
 
     /* Set the status for the event, confirmed, tentative or canceled
      */
-    final String fStatus = form.getEventStatus();
+    final String fStatus = request.getReqPar("eventStatus");
 
     if (!Util.equalsString(fStatus, ev.getStatus())) {
       /* Changing the status */
@@ -1317,7 +1318,7 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (validFreq.get(freq) == null) {
-      form.getErr().emit("org.bedework.bad.request", "freq");
+      request.error("org.bedework.bad.request", "freq");
       return null;
     }
 
@@ -1337,7 +1338,7 @@ public class UpdateEventAction extends RWActionBase {
     String until = request.getReqPar("until");
 
     if ((count != null) && (until != null)) {
-      form.getErr().emit(ValidationError.invalidRecurCountAndUntil);
+      request.error(ValidationError.invalidRecurCountAndUntil);
       return null;
     }
 
@@ -1360,7 +1361,7 @@ public class UpdateEventAction extends RWActionBase {
         // Floating - convert to UTC using start timezone.
         until = Timezones.getUtc(until, start.getTzid());
       } else if (!DateTimeUtil.isISODateTimeUTC(until)) {
-        form.getErr().emit(ValidationError.invalidRecurUntil, "until");
+        request.error(ValidationError.invalidRecurUntil, "until");
         return null;
       }
 
@@ -1370,7 +1371,7 @@ public class UpdateEventAction extends RWActionBase {
 
     if (count != null) {
       if (count < 0) {
-        form.getErr().emit(ValidationError.invalidRecurCount, count);
+        request.error(ValidationError.invalidRecurCount, count);
         return null;
       }
       rrule.append(";COUNT=");
@@ -1414,7 +1415,7 @@ public class UpdateEventAction extends RWActionBase {
     try {
       new Recur(rruleStr);
     } catch (final Throwable t) {
-      form.getErr().emit(ValidationError.invalidRecurRule);
+      request.error(ValidationError.invalidRecurRule);
       return null;
     }
 
@@ -1423,5 +1424,17 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     return rruleStr;
+  }
+
+  public TimeDateComponents getEventStartDate() {
+    return getRwForm().getEventStartDate();
+  }
+
+  public TimeDateComponents getEventEndDate() {
+    return getRwForm().getEventEndDate();
+  }
+
+  public DurationBean getEventDuration() {
+    return getRwForm().getEventDates().getDuration();
   }
 }

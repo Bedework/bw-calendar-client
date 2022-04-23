@@ -8,6 +8,8 @@ import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
+import java.io.File;
+
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -53,4 +55,62 @@ public abstract class RWActionBase extends BwAbstractAction {
   public abstract int doAction(BwRequest request,
                                RWClient cl,
                                BwRWActionForm form) throws Throwable;
+
+  public BwRWActionForm getRwForm() {
+    return (BwRWActionForm)form;
+  }
+
+  /**
+   * @param val FormFile
+   */
+  public void setImageUpload(final File val) {
+    getForm().setImageUpload(val);
+  }
+
+  /**
+   * @return FormFile
+   */
+  public File getImageUpload() {
+    return getForm().getImageUpload();
+  }
+
+  public void setImageUploadFileName(final String val) {
+    getForm().setImageUploadFileName(val);
+  }
+
+  public String getImageUploadFileName() {
+    return getForm().getImageUploadFileName();
+  }
+
+  public void setImageUploadContentType(final String val) {
+    getForm().setImageUploadContentType(val);
+  }
+
+  public String getImageUploadContentType() {
+    return getForm().getImageUploadContentType();
+  }
+
+  public void setUploadFileFileName(final String val) {
+    getForm().setUploadFileFileName(val);
+  }
+
+  public String getUploadFileFileName() {
+    return getForm().getUploadFileFileName();
+  }
+
+  public void setUploadFile(final File val) {
+    getForm().setUploadFile(val);
+  }
+
+  public File getUploadFile() {
+    return getForm().getUploadFile();
+  }
+
+  public void setUploadFileContentType(final String val) {
+    getForm().setUploadFileContentType(val);
+  }
+
+  public String getUploadFileContentType() {
+    return getForm().getUploadFileContentType();
+  }
 }

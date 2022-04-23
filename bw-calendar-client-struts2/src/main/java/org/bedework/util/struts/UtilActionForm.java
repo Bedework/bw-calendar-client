@@ -395,14 +395,6 @@ public class UtilActionForm implements WebActionForm {
     return imageUploadContentType;
   }
 
-  public void setUploadFileFileName(final String val) {
-    uploadFileFileName = val;
-  }
-
-  public String getUploadFileFileName() {
-    return uploadFileFileName;
-  }
-
   @Override
   public UploadFileInfo getImageUploadInfo() {
     if (imageUpload == null) {
@@ -412,6 +404,14 @@ public class UtilActionForm implements WebActionForm {
     return new UploadFileInfoImpl(imageUpload,
                                   imageUploadFileName,
                                   imageUploadContentType);
+  }
+
+  public void setUploadFileFileName(final String val) {
+    uploadFileFileName = val;
+  }
+
+  public String getUploadFileFileName() {
+    return uploadFileFileName;
   }
 
   /**

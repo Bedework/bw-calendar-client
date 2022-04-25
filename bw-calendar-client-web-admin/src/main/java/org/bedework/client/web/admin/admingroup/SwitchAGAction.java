@@ -58,7 +58,7 @@ public class SwitchAGAction extends AdminActionBase {
     final int temp = ((AdminBwModule)request.getModule())
             .checkGroup(request, false);
     if (temp == forwardNoAction) {
-      form.getErr().emit(ClientError.chooseGroupSuppressed);
+      request.error(ClientError.chooseGroupSuppressed);
       return forwardError;
     }
 

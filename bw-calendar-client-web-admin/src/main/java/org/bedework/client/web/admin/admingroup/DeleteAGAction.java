@@ -61,7 +61,7 @@ public class DeleteAGAction extends AdminActionBase {
 
     if (csw != null) {
       // Group already assigned to another cal suite
-      form.getErr().emit(ClientError.adminGroupAssignedCS, csw.getName());
+      request.error(ClientError.adminGroupAssignedCS, csw.getName());
       return forwardContinue;
     }
 
@@ -69,7 +69,7 @@ public class DeleteAGAction extends AdminActionBase {
 
     cl.removeAdminGroup(updgrp);
     form.setUpdAdminGroup(null);
-    form.getMsg().emit(ClientMessage.deletedGroup);
+    request.message(ClientMessage.deletedGroup);
     cl.refreshAdminGroups();
 
     return forwardContinue;

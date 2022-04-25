@@ -366,7 +366,7 @@ public class AdminBwModule extends RwBwModule {
 
       return forwardChooseGroup;
     } catch (final Throwable t) {
-      form.getErr().emit(t);
+      request.error(t);
       return forwardError;
     }
   }

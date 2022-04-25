@@ -48,10 +48,6 @@ public class BwAdminActionForm extends BwRWActionForm {
   private String adminGroupGroupOwner;
   private String adminGroupEventOwner;
 
-  /** Group member to add/delete
-   */
-  private String updGroupMember;
-
   /* ..............................................................
    *                   Authorised user fields
    * .............................................................. */
@@ -254,17 +250,10 @@ public class BwAdminActionForm extends BwRWActionForm {
   }
 
   /**
-   * @param val member
-   */
-  public void setUpdGroupMember(final String val) {
-    updGroupMember = val;
-  }
-
-  /**
-   * @return group member
+   * @return null. Only here to satisfy jsp
    */
   public String getUpdGroupMember() {
-    return updGroupMember;
+    return null;
   }
 
   /* ==============================================================

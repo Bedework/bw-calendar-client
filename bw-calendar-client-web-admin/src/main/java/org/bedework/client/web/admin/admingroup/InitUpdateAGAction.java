@@ -50,7 +50,6 @@ public class InitUpdateAGAction extends AdminActionBase {
     /* Set the objects to null so we get new ones.
      */
     form.assignAddingAdmingroup(false);
-    form.setUpdGroupMember(null);
     form.assignCalSuites(request.getClient().getContextCalSuites());
 
     return forwardContinue;

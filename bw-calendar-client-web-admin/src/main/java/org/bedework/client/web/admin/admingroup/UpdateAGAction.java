@@ -85,7 +85,7 @@ public class UpdateAGAction extends AdminActionBase {
       if (request.getReqPar("addGroupMember") != null) {
         /* Add a user to the group we are updating.
          */
-        final String mbr = checkNull(form.getUpdGroupMember());
+        final String mbr = checkNull(request.getReqPar("updGroupMember"));
         if (mbr == null) {
           return forwardContinue;
         }
@@ -212,6 +212,34 @@ public class UpdateAGAction extends AdminActionBase {
 
     form.getMsg().emit(ClientMessage.updatedGroup);
     return forwardContinue;
+  }
+
+  /**
+   * @param val Admin group group owner
+   */
+  public void setAdminGroupGroupOwner(final String val) {
+    getAdminForm().setAdminGroupGroupOwner(val);
+  }
+
+  /**
+   * @return group owner
+   */
+  public String getAdminGroupGroupOwner() {
+    return getAdminForm().getAdminGroupGroupOwner();
+  }
+
+  /**
+   * @param val event owner
+   */
+  public void setAdminGroupEventOwner(final String val) {
+    getAdminForm().setAdminGroupEventOwner(val);
+  }
+
+  /**
+   * @return owner
+   */
+  public String getAdminGroupEventOwner() {
+    return  getAdminForm().getAdminGroupEventOwner();
   }
 
   private boolean validateNewAdminGroup(final AdminClient cl,

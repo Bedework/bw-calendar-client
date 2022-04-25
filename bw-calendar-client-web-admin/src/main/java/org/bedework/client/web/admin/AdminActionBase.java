@@ -3,6 +3,7 @@
 */
 package org.bedework.client.web.admin;
 
+import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -38,4 +39,12 @@ public abstract class AdminActionBase extends BwAbstractAction {
   public abstract int doAction(BwRequest request,
                                AdminClient cl,
                                BwAdminActionForm form) throws Throwable;
+
+  public BwAdminActionForm getAdminForm() {
+    return (BwAdminActionForm)getForm();
+  }
+
+  public BwAdminGroup getUpdAdminGroup() {
+    return getAdminForm().getUpdAdminGroup();
+  }
 }

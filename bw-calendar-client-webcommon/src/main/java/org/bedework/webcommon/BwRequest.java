@@ -334,12 +334,12 @@ public class BwRequest extends Request {
     if (name != null) {
       gfdr = cl.getFilter(name);
       if (gfdr.getStatus() == Response.Status.notFound) {
-        form.getErr().emit(ClientError.unknownFilter, name);
+        error(ClientError.unknownFilter, name);
         return gfdr;
       }
       
       if (gfdr.getStatus() != Response.Status.ok) {
-        form.getErr().emit(ClientError.exc, gfdr.getMessage());
+        error(ClientError.exc, gfdr.getMessage());
         return gfdr;
       }
     } else {
@@ -357,7 +357,7 @@ public class BwRequest extends Request {
         gfdr.setStatus(Response.Status.failed);
         gfdr.setMessage(pr.message +
                                 " expression: " + fd.getDefinition());
-        getErr().emit(gfdr.getMessage());
+        error(gfdr.getMessage());
         return gfdr;
       }
     }

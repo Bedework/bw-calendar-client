@@ -49,7 +49,7 @@ public class FetchAuthAction extends AdminActionBase {
 
     /* User requested a user from the list or by entering the id.
      */
-    final String userId = form.getEditAuthUserId();
+    final String userId = request.getReqPar("editAuthUserId");
 
     final BwAuthUser au = cl.getAuthUser(cl.getUserAlways(userId));
 

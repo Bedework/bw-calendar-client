@@ -58,10 +58,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    */
   private int editAuthUserType;
 
-  /** User we want to fetch or modify
-   */
-  private String editAuthUserId;
-
   /** User object we are creating or modifying
    */
   private BwAuthUser editAuthUser;
@@ -330,20 +326,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    */
   public int getEditAuthUserType() {
     return editAuthUserType;
-  }
-
-  /**
-   * @param val id
-   */
-  public void setEditAuthUserId(final String val) {
-    editAuthUserId = val;
-  }
-
-  /**
-   * @return id
-   */
-  public String getEditAuthUserId() {
-    return editAuthUserId;
   }
 
   /**

@@ -96,7 +96,7 @@ public class UpdateAGAction extends AdminActionBase {
         }
 
         if (updgrp.isMember(mbr, "group".equals(kind))) {
-          form.getErr().emit(ClientError.alreadyMember, mbr);
+          request.error(ClientError.alreadyMember, mbr);
           return forwardRetry;
         }
 
@@ -133,7 +133,7 @@ public class UpdateAGAction extends AdminActionBase {
           newMbr = cl.findGroup(mbr);
 
           if (newMbr == null) {
-            form.getErr().emit(ClientError.unknownGroup, mbr);
+            request.error(ClientError.unknownGroup, mbr);
             return forwardRetry;
           }
         }
@@ -164,7 +164,7 @@ public class UpdateAGAction extends AdminActionBase {
           updgrp.removeGroupMember(oldMbr);
         }
       } else if (add) {
-        if (!validateNewAdminGroup(cl, form)) {
+        if (!validateNewAdminGroup(request, cl)) {
           return forwardRetry;
         }
 
@@ -188,12 +188,12 @@ public class UpdateAGAction extends AdminActionBase {
 
       switch (msg) {
         case CalFacadeException.duplicateAdminGroup:
-          form.getErr().emit(ClientError.duplicateGroup,
-                             updgrp.getAccount());
+          request.error(ClientError.duplicateGroup,
+                        updgrp.getAccount());
           return forwardRetry;
         case CalFacadeException.alreadyOnGroupPath:
-          form.getErr().emit(ClientError.onGroupPath,
-                             updgrp.getAccount());
+          request.error(ClientError.onGroupPath,
+                        updgrp.getAccount());
           return forwardRetry;
         default:
           throw cfe;
@@ -210,7 +210,7 @@ public class UpdateAGAction extends AdminActionBase {
     form.setUpdAdminGroup(updgrp);
     */
 
-    form.getMsg().emit(ClientMessage.updatedGroup);
+    request.message(ClientMessage.updatedGroup);
     return forwardContinue;
   }
 
@@ -242,11 +242,11 @@ public class UpdateAGAction extends AdminActionBase {
     return  getAdminForm().getAdminGroupEventOwner();
   }
 
-  private boolean validateNewAdminGroup(final AdminClient cl,
-                                        final BwAdminActionForm form) {
+  private boolean validateNewAdminGroup(final BwRequest request,
+                                        final AdminClient cl) {
     boolean ok = true;
 
-    final BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
+    final BwAdminGroup updAdminGroup = getAdminForm().getUpdAdminGroup();
 
     if (updAdminGroup == null) {
       // bogus call.
@@ -256,7 +256,7 @@ public class UpdateAGAction extends AdminActionBase {
     updAdminGroup.setAccount(checkNull(updAdminGroup.getAccount()));
 
     if (updAdminGroup.getAccount() == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       ok = false;
     } else {
       final DirectoryInfo di =  cl.getDirectoryInfo();
@@ -271,24 +271,24 @@ public class UpdateAGAction extends AdminActionBase {
     updAdminGroup.setDescription(checkNull(updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
-      form.getErr().emit(ValidationError.missingDescription);
+      request.error(ValidationError.missingDescription);
       ok = false;
     }
 
-    final String adminGroupGroupOwner = checkNull(form.getAdminGroupGroupOwner());
+    final String adminGroupGroupOwner = checkNull(getAdminForm().getAdminGroupGroupOwner());
     if (adminGroupGroupOwner == null) {
-      form.getErr().emit(ValidationError.missingGroupOwner);
+      request.error(ValidationError.missingGroupOwner);
       ok = false;
     } else {
       updAdminGroup.setGroupOwnerHref(cl.getUserAlways(adminGroupGroupOwner).getPrincipalRef());
     }
 
-    String adminGroupEventOwner = checkNull(form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = checkNull(getAdminForm().getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       adminGroupEventOwner = updAdminGroup.getAccount();
     }
     if (adminGroupEventOwner == null) {
-      form.getErr().emit(ValidationError.missingEventOwner);
+      request.error(ValidationError.missingEventOwner);
       ok = false;
     } else {
       final String prefix = cl.getAdminGroupsIdPrefix();

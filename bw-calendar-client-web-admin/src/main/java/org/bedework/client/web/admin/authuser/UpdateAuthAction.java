@@ -67,5 +67,29 @@ public class UpdateAuthAction extends AdminActionBase {
 
     return forwardContinue;
   }
+
+  public void setEditAuthUserPublicEvents(final boolean val) {
+    getAdminForm().setEditAuthUserPublicEvents(val);
+  }
+
+  public void setEditAuthUserContentAdmin(final boolean val) {
+    getAdminForm().setEditAuthUserContentAdmin(val);
+  }
+
+  public void setEditAuthUserApprover(final boolean val) {
+    getAdminForm().setEditAuthUserApprover(val);
+  }
+
+  public boolean getEditAuthUserPublicEvents() {
+    return getAdminForm().getEditAuthUserPublicEvents();
+  }
+
+  public boolean getEditAuthUserContentAdmin() {
+    return getAdminForm().getEditAuthUserContentAdmin();
+  }
+
+  public boolean getEditAuthUserApprover() {
+    return getAdminForm().getEditAuthUserApprover();
+  }
 }
 

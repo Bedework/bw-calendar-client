@@ -64,17 +64,17 @@ public class AddResourceAction extends AdminActionBase {
     }
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardNotAdded;
     }
 
     if (contentType == null) {
-      form.getErr().emit(ValidationError.missingContentType);
+      request.error(ValidationError.missingContentType);
       return forwardNotAdded;
     }
 
     if (type == null) {
-      form.getErr().emit(ValidationError.missingType);
+      request.error(ValidationError.missingType);
       return forwardNotAdded;
     }
 

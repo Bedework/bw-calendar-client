@@ -46,7 +46,7 @@ public class FetchCalSuiteAction extends AdminActionBase {
     final String name = request.getReqPar("name");
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardRetry;
     }
 

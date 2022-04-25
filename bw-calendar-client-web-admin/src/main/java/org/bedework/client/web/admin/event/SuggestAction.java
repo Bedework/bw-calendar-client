@@ -83,7 +83,7 @@ public class SuggestAction extends AdminActionBase {
     final boolean reject = request.present("reject");
 
     if ((reject && accept) || (!reject && !accept)) {
-      form.getErr().emit(ClientError.badRequest);
+      request.error(ClientError.badRequest);
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return forwardNull;
     }
@@ -94,7 +94,7 @@ public class SuggestAction extends AdminActionBase {
             ev.getXproperties(BwXproperty.bedeworkSuggestedTo);
 
     if (Util.isEmpty(props)) {
-      form.getErr().emit(ClientError.notSuggested);
+      request.error(ClientError.notSuggested);
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return forwardNull;
     }
@@ -111,7 +111,7 @@ public class SuggestAction extends AdminActionBase {
     }
 
     if (theProp == null) {
-      form.getErr().emit(ClientError.notSuggested);
+      request.error(ClientError.notSuggested);
       response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return forwardNull;
     }

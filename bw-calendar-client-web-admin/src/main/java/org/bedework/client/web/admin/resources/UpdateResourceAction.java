@@ -58,12 +58,12 @@ public class UpdateResourceAction extends AdminActionBase {
     final String name = request.getReqPar("name");
     final String type = request.getReqPar("class");
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardRetry;
     }
 
     if (type == null) {
-      form.getErr().emit(ValidationError.missingClass);
+      request.error(ValidationError.missingClass);
       return forwardRetry;
     }
 
@@ -72,7 +72,7 @@ public class UpdateResourceAction extends AdminActionBase {
 
     final BwResource r = cl.getCSResource(form.getCurrentCalSuite(), name, type);
     if (r == null) {
-      form.getErr().emit(ClientError.unknownResource, name);
+      request.error(ClientError.unknownResource, name);
       return forwardNotFound;
     }
 
@@ -95,7 +95,7 @@ public class UpdateResourceAction extends AdminActionBase {
       cl.setResourceValue(r, formFile.getContentStream(),
                           formFile.getLength());
     } else {
-      form.getErr().emit(ClientError.unknownResource, name);
+      request.error(ClientError.unknownResource, name);
       return forwardNotFound;
     }
       

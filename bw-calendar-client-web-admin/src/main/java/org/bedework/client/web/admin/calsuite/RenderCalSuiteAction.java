@@ -47,14 +47,14 @@ public class RenderCalSuiteAction extends AdminActionBase {
     final String name = form.getEditCalSuiteName();
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardRetry;
     }
 
     final BwCalSuiteWrapper cs = cl.getCalSuite(name);
 
     if (cs == null) {
-      form.getErr().emit(ClientError.unknownCalendarSuite);
+      request.error(ClientError.unknownCalendarSuite);
       return forwardNotFound;
     }
 

@@ -54,7 +54,7 @@ public class FetchAuthAction extends AdminActionBase {
     final BwAuthUser au = cl.getAuthUser(cl.getUserAlways(userId));
 
     if (au == null) {
-      form.getErr().emit(ClientError.unknownUserid, userId);
+      request.error(ClientError.unknownUserid, userId);
       return forwardNotFound;
     }
 

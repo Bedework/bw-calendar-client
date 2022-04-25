@@ -53,19 +53,19 @@ public class AddCalSuiteAction extends AdminActionBase {
     final String name = request.getReqPar("name");
 
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardNotAdded;
     }
 
     if (name.length() > BwCalSuite.maxNameLength) {
-      form.getErr().emit(ValidationError.tooLongName);
+      request.error(ValidationError.tooLongName);
       return forwardNotAdded;
     }
 
     final String groupName = request.getReqPar("groupName");
 
     if (groupName == null) {
-      form.getErr().emit(ValidationError.missingGroupName);
+      request.error(ValidationError.missingGroupName);
       request.setErrFlag(true);
       return forwardNotAdded;
     }
@@ -75,7 +75,7 @@ public class AddCalSuiteAction extends AdminActionBase {
                            request.getReqPar("calPath"),
                            request.getReqPar("subroot"));
     if (suite == null) {
-      form.getErr().emit(ClientError.calsuiteNotAdded);
+      request.error(ClientError.calsuiteNotAdded);
       return forwardNotAdded;
     }
 

@@ -30,7 +30,6 @@ import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.BwAdminActionForm;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import static org.bedework.util.misc.Util.checkNull;
@@ -91,7 +90,7 @@ public class UpdateAGAction extends AdminActionBase {
         }
 
         final String kind = request.getReqPar("kind");
-        if (!validateKind(kind, form)) {
+        if (!validateKind(request, kind)) {
           return forwardRetry;
         }
 
@@ -146,7 +145,7 @@ public class UpdateAGAction extends AdminActionBase {
         final String mbr = request.getReqPar("removeGroupMember");
 
         final String kind = request.getReqPar("kind");
-        if (!validateKind(kind, form)) {
+        if (!validateKind(request, kind)) {
           return forwardRetry;
         }
 
@@ -172,7 +171,7 @@ public class UpdateAGAction extends AdminActionBase {
 
         form.assignAddingAdmingroup(false);
       } else {
-        if (!validateAdminGroup(cl, form)) {
+        if (!validateAdminGroup(request, cl)) {
           return forwardRetry;
         }
 
@@ -308,11 +307,11 @@ public class UpdateAGAction extends AdminActionBase {
     return ok;
   }
 
-  private boolean validateAdminGroup(final AdminClient cl,
-                                     final BwAdminActionForm form) throws Throwable {
+  private boolean validateAdminGroup(final BwRequest request,
+                                     final AdminClient cl) throws Throwable {
     boolean ok = true;
 
-    final BwAdminGroup updAdminGroup = form.getUpdAdminGroup();
+    final BwAdminGroup updAdminGroup = getAdminForm().getUpdAdminGroup();
 
     if (updAdminGroup == null) {
       // bogus call.
@@ -324,11 +323,11 @@ public class UpdateAGAction extends AdminActionBase {
     updAdminGroup.setDescription(checkNull(updAdminGroup.getDescription()));
 
     if (updAdminGroup.getDescription() == null) {
-      form.getErr().emit(ValidationError.missingDescription);
+      request.error(ValidationError.missingDescription);
       ok = false;
     }
 
-    final String adminGroupGroupOwner = checkNull(form.getAdminGroupGroupOwner());
+    final String adminGroupGroupOwner = checkNull(getAdminForm().getAdminGroupGroupOwner());
     final BwPrincipal updAgowner = cl.getPrincipal(updAdminGroup.getGroupOwnerHref());
 
     if ((adminGroupGroupOwner != null) &&
@@ -336,14 +335,14 @@ public class UpdateAGAction extends AdminActionBase {
       final BwPrincipal aggo = cl.getUser(adminGroupGroupOwner);
 
       if (aggo == null) {
-        form.getErr().emit(ClientError.unknownUser, adminGroupGroupOwner);
+        request.error(ClientError.unknownUser, adminGroupGroupOwner);
         return false;
       }
 
       updAdminGroup.setGroupOwnerHref(aggo.getPrincipalRef());
     }
 
-    String adminGroupEventOwner = checkNull(form.getAdminGroupEventOwner());
+    String adminGroupEventOwner = checkNull(getAdminForm().getAdminGroupEventOwner());
     if (adminGroupEventOwner == null) {
       // no change
       return ok;
@@ -358,7 +357,7 @@ public class UpdateAGAction extends AdminActionBase {
     }
 
     if (ageo == null) {
-      form.getErr().emit(ClientError.unknownUser, adminGroupEventOwner);
+      request.error(ClientError.unknownUser, adminGroupEventOwner);
       return false;
     }
 
@@ -372,9 +371,10 @@ public class UpdateAGAction extends AdminActionBase {
     return ok;
   }
 
-  private boolean validateKind(final String kind, final BwActionFormBase form) {
+  private boolean validateKind(final BwRequest request,
+                               final String kind) {
     if (kind == null) {
-      form.getErr().emit(ClientError.missingRequestPar, "kind");
+      request.error(ClientError.missingRequestPar, "kind");
       return false;
     }
 
@@ -382,7 +382,7 @@ public class UpdateAGAction extends AdminActionBase {
       return true;
     }
 
-    form.getErr().emit(ClientError.badRequest, kind);
+    request.error(ClientError.badRequest, kind);
     return false;
   }
 }

@@ -63,7 +63,7 @@ public class FixTimezonesAction extends AdminActionBase {
       }
     }
 
-    form.getMsg().emit(ClientMessage.fixedTimezones);
+    request.message(ClientMessage.fixedTimezones);
 */
     return forwardSuccess;
   }

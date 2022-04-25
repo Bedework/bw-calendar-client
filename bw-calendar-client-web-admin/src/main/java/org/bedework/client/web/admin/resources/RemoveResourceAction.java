@@ -58,24 +58,24 @@ public class RemoveResourceAction extends AdminActionBase {
 
     final String name = request.getReqPar("name");
     if (name == null) {
-      form.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardRetry;
     }
     final String rclass = request.getReqPar("class");
     if (rclass == null) {
-      form.getErr().emit(ValidationError.missingClass);
+      request.error(ValidationError.missingClass);
       return forwardRetry;
     }
 
     final BwResource r =
             cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
     if (r == null) {
-      form.getErr().emit(ClientError.unknownResource, name);
+      request.error(ClientError.unknownResource, name);
       return forwardNotFound;
     }
 
     cl.deleteCSResource(form.getCurrentCalSuite(), name, rclass);
-    form.getMsg().emit(ClientMessage.deletedResource);
+    request.message(ClientMessage.deletedResource);
     return forwardSuccess;
   }
 }

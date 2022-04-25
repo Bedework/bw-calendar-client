@@ -63,7 +63,7 @@ public class UpdateAuthAction extends AdminActionBase {
 
     cl.updateAuthUser(au);
 
-    form.getMsg().emit(ClientMessage.updatedAuthuser);
+    request.message(ClientMessage.updatedAuthuser);
 
     return forwardContinue;
   }

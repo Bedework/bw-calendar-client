@@ -22,6 +22,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEventProperty;
+import org.bedework.calfacade.BwString;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.EventProps.ValidateResult;
@@ -99,5 +100,13 @@ public class UpdateContactAction extends RWActionBase {
     }
 
     return forwardSuccess;
+  }
+
+  public BwContact getContact() {
+    return getRwForm().getContact();
+  }
+
+  public BwString getContactName() {
+    return getRwForm().getContactName();
   }
 }

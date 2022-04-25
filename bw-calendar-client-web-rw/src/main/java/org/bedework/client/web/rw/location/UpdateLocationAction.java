@@ -123,4 +123,8 @@ public class UpdateLocationAction extends RWActionBase {
 
     return forwardSuccess;
   }
+
+  public BwLocation getLocation() {
+    return getRwForm().getLocation();
+  }
 }

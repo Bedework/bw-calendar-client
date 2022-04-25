@@ -32,7 +32,7 @@ import org.bedework.webcommon.BwSession;
  *
  * @author Mike Douglass   douglm@rpi.edu
  */
-public class InitUpdateAction extends RWActionBase {
+public class FetchEditableAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,

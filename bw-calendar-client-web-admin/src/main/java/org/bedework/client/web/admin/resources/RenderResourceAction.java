@@ -56,7 +56,7 @@ public class RenderResourceAction extends AdminActionBase {
 
     if (rclass.equals(CalSuiteResource.resourceClassGlobal) ||
             rclass.equals(CalSuiteResource.resourceClassAdmin)) {
-      if (!form.getCurUserSuperUser()) {
+      if (!cl.isSuperUser()) {
         return forwardNoAccess;
       }
     }

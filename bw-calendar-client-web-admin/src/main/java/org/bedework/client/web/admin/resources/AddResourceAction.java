@@ -80,7 +80,7 @@ public class AddResourceAction extends AdminActionBase {
 
     if (rclass.equals(CalSuiteResource.resourceClassGlobal) ||
             rclass.equals(CalSuiteResource.resourceClassAdmin)) {
-      if (!form.getCurUserSuperUser()) {
+      if (!cl.isSuperUser()) {
         request.error(ClientError.noAccess);
         return forwardNoAccess;
       }

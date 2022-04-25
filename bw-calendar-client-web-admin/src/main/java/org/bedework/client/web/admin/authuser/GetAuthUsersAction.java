@@ -40,7 +40,7 @@ public class GetAuthUsersAction extends AdminActionBase {
                       final BwAdminActionForm form) throws Throwable {
     /* Check access
      */
-    if (!form.getCurUserSuperUser()) {
+    if (!cl.isSuperUser()) {
       return forwardNoAccess;
     }
 

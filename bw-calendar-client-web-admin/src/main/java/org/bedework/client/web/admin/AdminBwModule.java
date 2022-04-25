@@ -132,7 +132,7 @@ public class AdminBwModule extends RwBwModule {
         }
 
         canSwitch = canSwitch || form.getCurUserContentAdminUser() ||
-                form.getCurUserSuperUser();
+                client.isSuperUser();
 
         final String curUser = pr.getAccount();
 
@@ -242,7 +242,7 @@ public class AdminBwModule extends RwBwModule {
 
     if (debug()) {
       info("form.getGroupSet()=" + cl.getGroupSet());
-      info("-------- isSuperUser: " + form.getCurUserSuperUser());
+      info("-------- isSuperUser: " + cl.isSuperUser());
     }
 
     final int temp = checkGroup(request, true);
@@ -326,7 +326,7 @@ public class AdminBwModule extends RwBwModule {
         return forwardNoAccess;
       }
 
-      if (initCheck || !form.getCurUserSuperUser()) {
+      if (initCheck || !cl.isSuperUser()) {
         // Always restrict to groups of which we are a member
         adgs = cl.getGroups(p);
       } else {

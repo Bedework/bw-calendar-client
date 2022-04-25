@@ -54,19 +54,18 @@ public class BwFormTag extends TagSupport {
     return action;
   }
 
-  public String resolveUrl(final String url)
-          throws JspException {
+  public String resolveUrl(final String url) {
     final var request = (HttpServletRequest)pageContext.getRequest();
 
     final String suffix;
     if (url.endsWith(".do")) {
       suffix = "";
     } else {
-      suffix = "";
+      suffix = ".do";
     }
 
     final String context = request.getContextPath();
 
-    return Util.buildPath(false, context, url) + suffix;
+    return Util.buildPath(false, context, "/", url) + suffix;
   }
 }

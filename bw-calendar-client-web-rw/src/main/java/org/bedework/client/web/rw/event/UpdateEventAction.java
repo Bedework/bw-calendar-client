@@ -1426,6 +1426,8 @@ public class UpdateEventAction extends RWActionBase {
     return rruleStr;
   }
 
+  // ===================== Time and date form elements ===============
+
   public TimeDateComponents getEventStartDate() {
     return getRwForm().getEventStartDate();
   }
@@ -1436,5 +1438,41 @@ public class UpdateEventAction extends RWActionBase {
 
   public DurationBean getEventDuration() {
     return getRwForm().getEventDates().getDuration();
+  }
+
+  // ===================== contact form elements ====================
+
+  public void setAllContactId(final String val) {
+    getRwForm().setAllContactId(val);
+  }
+
+  public String getAllContactId() {
+    return getRwForm().getAllContactId();
+  }
+
+  public void setPrefContactId(final String val) {
+    getRwForm().setPrefContactId(val);
+  }
+
+  public String getPrefContactId() {
+    return getRwForm().getPrefContactId();
+  }
+
+  // ===================== location form elements ====================
+
+  public void setAllLocationId(final String val) {
+    getRwForm().setAllLocationId(val);
+  }
+
+  public String getAllLocationId() {
+    return getRwForm().getAllLocationId();
+  }
+
+  public void setPrefLocationId(final String val) {
+    getRwForm().setPrefLocationId(val);
+  }
+
+  public String getPrefLocationId() {
+    return getRwForm().getPrefLocationId();
   }
 }

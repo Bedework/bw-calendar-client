@@ -3,6 +3,7 @@
 */
 package org.bedework.client.web.rw;
 
+import org.bedework.calfacade.BwString;
 import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -112,5 +113,26 @@ public abstract class RWActionBase extends BwAbstractAction {
 
   public String getUploadFileContentType() {
     return getForm().getUploadFileContentType();
+  }
+
+  // ===================== contact form elements ====================
+
+
+  // ===================== location form elements ====================
+
+  public void setLocationAddress(final BwString val) {
+    getRwForm().setLocationAddress(val);
+  }
+
+  public BwString getLocationAddress() {
+    return getRwForm().getLocationAddress();
+  }
+
+  public void setLocationSubaddress(final BwString val) {
+    getRwForm().setLocationSubaddress(val);
+  }
+
+  public BwString getLocationSubaddress() {
+    return getRwForm().getLocationSubaddress();
   }
 }

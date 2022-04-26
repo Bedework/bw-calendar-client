@@ -129,55 +129,50 @@ public class UpdateCategoryAction extends RWActionBase {
     final BwCategory cat = form.getCategory();
 
     final BwString str = cat.getWord();
-    BwString formstr = form.getCategoryWord();
-    if (formstr != null) {
-      if (formstr.checkNulls() && (formstr.getValue() == null)) {
-        formstr = null;
-      }
-    }
+    final String reqstr = request.getReqPar("categoryWord.value");
 
     if (str == null) {
-      if (formstr != null) {
+      if (reqstr != null) {
         vcr.changed = true;
-        cat.setWord(formstr);
+        cat.setWord(new BwString(null, reqstr));
       }
-    } else if (formstr == null) {
+    } else if (reqstr == null) {
       vcr.changed = true;
       cat.deleteWord();
-    } else if (str.update(formstr)) {
+    } else if (str.update(new BwString(null, reqstr))) {
       vcr.changed = true;
     }
 
     BwString desc = cat.getDescription();
-    final String formDesc = Util.checkNull(form.getCategoryDescription());
+    final String reqDesc = Util.checkNull(request.getReqPar("categoryDescription"));
 
     if (desc == null) {
-      if (formDesc != null) {
+      if (reqDesc != null) {
         vcr.changed = true;
-        cat.setDescriptionVal(formDesc);
+        cat.setDescriptionVal(reqDesc);
         desc = cat.getDescription();
       }
-    } else if (formDesc == null) {
+    } else if (reqDesc == null) {
       vcr.changed = desc.getValue() != null;
       desc.setValue(null);
-    } else if (!formDesc.equals(desc.getValue())) {
-      desc.setValue(formDesc);
+    } else if (!reqDesc.equals(desc.getValue())) {
+      desc.setValue(reqDesc);
       vcr.changed = true;
     }
     
-    final String formSt = Util.checkNull(form.getCategoryStatus());
+    final String reqSt = request.getReqPar("categoryStatus");
 
     if (desc == null) {
-      if (formSt != null) {
+      if (reqSt != null) {
         vcr.changed = true;
-        desc = new BwString(formSt, null);
+        desc = new BwString(reqSt, null);
         cat.setDescription(desc);
       }
-    } else if (formSt == null) {
+    } else if (reqSt == null) {
       vcr.changed = desc.getLang() != null;
       desc.setLang(null);
-    } else if (!formSt.equals(desc.getLang())) {
-      desc.setLang(formSt);
+    } else if (!reqSt.equals(desc.getLang())) {
+      desc.setLang(reqSt);
       vcr.changed = true;
     }
 

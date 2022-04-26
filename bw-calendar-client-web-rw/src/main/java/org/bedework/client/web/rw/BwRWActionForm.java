@@ -97,10 +97,6 @@ public class BwRWActionForm extends BwActionFormBase {
 
   private BwCategory category;
 
-  private BwString categoryWord;
-  private String categoryDesc;
-  private String categoryStatus;
-
   /* ....................................................................
    *                   Contacts
    * .................................................................... */
@@ -578,16 +574,6 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public void setCategory(final BwCategory val) {
     category = val;
-    setCategoryWord(null);
-    categoryDesc = null;
-    if (val != null) {
-      final BwString s = val.getWord();
-      if (s != null) {
-        setCategoryWord((BwString)s.clone());
-      }
-      categoryDesc = val.getDescriptionVal();
-      setCategoryStatus(val.getStatus());
-    }
   }
 
   /** If a Category object exists, return that otherwise create an empty one.
@@ -600,53 +586,6 @@ public class BwRWActionForm extends BwActionFormBase {
     }
 
     return category;
-  }
-
-  /**
-   * @param val new cat word
-   */
-  public void setCategoryWord(final BwString val) {
-    categoryWord = val;
-  }
-
-  /** If a category word object exists, return that otherwise create an empty one.
-   *
-   * @return BwString  Category word value object
-   */
-  public BwString getCategoryWord() {
-    if (categoryWord == null) {
-      categoryWord = new BwString();
-    }
-
-    return categoryWord;
-  }
-
-  /**
-   * @param val
-   */
-  public void setCategoryDescription(final String val) {
-    categoryDesc = val;
-  }
-
-  /**
-   * @return BwString  Category Desc value object
-   */
-  public String getCategoryDescription() {
-    return categoryDesc;
-  }
-
-  /**
-   * @param val status of category
-   */
-  public void setCategoryStatus(final String val) {
-    categoryStatus = val;
-  }
-
-  /**
-   * @return String  Category Status
-   */
-  public String getCategoryStatus() {
-    return Util.checkNull(categoryStatus);
   }
 
   /* ====================================================================

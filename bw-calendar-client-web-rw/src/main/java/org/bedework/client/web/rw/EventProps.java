@@ -82,7 +82,7 @@ public class EventProps {
     } else {
       /* Put the status in the address lang */
 
-      final String formSt = checkNull(form.getCategoryStatus());
+      final String formSt = request.getReqPar("categoryStatus");
 
       if (formSt == null) {
         vr.changed = addr.getLang() != null;
@@ -138,7 +138,7 @@ public class EventProps {
     if (str != null) {
       /* Put the status in the cn lang */
 
-      final String formSt = checkNull(form.getCategoryStatus());
+      final String formSt = request.getReqPar("categoryStatus");
 
       if (formSt == null) {
         vr.changed = str.getLang() != null;

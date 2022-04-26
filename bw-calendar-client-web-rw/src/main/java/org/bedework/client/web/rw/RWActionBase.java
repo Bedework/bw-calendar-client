@@ -3,6 +3,7 @@
 */
 package org.bedework.client.web.rw;
 
+import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwString;
 import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
@@ -115,10 +116,7 @@ public abstract class RWActionBase extends BwAbstractAction {
     return getForm().getUploadFileContentType();
   }
 
-  // ===================== contact form elements ====================
-
-
-  // ===================== location form elements ====================
+  // ===================== location form elements ===================
 
   public void setLocationAddress(final BwString val) {
     getRwForm().setLocationAddress(val);
@@ -134,5 +132,18 @@ public abstract class RWActionBase extends BwAbstractAction {
 
   public BwString getLocationSubaddress() {
     return getRwForm().getLocationSubaddress();
+  }
+
+  // =================== collection form elements ===================
+  public void setCalendar(final BwCalendar val) {
+    getBwForm().setCalendar(val);
+  }
+
+  /** If a calendar object exists, return that otherwise create an empty one.
+   *
+   * @return BwCalendar  populated calendar value object
+   */
+  public BwCalendar getCalendar() {
+    return getBwForm().getCalendar();
   }
 }

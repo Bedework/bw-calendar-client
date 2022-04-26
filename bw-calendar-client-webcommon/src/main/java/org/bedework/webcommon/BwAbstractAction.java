@@ -1203,4 +1203,19 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     return BedeworkDefs.viewPeriodNames[vt];
   }
+
+  public BwActionFormBase getBwForm() {
+    return (BwActionFormBase)getForm();
+  }
+
+  public void setCalPath(final String val) {
+    getBwForm().setCalPath(val);
+  }
+
+  /**
+   * @return cal Path
+   */
+  public String getCalPath() {
+    return getBwForm().getCalPath();
+  }
 }

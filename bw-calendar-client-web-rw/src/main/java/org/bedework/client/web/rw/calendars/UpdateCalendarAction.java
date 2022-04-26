@@ -227,9 +227,7 @@ public class UpdateCalendarAction extends RWActionBase {
       }
     }
 
-    if (cal.getPublick()) {
-      request.getSess().flushPublicCache();
-    }
+    request.getSess().flushPublicCache();
 
     /* redo filters */
     cl.flushState();

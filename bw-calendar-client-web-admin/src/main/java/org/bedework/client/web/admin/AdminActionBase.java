@@ -5,14 +5,16 @@ package org.bedework.client.web.admin;
 
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwAbstractAction;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /**
  * User: mike Date: 3/9/21 Time: 22:37
  */
-public abstract class AdminActionBase extends BwAbstractAction {
+public abstract class AdminActionBase extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -27,6 +29,12 @@ public abstract class AdminActionBase extends BwAbstractAction {
     return doAction(request,
                     cl,
                     (BwAdminActionForm)form);
+  }
+
+  public int doAction(final BwRequest request,
+                      final RWClient cl,
+                      final BwRWActionForm form) {
+    throw new RuntimeException("Should never be called");
   }
 
   /** This is the routine which does the work.

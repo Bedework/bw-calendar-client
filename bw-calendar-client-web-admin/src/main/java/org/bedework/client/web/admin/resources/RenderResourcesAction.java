@@ -89,7 +89,7 @@ public class RenderResourcesAction extends AdminActionBase {
   }
 
   @Override
-  public boolean clearMessages() {
+  public boolean clearMessagesOnEntry() {
     return false;
   }
 }

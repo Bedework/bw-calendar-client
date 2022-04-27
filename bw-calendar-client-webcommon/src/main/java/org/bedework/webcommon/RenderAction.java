@@ -54,7 +54,7 @@ public class RenderAction extends BwAbstractAction {
   }
 
   @Override
-  public boolean clearMessages() {
+  public boolean clearMessagesOnEntry() {
     return false;
   }
 }

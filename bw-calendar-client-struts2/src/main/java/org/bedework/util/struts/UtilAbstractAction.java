@@ -29,6 +29,7 @@ import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
+import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.config.entities.Parameterizable;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
@@ -127,8 +128,9 @@ import javax.servlet.http.HttpSession;
  * <p>A combination of the above can allow us to dump the output in a file,
  * <br /><em>contentType=text/text&amp;noxslt=yes</em>
  */
-public abstract class UtilAbstractAction
-         implements Parameterizable, ServletRequestAware, ServletResponseAware,
+public abstract class UtilAbstractAction extends ActionSupport
+         implements Parameterizable,
+                    ServletRequestAware, ServletResponseAware,
                     SessionAware, HttpAppLogger, Logged {
   private transient String logPrefix;
 
@@ -220,10 +222,10 @@ public abstract class UtilAbstractAction
 
     err = ErrorEmitSvlt.getErrorObj(request, getId(),
                                     getErrorObjErrProp(),
-                                    clearMessages());
+                                    clearMessagesOnEntry());
     msg = MessageEmitSvlt.getMessageObj(request, getId(),
                                         getErrorObjErrProp(),
-                                        clearMessages());
+                                        clearMessagesOnEntry());
 
     /* Log the request - virtual domains can make it difficult to
        *  distinguish applications.
@@ -396,7 +398,7 @@ public abstract class UtilAbstractAction
    *
    * @return boolean   true to clear messages
    */
-  public boolean clearMessages() {
+  public boolean clearMessagesOnEntry() {
     return true;
   }
 

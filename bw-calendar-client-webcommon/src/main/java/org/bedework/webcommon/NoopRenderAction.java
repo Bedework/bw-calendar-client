@@ -24,7 +24,7 @@ package org.bedework.webcommon;
  */
 public class NoopRenderAction extends NoopAction {
   @Override
-  public boolean clearMessages() {
+  public boolean clearMessagesOnEntry() {
     return false;
   }
 }

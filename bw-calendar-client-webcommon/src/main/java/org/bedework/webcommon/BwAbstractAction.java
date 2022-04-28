@@ -274,7 +274,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (reqpar != null) {
       /* Set the objects to null so we get new ones.
        */
-      request.error(ClientMessage.cancelled);
+      request.message(ClientMessage.cancelled);
       return forwards[forwardCancelled];
     }
 

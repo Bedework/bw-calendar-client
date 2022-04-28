@@ -116,7 +116,17 @@ public abstract class RWActionBase extends BwAbstractAction {
     return getForm().getUploadFileContentType();
   }
 
-  // ===================== location form elements ===================
+  // ================== contact form elements ===================
+
+  public void setContactUid(final String val) {
+    getRwForm().setContactUid(val);
+  }
+
+  public String getContactUid() {
+    return getRwForm().getContactUid();
+  }
+
+  // ================== location form elements ===================
 
   public void setLocationAddress(final BwString val) {
     getRwForm().setLocationAddress(val);
@@ -132,6 +142,14 @@ public abstract class RWActionBase extends BwAbstractAction {
 
   public BwString getLocationSubaddress() {
     return getRwForm().getLocationSubaddress();
+  }
+
+  public void setLocationUid(final String val) {
+    getRwForm().setLocationUid(val);
+  }
+
+  public String getLocationUid() {
+    return getRwForm().getLocationUid();
   }
 
   // =================== collection form elements ===================

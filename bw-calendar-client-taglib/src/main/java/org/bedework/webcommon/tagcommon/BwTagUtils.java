@@ -84,7 +84,7 @@ public class BwTagUtils extends BwTagUtilCommon {
       outTagged(out, curIndent, "ampm", tzdate.getAmPm());
       outTagged(out, curIndent, "longdate", tzdate.getLongDateString());
       outTagged(out, curIndent, "shortdate", tzdate.getDateString());
-      outTagged(out, curIndent, "", tzdate.getTimeString());
+      outTagged(out, curIndent, "time", tzdate.getTimeString());
 
     }
 

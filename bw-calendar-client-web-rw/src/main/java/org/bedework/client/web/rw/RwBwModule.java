@@ -3,13 +3,18 @@
 */
 package org.bedework.client.web.rw;
 
-import org.bedework.client.rw.InOutBoxInfo;
 import org.bedework.caldav.util.filter.FilterBase;
+import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwFilterDef;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.BwCollectionFilter;
+import org.bedework.client.rw.InOutBoxInfo;
 import org.bedework.client.rw.NotificationInfo;
 import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwModule;
 import org.bedework.webcommon.BwRequest;
+
+import static org.bedework.caldav.util.filter.FilterBase.addAndChild;
 
 /**
  * User: mike Date: 3/19/21 Time: 21:35
@@ -63,6 +68,19 @@ public class RwBwModule extends BwModule {
                                         inBoxInfo.getColPath());
         filter.setNot(true);
       }
+
+      final BwCalendar home;
+      try {
+        home = cl.getHome();
+      } catch (final CalFacadeException cfe) {
+        throw new RuntimeException(cfe);
+      }
+
+      final BwFilterDef fd = new BwFilterDef();
+      fd.setDefinition("vpath='" + home.getPath() + "')");
+      final var pr = cl.parseFilter(fd);
+
+      filter = addAndChild(filter, pr.filter);
     }
 
     return filter;

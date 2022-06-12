@@ -181,6 +181,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (form.getNewSession()) {
+      if (adminUserId != null) {
+        final var loginMsg = "Logged in to " + conf.getAppType() +
+                " as " + adminUserId;
+        if (isAuditLoggerEnabled()) {
+          audit(loginMsg);
+        }
+        info(loginMsg);
+      }
+
       form.setHour24(form.getConfig().getHour24());
       if (!cl.getPublicAdmin() &&
               !form.getSubmitApp() &&

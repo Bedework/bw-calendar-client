@@ -55,4 +55,18 @@ public abstract class AdminActionBase extends RWActionBase {
   public BwAdminGroup getUpdAdminGroup() {
     return getAdminForm().getUpdAdminGroup();
   }
+
+  /**
+   * @param val true for show group members
+   */
+  public void setShowAgMembers(final boolean val) {
+    getAdminForm().setShowAgMembers(val);
+  }
+
+  /**
+   * @return true for show group members
+   */
+  public boolean getShowAgMembers() {
+    return getAdminForm().getShowAgMembers();
+  }
 }

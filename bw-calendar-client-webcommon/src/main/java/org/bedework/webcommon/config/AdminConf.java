@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon.config;
 
+import org.bedework.util.config.ConfigurationStore;
 
 /**
  * @author douglm
@@ -25,6 +26,12 @@ package org.bedework.webcommon.config;
  */
 public class AdminConf extends ClientConf<AdminConfigImpl>
     implements AdminConfMBean {
+  public AdminConf(final String serviceName,
+                   final ConfigurationStore store,
+                   final String configName) {
+    super(serviceName, store, configName);
+  }
+
   /* ========================================================================
    * Conf properties
    * ======================================================================== */

@@ -33,8 +33,8 @@ import javax.management.ObjectName;
  */
 @SuppressWarnings("rawtypes")
 public final class ClientConfigurations extends ConfBase {
-  /* Name of the property holding the location of the config data */
-  private static final String confuriPname = "org.bedework.clients.confuri";
+  /* Name of the directory holding the config data */
+  private static final String confDirName = "clients";
 
   private static final Object lock = new Object();
 
@@ -91,64 +91,73 @@ public final class ClientConfigurations extends ConfBase {
   }
 
   /**
-   * @throws CalFacadeException
+   * @throws CalFacadeException on fatal lload error
    */
   private ClientConfigurations() throws CalFacadeException {
-    super("org.bedework.clients:service=System");
+    super("org.bedework.clients:service=System",
+          confDirName,
+          null); // No overall config
 
-    try {
-      setConfigPname(confuriPname);
-
-      loadClientConfigs();
-    } catch (final CalFacadeException cfe) {
-      throw cfe;
-    } catch (final Throwable t) {
-      throw new CalFacadeException(t);
-    }
+    loadClientConfigs();
   }
 
   /**
    * @param name of config
    * @return client config identified by name - or null.
-   * @throws CalFacadeException
    */
-  public ConfigCommon getClientConfig(final String name) throws CalFacadeException {
+  public ConfigCommon getClientConfig(final String name) {
     return clientConfigs.get(name);
   }
 
-  private void loadClientConfigs() throws Throwable {
-    final List<String> names = getStore().getConfigs();
+  private void loadClientConfigs() throws CalFacadeException {
+    try {
+      final List<String> names = getStore().getConfigs();
 
-    for (final String cn: names) {
-      final ObjectName objectName = createObjectName("client-config", cn);
+      for (final String cn: names) {
+        final ObjectName objectName = createObjectName(
+                "client-config", cn);
 
-      /* Read the config so we can get the mbean class name. */
+        /* Read the config so we can get the mbean class name. */
 
-      final ConfigCommonImpl cCfg =
-              (ConfigCommonImpl)getStore().getConfig(cn);
+        final ConfigCommonImpl cCfg =
+                (ConfigCommonImpl)getStore().getConfig(cn);
 
-      if (cCfg == null) {
-        error("Unable to read client configuration " + cn);
-        continue;
+        if (cCfg == null) {
+          error("Unable to read client configuration " + cn);
+          continue;
+        }
+
+        String mbeanClassName = cCfg.getMbeanClassName();
+
+        if (mbeanClassName == null) {
+          error("Must set the mbean class name for config " + cn);
+          error("Falling back to base class for " + cn);
+
+          mbeanClassName = ClientConf.class.getCanonicalName();
+        }
+
+        @SuppressWarnings("unchecked") final ClientConf<ConfigCommonImpl> cc =
+                (ClientConf<ConfigCommonImpl>)makeObject(
+                        mbeanClassName,
+                        objectName.toString(),
+                        getStore(),
+                        cn);
+
+        if (cc == null) {
+          throw new CalFacadeException(
+                  "Unable to create mbean class: " + mbeanClassName);
+        }
+
+        cc.setConfig(cCfg);
+
+        clientConfigs.put(cn, cc);
+
+        register(new ObjectName(cc.getServiceName()), cc);
       }
-
-      String mbeanClassName = cCfg.getMbeanClassName();
-
-      if (mbeanClassName == null) {
-        error("Must set the mbean class name for config " + cn);
-        error("Falling back to base class for " + cn);
-
-        mbeanClassName = ClientConf.class.getCanonicalName();
-      }
-
-      @SuppressWarnings("unchecked")
-      final ClientConf<ConfigCommonImpl> cc =
-              (ClientConf<ConfigCommonImpl>)makeObject(mbeanClassName);
-      cc.init(getStore(), objectName.toString(), cCfg);
-
-      clientConfigs.put(cn, cc);
-
-      register(new ObjectName(cc.getServiceName()), cc);
+    } catch (final CalFacadeException cfe) {
+      throw cfe;
+    } catch (final Throwable t) {
+      throw new CalFacadeException(t);
     }
   }
 

@@ -28,18 +28,16 @@ import org.bedework.util.jmx.ConfBase;
  */
 public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
     implements ClientConfMBean {
+  public ClientConf(final String serviceName,
+                    final ConfigurationStore store,
+                    final String configName) {
+    super(serviceName, store, configName);
+  }
+
   /**
-   * @param configStore
-   * @param serviceName
    * @param cfg - the configuration
    */
-  public void init(final ConfigurationStore configStore,
-                   final String serviceName,
-                   final X cfg) {
-    setServiceName(serviceName);
-    setStore(configStore);
-    setConfigName(cfg.getName());
-
+  public void setConfig(final X cfg) {
     this.cfg = cfg;
   }
 

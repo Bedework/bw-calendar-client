@@ -439,15 +439,6 @@ public class BwRequest extends Request {
     return bwdts;
   }
 
-  /** This often appears as the request parameter specifying the date for an
-   * action. Always YYYYMMDD format. Returns current date if not in request
-   *
-   * @return String date in YYYYMMDD format
-   */
-  public String getDate() {
-    return getReqPar("date");
-  }
-
   /**
    * @return view type - "monthView" etc
    */

@@ -80,7 +80,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                        implements ForwardDefs {
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "bwappname";
-  
+
+  private String viewType;
+
   @Override
   public String getId() {
     return getClass().getName();
@@ -209,9 +211,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       if (!cl.getPublicAdmin()) {
-        final String viewType = request.getReqPar("viewType");
-        if (viewType != null) {
-          mstate.setViewType(viewType);
+        if (getViewType() != null) {
+          mstate.setViewType(getViewType());
         } else {
           mstate.setViewType(prefs.getPreferredViewPeriod());
         }
@@ -1226,5 +1227,33 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    */
   public String getCalPath() {
     return getBwForm().getCalPath();
+  }
+
+  /* ============================================================
+   *                 Request parameters
+   * ============================================================ */
+
+  public void setCount(final String val) {
+    // Handled elsewhere.
+  }
+
+  public void setFexpr(final String val) {
+    // Handled elsewhere.
+  }
+
+  public void setSort(final String val) {
+    // Handled elsewhere.
+  }
+
+  public void setStart(final String val) {
+    // Handled elsewhere.
+  }
+
+  public void setViewType(final String val) {
+    viewType = val;
+  }
+
+  public String getViewType() {
+    return viewType;
   }
 }

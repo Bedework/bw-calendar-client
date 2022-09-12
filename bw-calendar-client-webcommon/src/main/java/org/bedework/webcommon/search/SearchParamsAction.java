@@ -72,6 +72,8 @@ import javax.servlet.http.HttpServletResponse;
  * </ul>
  */
 public class SearchParamsAction extends BwAbstractAction {
+  private boolean listMode;
+
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -82,7 +84,7 @@ public class SearchParamsAction extends BwAbstractAction {
             "y".equals(request.getReqPar("f")) ||
                     "y".equals(request.getStringActionPar("f"));
 
-    if (request.getBooleanReqPar("listMode", false)) {
+    if (listMode) {
       cl.setViewMode(Client.listViewMode);
     }
 
@@ -269,5 +271,13 @@ public class SearchParamsAction extends BwAbstractAction {
     response.addHeader("etag", cl.getCurrentChangeToken());
 
     return forwardSuccess;
+  }
+
+  /* ============================================================
+   *                 Request parameters
+   * ============================================================ */
+
+  public void setListMode(final String val) {
+    listMode = Boolean.parseBoolean(val);
   }
 }

@@ -430,9 +430,48 @@ public abstract class UtilAbstractAction extends ActionSupport
     return sc.getInitParameter("formClass");
   }
 
-  /* ====================================================================
-   *               Log request
-   * ==================================================================== */
+  public void setB(final String val) {
+    // We use b=de as a dummay param to make url building easy
+    if (!"de".equals(val)) {
+      throw new RuntimeException("'b' is reserved as a bedework parameter");
+    }
+  }
+
+  /* ============================================================
+   *                 Request parameters
+   * ============================================================ */
+
+  public void setSetappvar(final String val) {
+    // Handled elsewhere.
+  }
+
+  public void setSkinNameSticky(final String val) {
+    // Handled elsewhere.
+  }
+
+  /* ============================================================
+   *                 Params that show up as method calls
+   * ============================================================ */
+
+  public void setActionType(final String val) {
+    // Handled by Request class.
+  }
+
+  public void setConversation(final String val) {
+    // Handled by Request class.
+  }
+
+  public void setMdl(final String val) {
+    // Handled by Request class.
+  }
+
+  public void setRefaction(final String val) {
+    // Handled by Request class.
+  }
+
+  /* ============================================================
+   *                        Log request
+   * ============================================================ */
 
   @Override
   public String getLogPrefix(final HttpServletRequest request) {

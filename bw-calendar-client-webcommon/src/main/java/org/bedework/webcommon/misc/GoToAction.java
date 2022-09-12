@@ -32,6 +32,8 @@ import org.bedework.webcommon.BwRequest;
  *
  */
 public class GoToAction extends BwAbstractAction {
+  private String date;
+
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) throws Throwable {
@@ -40,9 +42,17 @@ public class GoToAction extends BwAbstractAction {
     cl.setViewMode(Client.gridViewMode);
 
     gotoDateView(request,
-                 request.getDate(),
+                 getDate(),
                  request.getViewType());
 
     return forwardSuccess;
+  }
+
+  public void setDate(final String val) {
+    date = val;
+  }
+
+  public String getDate() {
+    return date;
   }
 }

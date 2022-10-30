@@ -117,127 +117,77 @@ public class EmitCollectionTag extends EmitTextTag {
     out.println('>');
   }
 
-  protected void emitCollection(final BwCalendar col,
+  protected void emitCollection(final BwCalendar colPar,
                                 final JspWriter out,
                                 final String indent) throws Throwable {
-    String val = null;
-
-    if (col != null) {
-      val = col.getName();
+    final BwCalendar col;
+    if (colPar != null) {
+      col = colPar;
+    } else {
+      col = new BwCalendar();
     }
 
-    emitElement(out, indent, "name", val);
+    emitElement(out, indent, "name", col.getName());
+    emitElement(out, indent, "summary", col.getSummary());
+    emitElement(out, indent, "path", col.getPath());
 
-    if (col != null) {
-      val = col.getSummary();
+    if (col.getPath() != null) {
+      emitElement(out, indent, "encodedPath",
+                  URLEncoder.encode(col.getPath(),
+                                    StandardCharsets.UTF_8));
+    } else {
+      emitElement(out, indent, "encodedPath", "null");
     }
 
-    emitElement(out, indent, "summary", val);
+    emitElement(out, indent, "ownerHref", col.getOwnerHref());
+    emitElement(out, indent, "actualCalType",
+                String.valueOf(col.getCalType()));
 
-    if (col != null) {
-      val = col.getPath();
-    }
-
-    emitElement(out, indent, "path", val);
-
-    if (val != null) {
-      val = URLEncoder.encode(val, StandardCharsets.UTF_8);
-    }
-
-    emitElement(out, indent, "encodedPath", val);
-
-    if (col != null) {
-      val = col.getOwnerHref();
-    }
-
-    emitElement(out, indent, "ownerHref", val);
-
-    if (col != null) {
-      val = String.valueOf(col.getCalType());
-    }
-
-    emitElement(out, indent, "actualCalType", val);
-
-    if ((col != null) && (col.getCalType() == BwCalendar.calTypeAlias)) {
+    int calType = col.getCalType();
+    if (calType == BwCalendar.calTypeAlias) {
       final BwCalendar target = col.getAliasedEntity();
+
       if (target == null) {
-        val = String.valueOf(BwCalendar.calTypeUnknown);
+        calType = BwCalendar.calTypeUnknown;
       } else {
-        val = String.valueOf(target.getCalType());
+        calType = target.getCalType();
       }
     }
 
-    emitElement(out, indent, "calType", val);
+    emitElement(out, indent, "calType", String.valueOf(calType));
 
-    if (col != null) {
-      val = col.getProperty(NamespaceAbbrevs.prefixed(AppleServerTags.readWrite));
-    } else {
-      val = null;
-    }
+    emitElement(out, indent, "shared",
+                col.getShared());
 
-    if (val != null) {
-      emitElement(out, indent, "read-write", "true");
-    }
+    emitElement(out, indent, "read-write",
+                col.getSharedWritable());
 
-    if (col != null) {
-      if (col.getShared()) {
-        emitElement(out, indent, "shared", "true");
-      }
+    emitElement(out, indent, "calendarCollection",
+                col.getCalendarCollection());
 
-      emitElement(out, indent, "calendarCollection",
-                  String.valueOf(col.getCalendarCollection()));
+    emitElement(out, indent, "affectsFreeBusy",
+                col.getAffectsFreeBusy());
 
-      emitElement(out, indent, "affectsFreeBusy",
-                  String.valueOf(col.getAffectsFreeBusy()));
-    } else {
-      emitElement(out, indent, "calendarCollection", "false");
+    emitElement(out, indent, "color", col.getColor());
 
-      emitElement(out, indent, "affectsFreeBusy", "false");
-    }
+    emitElement(out, indent, "isTopicalArea",
+                col.getIsTopicalArea());
 
-    if (col != null) {
-      val = String.valueOf(col.getColor());
-    }
+    emitElement(out, indent, "primaryCollection",
+                col.getPrimaryCollection());
 
-    emitElement(out, indent, "color", val);
+    emitElement(out, indent, "display", col.getDisplay());
 
-    if (col != null) {
-      val = String.valueOf(col.getIsTopicalArea());
-    }
+    emitElement(out, indent, "disabled", col.getDisabled());
 
-    emitElement(out, indent, "isTopicalArea", val);
+    emitElement(out, indent, "lastRefreshStatus",
+                col.getLastRefreshStatus());
 
-    if (col != null) {
-      val = String.valueOf(col.getDisplay());
-    }
+    emitElement(out, indent, "lastRefresh", col.getLastRefresh());
 
-    emitElement(out, indent, "display", val);
+    emitElement(out, indent, "open", col.getOpen());
 
-    if (col != null) {
-      val = String.valueOf(col.getDisabled());
-    }
-
-    emitElement(out, indent, "disabled", val);
-
-    if (col != null) {
-      val = col.getLastRefreshStatus();
-    }
-
-    emitElement(out, indent, "lastRefreshStatus", val);
-
-    if (col != null) {
-      val = col.getLastRefresh();
-    }
-
-    emitElement(out, indent, "lastRefresh", val);
-
-    if (col != null) {
-      val = String.valueOf(col.getOpen());
-    }
-
-    emitElement(out, indent, "open", val);
-
-    if ((col == null) || !full) {
+    if (!full) {
       return;
     }
 
@@ -265,26 +215,25 @@ public class EmitCollectionTag extends EmitTextTag {
       out.println(inviteStr);
     }
 
-    emitElement(out, indent, "desc",
-                col.getDescription());
+    emitElement(out, indent, "desc", col.getDescription());
 
     emitElement(out, indent, "canAlias",
-                String.valueOf(col.getCanAlias()));
+                col.getCanAlias());
 
     emitElement(out, indent, "isSubscription",
-                String.valueOf(col.getAlias()));
+                col.getAlias());
 
     emitCdataElement(out, indent, "aliasUri",
                      col.getAliasUri());
 
     emitElement(out, indent, "internalAlias",
-                String.valueOf(col.getInternalAlias()));
+                col.getInternalAlias());
 
     emitElement(out, indent, "externalSub",
-                String.valueOf(col.getExternalSub()));
+                col.getExternalSub());
 
     emitElement(out, indent, "unremoveable",
-                String.valueOf(col.getUnremoveable()));
+                col.getUnremoveable());
 
     emitElement(out, indent, "refreshRate",
                 String.valueOf(col.getRefreshRate()));
@@ -298,8 +247,16 @@ public class EmitCollectionTag extends EmitTextTag {
 
   private void emitElement(final JspWriter out,
                            final String indent,
-                           final String name, final String val) throws Throwable {
+                           final String name,
+                           final String val) throws Throwable {
     emitElement(out, indent, name, val, false);
+  }
+
+  private void emitElement(final JspWriter out,
+                           final String indent,
+                           final String name,
+                           final boolean val) throws Throwable {
+    emitElement(out, indent, name, String.valueOf(val), false);
   }
 
   private void emitCdataElement(final JspWriter out,

@@ -131,6 +131,14 @@ public class UpdateCalendarAction extends RWActionBase {
       }
     }
 
+    // Checkboxes
+    cal.setPrimaryCollection(
+            request.getBooleanReqPar("calendar.primaryCollection", false));
+
+    cal.setDisplay(
+            request.getBooleanReqPar("calendar.display",
+                                     false));
+
     final GetFilterDefResponse gfdr = request.getFilterDef();
 
     if (gfdr.getStatus() == Response.Status.notFound) {

@@ -561,11 +561,16 @@ public class EventCommon {
                                                     final BwEvent ev) {
     List<ValidationError> ves = null;
 
-    /* ------------- Set zero length fields to null ------------------ */
+    /* ------------------------- colPath -------------------------- */
+    if(ev.getColPath() == null) {
+      ves = addError(ves, ValidationError.missingCalendar);
+    }
+
+    /* ------------- Set zero length fields to null --------------- */
 
     ev.setLink(checkNull(ev.getLink()));
 
-    /* ------------------------- summary ------------------------------- */
+    /* ------------------------- summary -------------------------- */
 
     final Collection<BwString> sums = ev.getSummaries();
     if ((sums == null) || (sums.size() == 0)) {

@@ -113,7 +113,7 @@ public class ROClientImpl implements Logged, Client {
 
   protected boolean publicAdmin;
 
-  protected BwPrincipal currentPrincipal;
+  protected BwPrincipal<?> currentPrincipal;
   private String currentCalendarAddress;
 
   private Collection<Locale>supportedLocales;
@@ -140,12 +140,12 @@ public class ROClientImpl implements Logged, Client {
 
   /* The list of cloned admin groups for the use of the user client
    */
-  protected static Collection<BwGroup> adminGroupsInfo;
+  protected static Collection<BwGroup<?>> adminGroupsInfo;
 
-  protected static Collection<BwGroup> calsuiteAdminGroupsInfo;
+  protected static Collection<BwGroup<?>> calsuiteAdminGroupsInfo;
 
   protected BwCalSuiteWrapper calSuite;
-  protected BwPrincipal calSuiteOwner;
+  protected BwPrincipal<?> calSuiteOwner;
   protected String calSuiteName;
 
   protected static long lastAdminGroupsInfoRefresh;
@@ -216,7 +216,7 @@ public class ROClientImpl implements Logged, Client {
     userIndexers.clear();
   }
 
-  protected BwPrincipal getCurrentCalSuiteOwner() throws CalFacadeException {
+  protected BwPrincipal<?> getCurrentCalSuiteOwner() throws CalFacadeException {
     if (calSuiteOwner != null) {
       return calSuiteOwner;
     }
@@ -446,7 +446,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public String getCalendarAddress(final String user) {
-    final BwPrincipal u = svci.getUsersHandler().getUser(user);
+    final BwPrincipal<?> u = svci.getUsersHandler().getUser(user);
     if (u == null) {
       return null;
     }
@@ -460,7 +460,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwPrincipal calAddrToPrincipal(final String cua) {
+  public BwPrincipal<?> calAddrToPrincipal(final String cua) {
     return svci.getDirectories().caladdrToPrincipal(cua);
   }
 
@@ -479,21 +479,21 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwPrincipal getCurrentPrincipal() {
+  public BwPrincipal<?> getCurrentPrincipal() {
     if (currentPrincipal == null) {
-      currentPrincipal = (BwPrincipal)svci.getPrincipal().clone();
+      currentPrincipal = (BwPrincipal<?>)svci.getPrincipal().clone();
     }
 
     return currentPrincipal;
   }
 
   @Override
-  public BwPrincipal getAuthPrincipal() {
+  public BwPrincipal<?> getAuthPrincipal() {
     return svci.getPrincipalInfo().getAuthPrincipal();
   }
 
   @Override
-  public BwPrincipal getOwner() {
+  public BwPrincipal<?> getOwner() {
     return getCurrentPrincipal();
   }
 
@@ -512,12 +512,12 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwPrincipal getUser(final String val) {
+  public BwPrincipal<?> getUser(final String val) {
     return svci.getUsersHandler().getUser(val);
   }
 
   @Override
-  public BwPrincipal getUserAlways(final String val) {
+  public BwPrincipal<?> getUserAlways(final String val) {
     try {
       return svci.getUsersHandler().getAlways(val);
     } catch (final CalFacadeException cfe) {
@@ -532,7 +532,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwPrincipal getPrincipal(final String href)
+  public BwPrincipal<?> getPrincipal(final String href)
           throws CalFacadeException {
     return svci.getDirectories().getPrincipal(href);
   }
@@ -547,7 +547,7 @@ public class ROClientImpl implements Logged, Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public Collection<BwGroup> getAdminGroups()
+  public Collection<BwGroup<?>> getAdminGroups()
           throws CalFacadeException {
     refreshAdminGroupInfo();
 
@@ -842,7 +842,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwCalendar getHome(final BwPrincipal principal,
+  public BwCalendar getHome(final BwPrincipal<?> principal,
                             final boolean freeBusy)
           throws CalFacadeException {
     return svci.getCalendarsHandler().getHome(principal, freeBusy);
@@ -1322,7 +1322,7 @@ public class ROClientImpl implements Logged, Client {
 
     final String csHref = cs.getGroup().getOwnerHref();
 
-    final BwPrincipal p = getUser(csHref);
+    final BwPrincipal<?> p = getUser(csHref);
     if (p == null) {
       return null;
     }
@@ -1364,23 +1364,23 @@ public class ROClientImpl implements Logged, Client {
       adminGroupsInfo = new ArrayList<>();
       calsuiteAdminGroupsInfo = new ArrayList<>();
       
-      final Map<String, BwPrincipal> cloned = new HashMap<>();
+      final Map<String, BwPrincipal<?>> cloned = new HashMap<>();
 
-      final Collection<BwGroup> ags =
+      final var ags =
               svci.getAdminDirectories().getAll(true);
 
-      for (final BwGroup g: ags) {
-        final BwGroup cg = cloneGroup(g, cloned);
+      for (final var g: ags) {
+        final var cg = cloneGroup(g, cloned);
 
         if (groupHrefs.contains(cg.getPrincipalRef())) {
           calsuiteAdminGroupsInfo.add(cg);
         }
 
         // Set the memberships for this group.
-        final Collection<BwGroup> mgs = getAllAdminGroups(g);
+        final var mgs = getAllAdminGroups(g);
 
-        for (final BwGroup mg: mgs) {
-          final BwGroup cmg = cloneGroup(mg, cloned);
+        for (final var mg: mgs) {
+          final var cmg = cloneGroup(mg, cloned);
 
           cg.addGroup(cmg);
         }
@@ -1402,14 +1402,14 @@ public class ROClientImpl implements Logged, Client {
    * @return Collection    of BwGroup
    * @throws CalFacadeException on fatal error
    */
-  private Collection<BwGroup> getAllAdminGroups(final BwPrincipal val)
+  private Collection<BwGroup<?>> getAllAdminGroups(final BwPrincipal<?> val)
           throws CalFacadeException {
     return svci.getAdminDirectories().getAllGroups(val);
   }
 
-  private BwGroup cloneGroup(final BwGroup g,
-                             final Map<String, BwPrincipal> cloned) {
-    BwGroup cg = (BwGroup)cloned.get(g.getPrincipalRef());
+  private BwGroup<?> cloneGroup(final BwGroup<?> g,
+                                final Map<String, BwPrincipal<?>> cloned) {
+    var cg = (BwGroup<?>)cloned.get(g.getPrincipalRef());
 
     if (cg != null) {
       return cg;
@@ -1418,19 +1418,19 @@ public class ROClientImpl implements Logged, Client {
     cg = g.shallowClone();
     cloned.put(g.getPrincipalRef(), cg);
 
-    final Collection<BwPrincipal> ms = g.getGroupMembers();
+    final var ms = g.getGroupMembers();
     if (ms == null) {
       return cg;
     }
 
-    for (final BwPrincipal mbr: ms) {
-      BwPrincipal cmbr = cloned.get(mbr.getPrincipalRef());
+    for (final var mbr: ms) {
+      BwPrincipal<?> cmbr = cloned.get(mbr.getPrincipalRef());
 
       if (cmbr == null) {
         if (mbr instanceof BwGroup) {
-          cmbr = cloneGroup((BwGroup)mbr, cloned);
+          cmbr = cloneGroup((BwGroup<?>)mbr, cloned);
         } else {
-          cmbr = (BwPrincipal)mbr.clone();
+          cmbr = (BwPrincipal<?>)mbr.clone();
         }
         cloned.put(mbr.getPrincipalRef(), cmbr);
       }
@@ -1451,7 +1451,7 @@ public class ROClientImpl implements Logged, Client {
       return Util.buildPath(false, getBasicSyspars().getGlobalResourcesPath());
     }
 
-    final BwPrincipal eventsOwner = getPrincipal(suite.getGroup().getOwnerHref());
+    final BwPrincipal<?> eventsOwner = getPrincipal(suite.getGroup().getOwnerHref());
 
     final String home = svci.getPrincipalInfo().getCalendarHomePath(eventsOwner);
 
@@ -1576,7 +1576,7 @@ public class ROClientImpl implements Logged, Client {
           new FlushMap<>();
 
   protected FilterBase getDefaultFilterContext() throws CalFacadeException {
-    final BwPrincipal pr = getCurrentPrincipal();
+    final var pr = getCurrentPrincipal();
     final String phref;
     if (pr == null) {
       phref = null;

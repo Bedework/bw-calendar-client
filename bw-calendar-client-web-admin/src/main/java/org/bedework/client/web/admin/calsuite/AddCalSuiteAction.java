@@ -73,7 +73,7 @@ public class AddCalSuiteAction extends AdminActionBase {
     final BwCalSuiteWrapper suite =
             cl.addCalSuite(name, groupName,
                            request.getReqPar("calPath"),
-                           request.getReqPar("subroot"));
+                           request.getReqPar("description"));
     if (suite == null) {
       request.error(ClientError.calsuiteNotAdded);
       return forwardNotAdded;

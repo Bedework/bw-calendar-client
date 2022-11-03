@@ -20,14 +20,11 @@
 package org.bedework.webcommon.admingroup;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.responses.AdminGroupsResponse;
 import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-
-import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -59,7 +56,7 @@ public class FetchAdminGroupsAction extends BwAbstractAction {
     /* Add an etag */
     resp.addHeader("etag", changeToken);
 
-    final Collection<BwGroup> vals = cl.getAdminGroups();
+    final var vals = cl.getAdminGroups();
 
     resp.setContentType("text/json; charset=UTF-8");
 

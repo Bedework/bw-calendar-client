@@ -43,7 +43,7 @@ import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
-import org.bedework.calfacade.base.BwShareableDbentity;
+import org.bedework.calfacade.base.ShareableEntity;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.calfacade.mail.Message;
@@ -850,7 +850,7 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public void changeAccess(final BwShareableDbentity<?> ent,
+  public void changeAccess(final ShareableEntity ent,
                            final Collection<Ace> aces,
                            final boolean replaceAll)
           throws CalFacadeException {

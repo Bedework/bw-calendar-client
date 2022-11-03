@@ -35,7 +35,7 @@ import org.bedework.webcommon.BwRequest;
  *      <li>"name"            Name of calsuite to update</li>
  *      <li>"groupName"       group name for calsuite</li>
  *      <li>"calPath"         root collection path</li>
- *      <li>"subroot"         submissions root path</li>
+ *      <li>"description"     </li>
  * </ul>
  *
  * <p>Forwards to:<ul>
@@ -67,7 +67,7 @@ public class UpdateCalSuiteAction extends AdminActionBase {
     cl.updateCalSuite(csw,
                       request.getReqPar("groupName"),
                       request.getReqPar("calPath"),
-                      request.getReqPar("subroot"));
+                      request.getReqPar("description"));
 
     /* -------------------------- Access ------------------------------ */
 

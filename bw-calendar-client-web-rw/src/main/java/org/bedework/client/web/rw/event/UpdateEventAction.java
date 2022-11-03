@@ -546,12 +546,6 @@ public class UpdateEventAction extends RWActionBase {
       return forwardRetry;
     }
 
-    /* --------- set collection (why not earlier?) ---------------- */
-
-    if (!request.setEventCalendar(ei, pars.changes)) {
-      return forwardRetry;
-    }
-
     /* ------------------ final validation -------------------------- */
 
     /* If we're updating but not publishing a submitted event, treat it as

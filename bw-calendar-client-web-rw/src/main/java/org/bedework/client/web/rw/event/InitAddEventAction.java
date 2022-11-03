@@ -31,6 +31,7 @@ import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.client.web.rw.Attendees;
+import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.DurationBean;
@@ -135,6 +136,9 @@ public class InitAddEventAction extends RWActionBase {
     form.setFormattedRdates(null);
     form.setFormattedExdates(null);
 
+    /* We may have been supplied with a cal path - e.g. user client
+       and we allow them to add an event with the calendar selection.
+     */
     final BwCalendar cal = request.getNewCal(false);
 
     if (cal != null) {
@@ -142,6 +146,8 @@ public class InitAddEventAction extends RWActionBase {
                       ev.getColPath(),
                       cal.getPath());
       ev.setColPath(cal.getPath());
+    } else {
+      setEventCollection(cl, ev);
     }
 
     final BwSession sess = request.getSess();
@@ -159,5 +165,17 @@ public class InitAddEventAction extends RWActionBase {
     //}
 
     return forwardSuccess;
+  }
+
+  protected void setEventCollection(final RWClient cl,
+                                    final BwEvent ev) throws Throwable {
+    final var cols = cl.getAddContentCollections(false);
+
+    if (Util.isEmpty(cols)) {
+      throw new RuntimeException("No writaeable collection");
+    }
+
+    // Use the first.
+    ev.setColPath(cols.stream().findFirst().get().getColPath());
   }
 }

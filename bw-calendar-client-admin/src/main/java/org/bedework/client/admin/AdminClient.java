@@ -67,7 +67,7 @@ public interface AdminClient extends RWClient {
    * @return BwAuthUser    users entry
    * @throws CalFacadeException on fatal error
    */
-  BwAuthUser getAuthUser(BwPrincipal pr) throws CalFacadeException;
+  BwAuthUser getAuthUser(BwPrincipal<?> pr) throws CalFacadeException;
 
   /** Update the user entry
    *
@@ -98,13 +98,13 @@ public interface AdminClient extends RWClient {
    * @return group
    * @throws CalFacadeException  for errors
    */
-  BwGroup getAdminGroup(String href) throws CalFacadeException;
+  BwGroup<?> getAdminGroup(String href) throws CalFacadeException;
 
   /**
    * @return groups that are calsuite owners
    * @throws CalFacadeException  for errors
    */
-  Collection<BwGroup> getCalsuiteAdminGroups() throws CalFacadeException;
+  Collection<BwGroup<?>> getCalsuiteAdminGroups() throws CalFacadeException;
 
   /**
    * Force a refetch of the groups when getAdminGroups is called
@@ -154,16 +154,16 @@ public interface AdminClient extends RWClient {
    * @exception CalFacadeException   For invalid usertype values.
    */
   void addAdminGroupMember(BwAdminGroup group,
-                           BwPrincipal val) throws CalFacadeException;
+                           BwPrincipal<?> val) throws CalFacadeException;
 
   /** Remove a member from a group
    *
    * @param group          a group principal
-   * @param val            BwPrincipal new member
+   * @param val            BwPrincipal<?> new member
    * @exception CalFacadeException   For invalid usertype values.
    */
   void removeAdminGroupMember(BwAdminGroup group,
-                              BwPrincipal val) throws CalFacadeException;
+                              BwPrincipal<?> val) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                     Groups
@@ -174,14 +174,14 @@ public interface AdminClient extends RWClient {
    * @param  name           String group name
    * @return BwGroup        group object
    */
-  BwGroup findGroup(String name);
+  BwGroup<?> findGroup(String name);
 
   /**
    * @param group the group
    * @return Collection of groups of which this is a member
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwGroup> findGroupParents(BwGroup group) throws CalFacadeException;
+  Collection<BwGroup<?>> findGroupParents(BwGroup<?> group) throws CalFacadeException;
 
   /** Return all groups of which the given principal is a member. Never returns null.
    *
@@ -191,7 +191,7 @@ public interface AdminClient extends RWClient {
    * @return Collection    of BwGroup
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwGroup> getGroups(BwPrincipal val) throws CalFacadeException;
+  Collection<BwGroup<?>> getGroups(BwPrincipal<?> val) throws CalFacadeException;
 
   /** Return all groups to which this user has some access. Never returns null.
    *
@@ -199,7 +199,7 @@ public interface AdminClient extends RWClient {
    * @return Collection    of BwGroup
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwGroup> getAllGroups(boolean populate) throws CalFacadeException;
+  Collection<BwGroup<?>> getAllGroups(boolean populate) throws CalFacadeException;
 
   /** Populate the group with a (possibly empty) Collection of members. Does not
    * populate groups which are members.
@@ -207,7 +207,7 @@ public interface AdminClient extends RWClient {
    * @param  group           BwGroup group object to add
    * @throws CalFacadeException on fatal error
    */
-  void getMembers(BwGroup group) throws CalFacadeException;
+  void getMembers(BwGroup<?> group) throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                   Calendar Suites
@@ -249,13 +249,13 @@ public interface AdminClient extends RWClient {
    * @param cs     BwCalSuiteWrapper object
    * @param adminGroupName - name of the admin group
    * @param rootCollectionPath - root for suite
-   * @param submissionsPath where submitted events go
+   * @param description of calsuite
    * @throws CalFacadeException on fatal error
    */
   void updateCalSuite(BwCalSuiteWrapper cs,
                       String adminGroupName,
                       String rootCollectionPath,
-                      String submissionsPath) throws CalFacadeException;
+                      String description) throws CalFacadeException;
 
   /** Delete a calendar suite object
    *

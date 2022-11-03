@@ -214,7 +214,7 @@ public interface Client extends Serializable {
    * @param cua   calendar user address
    * @return principal corresponding or null for unknown
    */
-  BwPrincipal calAddrToPrincipal(String cua);
+  BwPrincipal<?> calAddrToPrincipal(String cua);
 
   /**
    *
@@ -269,19 +269,19 @@ public interface Client extends Serializable {
    *
    * @return the current principal we are acting for
    */
-  BwPrincipal getCurrentPrincipal();
+  BwPrincipal<?> getCurrentPrincipal();
 
   /** This will not change.
    *
    * @return the principal we authenticated as
    */
-  BwPrincipal getAuthPrincipal();
+  BwPrincipal<?> getAuthPrincipal();
 
   /** Get the current principal to set as owner
    *
-   * @return BwPrincipal object
+   * @return BwPrincipal<?> object
    */
-  BwPrincipal getOwner();
+  BwPrincipal<?> getOwner();
 
   /**
    *
@@ -294,14 +294,14 @@ public interface Client extends Serializable {
    * @param val           String user id
    * @return User principal or null if not there
    */
-  BwPrincipal getUser(String val);
+  BwPrincipal<?> getUser(String val);
 
   /** Find the user with the given account name. Create if not there.
    *
    * @param val           String user id
    * @return BwUser       representing the user
    */
-  BwPrincipal getUserAlways(String val);
+  BwPrincipal<?> getUserAlways(String val);
 
   /**
    *
@@ -323,7 +323,7 @@ public interface Client extends Serializable {
    * @return Principal
    * @throws CalFacadeException on fatal error
    */
-  BwPrincipal getPrincipal(String href) throws CalFacadeException;
+  BwPrincipal<?> getPrincipal(String href) throws CalFacadeException;
 
   /** Test for a valid principal in the directory. This may have a number of
    * uses. For example, when organizing meetings we may want to send an
@@ -346,7 +346,7 @@ public interface Client extends Serializable {
    * @return groups
    * @throws CalFacadeException  for errors
    */
-  Collection<BwGroup> getAdminGroups() throws CalFacadeException;
+  Collection<BwGroup<?>> getAdminGroups() throws CalFacadeException;
 
   /* ------------------------------------------------------------
    *                     Preferences
@@ -512,7 +512,7 @@ public interface Client extends Serializable {
    * <p>For authenticated, personal access this always returns the user
    * entry in the /user calendar tree, e.g. for user smithj it would return
    * an entry smithj with path /user/smithj
-   * 
+   *<p>
    * Note: the returned object is NOT a live hibernate object.
    *
    * @param  principal whose home we want
@@ -520,7 +520,7 @@ public interface Client extends Serializable {
    * @return BwCalendar   user home.
    * @throws CalFacadeException on fatal error
    */
-  BwCalendar getHome(BwPrincipal principal,
+  BwCalendar getHome(BwPrincipal<?> principal,
                      boolean freeBusy) throws CalFacadeException;
 
   /**

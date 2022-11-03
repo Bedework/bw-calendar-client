@@ -5,7 +5,6 @@ package org.bedework.client.web.admin;
 
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.calfacade.BwGroup;
-import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
@@ -126,7 +125,7 @@ public class AdminBwModule extends RwBwModule {
          * already have the authorised user's rights set in the form.
          */
 
-        final BwPrincipal pr = client.getCurrentPrincipal();
+        final var pr = client.getCurrentPrincipal();
         if (pr == null) {
           throw new CalFacadeException("Null user for public admin.");
         }
@@ -192,7 +191,7 @@ public class AdminBwModule extends RwBwModule {
         sess.reset(request);
       }
 
-      final BwPrincipal pr = client.getCurrentPrincipal();
+      final var pr = client.getCurrentPrincipal();
       form.assignCurrentAdminUser(pr.getAccount());
     } catch (final CalFacadeException cfe) {
       throw cfe;
@@ -319,9 +318,9 @@ public class AdminBwModule extends RwBwModule {
           otherwise we ask them to select the group
        */
 
-      final Collection<BwGroup> adgs;
+      final Collection<BwGroup<?>> adgs;
 
-      final BwPrincipal p = cl.getAuthPrincipal();
+      final var p = cl.getAuthPrincipal();
       if (p == null) {
         return forwardNoAccess;
       }
@@ -388,7 +387,7 @@ public class AdminBwModule extends RwBwModule {
 
     //int access = getAccess(request, getMessages());
 
-    final BwPrincipal p = cl.getPrincipal(adg.getOwnerHref());
+    final var p = cl.getPrincipal(adg.getOwnerHref());
 
     if ((p == null) ||
             !form.fetchModule(request.getModuleName())

@@ -250,7 +250,7 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public Collection<BwGroup> getCalsuiteAdminGroups()
+  public Collection<BwGroup<?>> getCalsuiteAdminGroups()
           throws CalFacadeException {
     refreshAdminGroupInfo();
 
@@ -320,19 +320,19 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public Collection<BwGroup> findGroupParents(final BwGroup group)
+  public Collection<BwGroup<?>> findGroupParents(final BwGroup group)
           throws CalFacadeException {
     return svci.getDirectories().findGroupParents(group);
   }
 
   @Override
-  public Collection<BwGroup> getGroups(final BwPrincipal val)
+  public Collection<BwGroup<?>> getGroups(final BwPrincipal val)
           throws CalFacadeException {
     return svci.getDirectories().getGroups(val);
   }
 
   @Override
-  public Collection<BwGroup> getAllGroups(final boolean populate)
+  public Collection<BwGroup<?>> getAllGroups(final boolean populate)
           throws CalFacadeException {
     return svci.getDirectories().getAll(populate);
   }
@@ -448,24 +448,24 @@ public class AdminClientImpl extends RWClientImpl
   public BwCalSuiteWrapper addCalSuite(final String name,
                                        final String adminGroupName,
                                        final String rootCollectionPath,
-                                       final String submissionsPath)
+                                       final String description)
           throws CalFacadeException {
     return update(svci.getCalSuitesHandler().add(name,
                                                  adminGroupName,
                                                  rootCollectionPath,
-                                                 submissionsPath));
+                                                 description));
   }
 
   @Override
   public void updateCalSuite(final BwCalSuiteWrapper cs,
                              final String adminGroupName,
                              final String rootCollectionPath,
-                             final String submissionsPath)
+                             final String description)
           throws CalFacadeException {
     svci.getCalSuitesHandler().update(cs,
                                       adminGroupName,
                                       rootCollectionPath,
-                                      submissionsPath);
+                                      description);
     updated();
   }
 

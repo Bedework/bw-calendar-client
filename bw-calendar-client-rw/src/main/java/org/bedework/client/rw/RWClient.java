@@ -19,7 +19,7 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.ScheduleResult;
-import org.bedework.calfacade.base.BwShareableDbentity;
+import org.bedework.calfacade.base.ShareableEntity;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwView;
@@ -671,7 +671,7 @@ public interface RWClient extends Client {
    * @param replaceAll true to replace the entire access list.
    * @throws CalFacadeException on fatal error
    */
-  void changeAccess(BwShareableDbentity<?> ent,
+  void changeAccess(ShareableEntity ent,
                     Collection<Ace> aces,
                     boolean replaceAll) throws CalFacadeException;
 

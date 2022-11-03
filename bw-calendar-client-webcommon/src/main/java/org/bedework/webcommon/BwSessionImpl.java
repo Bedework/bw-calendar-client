@@ -205,9 +205,9 @@ public class BwSessionImpl implements Logged, BwSession {
       }
       
       if (cl.getPublicAdmin()) {
-        final Collection<BwGroup> adgs;
+        final Collection<BwGroup<?>> adgs;
 
-        final BwPrincipal p = cl.getAuthPrincipal();
+        final var p = cl.getAuthPrincipal();
         if (p != null) {
           final AdminClient adcl = (AdminClient)cl;
           if (!cl.isSuperUser()) {
@@ -527,7 +527,7 @@ public class BwSessionImpl implements Logged, BwSession {
     final boolean publicAdmin = cl.getPublicAdmin(); //form.getConfig().getPublicAdmin();
 
     try {
-      final BwPrincipal p;
+      final BwPrincipal<?> p;
 
       if (cl.getWebSubmit() || cl.getPublicAuth()) {
         // Use calsuite in form or default
@@ -1078,7 +1078,7 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   private void setSessionNum(final String name) {
-    Counts c = countsMap.computeIfAbsent(name, k -> new Counts());
+    final Counts c = countsMap.computeIfAbsent(name, k -> new Counts());
 
     sessionNum = c.totalSessions;
     c.totalSessions++;
@@ -1117,7 +1117,7 @@ public class BwSessionImpl implements Logged, BwSession {
    *                   Logged methods
    * ==================================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

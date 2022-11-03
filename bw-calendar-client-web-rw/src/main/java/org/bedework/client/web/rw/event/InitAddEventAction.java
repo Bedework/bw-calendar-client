@@ -147,7 +147,7 @@ public class InitAddEventAction extends RWActionBase {
                       cal.getPath());
       ev.setColPath(cal.getPath());
     } else {
-      setEventCollection(cl, ev);
+      setEventCollection(cl, ev, changes);
     }
 
     final BwSession sess = request.getSess();
@@ -168,14 +168,20 @@ public class InitAddEventAction extends RWActionBase {
   }
 
   protected void setEventCollection(final RWClient cl,
-                                    final BwEvent ev) throws Throwable {
+                                    final BwEvent ev,
+                                    final ChangeTable changes) throws Throwable {
     final var cols = cl.getAddContentCollections(false);
 
     if (Util.isEmpty(cols)) {
-      throw new RuntimeException("No writaeable collection");
+      throw new RuntimeException("No writeable collection");
     }
 
     // Use the first.
-    ev.setColPath(cols.stream().findFirst().get().getColPath());
+    final var path =
+            cols.stream().findFirst().get().getPath();
+    changes.changed(PropertyInfoIndex.COLLECTION,
+                    ev.getColPath(),
+                    path);
+    ev.setColPath(path);
   }
 }

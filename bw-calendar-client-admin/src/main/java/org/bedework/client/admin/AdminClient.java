@@ -69,6 +69,21 @@ public interface AdminClient extends RWClient {
    */
   BwAuthUser getAuthUser(BwPrincipal<?> pr) throws CalFacadeException;
 
+  /** Return the current authorised user. Will always return an entry (except for
+   * exceptional conditions.) An unauthorised user will have a usertype of
+   * noPrivileges.
+   *
+   * @return BwAuthUser    users entry
+   * @throws CalFacadeException on fatal error
+   */
+  BwAuthUser getAuthUser() throws CalFacadeException;
+
+  /**
+   * @return true if current auth user is an approver
+   * @throws CalFacadeException on fatal error
+   */
+  boolean isApprover() throws CalFacadeException;
+
   /** Update the user entry
    *
    * @param  val      AuthUser users entry

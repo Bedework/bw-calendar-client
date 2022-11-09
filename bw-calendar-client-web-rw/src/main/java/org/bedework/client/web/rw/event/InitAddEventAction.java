@@ -170,7 +170,7 @@ public class InitAddEventAction extends RWActionBase {
   protected void setEventCollection(final RWClient cl,
                                     final BwEvent ev,
                                     final ChangeTable changes) throws Throwable {
-    final var cols = cl.getAddContentCollections(false);
+    final var cols = cl.getAddContentCollections();
 
     if (Util.isEmpty(cols)) {
       throw new RuntimeException("No writeable collection");

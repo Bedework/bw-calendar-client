@@ -76,6 +76,8 @@ public class BwRWActionForm extends BwActionFormBase {
 
   private BwCalendar meetingCal;
 
+  private String submissionRoot;
+
   private String parentCalendarPath;
 
   private SelectId<String> calendarId = new SelectId<>(null,
@@ -434,6 +436,22 @@ public class BwRWActionForm extends BwActionFormBase {
     return meetingCal;
   }
 
+  /**
+   *
+   * @param val root of the workflow collections
+   */
+  public void assignSubmissionRoot(final String val) {
+    submissionRoot = val;
+  }
+
+  /** Return the unencoded root of the workflow collections
+   *
+   * @return String path.
+   */
+  public String getSubmissionRoot() {
+    return submissionRoot;
+  }
+
   /** Return the encoded root of the submissions calendars
    *
    * @return String path.
@@ -445,7 +463,7 @@ public class BwRWActionForm extends BwActionFormBase {
             appTypeWebadmin.equals(appType)) {
       try {
         return URLEncoder
-                .encode(getConfig().getSubmissionRoot(),
+                .encode(getSubmissionRoot(),
                         StandardCharsets.UTF_8);
       } catch (final Throwable t) {
         getErr().emit(t);

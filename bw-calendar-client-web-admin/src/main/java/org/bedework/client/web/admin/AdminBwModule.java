@@ -218,12 +218,15 @@ public class AdminBwModule extends RwBwModule {
       return forwardNoAccess;
     }
 
+    final var sysprops = cl.getSystemProperties();
+
     form.assignOneGroup(cl.getOneGroup());
     form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
 
-    form.assignSuggestionEnabled(cl.getSystemProperties().getSuggestionEnabled());
-    form.assignWorkflowEnabled(cl.getSystemProperties().getWorkflowEnabled());
-    form.assignWorkflowRoot(cl.getSystemProperties().getWorkflowRoot());
+    form.assignSuggestionEnabled(sysprops.getSuggestionEnabled());
+    form.assignWorkflowEnabled(sysprops.getWorkflowEnabled());
+    form.assignWorkflowRoot(sysprops.getWorkflowRoot());
+    form.assignSubmissionRoot(sysprops.getSubmissionRoot());
     form.assignUserMaintOK(cl.getUserMaintOK());
 
     // Refresh current auth user prefs.

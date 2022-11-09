@@ -377,7 +377,7 @@ public class BwSessionImpl implements Logged, BwSession {
   public void embedAddContentCalendarCollections(final BwRequest request) throws Throwable {
     final RWClient cl = (RWClient)request.getClient();
     request.setSessionAttr(BwRequest.bwAddContentCollectionListName,
-                       cl.getAddContentCollections(!publicAdmin));
+                       cl.getAddContentCollections());
   }
 
   @Override
@@ -414,14 +414,7 @@ public class BwSessionImpl implements Logged, BwSession {
     final Client cl = request.getClient();
 
     try {
-      if (form.getSubmitApp()) {
-        // Use submission root
-        col = cl.getCollection(
-                form.getConfig().getSubmissionRoot());
-      } else {
-        // Current owner
-        col = cl.getHome();
-      }
+      col = cl.getHome();
 
       if (col == null) {
         request.getErr().emit("No home collection");

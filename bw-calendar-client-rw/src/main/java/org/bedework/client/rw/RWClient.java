@@ -111,12 +111,10 @@ public interface RWClient extends Client {
    * calendar collections are the leaf nodes only.
    *
    *
-   * @param includeAliases - true to include aliases - for public admin we don't
-   *                    want aliases
    * @return Set   of BwCalendar
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwCalendar> getAddContentCollections(boolean includeAliases)
+  Collection<BwCalendar> getAddContentCollections()
           throws CalFacadeException;
 
   /* ------------------------------------------------------------

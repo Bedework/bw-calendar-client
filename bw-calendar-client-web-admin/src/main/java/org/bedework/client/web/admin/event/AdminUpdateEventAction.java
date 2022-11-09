@@ -73,7 +73,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       updateSubmitEvent = request.present("updateSubmitEvent");
       approveEvent = request.present("approveEvent");
 
-      submissionsRoot = form.getConfig().getSubmissionRoot();
+      submissionsRoot = cl.getSystemProperties().getSubmissionRoot();
       workflowRoot = cl.getSystemProperties().getWorkflowRoot();
     }
   }
@@ -217,33 +217,27 @@ public class AdminUpdateEventAction extends UpdateEventAction {
 
     /* ------- web submit - copy entities and change owner -------- */
 
-    final String colPath = ev.getColPath();
+    String colPath = ev.getColPath();
 
     if (adPars.publishEvent) {
-      /* Event MUST NOT be in a submission calendar */
-      if (colPath.startsWith(adPars.submissionsRoot)) {
-        ves = addError(ves, ValidationError.inSubmissionsCalendar);
+      /* Event MUST be in a submission calendar */
+      if (!colPath.startsWith(adPars.submissionsRoot)) {
+        ves = addError(ves, ValidationError.notInSubmissionsCalendar);
         pars.cl.rollback();
         return ves;
       }
+
+      colPath = pars.cl.getPrimaryPublicPath();
     } else if (adPars.approveEvent) {
-      /* Event MUST NOT be in a workflow calendar */
-      if (colPath.startsWith(adPars.workflowRoot)) {
-        ves = addError(ves, ValidationError.inSubmissionsCalendar);
+      /* Event MUST be in a workflow calendar */
+      if (!colPath.startsWith(adPars.workflowRoot)) {
+        ves = addError(ves, ValidationError.notInWorkflowCalendar);
         restore(pars);
         pars.cl.rollback();
         return ves;
       }
 
-      // See if colpath changed and if so change the overrides
-      if (ev.getRecurring() &&
-              !pars.preserveColPath.equals(colPath) &&
-              (pars.ei.getOverrideProxies() != null)) {
-        for (final BwEvent oev: pars.ei.getOverrideProxies()) {
-          oev.setColPath(ev.getColPath());
-        }
-      }
-
+      colPath = pars.cl.getPrimaryPublicPath();
     } else if (adPars.updateSubmitEvent) {
       /* Event MUST be in a submission calendar */
       if (!colPath.startsWith(adPars.submissionsRoot)) {
@@ -254,6 +248,21 @@ public class AdminUpdateEventAction extends UpdateEventAction {
     } else if ((adPars.workflowRoot != null) &&
             colPath.startsWith(adPars.workflowRoot)) {
       adPars.awaitingApprovalEvent = pars.adding;
+    }
+
+      // See if colpath changed and if so change any overrides
+    if (!pars.preserveColPath.equals(colPath)) {
+      ev.setColPath(colPath);
+      pars.changes.changed(PropertyInfoIndex.COLLECTION,
+                           pars.preserveColPath,
+                           ev.getColPath());
+
+      if (ev.getRecurring() &&
+      (pars.ei.getOverrideProxies() != null)){
+        for (final BwEvent oev: pars.ei.getOverrideProxies()) {
+          oev.setColPath(colPath);
+        }
+      }
     }
 
     if (adPars.publishEvent) {

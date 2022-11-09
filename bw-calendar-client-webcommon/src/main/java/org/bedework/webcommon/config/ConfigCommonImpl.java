@@ -70,8 +70,6 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
 
   private String calSuite;
 
-  private String submissionRoot;
-
   //private String portalPlatform;
 
   @Override
@@ -284,16 +282,6 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
     return calSuite;
   }
 
-  @Override
-  public void setSubmissionRoot(final String val) {
-    submissionRoot = val;
-  }
-
-  @Override
-  public String getSubmissionRoot() {
-    return submissionRoot;
-  }
-
   /*
   @Override
   public void setPortalPlatform(final String val) {
@@ -329,7 +317,6 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
     val.setRefreshAction(getRefreshAction());
     val.setRefreshInterval(getRefreshInterval());
     val.setCalSuite(getCalSuite());
-    val.setSubmissionRoot(getSubmissionRoot());
     //val.setPortalPlatform(getPortalPlatform());
   }
 

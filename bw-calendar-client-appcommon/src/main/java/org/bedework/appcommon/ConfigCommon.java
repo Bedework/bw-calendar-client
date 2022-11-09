@@ -264,17 +264,6 @@ public interface ConfigCommon extends Serializable {
    */
   String getCalSuite();
 
-  /** The root of the calendars used for submission of public events by users.
-   *
-   * @param val
-   */
-  void setSubmissionRoot(String val);
-
-  /**
-   * @return String
-   */
-  String getSubmissionRoot();
-
   /* * portalPlatform.
    *
    * @param val

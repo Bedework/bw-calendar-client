@@ -224,6 +224,12 @@ public interface Client extends Serializable {
    */
   String getCalendarAddress(String user) throws CalFacadeException;
 
+  /**
+   *
+   * @return path of primary public calendar
+   */
+  String getPrimaryPublicPath();
+
   /** Given a uri return a calendar address.
    * This should handle actions such as turning<br/>
    *   auser

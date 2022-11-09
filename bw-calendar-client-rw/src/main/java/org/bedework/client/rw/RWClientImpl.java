@@ -223,11 +223,13 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public Collection<BwCalendar> getAddContentCollections(final boolean includeAliases)
+  public Collection<BwCalendar> getAddContentCollections()
           throws CalFacadeException {
     checkUpdate();
     return getCalendarCollator().getCollatedCollection(
-            svci.getCalendarsHandler().getAddContentCollections(includeAliases));
+            svci.getCalendarsHandler()
+                .getAddContentCollections(getWebUser(),
+                                          false));
   }
 
   /* ------------------------------------------------------------

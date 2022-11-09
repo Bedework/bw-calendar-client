@@ -217,6 +217,16 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
+  public BwAuthUser getAuthUser() throws CalFacadeException {
+    return getAuthUser(getAuthPrincipal());
+  }
+
+  @Override
+  public boolean isApprover() throws CalFacadeException {
+    return isSuperUser() || getAuthUser().isApproverUser();
+  }
+
+  @Override
   public void updateAuthUser(final BwAuthUser val)
           throws CalFacadeException {
     svci.getUserAuth().updateUser(val);
@@ -676,7 +686,7 @@ public class AdminClientImpl extends RWClientImpl
     }
 
     final Collection<BwCalendar> cols =
-            getAddContentCollections(false);
+            getAddContentCollections();
 
     final StringBuilder fexpr = new StringBuilder();
     String conj = "";
@@ -703,6 +713,16 @@ public class AdminClientImpl extends RWClientImpl
   /* ------------------------------------------------------------
    *                     Misc
    * ------------------------------------------------------------ */
+
+  @Override
+  public Collection<BwCalendar> getAddContentCollections()
+          throws CalFacadeException {
+    checkUpdate();
+    return getCalendarCollator().getCollatedCollection(
+            svci.getCalendarsHandler()
+                .getAddContentCollections(getWebUser(),
+                                          isApprover()));
+  }
 
   @Override
   public UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref,

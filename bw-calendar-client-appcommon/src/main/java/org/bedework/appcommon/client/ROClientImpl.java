@@ -116,6 +116,8 @@ public class ROClientImpl implements Logged, Client {
   protected BwPrincipal<?> currentPrincipal;
   private String currentCalendarAddress;
 
+  private String primaryPublicPath;
+
   private Collection<Locale>supportedLocales;
 
   private final ClientState cstate;
@@ -452,6 +454,20 @@ public class ROClientImpl implements Logged, Client {
     }
 
     return svci.getDirectories().principalToCaladdr(u);
+  }
+
+  @Override
+  public String getPrimaryPublicPath() {
+    if (primaryPublicPath == null) {
+      final var primaryCal = svci.getCalendarsHandler().getPrimaryPublicPath();
+      if (primaryCal == null) {
+        throw new RuntimeException("No primary calendar set");
+      }
+
+      primaryPublicPath = primaryCal.getPath();
+    }
+
+    return primaryPublicPath;
   }
 
   @Override
@@ -1531,7 +1547,8 @@ public class ROClientImpl implements Logged, Client {
 
   protected void updated() {
     lastUpdate = System.currentTimeMillis();
-   adminGroupsInfo = null;
+    adminGroupsInfo = null;
+    primaryPublicPath = null;
   }
 
   protected void checkUpdate() {

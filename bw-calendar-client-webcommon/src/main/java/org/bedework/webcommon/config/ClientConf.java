@@ -259,16 +259,6 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
     return getConfig().getCalSuite();
   }
 
-  @Override
-  public void setSubmissionRoot(final String val) {
-    getConfig().setSubmissionRoot(val);
-  }
-
-  @Override
-  public String getSubmissionRoot() {
-    return getConfig().getSubmissionRoot();
-  }
-
   /*
   @Override
   public void setPortalPlatform(final String val) {

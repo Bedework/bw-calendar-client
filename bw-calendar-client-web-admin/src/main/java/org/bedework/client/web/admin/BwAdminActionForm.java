@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
  * User: mike Date: 3/9/21 Time: 22:25
  */
 public class BwAdminActionForm extends BwRWActionForm {
+  private String currentTab = "main";
+
   /* ..............................................................
    *                   Admin group fields
    * .............................................................. */
@@ -101,6 +103,20 @@ public class BwAdminActionForm extends BwRWActionForm {
   private boolean suggestionEnabled;
   private boolean workflowEnabled;
   private String workflowRoot;
+
+  /**
+   * @param val admin group name
+   */
+  public void assignCurrentTab(final String val) {
+    currentTab = val;
+  }
+
+  /**
+   * @return String admin group name
+   */
+  public String getCurrentTab() {
+    return currentTab;
+  }
 
   /* ==============================================================
    *                   Admin groups

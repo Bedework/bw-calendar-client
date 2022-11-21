@@ -29,7 +29,8 @@ public class ShowCurrentTabAction extends RenderSearchResultAction {
   }
 
   private final List<Integer> eventSearchTab =
-          Arrays.asList(forwardApprovalQTab,
+          Arrays.asList(forwardMainTab,
+                        forwardApprovalQTab,
                         forwardPendingQTab,
                         forwardSuggestionQTab);
 

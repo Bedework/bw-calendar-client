@@ -4,10 +4,8 @@
 package org.bedework.client.web.admin.event;
 
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEvent.SuggestedTo;
-import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -20,9 +18,9 @@ import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.event.UpdateEventAction;
+import org.bedework.client.web.rw.event.UpdatePars;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.sysevents.events.publicAdmin.EntityApprovalNeededEvent;
-import org.bedework.sysevents.events.publicAdmin.EntityApprovalResponseEvent;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
@@ -37,62 +35,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.bedework.client.web.rw.EventCommon.addError;
 import static org.bedework.client.web.rw.EventCommon.adminEventLocation;
 import static org.bedework.client.web.rw.EventCommon.notifyEventReg;
 import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 import static org.bedework.client.web.rw.EventCommon.resetEvent;
-import static org.bedework.client.web.rw.EventCommon.validateEvent;
 import static org.bedework.util.misc.response.Response.Status.ok;
 
 /**
  * User: mike Date: 3/10/21 Time: 21:26
  */
 public class AdminUpdateEventAction extends UpdateEventAction {
-  public static class AdminUpdatePars extends UpdatePars {
-    String submitterEmail;
-
-    final boolean publishEvent;
-    final boolean updateSubmitEvent;
-    final boolean approveEvent;
-
-    final String submissionsRoot;
-    final String workflowRoot;
-
-    // TODO - set this based on an x-prop or a request param
-    boolean awaitingApprovalEvent;
-
-    List<SuggestedTo> suggestedTo;
-
-    AdminUpdatePars(final BwRequest request,
-                    final RWClient cl,
-                    final BwRWActionForm form) {
-      super(request, cl, form);
-
-      publishEvent = request.present("publishEvent");
-      updateSubmitEvent = request.present("updateSubmitEvent");
-      approveEvent = request.present("approveEvent");
-
-      submissionsRoot = cl.getSystemProperties().getSubmissionRoot();
-      workflowRoot = cl.getSystemProperties().getWorkflowRoot();
-    }
-  }
-
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) throws Throwable {
     final AdminUpdatePars pars = new AdminUpdatePars(request, cl, form);
 
-    if (pars.approveEvent &&
-            !((BwAdminActionForm)form).getCurUserApproverUser()) {
-      cl.rollback();
-      return forwardNoAccess;
-    }
-
-    if ((pars.publishEvent || pars.approveEvent) &&
-            (pars.ev.getRecurrenceId() != null)) {
-      // Cannot publish/approve an instance - only the master
+    if (pars.publishEvent || pars.approveEvent) {
+      // Cannot publish/approve while updating.
       cl.rollback();
       return forwardError;
     }
@@ -113,7 +73,6 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   @Override
   protected boolean setLocation(final UpdatePars pars) throws Throwable {
     if (!adminEventLocation(pars.request, pars.ei)) {
-      restore(pars);
       return false;
     }
 
@@ -132,18 +91,10 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       }
       pars.cl.rollback();
       pars.request.error(ValidationError.missingTopic);
-      restore(pars);
       return Response.error(ger, ValidationError.missingTopic);
     }
 
-    if (!adPars.updateSubmitEvent && Util.isEmpty(resp.getCats())) {
-      if (debug()) {
-        debug("No topical areas? " + resp);
-      }
-      pars.request.error(ValidationError.missingTopic);
-      restore(pars);
-      return Response.error(ger, ValidationError.missingTopic);
-    }
+    adPars.categories = resp.getCats(); // For validation later
 
     ger.setEntity(resp.getCats());
     return ger;
@@ -168,7 +119,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
                             final List<BwXproperty> extras) throws Throwable {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
-    if ((adPars.publishEvent || adPars.updateSubmitEvent)) {
+    if (adPars.updateSubmitEvent) {
       // We might need the submitters info */
 
       final List<BwXproperty> xps =
@@ -180,110 +131,6 @@ public class AdminUpdateEventAction extends UpdateEventAction {
     }
 
     return super.processXprops(pars, extras);
-  }
-
-  @Override
-  protected List<ValidationError> validate(final UpdatePars pars) throws Throwable {
-    final AdminUpdatePars adPars = (AdminUpdatePars)pars;
-
-    final boolean prePublish = adPars.updateSubmitEvent;
-
-    final BwEvent ev = pars.ev;
-
-    List<ValidationError> ves =
-            validateEvent(pars.cl,
-                          pars.cl.getAuthProperties()
-                                 .getMaxPublicDescriptionLength(),
-                          false,
-                          ev);
-
-    if (!Util.isEmpty(ves)) {
-      return ves;
-    }
-
-    if (!prePublish) {
-      /* -------------------------- Location ------------------------------ */
-
-      if (ev.getLocation() == null) {
-        ves = addError(ves, ValidationError.missingLocation);
-      }
-
-      /* -------------------------- Contact ------------------------------ */
-
-      if (ev.getContact() == null) {
-        ves = addError(ves, ValidationError.missingContact);
-      }
-    }
-
-    /* ------- web submit - copy entities and change owner -------- */
-
-    String colPath = ev.getColPath();
-
-    if (adPars.publishEvent) {
-      /* Event MUST be in a submission calendar */
-      if (!colPath.startsWith(adPars.submissionsRoot)) {
-        ves = addError(ves, ValidationError.notInSubmissionsCalendar);
-        pars.cl.rollback();
-        return ves;
-      }
-
-      colPath = pars.cl.getPrimaryPublicPath();
-    } else if (adPars.approveEvent) {
-      /* Event MUST be in a workflow calendar */
-      if (!colPath.startsWith(adPars.workflowRoot)) {
-        ves = addError(ves, ValidationError.notInWorkflowCalendar);
-        restore(pars);
-        pars.cl.rollback();
-        return ves;
-      }
-
-      colPath = pars.cl.getPrimaryPublicPath();
-    } else if (adPars.updateSubmitEvent) {
-      /* Event MUST be in a submission calendar */
-      if (!colPath.startsWith(adPars.submissionsRoot)) {
-        ves = addError(ves, ValidationError.notSubmissionsCalendar);
-        pars.cl.rollback();
-        return ves;
-      }
-    } else if ((adPars.workflowRoot != null) &&
-            colPath.startsWith(adPars.workflowRoot)) {
-      adPars.awaitingApprovalEvent = pars.adding;
-    }
-
-      // See if colpath changed and if so change any overrides
-    if (!pars.preserveColPath.equals(colPath)) {
-      ev.setColPath(colPath);
-      pars.changes.changed(PropertyInfoIndex.COLLECTION,
-                           pars.preserveColPath,
-                           ev.getColPath());
-
-      if (ev.getRecurring() &&
-      (pars.ei.getOverrideProxies() != null)){
-        for (final BwEvent oev: pars.ei.getOverrideProxies()) {
-          oev.setColPath(colPath);
-        }
-      }
-    }
-
-    if (adPars.publishEvent) {
-      copyEntities(ev);
-      changeOwner(ev, pars.cl);
-      pars.changes.changed(PropertyInfoIndex.CREATOR, null,
-                           ev.getCreatorHref());
-
-      // Do the same for any overrides
-
-      if (ev.getRecurring() &&
-              (pars.ei.getOverrideProxies() != null)) {
-        for (final BwEvent oev: pars.ei.getOverrideProxies()) {
-          copyEntities(oev);
-          changeOwner(oev, pars.cl);
-          oev.setColPath(ev.getColPath());
-        }
-      }
-    }
-
-    return ves;
   }
 
   @Override
@@ -319,12 +166,12 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       form.resetSelectIds();
     }
 
-    if ((adPars.publishEvent || adPars.updateSubmitEvent) &&
+    if (adPars.updateSubmitEvent &&
             pars.request.getBooleanReqPar("submitNotification", false)) {
       notifySubmitter(pars.request, pars.ei, adPars.submitterEmail);
     }
 
-    if (adPars.approveEvent || adPars.awaitingApprovalEvent) {
+    if (adPars.awaitingApprovalEvent) {
       /* Post an event flagging the approval.
          The change notification processor will add the
          notification(s).
@@ -341,26 +188,15 @@ public class AdminUpdateEventAction extends UpdateEventAction {
 
       final SysEventBase sev;
 
-      if (adPars.approveEvent) {
-        sev = new EntityApprovalResponseEvent(
-                SysEventBase.SysCode.APPROVAL_STATUS,
-                adcl.getCurrentPrincipalHref(),
-                ev.getCreatorHref(),
-                ev.getHref(),
-                null,
-                true,
-                null,
-                csHref);
-      } else {
-        sev = new EntityApprovalNeededEvent(
-                SysEventBase.SysCode.APPROVAL_NEEDED,
-                adcl.getCurrentPrincipalHref(),
-                ev.getCreatorHref(),
-                ev.getHref(),
-                null,
-                null,
-                csHref);
-      }
+      sev = new EntityApprovalNeededEvent(
+              SysEventBase.SysCode.APPROVAL_NEEDED,
+              adcl.getCurrentPrincipalHref(),
+              ev.getCreatorHref(),
+              ev.getHref(),
+              null,
+              null,
+              csHref);
+
       adcl.postNotification(sev);
     }
 
@@ -398,34 +234,6 @@ public class AdminUpdateEventAction extends UpdateEventAction {
     resetEvent(pars.request, clearForm);
 
     return forwardSuccess;
-  }
-
-  private void changeOwner(final BwEvent ev,
-                           final RWClient cl) {
-    cl.claimEvent(ev);
-    ev.setCreatorHref(cl.getCurrentPrincipalHref());
-  }
-
-  private void copyEntities(final BwEvent ev) {
-    /* Copy event entities */
-    BwLocation loc = ev.getLocation();
-    if ((loc != null) && !loc.getPublick()) {
-      loc = (BwLocation)loc.clone();
-      loc.setOwnerHref(null);
-      loc.setCreatorHref(null);
-      loc.setPublick(true);
-      ev.setLocation(loc);
-    }
-
-    BwContact contact = ev.getContact();
-    if ((contact != null)  && !contact.getPublick()) {
-      contact = (BwContact)contact.clone();
-      contact.setOwnerHref(null);
-      contact.setCreatorHref(null);
-      contact.setPublick(true);
-      ev.setLocation(loc);
-      ev.setContact(contact);
-    }
   }
 
   private List<SuggestedTo> doSuggested(final AdminUpdatePars pars) throws Throwable {

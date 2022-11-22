@@ -20,6 +20,7 @@ package org.bedework.client.rw;
 
 import org.bedework.access.Ace;
 import org.bedework.appcommon.BedeworkDefs;
+import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ROClientImpl;
@@ -482,6 +483,33 @@ public class RWClientImpl extends ROClientImpl
                                                  alwaysWrite,
                                                  true, // it's a client
                                                  false)); // autocreate
+  }
+
+  public Response moveEvent(final EventInfo ei,
+                            final String newPath) {
+    final var resp = new Response();
+
+    try {
+      final var toCol = getCollection(newPath);
+      if (toCol == null) {
+        resp.setMessage(ClientError.unknownCalendar + "\t" + newPath);
+        resp.setStatus(Response.Status.failed);
+        return resp;
+      }
+
+      final var cmnResp =
+              svci.getEventsHandler().copyMoveNamed(ei,
+                                               toCol,
+                                               ei.getEvent().getName(),
+                                               false, false, false);
+      if (!cmnResp.isOk()) {
+        return Response.fromResponse(resp, cmnResp);
+      }
+    } catch (final CalFacadeException cfe) {
+      return Response.error(resp, cfe);
+    }
+
+    return resp;
   }
 
   @Override

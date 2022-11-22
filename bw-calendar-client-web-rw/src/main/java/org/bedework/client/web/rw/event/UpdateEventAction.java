@@ -42,7 +42,6 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.svc.RealiasResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
-import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
@@ -83,7 +82,6 @@ import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
 import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
-import static org.bedework.client.web.rw.EventCommon.validateEvent;
 import static org.bedework.client.web.rw.EventCommon.validateEventDates;
 import static org.bedework.util.misc.response.Response.Status.ok;
 
@@ -115,74 +113,6 @@ import static org.bedework.util.misc.response.Response.Status.ok;
  * @author Mike Douglass
  */
 public class UpdateEventAction extends RWActionBase {
-  protected static class UpdatePars {
-    public final BwRequest request;
-    public final RWClient cl;
-    public final BwRWActionForm form;
-    public final EventInfo ei;
-    public final BwEvent ev;
-
-    final boolean submitApp;
-
-    public String preserveColPath;
-
-    public final ChangeTable changes;
-
-    public final boolean adding;
-
-    public final boolean sendInvitations;
-
-    public String unindexLocation;
-
-    protected UpdatePars(final BwRequest request,
-                         final RWClient cl,
-                         final BwRWActionForm form) {
-      this.request = request;
-      this.cl = cl;
-      this.form = form;
-      submitApp = cl.getWebSubmit();
-
-      ei = form.getEventInfo();
-      ev = ei.getEvent();
-
-      /* This should be done by a wrapper */
-      changes = ei.getChangeset(cl.getCurrentPrincipalHref());
-      adding = form.getAddingEvent();
-      sendInvitations = request.present("submitAndSend");
-
-      if (ev != null) {
-        /* We have a problem with roll back in the case of errors.
-         * Hibernate will actually update the event as we change fields and
-         * really we should do a roll back on any failure.
-         *
-         * However, this causes a problem with the UI. All this should be
-         * resolved with the newer client approach which doesn't update
-         * this way. For the moment preserve some important value(s).
-         */
-
-        preserveColPath = ev.getColPath();
-
-      /* TODO - If we are publishing this we should do it as a MOVE
-              Allows the back end to remove the index entry from the old
-              location. For the moment do it explicitly here
-       */
-
-      /*
-        if (publishEvent | approveEvent) {
-          // Will need to unindex from old location
-    //      cl.unindex(ei.getEvent().getHref());
-          unindexLocation = ev.getHref();
-        } else {
-          unindexLocation = null;
-        }
-      */
-        if (!adding) {
-          unindexLocation = ev.getHref();
-        }
-      }
-    }
-  }
-
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
@@ -302,7 +232,6 @@ public class UpdateEventAction extends RWActionBase {
           return forwardValidationError;
         }
 
-        restore(pars);
         return forwardRetry;
       }
 
@@ -336,7 +265,6 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (!validateEventDates(request, ei)) {
-      restore(pars);
       return forwardRetry;
     }
 
@@ -381,7 +309,6 @@ public class UpdateEventAction extends RWActionBase {
     final String link = Util.checkNull(request.getReqPar("eventLink"));
     if ((link != null) && (Util.validURI(link) == null)) {
       form.getErr().emit(ValidationError.invalidUri);
-      restore(pars);
       return forwardRetry;
     }
 
@@ -451,7 +378,6 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (request.getErrFlag()) {
-      restore(pars);
       return forwardRetry;
     }
 
@@ -551,13 +477,12 @@ public class UpdateEventAction extends RWActionBase {
     /* If we're updating but not publishing a submitted event, treat it as
      * if it were the submit app.
      */
-    final List<ValidationError> ves = validate(pars);
+    final List<ValidationError> ves = pars.validate();
 
     if (ves != null) {
       for (final ValidationError ve: ves) {
         request.error(ve.getErrorCode(), ve.getExtra());
       }
-      restore(pars);
       return forwardValidationError;
     }
 
@@ -617,7 +542,6 @@ public class UpdateEventAction extends RWActionBase {
 
   protected boolean setContact(final UpdatePars pars) {
     if (!setEventContact(pars.request, pars.submitApp)) {
-      restore(pars);
       return false;
     }
 
@@ -638,7 +562,6 @@ public class UpdateEventAction extends RWActionBase {
       }
       pars.cl.rollback();
       pars.request.error(ValidationError.missingTopic);
-      restore(pars);
       return Response.error(ger, ValidationError.missingTopic);
     }
 
@@ -676,7 +599,8 @@ public class UpdateEventAction extends RWActionBase {
                               !pars.sendInvitations,
                               true);
       } else {
-        ur = pars.cl.updateEvent(pars.ei, !pars.sendInvitations, null, false);
+        ur = pars.cl.updateEvent(pars.ei, !pars.sendInvitations,
+                                 null, false);
       }
       if (!ur.isOk()) {
         pars.request.error(ur.getMessage());
@@ -698,10 +622,6 @@ public class UpdateEventAction extends RWActionBase {
 
         pars.cl.changeAccess(pars.ev, acl.getAces(), true);
       }
-
-      if (!pars.adding && !pars.unindexLocation.equals(pars.ev.getHref())) {
-        pars.cl.unindex(pars.unindexLocation);
-      }
     } catch (final CalFacadeException cfe) {
       pars.cl.rollback();
 
@@ -720,16 +640,6 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     return forwardSuccess;
-  }
-
-  protected void restore(final UpdatePars pars) {
-    if (pars.preserveColPath == null) {
-      return;
-    }
-
-    if (!pars.preserveColPath.equals(pars.ev.getColPath())) {
-      pars.ev.setColPath(pars.preserveColPath);
-    }
   }
 
   /** Update rdates and exdates.
@@ -958,23 +868,6 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     return forwardNoAction;
-  }
-
-  protected List<ValidationError> validate(final UpdatePars pars) throws Throwable {
-    final int maxDescLen;
-
-    if (pars.submitApp) {
-      maxDescLen = pars.cl.getAuthProperties()
-                          .getMaxPublicDescriptionLength();
-    } else {
-      maxDescLen = pars.cl.getAuthProperties()
-                          .getMaxUserDescriptionLength();
-    }
-
-    return validateEvent(pars.cl,
-                         maxDescLen,
-                         !pars.submitApp,
-                         pars.ev);
   }
 
   /** Create resource entities based on the uploaded file.

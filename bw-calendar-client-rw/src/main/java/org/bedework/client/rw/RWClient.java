@@ -301,6 +301,16 @@ public interface RWClient extends Client {
                                      String fromAttUri,
                                      boolean alwaysWrite);
 
+  /** Move the event to the collection specified in newPath. There must
+   * be no event with the same uid in the destination.
+   *
+   * @param ei           EventInfo object to be moved
+   * @param newPath      Destination collection.
+   * @return UpdateResult status.
+   */
+  Response moveEvent(EventInfo ei,
+                     String newPath);
+
   /** Delete an event.
    *
    * @param ei                 BwEvent object to be deleted

@@ -3,9 +3,11 @@
 */
 package org.bedework.client.web.admin;
 
+import org.bedework.calfacade.indexing.BwIndexer;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.search.RenderSearchResultAction;
+import org.bedework.webcommon.RenderMainAction;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,7 +17,7 @@ import java.util.Map;
 /**
  * User: mike Date: 3/10/21 Time: 21:17
  */
-public class ShowCurrentTabAction extends RenderSearchResultAction {
+public class ShowCurrentTabAction extends RenderMainAction {
   private final static Map<String, Integer> forwardsTab =
           new HashMap<>();
   static {
@@ -39,8 +41,15 @@ public class ShowCurrentTabAction extends RenderSearchResultAction {
                       final BwActionFormBase form) throws Throwable {
 
     final BwAdminActionForm aform = (BwAdminActionForm)form;
-    if (form.getNewSession()) {
+//    if (form.getNewSession()) {
       request.refresh();
+//    }
+
+    final var cl = (AdminClient)request.getClient();
+
+    if (!cl.isApprover()) {
+      // Force to approval q
+      aform.assignCurrentTab("approvalQueue");
     }
 
     final var fwd = forwardsTab.get(aform.getCurrentTab());
@@ -54,6 +63,8 @@ public class ShowCurrentTabAction extends RenderSearchResultAction {
       if (sfwd != forwardSuccess) {
         return sfwd;
       }
+      request.setRequestAttr(BwRequest.bwSearchListName,
+                             cl.getSearchResult(BwIndexer.Position.current));
     }
 
     return fwd;

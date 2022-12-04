@@ -457,6 +457,10 @@ public class BwRWActionForm extends BwActionFormBase {
    * @return String path.
    */
   public String getEncodedSubmissionRoot() {
+    if (getSubmissionRoot() == null) {
+      return "";
+    }
+
     final String appType = getAppType();
 
     if (appTypeWebsubmit.equals(appType) ||

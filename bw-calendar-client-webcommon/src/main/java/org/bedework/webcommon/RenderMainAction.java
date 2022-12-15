@@ -63,6 +63,8 @@ public class RenderMainAction extends RenderAction {
       fetch = true;
     }
 
+    request.setRequestAttr(BwRequest.bwSearchParamsName, params);
+
     if (fetch) {
       /* Do the search */
       try {

@@ -220,6 +220,9 @@ public class UpdateEventAction extends RWActionBase {
 
     /* ---------------------- Uploaded image ----------------------------- */
 
+    boolean retry = false;
+    boolean validationError = false;
+
     final List<BwXproperty> extras = new ArrayList<>();
     final UploadFileInfo ff = form.getImageUploadInfo();
 
@@ -229,23 +232,24 @@ public class UpdateEventAction extends RWActionBase {
       if (!pi.OK) {
         if (!pi.retry) {
           cl.rollback();
-          return forwardValidationError;
+          validationError = true;
         }
 
-        return forwardRetry;
+        retry = true;
+      } else {
+        BwXproperty imageXp = new BwXproperty();
+        imageXp.setName(BwXproperty.bedeworkImage);
+        imageXp.setValue(
+                pi.image.getColPath() + "/" + pi.image.getName());
+        extras.add(imageXp);
+
+        imageXp = new BwXproperty();
+        imageXp.setName(BwXproperty.bedeworkThumbImage);
+        imageXp.setValue(
+                pi.thumbnail.getColPath() + "/" + pi.thumbnail
+                        .getName());
+        extras.add(imageXp);
       }
-
-      BwXproperty imageXp = new BwXproperty();
-      imageXp.setName(BwXproperty.bedeworkImage);
-      imageXp.setValue(
-              pi.image.getColPath() + "/" + pi.image.getName());
-      extras.add(imageXp);
-
-      imageXp = new BwXproperty();
-      imageXp.setName(BwXproperty.bedeworkThumbImage);
-      imageXp.setValue(pi.thumbnail.getColPath() + "/" + pi.thumbnail
-              .getName());
-      extras.add(imageXp);
     }
 
     /* ----------------------- X-properties ------------------------------ */
@@ -253,7 +257,7 @@ public class UpdateEventAction extends RWActionBase {
     int res = processXprops(pars, extras);
     if (res == forwardValidationError) {
       cl.rollback();
-      return res;
+      validationError = true;
     }
 
     /* -------------------------- Dates ------------------------------ */
@@ -261,11 +265,11 @@ public class UpdateEventAction extends RWActionBase {
     res = form.getEventDates().updateEvent(ei);
     if (res == forwardValidationError) {
       cl.rollback();
-      return res;
+      validationError = true;
     }
 
     if (!validateEventDates(request, ei)) {
-      return forwardRetry;
+      retry = true;
     }
 
     /* -------------------------- CalSuite ------------------------------ */
@@ -275,21 +279,21 @@ public class UpdateEventAction extends RWActionBase {
     /* -------------------------- Location ------------------------------ */
 
     if (!setLocation(pars)) {
-      return forwardRetry;
+      retry = true;
     }
 
     /* -------------------------- Contact ------------------------------ */
 
 
     if (!setContact(pars)) {
-      return forwardRetry;
+      retry = true;
     }
 
     /* -------------------------- Aliases ------------------------------ */
 
     final var aliasGer = doAliases(pars);
     if (!aliasGer.isOk()) {
-      return forwardRetry;
+      retry = true;
     }
     final Set<BwCategory> cats = aliasGer.getEntity();
 
@@ -309,7 +313,7 @@ public class UpdateEventAction extends RWActionBase {
     final String link = Util.checkNull(request.getReqPar("eventLink"));
     if ((link != null) && (Util.validURI(link) == null)) {
       form.getErr().emit(ValidationError.invalidUri);
-      return forwardRetry;
+      retry = true;
     }
 
     if (!Util.equalsString(ev.getLink(), link)) {
@@ -378,7 +382,7 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     if (request.getErrFlag()) {
-      return forwardRetry;
+      retry = true;
     }
 
     /* -------------------------- Recurrences ------------------------------ */
@@ -392,7 +396,7 @@ public class UpdateEventAction extends RWActionBase {
       if (form.getErrorsEmitted()) {
         // Unrecoverable? Error in form.
         cl.rollback();
-        return forwardValidationError;
+        validationError = true;
       }
 
       if (rrule != null) {
@@ -469,7 +473,7 @@ public class UpdateEventAction extends RWActionBase {
     /* ---------------- Suggested to a group? --------------------- */
 
     if (!doAdditional(pars)) {
-      return forwardRetry;
+      retry = true;
     }
 
     /* ------------------ final validation -------------------------- */
@@ -483,7 +487,7 @@ public class UpdateEventAction extends RWActionBase {
       for (final ValidationError ve: ves) {
         request.error(ve.getErrorCode(), ve.getExtra());
       }
-      return forwardValidationError;
+      retry = true;
     }
 
     /* --------------------- Must have a calendar ------------------ */
@@ -491,7 +495,11 @@ public class UpdateEventAction extends RWActionBase {
     if (ev.getColPath() == null) {
       request.error(ValidationError.missingCalendar);
       cl.rollback();
-      return forwardValidationError;
+      retry = true;
+    }
+
+    if (retry || validationError) {
+      return forwardRetry;
     }
 
     /* --------------------- Add or update the event ------------------------ */
@@ -1313,7 +1321,25 @@ public class UpdateEventAction extends RWActionBase {
     return rruleStr;
   }
 
-  // ===================== Time and date form elements ===============
+  // ============== event form elements ==============
+
+  public void setDescription(final String val) {
+    getRwForm().setDescription(val);
+  }
+
+  public String getDescription() {
+    return getRwForm().getDescription();
+  }
+
+  public void setSummary(final String val) {
+    getRwForm().setSummary(val);
+  }
+
+  public String getSummary() {
+    return getRwForm().getSummary();
+  }
+
+  // ========= time and date form elements ===========
 
   public TimeDateComponents getEventStartDate() {
     return getRwForm().getEventStartDate();
@@ -1327,7 +1353,7 @@ public class UpdateEventAction extends RWActionBase {
     return getRwForm().getEventDates().getDuration();
   }
 
-  // ===================== contact form elements ====================
+  // ============ contact form elements ==============
 
   public void setAllContactId(final String val) {
     getRwForm().setAllContactId(val);

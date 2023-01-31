@@ -41,20 +41,12 @@ public class ApprovePublishAction extends AdminActionBase {
 
     final BwEvent ev = pars.ev;
 
-    if (pars.approveEvent &&
-            !form.getCurUserApproverUser()) {
-      cl.rollback();
-      return forwardNoAccess;
-    }
-
-    if ((pars.publishEvent || pars.approveEvent) &&
-            (ev.getRecurrenceId() != null)) {
-      // Cannot publish/approve an instance - only the master
-      cl.rollback();
-      return forwardError;
-    }
-
-    if (pars.publishEvent) {
+    if (pars.approveEvent) {
+      if (!form.getCurUserApproverUser()) {
+        cl.rollback();
+        return forwardNoAccess;
+      }
+    } else if (pars.publishEvent) {
       // We might need the submitters info */
 
       final List<BwXproperty> xps =
@@ -63,6 +55,16 @@ public class ApprovePublishAction extends AdminActionBase {
       if (!Util.isEmpty(xps)) {
         pars.submitterEmail = xps.get(0).getValue();
       }
+    } else {
+      // Must be approve or publish.
+      cl.rollback();
+      return forwardNoAccess;
+    }
+
+    if (ev.getRecurrenceId() != null) {
+      // Cannot publish/approve an instance - only the master
+      cl.rollback();
+      return forwardError;
     }
 
     /* ------------------ validation -------------------------- */

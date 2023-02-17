@@ -34,6 +34,8 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -89,6 +91,8 @@ public class WebCalendarAction extends BwAbstractAction {
     if (name == null) {
       name = start.toString();
     }
+
+    name = StringEscapeUtils.escapeJava(name);
 
     String st = request.getReqPar("start");
 

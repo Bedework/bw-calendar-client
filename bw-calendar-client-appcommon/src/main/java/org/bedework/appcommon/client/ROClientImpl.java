@@ -40,6 +40,7 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
 import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.filter.BwCollectionFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.calfacade.indexing.BwIndexer.DeletedState;
@@ -1609,20 +1610,20 @@ public class ROClientImpl implements Logged, Client {
     final BwView preferred = getView(null);
 
     if (preferred == null) {
-      return null;
-    }
+      tblVal = makeDefaultView();
+    } else {
+      final String fexpr = "view=\"" + preferred.getName() + "\"";
 
-    final String fexpr = "view=\"" + preferred.getName() +"\"";
+      final BwFilterDef fd = new BwFilterDef();
+      fd.setDefinition(fexpr);
 
-    final BwFilterDef fd = new BwFilterDef();
-    fd.setDefinition(fexpr);
+      parseFilter(fd);
 
-    parseFilter(fd);
+      tblVal = fd.getFilters();
 
-    tblVal = fd.getFilters();
-
-    if (tblVal == null) {
-      warn("Null filter for " + phref);
+      if (tblVal == null) {
+        warn("Null filter for " + phref);
+      }
     }
 
     synchronized (defaultFilters) {
@@ -1635,6 +1636,35 @@ public class ROClientImpl implements Logged, Client {
   /* ------------------------------------------------------------
    *                   private methods
    * ------------------------------------------------------------ */
+
+  private FilterBase makeDefaultView() throws CalFacadeException {
+    final Collection<BwCalendar> cols = new ArrayList<>();
+
+    findCollections(getHome(), cols);
+
+    FilterBase flt = null;
+
+    for (final BwCalendar col: cols) {
+      flt = FilterBase.addOrChild(flt,
+                                  new BwCollectionFilter(col.getName(),
+                                                         col));
+    }
+
+    return flt;
+  }
+
+  private void findCollections(final BwCalendar root,
+                               final Collection<BwCalendar> cols)
+          throws CalFacadeException {
+    if (root.getCalendarCollection()) {
+      cols.add(root);
+      return;
+    }
+
+    for (final var ch: svci.getCalendarsHandler().getChildren(root)) {
+      findCollections(ch, cols);
+    }
+  }
 
   private List<SearchResultEntry> formatSearchResult(
           final List<SearchResultEntry> entries) {

@@ -3,6 +3,7 @@
 */
 package org.bedework.client.web.rw;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwFilterDef;
@@ -22,6 +23,17 @@ import static org.bedework.caldav.util.filter.FilterBase.addAndChild;
 public class RwBwModule extends BwModule {
   public RwBwModule(final String moduleName) {
     super(moduleName);
+  }
+
+  protected int actionSetup(final BwRequest request) throws Throwable {
+    final Client cl = request.getClient();
+    final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
+
+    if (cl.getWebSubmit()) {
+      form.assignSubmissionRoot(cl.getSystemProperties().getSubmissionRoot());
+    }
+
+    return super.actionSetup(request);
   }
 
   @Override

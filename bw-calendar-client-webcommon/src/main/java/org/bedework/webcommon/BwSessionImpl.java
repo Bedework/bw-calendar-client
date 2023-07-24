@@ -414,7 +414,12 @@ public class BwSessionImpl implements Logged, BwSession {
     final Client cl = request.getClient();
 
     try {
-      col = cl.getHome();
+      if (cl.getWebSubmit()) {
+        col = cl.getCollection(
+                cl.getSystemProperties().getSubmissionRoot());
+      } else {
+        col = cl.getHome();
+      }
 
       if (col == null) {
         request.getErr().emit("No home collection");

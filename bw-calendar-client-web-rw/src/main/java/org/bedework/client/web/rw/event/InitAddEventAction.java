@@ -170,15 +170,21 @@ public class InitAddEventAction extends RWActionBase {
   protected void setEventCollection(final RWClient cl,
                                     final BwEvent ev,
                                     final ChangeTable changes) throws Throwable {
-    final var cols = cl.getAddContentCollections();
+    final String path;
 
-    if (Util.isEmpty(cols)) {
-      throw new RuntimeException("No writeable collection");
+    if (cl.getWebSubmit()) {
+      path = cl.getSystemProperties().getSubmissionRoot();
+    } else {
+      final var cols = cl.getAddContentCollections();
+
+      if (Util.isEmpty(cols)) {
+        throw new RuntimeException("No writeable collection");
+      }
+
+      // Use the first.
+      path = cols.stream().findFirst().get().getPath();
     }
 
-    // Use the first.
-    final var path =
-            cols.stream().findFirst().get().getPath();
     changes.changed(PropertyInfoIndex.COLLECTION,
                     ev.getColPath(),
                     path);

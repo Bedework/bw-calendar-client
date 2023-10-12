@@ -44,6 +44,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
+import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
@@ -94,6 +95,7 @@ public class BwSessionImpl implements Logged, BwSession {
   // Both indexed by isSuper
   private static final String[] publicCollectionsChangeToken = {null, null};
   private static final BwCalendar[] clonedPublicCollections = {null, null};
+  private static Collection<BwView> publicViews;
 
   /** The current user - null for guest
    */
@@ -410,7 +412,6 @@ public class BwSessionImpl implements Logged, BwSession {
 
   public BwCalendar getAppCollections(final BwRequest request) {
     final BwCalendar col;
-    final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
     try {
@@ -835,8 +836,61 @@ public class BwSessionImpl implements Logged, BwSession {
 
   @Override
   public void embedViews(final BwRequest request) throws Throwable {
+    final var cl = request.getClient();
+    if (cl.isGuest() && publicViews != null) {
+      request.setSessionAttr(BwRequest.bwViewsListName,
+                             publicViews);
+      return;
+    }
+
+    final var views = request.getClient().getAllViews();
+
+    if (cl.isGuest() && (views != null)) {
+      final var publicRoot = getPublicCollections(request);
+      if (publicRoot != null) {
+        for (final var view: views) {
+          final var collectionPaths = view.getCollectionPaths();
+          final var collections = new ArrayList<BwCalendar>();
+
+          for (final var path: collectionPaths) {
+            final var col = findCollection(publicRoot, path);
+            if (col != null) {
+              collections.add(col);
+            }
+          }
+
+          view.setCollections(collections);
+        }
+      }
+
+      publicViews = views;
+    }
+
     request.setSessionAttr(BwRequest.bwViewsListName,
-                           request.getClient().getAllViews());
+                           views);
+  }
+
+  private BwCalendar findCollection(final BwCalendar root,
+                                    final String path) {
+    if (path.equals(root.getPath())) {
+      return root;
+    }
+
+    if (path.startsWith(root.getPath() + "/")) {
+      final var children = root.getChildren();
+      if (children == null) {
+        return null;
+      }
+
+      for (final var child: children) {
+        final var childCol = findCollection(child, path);
+        if (childCol != null) {
+          return childCol;
+        }
+      }
+    }
+
+    return null;
   }
 
   @Override

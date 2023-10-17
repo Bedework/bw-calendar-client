@@ -140,11 +140,6 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public boolean isGuest() {
-    return false;
-  }
-
-  @Override
   public boolean getAdminGroupMaintOK() {
     return svci.getAdminDirectories().getGroupMaintOK();
   }
@@ -174,7 +169,7 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public BwAuthUser getAuthUser(final BwPrincipal pr)
+  public BwAuthUser getAuthUser(final BwPrincipal<?> pr)
           throws CalFacadeException {
     final UserAuth ua = svci.getUserAuth();
     BwAuthUser au = null;
@@ -197,7 +192,7 @@ public class AdminClientImpl extends RWClientImpl
 
     /* For the time being force initialization of the prefs
        Not sure why we need this - probably because these objects
-       become detached but we need the collections.
+       become detached, but we need the collections.
 
        For the moment get the size of the object. Means no explicit
        hibernate dependency
@@ -219,6 +214,15 @@ public class AdminClientImpl extends RWClientImpl
   @Override
   public BwAuthUser getAuthUser() throws CalFacadeException {
     return getAuthUser(getAuthPrincipal());
+  }
+
+  @Override
+  public BwPrincipal<?> getUserAlways(final String val) {
+    try {
+      return svci.getUsersHandler().getAlways(val);
+    } catch (final CalFacadeException cfe) {
+      throw new RuntimeException(cfe);
+    }
   }
 
   @Override
@@ -254,9 +258,9 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public BwGroup getAdminGroup(final String href)
+  public BwGroup<?> getAdminGroup(final String href)
           throws CalFacadeException {
-    return (BwGroup)svci.getAdminDirectories().getPrincipal(href);
+    return (BwGroup<?>)svci.getAdminDirectories().getPrincipal(href);
   }
 
   @Override
@@ -306,7 +310,7 @@ public class AdminClientImpl extends RWClientImpl
 
   @Override
   public void addAdminGroupMember(final BwAdminGroup group,
-                                  final BwPrincipal val)
+                                  final BwPrincipal<?> val)
           throws CalFacadeException {
     svci.getAdminDirectories().addMember(group, val);
     updated();
@@ -314,7 +318,7 @@ public class AdminClientImpl extends RWClientImpl
 
   @Override
   public void removeAdminGroupMember(final BwAdminGroup group,
-                                     final BwPrincipal val)
+                                     final BwPrincipal<?> val)
           throws CalFacadeException {
     svci.getAdminDirectories().removeMember(group, val);
     updated();
@@ -325,18 +329,18 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public BwGroup findGroup(final String name) {
+  public BwGroup<?> findGroup(final String name) {
     return svci.getDirectories().findGroup(name);
   }
 
   @Override
-  public Collection<BwGroup<?>> findGroupParents(final BwGroup group)
+  public Collection<BwGroup<?>> findGroupParents(final BwGroup<?> group)
           throws CalFacadeException {
     return svci.getDirectories().findGroupParents(group);
   }
 
   @Override
-  public Collection<BwGroup<?>> getGroups(final BwPrincipal val)
+  public Collection<BwGroup<?>> getGroups(final BwPrincipal<?> val)
           throws CalFacadeException {
     return svci.getDirectories().getGroups(val);
   }
@@ -348,7 +352,7 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public void getMembers(final BwGroup group)
+  public void getMembers(final BwGroup<?> group)
           throws CalFacadeException {
     svci.getDirectories().getMembers(group);
   }
@@ -373,7 +377,7 @@ public class AdminClientImpl extends RWClientImpl
       return null;
     }
 
-    final BwPrincipal p = getUser(user);
+    final BwPrincipal<?> p = getUser(user);
     if (p == null) {
       return null;
     }
@@ -424,12 +428,6 @@ public class AdminClientImpl extends RWClientImpl
     svci.getNotificationsHandler().
             remove(getCalSuite().getGroup().getOwnerHref(),
                    val);
-    updated();
-  }
-
-  @Override
-  public void removeAllNotifications(final String principalHref) throws CalFacadeException {
-    svci.getNotificationsHandler().removeAll(principalHref);
     updated();
   }
 
@@ -741,7 +739,7 @@ public class AdminClientImpl extends RWClientImpl
       return;
     }
 
-    for (final BwPrincipal pr: ag.getGroupMembers()) {
+    for (final BwPrincipal<?> pr: ag.getGroupMembers()) {
       if (pr instanceof BwAdminGroup) {
         addOwnerHrefs((BwAdminGroup)pr);
       }

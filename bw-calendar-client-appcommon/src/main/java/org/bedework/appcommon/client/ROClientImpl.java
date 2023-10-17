@@ -534,15 +534,6 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwPrincipal<?> getUserAlways(final String val) {
-    try {
-      return svci.getUsersHandler().getAlways(val);
-    } catch (final CalFacadeException cfe) {
-      throw new RuntimeException(cfe);
-    }
-  }
-
-  @Override
   public String makePrincipalUri(final String id,
                                  final int whoType) {
     return svci.getDirectories().makePrincipalUri(id, whoType);

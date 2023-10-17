@@ -78,6 +78,13 @@ public interface AdminClient extends RWClient {
    */
   BwAuthUser getAuthUser() throws CalFacadeException;
 
+  /** Find the user with the given account name. Create if not there.
+   *
+   * @param val           String user id
+   * @return BwUser       representing the user
+   */
+  BwPrincipal<?> getUserAlways(String val);
+
   /**
    * @return true if current auth user is an approver
    * @throws CalFacadeException on fatal error

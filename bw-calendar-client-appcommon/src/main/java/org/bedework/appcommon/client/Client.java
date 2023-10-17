@@ -302,13 +302,6 @@ public interface Client extends Serializable {
    */
   BwPrincipal<?> getUser(String val);
 
-  /** Find the user with the given account name. Create if not there.
-   *
-   * @param val           String user id
-   * @return BwUser       representing the user
-   */
-  BwPrincipal<?> getUserAlways(String val);
-
   /**
    *
    * @return current calendar address

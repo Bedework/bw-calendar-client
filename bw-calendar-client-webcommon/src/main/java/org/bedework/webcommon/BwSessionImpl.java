@@ -852,10 +852,12 @@ public class BwSessionImpl implements Logged, BwSession {
           final var collectionPaths = view.getCollectionPaths();
           final var collections = new ArrayList<BwCalendar>();
 
-          for (final var path: collectionPaths) {
-            final var col = findCollection(publicRoot, path);
-            if (col != null) {
-              collections.add(col);
+          if (collectionPaths != null) {
+            for (final var path: collectionPaths) {
+              final var col = findCollection(publicRoot, path);
+              if (col != null) {
+                collections.add(col);
+              }
             }
           }
 

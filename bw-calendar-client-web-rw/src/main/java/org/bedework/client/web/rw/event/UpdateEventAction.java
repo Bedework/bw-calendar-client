@@ -991,7 +991,7 @@ public class UpdateEventAction extends RWActionBase {
       }
 
       cl.setResourceValue(pi.image,
-                          images.getInputStream(),
+                          file.getContentStream(),
                           file.getLength());
       pi.image.setContentType(file.getContentType());
 

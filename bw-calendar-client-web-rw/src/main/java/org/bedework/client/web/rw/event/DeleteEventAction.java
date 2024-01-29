@@ -71,7 +71,6 @@ public class DeleteEventAction extends RWActionBase {
 
     if (ei == null) {
       // Do nothing
-      form.getErr().emit(ClientError.unknownEvent);
       return forwardNoAction;
     }
 

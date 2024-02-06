@@ -73,6 +73,9 @@ public interface ClientError extends Serializable {
   /** Error: choose group is suppressed.  You cannot perform that action at this time. */
   public static final String chooseGroupSuppressed = prefix + "choosegroupsuppressed";
 
+  /** Error: closed. */
+  public static final String closed = prefix + " interface closed";
+
   /** Cannot add: the category already exists. */
   public static final String duplicateCategory = prefix + "duplicatecategory";
 

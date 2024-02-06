@@ -42,6 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import static java.lang.String.format;
+
 /**
  * Abstract implementation of <strong>Action</strong> which sets up frequently
  * required fields then calls an abstract method to do the work.
@@ -318,30 +320,17 @@ public abstract class UtilAbstractAction extends ActionSupport
 
       if (forward == null) {
         warn("Forward = null");
-        err.emit("edu.rpi.sss.util.nullforward");
+        err.emit("org.bedework.client.nullforward");
         forward = "error";
       } else if (forward.equals("FORWARD-NULL")) {
         forward = null;
       }
 
-      if (err.messagesEmitted()) {
-        if (debug()) {
-          debug(err.getMsgList().size() + " errors emitted");
-        }
-      } else if (debug()) {
-        debug("No errors emitted");
-      }
-
-      if (msg.messagesEmitted()) {
-        if (debug()) {
-          debug(msg.getMsgList().size() + " messages emitted");
-        }
-      } else if (debug()) {
-        debug("No messages emitted");
-      }
-
       if (debug()) {
-        debug("exit to " + forward);
+        debug(format("exit to %s, %d errors %d messages",
+                     forward,
+                     err.getMsgList().size(),
+                     msg.getMsgList().size()));
       }
     } catch (final Throwable t) {
       if (debug()) {

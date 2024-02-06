@@ -38,6 +38,7 @@ import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
+import org.bedework.calfacade.exc.CalFacadeClosed;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.BwCreatorFilter;
@@ -321,6 +322,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
       forward = forwards[forwardNoAccess];
       cl.rollback();
+    } catch (final CalFacadeClosed cfc) {
+      request.error(ClientError.closed);
+      warn("Interface closed");
+      forward = forwards[forwardGotomain];
     } catch (final CalFacadeException cfe) {
       request.error(cfe.getMessage(), cfe.getExtra());
       request.error(cfe);

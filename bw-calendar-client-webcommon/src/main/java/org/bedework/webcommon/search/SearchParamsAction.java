@@ -135,16 +135,8 @@ public class SearchParamsAction extends BwAbstractAction {
     if (forFeederOneShot || generateCalendarContent) {
       form.setNocache(false);
 
-      final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
-
-      if (ifNoneMatch != null) {
-        final String changeToken = cl.getCurrentChangeToken();
-
-        if ((changeToken != null) && changeToken.equals(
-                ifNoneMatch)) {
-          response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-          return forwardNull;
-        }
+      if (!request.contentChanged()) {
+        return forwardNull;
       }
     }
 
@@ -164,7 +156,7 @@ public class SearchParamsAction extends BwAbstractAction {
     if (generateCalendarContent) {
       final Collection<SearchResultEntry> sres = cl.getSearchResult(
               Position.current);
-      if ((sres == null) || (sres.size() == 0)) {
+      if ((sres == null) || (sres.isEmpty())) {
         return forwardNull;
       }
 
@@ -268,7 +260,8 @@ public class SearchParamsAction extends BwAbstractAction {
                                       BwSession.ownersEntity);
 
     /* Add an etag */
-    response.addHeader("etag", cl.getCurrentChangeToken());
+    response.addHeader("etag",
+                       cl.getCurrentChangeToken());
 
     return forwardSuccess;
   }

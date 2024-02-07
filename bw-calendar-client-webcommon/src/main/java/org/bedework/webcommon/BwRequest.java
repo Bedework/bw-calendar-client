@@ -211,6 +211,26 @@ public class BwRequest extends Request {
     return module;
   }
 
+  /**
+   *
+   * @return false if we have an if-none-match which
+   * matches current change token. Status is set to not-modified.
+   */
+  public boolean contentChanged() {
+    final String changeToken = cl.getCurrentChangeToken();
+
+    final String ifNoneMatch = request.getHeader("if-none-match");
+
+    final HttpServletResponse resp = getResponse();
+
+    if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
+      getResponse().setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+      return false;
+    }
+
+    return true;
+  }
+
   @Override
   protected boolean logOutCleanup() {
     final HttpSession hsess = request.getSession();

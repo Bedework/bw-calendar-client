@@ -79,18 +79,14 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
       return forwardNull;
     }
 
+    if (!request.contentChanged()) {
+      return forwardNull;
+    }
+
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
     form.setNocache(false);
-    final String changeToken = cl.getCurrentChangeToken();
-
-    final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
-
-    if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
-      resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-      return forwardNull;
-    }
 
     final Collection<T> vals;
 
@@ -130,7 +126,9 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
 
     Response.ok(epresp);
 
-    cl.outputJson(resp, changeToken, null, epresp);
+    cl.outputJson(resp,
+                  cl.getCurrentChangeToken(),
+                  null, epresp);
 
     return forwardNull;
   }

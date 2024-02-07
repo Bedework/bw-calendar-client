@@ -63,18 +63,14 @@ public class FetchLocationsAction extends BwAbstractAction {
       return forwardNull;
     }
 
+    if (!request.contentChanged()) {
+      return forwardNull;
+    }
+
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
     form.setNocache(false);
-    final String changeToken = cl.getCurrentChangeToken();
-
-    final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
-
-    if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
-      resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-      return forwardNull;
-    }
 
     final BwSession sess = request.getSess();
 
@@ -121,7 +117,9 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     Response.ok(locs);
 
-    cl.outputJson(resp, changeToken, null, locs);
+    cl.outputJson(resp,
+                  cl.getCurrentChangeToken(),
+                  null, locs);
 
     return forwardNull;
   }

@@ -26,8 +26,6 @@ import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
-import javax.servlet.http.HttpServletResponse;
-
 /** This action fetches admin groups and writes them as a json object.
  * READ-ONLY + ADMIN
  *
@@ -41,19 +39,13 @@ public class FetchAdminGroupsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) {
-    final Client cl = request.getClient();
     form.setNocache(false);
-    final String changeToken = cl.getCurrentChangeToken();
 
-    final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
-
-    final HttpServletResponse resp = request.getResponse();
-
-    if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
-      resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+    if (!request.contentChanged()) {
       return forwardNull;
     }
 
+    final Client cl = request.getClient();
     final var vals = cl.getAdminGroups();
 
     final AdminGroupsResponse adgs = new AdminGroupsResponse();
@@ -61,7 +53,9 @@ public class FetchAdminGroupsAction extends BwAbstractAction {
 
     Response.ok(adgs);
 
-    cl.outputJson(resp, changeToken, null, adgs);
+    cl.outputJson(request.getResponse(),
+                  cl.getCurrentChangeToken(),
+                  null, adgs);
 
     return forwardNull;
   }

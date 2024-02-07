@@ -43,10 +43,10 @@ import org.bedework.webcommon.BwSession;
 public class SearchNextAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
+                      final BwActionFormBase form) {
+    final Client cl = request.getClient();
 
-    int offset = request.getIntReqPar("offset", -1);
+    final int offset = request.getIntReqPar("offset", -1);
 
     if (offset > 0) {
       request.setRequestAttr(BwRequest.bwSearchListName,

@@ -769,14 +769,13 @@ public class BwSessionImpl implements Logged, BwSession {
       return getContactCollator().getCollatedCollection(vals);
     } catch (final CalFacadeException cfe) {
       request.getErr().emit(cfe);
-      cfe.printStackTrace();
       return new ArrayList<>();
     }
   }
 
   @Override
   public void embedContactCollection(final BwRequest request,
-                                     final int kind) throws Throwable {
+                                     final int kind) {
     final Client cl = request.getClient();
     final Collection<BwContact> vals;
     final String attrName;
@@ -813,7 +812,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
   @Override
   public void embedLocations(final BwRequest request,
-                             final int kind) throws Throwable {
+                             final int kind) {
     final Collection<BwLocation> vals;
     final String attrName;
 
@@ -829,7 +828,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       vals = curAuthUserPrefs.getLocationPrefs().getPreferred();
     } else {
-      throw new Exception("Software error - bad kind " + kind);
+      throw new CalFacadeException("Software error - bad kind " + kind);
     }
 
     request.setSessionAttr(attrName,
@@ -837,7 +836,7 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   @Override
-  public void embedViews(final BwRequest request) throws Throwable {
+  public void embedViews(final BwRequest request) {
     final var cl = request.getClient();
     if (cl.isGuest() && publicViews != null) {
       request.setSessionAttr(BwRequest.bwViewsListName,
@@ -898,9 +897,10 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   @Override
-  public Collection<BwLocation> getLocations(final BwRequest request,
-                                             final int kind,
-                                             final boolean forEventUpdate) {
+  public Collection<BwLocation> getLocations(
+          final BwRequest request,
+          final int kind,
+          final boolean forEventUpdate) {
     try {
       final BwActionFormBase form = request.getBwForm();
       final Client cl = request.getClient();
@@ -938,7 +938,6 @@ public class BwSessionImpl implements Logged, BwSession {
 
       return getLocationCollator().getCollatedCollection(vals);
     } catch (final Throwable t) {
-      t.printStackTrace();
       request.getErr().emit(t);
       return new ArrayList<>();
     }
@@ -959,9 +958,10 @@ public class BwSessionImpl implements Logged, BwSession {
    *                   Private methods
    * ==================================================================== */
 
-  private BwCalendar getClonedCollection(final BwRequest request,
-                                         final BwCalendar col,
-                                         final boolean fromCopy)  {
+  private BwCalendar getClonedCollection(
+          final BwRequest request,
+          final BwCalendar col,
+          final boolean fromCopy)  {
     final ColCloner cc = new ColCloner(request.getClient(),
                                        request.getBwForm().getCalendarsOpenState());
     final ColCloner.CloneResult clres = cc.deepClone(col, fromCopy);
@@ -1164,7 +1164,7 @@ public class BwSessionImpl implements Logged, BwSession {
     return locationCollator;
   }
 
-  private void embedPrefs(final BwRequest request) throws Throwable {
+  private void embedPrefs(final BwRequest request) {
     request.setSessionAttr(BwRequest.bwPreferencesName,
                            request.getClient().getPreferences());
   }

@@ -40,7 +40,7 @@ import org.bedework.webcommon.BwRequest;
 public class EventKeyAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final EventKey ekey = request.makeEventKey(false);
     form.setEventKey(ekey);
 

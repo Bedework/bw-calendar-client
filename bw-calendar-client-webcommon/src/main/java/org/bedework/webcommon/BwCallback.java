@@ -42,35 +42,31 @@ public abstract class BwCallback implements Serializable {
   /** Called when the response is on its way in.
    *
    * @return int HttpServletResponse status
-   * @throws Throwable
    */
-  public abstract int in(Request req) throws Throwable;
+  public abstract int in(Request req);
 
   /** Called when the response is on its way out.
    *
-   * @param hreq
-   * @throws Throwable
+   * @param hreq HttpServletRequest
    */
-  public abstract void out(HttpServletRequest hreq) throws Throwable;
+  public abstract void out(HttpServletRequest hreq);
 
   /** Flag an error
    *
-   * @param hreq
-   * @param hresp
-   * @param t
-   * @throws Throwable
+   * @param hreq HttpServletRequest
+   * @param hresp HttpServletResponse
+   * @param t the error
    */
   public abstract void error(HttpServletRequest hreq,
                              HttpServletResponse hresp,
-                             Throwable t) throws Throwable;
+                             Throwable t);
 
   /** Called after the above to allow close etc.
    *
    * @param cleanUp  true if we are cleaning up for id switch etc
-   * @throws Throwable
    */
   public abstract void close(HttpServletRequest hreq,
-                             boolean cleanUp) throws Throwable;
+                             boolean cleanUp);
 
   public static BwCallback getCb(final Request request,
                                  final BwActionFormBase form) {

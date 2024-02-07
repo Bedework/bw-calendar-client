@@ -41,7 +41,7 @@ public class AdminUtil implements ForwardDefs {
   private static final BwLogger logger =
           new BwLogger().setLoggedClass(AdminUtil.class);
 
-  public static void embedPreferredAdminGroups(final BwRequest request) throws Throwable {
+  public static void embedPreferredAdminGroups(final BwRequest request) {
     final AdminClient cl = (AdminClient)request.getClient();
 
     final Set<String> prefGroupHrefs = cl.getPreferences().getPreferredGroups();
@@ -62,7 +62,7 @@ public class AdminUtil implements ForwardDefs {
                            prefGroups);
   }
 
-  public static void embedCalsuiteAdminGroups(final BwRequest request) throws Throwable {
+  public static void embedCalsuiteAdminGroups(final BwRequest request) {
     final AdminClient cl = (AdminClient)request.getClient();
 
     request.setSessionAttr(BwRequest.bwCsAdminGroupsInfoName,
@@ -81,8 +81,9 @@ public class AdminUtil implements ForwardDefs {
    * @param cl client
    * @return calendar suite wrapper
    */
-  public static BwCalSuiteWrapper findCalSuite(final Request request,
-                                               final AdminClient cl) {
+  public static BwCalSuiteWrapper findCalSuite(
+          final Request request,
+          final AdminClient cl) {
     final String groupName = cl.getAdminGroupName();
     if (groupName == null) {
       return null;
@@ -106,9 +107,10 @@ public class AdminUtil implements ForwardDefs {
    * @param adg admin group
    * @return calendar suite wrapper
    */
-  private static BwCalSuiteWrapper findCalSuite(final Request request,
-                                                final AdminClient cl,
-                                                final BwAdminGroup adg) {
+  private static BwCalSuiteWrapper findCalSuite(
+          final Request request,
+          final AdminClient cl,
+          final BwAdminGroup adg) {
     if (adg == null) {
       return null;
     }

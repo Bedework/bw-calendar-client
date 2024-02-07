@@ -27,7 +27,7 @@ import java.io.Serializable;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class EventState implements Serializable {
-  private BwActionFormBase form;
+  private final BwActionFormBase form;
 
   /* When I manage to figure out request scopeforms this will be embedded i
      in the module state - not the global action form.
@@ -66,7 +66,7 @@ public class EventState implements Serializable {
     this.mstate = mstate;
   }
   */
-  public EventState(BwActionFormBase form) {
+  public EventState(final BwActionFormBase form) {
     this.form = form;
   }
 
@@ -86,7 +86,7 @@ public class EventState implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val duration
    */
   public void setTriggerDuration(final DurationBean val) {
     triggerDuration = val;
@@ -104,7 +104,7 @@ public class EventState implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val rel start
    */
   public void setAlarmRelStart(final boolean val) {
     alarmRelStart = val;
@@ -118,7 +118,7 @@ public class EventState implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val duration
    */
   public void setAlarmDuration(final DurationBean val) {
     alarmDuration = val;
@@ -136,7 +136,7 @@ public class EventState implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val repeat
    */
   public void setAlarmRepeatCount(final int val) {
     alarmRepeatCount = val;
@@ -150,7 +150,7 @@ public class EventState implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val true/false
    */
   public void setAlarmTriggerByDate(final boolean val) {
     alarmTriggerByDate = val;

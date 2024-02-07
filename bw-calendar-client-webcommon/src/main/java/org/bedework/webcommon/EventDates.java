@@ -24,7 +24,6 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.base.StartEndComponent;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
@@ -35,7 +34,7 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.timezones.DateTimeUtil;
 
-/** The dates (and/or duration which define when an event happens. These are
+/** The dates and/or duration which define when an event happens. These are
  * stored in objects which allow manipulation of indiviual date and time
  * components.
  */
@@ -61,8 +60,8 @@ public class EventDates extends EntityDates implements ForwardDefs {
    * @param calInfo calendar info
    * @param hour24 trie for 24 hour
    * @param endTypeName dur or end
-   * @param minIncrement
-   * @param err
+   * @param minIncrement for minutes
+   * @param err for errors
    */
   public EventDates(final String principalHref,
                     final CalendarInfo calInfo,
@@ -327,9 +326,8 @@ public class EventDates extends EntityDates implements ForwardDefs {
 
   /**
    * @return TimeRange object
-   * @throws CalFacadeException
    */
-  public BwTimeRange getTimeRange() throws CalFacadeException {
+  public BwTimeRange getTimeRange() {
     return new BwTimeRange(getStartDate().getDateTime(),
                          getEndDate().getDateTime());
   }
@@ -340,7 +338,7 @@ public class EventDates extends EntityDates implements ForwardDefs {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
 
     sb.append("EventDates{startDate=");
     sb.append(startDate);

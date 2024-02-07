@@ -26,6 +26,7 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
@@ -42,6 +43,8 @@ import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -230,6 +233,24 @@ public class BwRequest extends Request {
 
     return true;
   }
+
+  public void sendError(final int status,
+                        final String text) {
+    try {
+      getResponse().sendError(status, text);
+    } catch (final IOException e) {
+      throw new CalFacadeException(e);
+    }
+  }
+
+  public Writer getWriter() {
+    try {
+      return getResponse().getWriter();
+    } catch (final IOException e) {
+      throw new CalFacadeException(e);
+    }
+  }
+
 
   @Override
   protected boolean logOutCleanup() {

@@ -109,7 +109,7 @@ public class TimeDateComponents implements Serializable {
    */
   public TimeDateComponents(final CalendarInfo calInfo,
                             final int minuteIncrement,
-                            final boolean hour24) throws TimeDateException {
+                            final boolean hour24) {
     this.calInfo = calInfo;
     this.hour24 = hour24;
 
@@ -306,7 +306,7 @@ public class TimeDateComponents implements Serializable {
       } else if (DateTimeUtil.isISODate(val)) {
         setDateOnly(true);
       } else {
-        throw new RuntimeException(CalFacadeException.badDate +
+        throw new CalFacadeException(CalFacadeException.badDate +
                                            ": " + val);
       }
 

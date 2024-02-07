@@ -38,11 +38,11 @@ import java.util.Collection;
  * @author Mike Douglass   douglm   rpi.edu
  */
 public interface BwSession extends Serializable {
-  static final String changeTokenAttr = "bw_change_token";
+  String changeTokenAttr = "bw_change_token";
 
-  /** ===================================================================
+  /* =============================================================
    *                     Property methods
-   *  =================================================================== */
+   *  ============================================================= */
 
   /**
    * Call to reset state and flush objects.
@@ -99,14 +99,13 @@ public interface BwSession extends Serializable {
    *
    * @param request - current request
    */
-  void embedCollections(final BwRequest request);
+  void embedCollections(BwRequest request);
 
   /**
    *
    * @param req - current request
-   * @throws Throwable
    */
-  void embedFilters(final BwRequest req);
+  void embedFilters(BwRequest req);
 
   /** Get the current view according to the current setting of curViewPeriod.
    * May be called when we change the view or if we need a refresh
@@ -137,9 +136,9 @@ public interface BwSession extends Serializable {
    */
   void embedAddContentCalendarCollections(BwRequest request);
 
-  /* ====================================================================
+  /* ==============================================================
    *                   Categories
-   * ==================================================================== */
+   * ============================================================== */
 
   /** Embed the list of categories for this owner. Return a null list for
    * exceptions or no categories. For guest mode or public admin this is the
@@ -162,17 +161,17 @@ public interface BwSession extends Serializable {
    * @param forEventUpdate true if we are about to update an event
    * @return collection - never null.
    */
-  public Collection<BwCategory> getCategoryCollection(
-          final BwRequest request,
-          final int kind,
-          final boolean forEventUpdate);
+  Collection<BwCategory> getCategoryCollection(
+          BwRequest request,
+          int kind,
+          boolean forEventUpdate);
 
   /* Kind of entity we are referring to */
 
-  public static final int ownersEntity = 1;
-  public static final int editableEntity = 2;
-  public static final int preferredEntity = 3;
-  public static final int defaultEntity = 4;
+  int ownersEntity = 1;
+  int editableEntity = 2;
+  int preferredEntity = 3;
+  int defaultEntity = 4;
 
   /**
    * @param request - current request
@@ -180,24 +179,22 @@ public interface BwSession extends Serializable {
    * @param forEventUpdate if we are updating an event
    * @return the contacts
    */
-  Collection<BwContact> getContacts(final BwRequest request,
-                                    final int kind,
-                                    final boolean forEventUpdate);
+  Collection<BwContact> getContacts(BwRequest request,
+                                    int kind,
+                                    boolean forEventUpdate);
 
   /**
    *
    * @param request - current request
    * @param kind of entity
-   * @throws Throwable
    */
   void embedContactCollection(BwRequest request,
-                              final int kind) throws Throwable;
+                              int kind);
 
   /**
    * @param request - current request
-   * @throws Throwable
    */
-  void embedViews(final BwRequest request) throws Throwable;
+  void embedViews(BwRequest request);
 
   /**
    * @param request - current request
@@ -205,17 +202,17 @@ public interface BwSession extends Serializable {
    * @param forEventUpdate if we are updating an event
    * @return the locations
    */
-  Collection<BwLocation> getLocations(final BwRequest request,
-                                      final int kind,
-                                      final boolean forEventUpdate);
+  Collection<BwLocation> getLocations(
+          BwRequest request,
+          int kind,
+          boolean forEventUpdate);
 
   /** Called by jsp when editing an event
    *
    * @param request - current request
    * @param kind of entity
-   * @throws Throwable
    */
-  void embedLocations(final BwRequest request,
-                      final int kind) throws Throwable;
+  void embedLocations(BwRequest request,
+                      int kind);
 }
 

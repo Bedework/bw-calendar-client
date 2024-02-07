@@ -24,11 +24,11 @@ import org.bedework.util.servlet.MessageEmit;
 
 import java.io.Serializable;
 
-/** The dates (and/or duration which define when an entity happens. These are
+/** The dates and/or duration which define when an entity happens. These are
  * stored in objects which allow manipulation of individual date and time
  * components.
- *
- * This is the base class for entity specific classes.
+ * <p>
+ * This is the base class for entity specific classes.</p?
  */
 public class EntityDates implements Serializable {
   protected String principalHref;

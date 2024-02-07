@@ -422,7 +422,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   protected int setSearchParams(final BwRequest request,
                                 final SearchParams params,
-                                final boolean gridMode) throws Throwable {
+                                final boolean gridMode) {
     final BwActionFormBase form = request.getBwForm();
     final BwModuleState mstate = request.getModule().getState();
     final Client cl = request.getClient();

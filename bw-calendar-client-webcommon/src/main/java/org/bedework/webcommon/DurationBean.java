@@ -20,7 +20,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.calfacade.BwDuration;
-import org.bedework.calfacade.exc.CalFacadeException;
 
 /** Class representing a duration for web applications. This takes String values
  * for the properties and validates them.
@@ -50,7 +49,7 @@ public class DurationBean extends BwDuration {
    *
    * @param val    String type
    */
-  public void setType(String val) {
+  public void setType(final String val) {
     type = val;
     if (dayTimeDuration.equals(val)) {
       setWeeks(0);
@@ -69,7 +68,7 @@ public class DurationBean extends BwDuration {
    *
    * @param val    String days
    */
-  public void setDaysStr(String val) {
+  public void setDaysStr(final String val) {
     setDays(makeInt(val));
   }
 
@@ -85,7 +84,7 @@ public class DurationBean extends BwDuration {
    *
    * @param val    String hours
    */
-  public void setHoursStr(String val) {
+  public void setHoursStr(final String val) {
     setHours(makeInt(val));
   }
 
@@ -101,7 +100,7 @@ public class DurationBean extends BwDuration {
    *
    * @param val    String minutes
    */
-  public void setMinutesStr(String val) {
+  public void setMinutesStr(final String val) {
     setMinutes(makeInt(val));
   }
 
@@ -117,7 +116,7 @@ public class DurationBean extends BwDuration {
    *
    * @param val    String seconds
    */
-  public void setSecondsStr(String val) {
+  public void setSecondsStr(final String val) {
     setSeconds(makeInt(val));
   }
 
@@ -133,7 +132,7 @@ public class DurationBean extends BwDuration {
    *
    * @param val    String weeks
    */
-  public void setWeeksStr(String val) {
+  public void setWeeksStr(final String val) {
     setWeeks(makeInt(val));
   }
 
@@ -149,7 +148,7 @@ public class DurationBean extends BwDuration {
    *
    * @param val    boolean negative
    */
-  public void setNegativeStr(String val) {
+  public void setNegativeStr(final String val) {
     setNegative(makeBool(val));
   }
 
@@ -180,12 +179,11 @@ public class DurationBean extends BwDuration {
    * ==================================================================== */
 
   /**
-   * @param val
+   * @param val of bean
    * @return duration bean
-   * @throws CalFacadeException
    */
-  public static DurationBean makeDurationBean(String val) throws CalFacadeException {
-    DurationBean db = new DurationBean();
+  public static DurationBean makeDurationBean(final String val) {
+    final DurationBean db = new DurationBean();
 
     populate(db, val);
 
@@ -200,10 +198,9 @@ public class DurationBean extends BwDuration {
 
   /**
    * @return one hour
-   * @throws CalFacadeException
    */
-  public static DurationBean makeOneHour() throws CalFacadeException {
-    DurationBean db = new DurationBean();
+  public static DurationBean makeOneHour() {
+    final DurationBean db = new DurationBean();
 
     db.setType(dayTimeDuration);
     db.setHours(1);
@@ -213,10 +210,9 @@ public class DurationBean extends BwDuration {
 
   /**
    * @return one day
-   * @throws CalFacadeException
    */
-  public static DurationBean makeOneDay() throws CalFacadeException {
-    DurationBean db = new DurationBean();
+  public static DurationBean makeOneDay() {
+    final DurationBean db = new DurationBean();
 
     db.setType(dayTimeDuration);
     db.setDays(1);
@@ -228,19 +224,19 @@ public class DurationBean extends BwDuration {
    *                        Private methods
    * ==================================================================== */
 
-  private int makeInt(String val) {
+  private int makeInt(final String val) {
     try {
       return Integer.parseInt(val);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       valueError = true;
       return 0;
     }
   }
 
-  private boolean makeBool(String val) {
+  private boolean makeBool(final String val) {
     try {
-      return Boolean.valueOf(val).booleanValue();
-    } catch (Throwable t) {
+      return Boolean.parseBoolean(val);
+    } catch (final Throwable t) {
       valueError = true;
       return false;
     }

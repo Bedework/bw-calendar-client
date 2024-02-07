@@ -22,6 +22,7 @@ import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.svc.EventInfo;
@@ -44,6 +45,7 @@ import org.bedework.webcommon.BwSession;
 
 import net.fortuna.ical4j.model.Calendar;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +78,7 @@ public class SearchParamsAction extends BwAbstractAction {
 
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final BwModuleState mstate = request.getModule().getState();
     final SearchParams params = new SearchParams();
     final Client cl = request.getClient();
@@ -224,6 +226,8 @@ public class SearchParamsAction extends BwAbstractAction {
           jcalTrans.writeJcal(eis, ScheduleMethods.methodTypePublish,
                               wtr);
         }
+      } catch (final IOException e) {
+        throw new CalFacadeException(e);
       }
 
       return forwardNull;

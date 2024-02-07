@@ -264,7 +264,7 @@ public class BwModule implements Logged, Serializable {
   public boolean checkClient(final BwRequest request,
                              final BwSession sess,
                              final String user,
-                             boolean canSwitch,
+                             final boolean canSwitch,
                              final ConfigCommon conf) {
     final BwActionFormBase form = request.getBwForm();
 

@@ -26,6 +26,7 @@ import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.configs.AuthProperties;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.convert.IcalTranslator;
@@ -41,6 +42,7 @@ import org.bedework.webcommon.BwRequest;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.DateTime;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.TreeSet;
@@ -68,9 +70,9 @@ import javax.servlet.http.HttpServletResponse;
 public class ExportAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    String calPath = request.getReqPar("calPath");
-    Client cl = request.getClient();
+                      final BwActionFormBase form) {
+    final String calPath = request.getReqPar("calPath");
+    final Client cl = request.getClient();
 
     EventInfo ev = null;
     Collection<EventInfo> evs = null;
@@ -104,7 +106,7 @@ public class ExportAction extends BwAbstractAction {
         return forwardNotFound;
       }
 
-      String dl = request.getReqPar("dateLimits");
+      final String dl = request.getReqPar("dateLimits");
       final BwDateTime start;
       final BwDateTime end;
 
@@ -167,28 +169,30 @@ public class ExportAction extends BwAbstractAction {
                    "Attachment; Filename=\"" +
                            form.getContentName() + "\"");
 
-    try (Writer wtr = resp.getWriter()) {
-      String ct = request.getReqPar("content-type");
+    try (final Writer wtr = resp.getWriter()) {
+      final String ct = request.getReqPar("content-type");
 
       if ("application/jscalendar+json".equals(ct)) {
-        JSCalTranslator trans = new JSCalTranslator(
+        final JSCalTranslator trans = new JSCalTranslator(
                 new IcalCallbackcb(cl));
 
-        JSGroup grp = trans.toJScal(evs, method);
+        final JSGroup grp = trans.toJScal(evs, method);
 
         resp.setContentType(ct + "; charset=UTF-8");
 
         JSCalTranslator.writeJSCalendar(grp, wtr);
       } else {
-        IcalTranslator trans = new IcalTranslator(
+        final IcalTranslator trans = new IcalTranslator(
                 new IcalCallbackcb(cl));
 
-        Calendar ical = trans.toIcal(evs, method);
+        final Calendar ical = trans.toIcal(evs, method);
 
         resp.setContentType("text/calendar; charset=UTF-8");
 
         IcalendarUtil.writeCalendar(ical, wtr);
       }
+    } catch (final IOException e) {
+      throw new CalFacadeException(e);
     }
 
     return forwardNull;

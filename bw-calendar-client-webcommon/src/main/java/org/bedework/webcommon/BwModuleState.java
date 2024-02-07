@@ -40,7 +40,7 @@ import java.util.Map;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class BwModuleState implements Serializable {
-  private String moduleName;
+  private final String moduleName;
 
   private boolean refresh;
 
@@ -94,13 +94,13 @@ public class BwModuleState implements Serializable {
 
   private String[] yearVals;
 
-  public BwModuleState(String moduleName) {
+  public BwModuleState(final String moduleName) {
     this.moduleName = moduleName;
   }
 
   /** flag refresh needed
    *
-   * @param val
+   * @param val true to force refresh
    */
   public void setRefresh(final boolean val) {
     refresh = val;
@@ -117,7 +117,7 @@ public class BwModuleState implements Serializable {
   /**
    * @param val PresentationState
    */
-  public void setPresentationState(PresentationState val) {
+  public void setPresentationState(final PresentationState val) {
     ps = val;
   }
 
@@ -131,7 +131,7 @@ public class BwModuleState implements Serializable {
   /**
    * @param val XSLTConfig
    */
-  public void setXsltConfig(XSLTConfig val) {
+  public void setXsltConfig(final XSLTConfig val) {
     xsltConfig = val;
   }
 
@@ -165,9 +165,9 @@ public class BwModuleState implements Serializable {
 
   /** Set an object containing the dates.
    *
-   * @return EventDates  object representing date/times and duration
+   * @param val EventDates  object representing date/times and duration
    */
-  public void assignEventDates(EventDates val) {
+  public void assignEventDates(final EventDates val) {
     eventDates = val;
   }
 
@@ -190,7 +190,7 @@ public class BwModuleState implements Serializable {
     return viewStartDate;
   }
 
-  public void updateViewStartDate(BwRequest req) throws Throwable {
+  public void updateViewStartDate(final BwRequest req) {
     if (req.present("viewStartDate.year")) {
       getViewStartDate().setYear(req.getIntReqPar("viewStartDate.year"));
     }
@@ -204,7 +204,7 @@ public class BwModuleState implements Serializable {
 
   /** Date of the view as a MyCalendar object
    *
-   * @param val
+   * @param val the calendar
    */
   public void setViewMcDate(final MyCalendarVO val) {
     viewMcDate = val;
@@ -341,7 +341,7 @@ public class BwModuleState implements Serializable {
    *
    * @param val - the search result
    */
-  public void setSearchResult(SearchResult val) {
+  public void setSearchResult(final SearchResult val) {
     searchResult = val;
   }
 
@@ -355,7 +355,7 @@ public class BwModuleState implements Serializable {
 
   /** Set query from last search
    *
-   * @param val
+   * @param val the query
    */
   public void setQuery(final String val) {
     query = val;
@@ -371,7 +371,7 @@ public class BwModuleState implements Serializable {
 
   /** Set search limits
    *
-   * @param val
+   * @param val the limits
    */
   public void setSearchLimits(final String val) {
     searchLimits = val;
@@ -389,7 +389,7 @@ public class BwModuleState implements Serializable {
    * .................................................................... */
 
   /**
-   * @param val
+   * @param val the selection type
    */
   public void setSelectionType(final String val) {
     selectionType = val;
@@ -404,7 +404,7 @@ public class BwModuleState implements Serializable {
 
   /** Last date used to position ourselves
    *
-   * @param val
+   * @param val date
    */
   public void setDate(final String val) {
     date = val;

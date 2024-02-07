@@ -43,21 +43,21 @@ public interface AdminClient extends RWClient {
    * @return boolean    true if user maintenance is implemented.
    * @throws CalFacadeException  for errors
    */
-  boolean getUserMaintOK() throws CalFacadeException;
+  boolean getUserMaintOK();
 
   /** Add an entry for the user.
    *
    * @param account for user
    * @throws CalFacadeException on fatal error
    */
-  void addUser(String account) throws CalFacadeException;
+  void addUser(String account);
 
   /** Add the user entry
    *
    * @param  val      AuthUser users entry
    * @throws CalFacadeException on fatal error
    */
-  void addAuthUser(BwAuthUser val) throws CalFacadeException;
+  void addAuthUser(BwAuthUser val);
 
   /** Return the given authorised user. Will always return an entry (except for
    * exceptional conditions.) An unauthorised user will have a usertype of
@@ -67,7 +67,7 @@ public interface AdminClient extends RWClient {
    * @return BwAuthUser    users entry
    * @throws CalFacadeException on fatal error
    */
-  BwAuthUser getAuthUser(BwPrincipal<?> pr) throws CalFacadeException;
+  BwAuthUser getAuthUser(BwPrincipal<?> pr);
 
   /** Return the current authorised user. Will always return an entry (except for
    * exceptional conditions.) An unauthorised user will have a usertype of
@@ -76,7 +76,7 @@ public interface AdminClient extends RWClient {
    * @return BwAuthUser    users entry
    * @throws CalFacadeException on fatal error
    */
-  BwAuthUser getAuthUser() throws CalFacadeException;
+  BwAuthUser getAuthUser();
 
   /** Find the user with the given account name. Create if not there.
    *
@@ -89,21 +89,21 @@ public interface AdminClient extends RWClient {
    * @return true if current auth user is an approver
    * @throws CalFacadeException on fatal error
    */
-  boolean isApprover() throws CalFacadeException;
+  boolean isApprover();
 
   /** Update the user entry
    *
    * @param  val      AuthUser users entry
    * @throws CalFacadeException on fatal error
    */
-  void updateAuthUser(BwAuthUser val) throws CalFacadeException;
+  void updateAuthUser(BwAuthUser val);
 
   /** Return a collection of all authorised users
    *
    * @return Collection      of BwAuthUser for users with any special authorisation.
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwAuthUser> getAllAuthUsers() throws CalFacadeException;
+  Collection<BwAuthUser> getAllAuthUsers();
 
   /* ------------------------------------------------------------
    *                     Admin Groups
@@ -120,13 +120,13 @@ public interface AdminClient extends RWClient {
    * @return group
    * @throws CalFacadeException  for errors
    */
-  BwGroup<?> getAdminGroup(String href) throws CalFacadeException;
+  BwGroup<?> getAdminGroup(String href);
 
   /**
    * @return groups that are calsuite owners
    * @throws CalFacadeException  for errors
    */
-  Collection<BwGroup<?>> getCalsuiteAdminGroups() throws CalFacadeException;
+  Collection<BwGroup<?>> getCalsuiteAdminGroups();
 
   /**
    * Force a refetch of the groups when getAdminGroups is called
@@ -138,21 +138,21 @@ public interface AdminClient extends RWClient {
    * @param  group           BwGroup group object to add
    * @exception CalFacadeException If there's a problem
    */
-  void addAdminGroup(BwAdminGroup group) throws CalFacadeException;
+  void addAdminGroup(BwAdminGroup group);
 
   /** Delete a group
    *
    * @param  group           BwGroup group object to delete
    * @exception CalFacadeException If there's a problem
    */
-  void removeAdminGroup(BwAdminGroup group) throws CalFacadeException;
+  void removeAdminGroup(BwAdminGroup group);
 
   /** update a group. This may have no meaning in some directories.
    *
    * @param  group           BwGroup group object to update
    * @exception CalFacadeException If there's a problem
    */
-  void updateAdminGroup(BwAdminGroup group) throws CalFacadeException;
+  void updateAdminGroup(BwAdminGroup group);
 
   /** Find a group given its name
    *
@@ -167,7 +167,7 @@ public interface AdminClient extends RWClient {
    * @param  group           BwGroup group object to add
    * @throws CalFacadeException on fatal error
    */
-  void getAdminGroupMembers(BwAdminGroup group) throws CalFacadeException;
+  void getAdminGroupMembers(BwAdminGroup group);
 
   /** Add a principal to a group
    *
@@ -176,7 +176,7 @@ public interface AdminClient extends RWClient {
    * @exception CalFacadeException   For invalid usertype values.
    */
   void addAdminGroupMember(BwAdminGroup group,
-                           BwPrincipal<?> val) throws CalFacadeException;
+                           BwPrincipal<?> val);
 
   /** Remove a member from a group
    *
@@ -185,7 +185,7 @@ public interface AdminClient extends RWClient {
    * @exception CalFacadeException   For invalid usertype values.
    */
   void removeAdminGroupMember(BwAdminGroup group,
-                              BwPrincipal<?> val) throws CalFacadeException;
+                              BwPrincipal<?> val);
 
   /* ------------------------------------------------------------
    *                     Groups
@@ -203,7 +203,7 @@ public interface AdminClient extends RWClient {
    * @return Collection of groups of which this is a member
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwGroup<?>> findGroupParents(BwGroup<?> group) throws CalFacadeException;
+  Collection<BwGroup<?>> findGroupParents(BwGroup<?> group);
 
   /** Return all groups of which the given principal is a member. Never returns null.
    *
@@ -213,7 +213,7 @@ public interface AdminClient extends RWClient {
    * @return Collection    of BwGroup
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwGroup<?>> getGroups(BwPrincipal<?> val) throws CalFacadeException;
+  Collection<BwGroup<?>> getGroups(BwPrincipal<?> val);
 
   /** Return all groups to which this user has some access. Never returns null.
    *
@@ -221,7 +221,7 @@ public interface AdminClient extends RWClient {
    * @return Collection    of BwGroup
    * @throws CalFacadeException on fatal error
    */
-  Collection<BwGroup<?>> getAllGroups(boolean populate) throws CalFacadeException;
+  Collection<BwGroup<?>> getAllGroups(boolean populate);
 
   /** Populate the group with a (possibly empty) Collection of members. Does not
    * populate groups which are members.
@@ -229,7 +229,7 @@ public interface AdminClient extends RWClient {
    * @param  group           BwGroup group object to add
    * @throws CalFacadeException on fatal error
    */
-  void getMembers(BwGroup<?> group) throws CalFacadeException;
+  void getMembers(BwGroup<?> group);
 
   /* ------------------------------------------------------------
    *                   Calendar Suites
@@ -240,7 +240,7 @@ public interface AdminClient extends RWClient {
    *
    * @throws CalFacadeException on fatal error
    */
-  void setCalSuite(BwCalSuite cs) throws CalFacadeException;
+  void setCalSuite(BwCalSuite cs);
 
   /** Get a calendar suite given the 'owning' group
    *
@@ -249,7 +249,7 @@ public interface AdminClient extends RWClient {
    * @throws CalFacadeException on fatal error
    */
   BwCalSuiteWrapper getCalSuite(BwAdminGroup group)
-          throws CalFacadeException;
+         ;
 
   /** Create a new calendar suite
    *
@@ -263,7 +263,7 @@ public interface AdminClient extends RWClient {
   BwCalSuiteWrapper addCalSuite(String name,
                                 String adminGroupName,
                                 String rootCollectionPath,
-                                String submissionsPath) throws CalFacadeException;
+                                String submissionsPath);
 
   /** Update a calendar suite. Any of the parameters to be changed may be null
    * or the current value to indicate no change.
@@ -277,14 +277,14 @@ public interface AdminClient extends RWClient {
   void updateCalSuite(BwCalSuiteWrapper cs,
                       String adminGroupName,
                       String rootCollectionPath,
-                      String description) throws CalFacadeException;
+                      String description);
 
   /** Delete a calendar suite object
    *
    * @param  val     BwCalSuiteWrapper object
    * @throws CalFacadeException on fatal error
    */
-  void deleteCalSuite(BwCalSuiteWrapper val) throws CalFacadeException;
+  void deleteCalSuite(BwCalSuiteWrapper val);
 
   /** Is the current calendar suite the 'owner'.
    *
@@ -305,7 +305,7 @@ public interface AdminClient extends RWClient {
    * @throws CalFacadeException on fatal error
    */
   List<BwResource> getCSResources(BwCalSuite suite,
-                                  String rc) throws CalFacadeException;
+                                  String rc);
 
   /** Get named resource. The content is fetched.
    *
@@ -317,7 +317,7 @@ public interface AdminClient extends RWClient {
    */
   BwResource getCSResource(BwCalSuite suite,
                            String name,
-                           String rc) throws CalFacadeException;
+                           String rc);
 
   /** Add a resource. The supplied object has all fields set except for the
    * path. This will be determined by the cl parameter and set in the object.
@@ -331,18 +331,17 @@ public interface AdminClient extends RWClient {
    */
   void addCSResource(BwCalSuite suite,
                      BwResource res,
-                     String rc) throws CalFacadeException;
+                     String rc);
 
   /** Delete named resource
    *
    * @param suite - calendar suite
    * @param name of resource
    * @param rc - define class of resource "calsuite", "admin"or "global"
-   * @throws CalFacadeException on fatal error
    */
   void deleteCSResource(BwCalSuite suite,
                         String name,
-                        String rc) throws CalFacadeException;
+                        String rc);
 
   /* ------------------------------------------------------------
    *                     State of current admin group
@@ -352,7 +351,7 @@ public interface AdminClient extends RWClient {
    * @param val true if group is set
    * @throws CalFacadeException on fatal error
    */
-  void setGroupSet(boolean val) throws CalFacadeException;
+  void setGroupSet(boolean val);
 
   /**
    * @return true for group set
@@ -363,7 +362,7 @@ public interface AdminClient extends RWClient {
    * @param val true if choosing group
    * @throws CalFacadeException on fatal error
    */
-  void setChoosingGroup(boolean val) throws CalFacadeException;
+  void setChoosingGroup(boolean val);
 
   /**
    * @return true for choosing group
@@ -372,9 +371,8 @@ public interface AdminClient extends RWClient {
 
   /**
    * @param val true if only 1 group available
-   * @throws CalFacadeException on fatal error
    */
-  void setOneGroup(boolean val) throws CalFacadeException;
+  void setOneGroup(boolean val);
 
   /**
    * @return true if there is only one group
@@ -384,9 +382,8 @@ public interface AdminClient extends RWClient {
   /** Current admin group name, or null for none
    *
    * @param val      BwAdminGroup representing users group or null
-   * @throws CalFacadeException on fatal error
    */
-  void setAdminGroupName(String val) throws CalFacadeException;
+  void setAdminGroupName(String val);
 
   /**
    * @return String admin group name
@@ -418,5 +415,5 @@ public interface AdminClient extends RWClient {
                                               int limit,
                                               boolean checkOnly,
                                               UpdateFromTimeZonesInfo info)
-          throws CalFacadeException;
+         ;
 }

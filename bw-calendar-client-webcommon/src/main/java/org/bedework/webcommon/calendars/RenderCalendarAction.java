@@ -42,7 +42,7 @@ import java.util.Set;
 public class RenderCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     /* User requested a calendar from the list. Retrieve it, embed it in
      * the form so we can display the page
      */

@@ -50,7 +50,7 @@ public class BwCallbackImpl extends BwCallback implements
   }
 
   @Override
-  public int in(final Request req) throws Throwable {
+  public int in(final Request req) {
       /* On the way in we set up the client from the default client
          embedded in the form.
        */
@@ -73,7 +73,7 @@ public class BwCallbackImpl extends BwCallback implements
   }
 
   @Override
-  public void out(final HttpServletRequest hreq) throws Throwable {
+  public void out(final HttpServletRequest hreq) {
     final BwModule module = form.fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
@@ -86,7 +86,7 @@ public class BwCallbackImpl extends BwCallback implements
 
   @Override
   public void close(final HttpServletRequest hreq,
-                    final boolean cleanUp) throws Throwable {
+                    final boolean cleanUp) {
     final BwModule module = form.fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
@@ -104,7 +104,7 @@ public class BwCallbackImpl extends BwCallback implements
   @Override
   public void error(final HttpServletRequest hreq,
                     final HttpServletResponse hresp,
-                    final Throwable t) throws Throwable {
+                    final Throwable t) {
     form.getErr().emit(t);
 
     /* Redirect to an error action

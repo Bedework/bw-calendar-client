@@ -19,6 +19,7 @@
 package org.bedework.webcommon.monitor;
 
 import org.bedework.calfacade.MonitorStat;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwSysMonitorMBean;
 import org.bedework.util.jmx.MBeanUtil;
 import org.bedework.util.xml.XmlEmit;
@@ -26,6 +27,7 @@ import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
@@ -55,26 +57,21 @@ public class MonitorAction extends BwAbstractAction {
   /** */
   public static QName valueTag = new QName("value");
 
-  /* (non-Javadoc)
-   * @see org.bedework.webcommon.BwAbstractAction#doAction(org.bedework.webcommon.BwRequest, org.bedework.webcommon.BwActionFormBase)
-   */
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    List<MonitorStat> stats = getMonitor().getStats();
+                      final BwActionFormBase form) {
+    final List<MonitorStat> stats = getMonitor().getStats();
 
     request.getResponse().setContentType("text/xml; charset=UTF-8");
 
-    Writer wtr = request.getResponse().getWriter();
-
-    try {
-      XmlEmit xml = new XmlEmit();
+    try (final Writer wtr = request.getWriter()) {
+      final XmlEmit xml = new XmlEmit();
 
       xml.startEmit(wtr);
 
       xml.openTag(monitorTag);
 
-      for (MonitorStat stat: stats) {
+      for (final MonitorStat stat: stats) {
         xml.openTag(statTag);
 
         xml.property(nameTag, stat.getName());
@@ -84,17 +81,22 @@ public class MonitorAction extends BwAbstractAction {
       }
 
       xml.closeTag(monitorTag);
-    } finally {
-      wtr.close();
+    } catch (final IOException e) {
+      throw new CalFacadeException(e);
     }
 
     return forwardNull;
   }
 
-  private synchronized BwSysMonitorMBean getMonitor() throws Throwable {
+  private synchronized BwSysMonitorMBean getMonitor() {
     if (monitor == null) {
-      monitor = (BwSysMonitorMBean)MBeanUtil.getMBean(BwSysMonitorMBean.class,
-                                                     "org.bedework:service=BwSysMonitor");
+      try {
+        monitor = (BwSysMonitorMBean)MBeanUtil.getMBean(
+                BwSysMonitorMBean.class,
+                "org.bedework:service=BwSysMonitor");
+      } catch (final Throwable e) {
+        throw new CalFacadeException(e);
+      }
     }
 
     return monitor;

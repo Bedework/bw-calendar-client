@@ -28,7 +28,7 @@ import org.bedework.util.webaction.Request;
 public class RenderAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     if (form.getNewSession()) {
       request.refresh();
 //      return forwardGotomain;

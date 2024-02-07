@@ -102,13 +102,14 @@ public class AdminClientImpl extends RWClientImpl
 
     final AdminConfig admconf = (AdminConfig)conf;
 
-    pars = CalSvcIPars.getAdminClientPars(id,
-                                          authUser,
-                                          runAsUser,
-                                          calSuiteName,
-                                          admconf.getAllowEditAllCategories(),
-                                          admconf.getAllowEditAllLocations(),
-                                          admconf.getAllowEditAllContacts());
+    pars = CalSvcIPars.getAdminClientPars(
+            id,
+            authUser,
+            runAsUser,
+            calSuiteName,
+            admconf.getAllowEditAllCategories(),
+            admconf.getAllowEditAllLocations(),
+            admconf.getAllowEditAllContacts());
 
     svci = new CalSvcFactoryDefault().getSvc(pars);
 
@@ -149,28 +150,25 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public boolean getUserMaintOK() throws CalFacadeException {
+  public boolean getUserMaintOK() {
     return svci.getUserAuth().getUserMaintOK();
   }
 
   @Override
-  public void addUser(final String account)
-          throws CalFacadeException {
+  public void addUser(final String account) {
     svci.getUsersHandler().add(account);
     updated();
   }
 
   @Override
-  public void addAuthUser(final BwAuthUser val)
-          throws CalFacadeException {
+  public void addAuthUser(final BwAuthUser val) {
     svci.getUserAuth().addUser(val);
     updated();
     authUsers = null; // force refresh
   }
 
   @Override
-  public BwAuthUser getAuthUser(final BwPrincipal<?> pr)
-          throws CalFacadeException {
+  public BwAuthUser getAuthUser(final BwPrincipal<?> pr) {
     final UserAuth ua = svci.getUserAuth();
     BwAuthUser au = null;
 
@@ -212,7 +210,7 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public BwAuthUser getAuthUser() throws CalFacadeException {
+  public BwAuthUser getAuthUser() {
     return getAuthUser(getAuthPrincipal());
   }
 
@@ -226,21 +224,19 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public boolean isApprover() throws CalFacadeException {
+  public boolean isApprover() {
     return isSuperUser() || getAuthUser().isApproverUser();
   }
 
   @Override
-  public void updateAuthUser(final BwAuthUser val)
-          throws CalFacadeException {
+  public void updateAuthUser(final BwAuthUser val) {
     svci.getUserAuth().updateUser(val);
     updated();
     authUsers = null; // force refresh
   }
 
   @Override
-  public Collection<BwAuthUser> getAllAuthUsers()
-          throws CalFacadeException {
+  public Collection<BwAuthUser> getAllAuthUsers() {
     if (authUsers == null) {
       authUsers = svci.getUserAuth().getAll();
     }
@@ -258,14 +254,12 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public BwGroup<?> getAdminGroup(final String href)
-          throws CalFacadeException {
+  public BwGroup<?> getAdminGroup(final String href) {
     return (BwGroup<?>)svci.getAdminDirectories().getPrincipal(href);
   }
 
   @Override
-  public Collection<BwGroup<?>> getCalsuiteAdminGroups()
-          throws CalFacadeException {
+  public Collection<BwGroup<?>> getCalsuiteAdminGroups() {
     refreshAdminGroupInfo();
 
     return calsuiteAdminGroupsInfo;
@@ -277,22 +271,19 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public void addAdminGroup(final BwAdminGroup group)
-          throws CalFacadeException {
+  public void addAdminGroup(final BwAdminGroup group) {
     svci.getAdminDirectories().addGroup(group);
     updated();
   }
 
   @Override
-  public void removeAdminGroup(final BwAdminGroup group)
-          throws CalFacadeException {
+  public void removeAdminGroup(final BwAdminGroup group) {
     svci.getAdminDirectories().removeGroup(group);
     updated();
   }
 
   @Override
-  public void updateAdminGroup(final BwAdminGroup group)
-          throws CalFacadeException {
+  public void updateAdminGroup(final BwAdminGroup group) {
     svci.getAdminDirectories().updateGroup(group);
     updated();
   }
@@ -303,23 +294,22 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public void getAdminGroupMembers(final BwAdminGroup group)
-          throws CalFacadeException {
+  public void getAdminGroupMembers(final BwAdminGroup group) {
     svci.getAdminDirectories().getMembers(group);
   }
 
   @Override
-  public void addAdminGroupMember(final BwAdminGroup group,
-                                  final BwPrincipal<?> val)
-          throws CalFacadeException {
+  public void addAdminGroupMember(
+          final BwAdminGroup group,
+          final BwPrincipal<?> val) {
     svci.getAdminDirectories().addMember(group, val);
     updated();
   }
 
   @Override
-  public void removeAdminGroupMember(final BwAdminGroup group,
-                                     final BwPrincipal<?> val)
-          throws CalFacadeException {
+  public void removeAdminGroupMember(
+          final BwAdminGroup group,
+          final BwPrincipal<?> val) {
     svci.getAdminDirectories().removeMember(group, val);
     updated();
   }
@@ -334,26 +324,22 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public Collection<BwGroup<?>> findGroupParents(final BwGroup<?> group)
-          throws CalFacadeException {
+  public Collection<BwGroup<?>> findGroupParents(final BwGroup<?> group) {
     return svci.getDirectories().findGroupParents(group);
   }
 
   @Override
-  public Collection<BwGroup<?>> getGroups(final BwPrincipal<?> val)
-          throws CalFacadeException {
+  public Collection<BwGroup<?>> getGroups(final BwPrincipal<?> val) {
     return svci.getDirectories().getGroups(val);
   }
 
   @Override
-  public Collection<BwGroup<?>> getAllGroups(final boolean populate)
-          throws CalFacadeException {
+  public Collection<BwGroup<?>> getAllGroups(final boolean populate) {
     return svci.getDirectories().getAll(populate);
   }
 
   @Override
-  public void getMembers(final BwGroup<?> group)
-          throws CalFacadeException {
+  public void getMembers(final BwGroup<?> group) {
     svci.getDirectories().getMembers(group);
   }
 
@@ -391,8 +377,7 @@ public class AdminClientImpl extends RWClientImpl
 
   @Override
   public BwCalendar getSpecial(final int calType,
-                               final boolean create)
-          throws CalFacadeException {
+                               final boolean create) {
     checkUpdate();
 
     final BwCalSuite cs = getCalSuite();
@@ -423,8 +408,7 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public void removeNotification(final NotificationType val)
-          throws CalFacadeException {
+  public void removeNotification(final NotificationType val) {
     svci.getNotificationsHandler().
             remove(getCalSuite().getGroup().getOwnerHref(),
                    val);
@@ -436,8 +420,7 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public void setCalSuite(final BwCalSuite cs)
-          throws CalFacadeException {
+  public void setCalSuite(final BwCalSuite cs) {
     ownerHrefs = new ArrayList<>();
 
     final BwAdminGroup ag = cs.getGroup();
@@ -447,8 +430,7 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public BwCalSuiteWrapper getCalSuite(final BwAdminGroup group)
-          throws CalFacadeException {
+  public BwCalSuiteWrapper getCalSuite(final BwAdminGroup group) {
     return svci.getCalSuitesHandler().get(group);
   }
 
@@ -456,8 +438,7 @@ public class AdminClientImpl extends RWClientImpl
   public BwCalSuiteWrapper addCalSuite(final String name,
                                        final String adminGroupName,
                                        final String rootCollectionPath,
-                                       final String description)
-          throws CalFacadeException {
+                                       final String description) {
     return update(svci.getCalSuitesHandler().add(name,
                                                  adminGroupName,
                                                  rootCollectionPath,
@@ -468,8 +449,7 @@ public class AdminClientImpl extends RWClientImpl
   public void updateCalSuite(final BwCalSuiteWrapper cs,
                              final String adminGroupName,
                              final String rootCollectionPath,
-                             final String description)
-          throws CalFacadeException {
+                             final String description) {
     svci.getCalSuitesHandler().update(cs,
                                       adminGroupName,
                                       rootCollectionPath,
@@ -478,8 +458,7 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public void deleteCalSuite(final BwCalSuiteWrapper val)
-          throws CalFacadeException {
+  public void deleteCalSuite(final BwCalSuiteWrapper val) {
     svci.getCalSuitesHandler().delete(val);
     updated();
   }
@@ -498,18 +477,17 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public List<BwResource> getCSResources(final BwCalSuite suite,
-                                         final String rc)
-          throws CalFacadeException {
-    return svci.getResourcesHandler().getAll(getCSResourcesPath(suite,
-                                                                rc));
+  public List<BwResource> getCSResources(
+          final BwCalSuite suite,
+          final String rc) {
+    return svci.getResourcesHandler().getAll(
+            getCSResourcesPath(suite, rc));
   }
 
   @Override
   public BwResource getCSResource(final BwCalSuite suite,
                                   final String name,
-                                  final String rc)
-          throws CalFacadeException {
+                                  final String rc) {
     try {
       final BwResource r = svci.getResourcesHandler().
               get(Util.buildPath(false,
@@ -535,8 +513,7 @@ public class AdminClientImpl extends RWClientImpl
   @Override
   public void addCSResource(final BwCalSuite suite,
                             final BwResource res,
-                            final String rc)
-          throws CalFacadeException {
+                            final String rc) {
     res.setColPath(getCSResourcesDir(suite, rc));
     svci.getResourcesHandler().save(res,
                                     false);
@@ -546,19 +523,18 @@ public class AdminClientImpl extends RWClientImpl
   @Override
   public void deleteCSResource(final BwCalSuite suite,
                                final String name,
-                               final String rc)
-          throws CalFacadeException {
-    svci.getResourcesHandler().delete(Util.buildPath(false,
-                                                     getCSResourcesPath(
-                                                             suite,
-                                                             rc), "/",
-                                                     name));
+                               final String rc) {
+    svci.getResourcesHandler().delete(
+            Util.buildPath(false,
+                           getCSResourcesPath(suite,
+                                              rc),
+                           "/",
+                           name));
     updated();
   }
 
   private String getCSResourcesDir(final BwCalSuite suite,
-                                   final String rc)
-          throws CalFacadeException {
+                                   final String rc) {
     String path = getCSResourcesPath(suite, rc);
 
     if (path == null) {
@@ -674,11 +650,9 @@ public class AdminClientImpl extends RWClientImpl
    * editable collections.
    *
    * @return filter
-   * @throws CalFacadeException on fatal error
    */
   @Override
-  protected FilterBase getDefaultFilterContext()
-          throws CalFacadeException {
+  protected FilterBase getDefaultFilterContext() {
     if (defaultFilterContextSet) {
       return defaultFilterContext;
     }
@@ -713,8 +687,7 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public Collection<BwCalendar> getAddContentCollections()
-          throws CalFacadeException {
+  public Collection<BwCalendar> getAddContentCollections() {
     checkUpdate();
     return getCalendarCollator().getCollatedCollection(
             svci.getCalendarsHandler()
@@ -723,15 +696,15 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
-  public UpdateFromTimeZonesInfo updateFromTimeZones(final String colHref,
-                                                     final int limit,
-                                                     final boolean checkOnly,
-                                                     final UpdateFromTimeZonesInfo info)
-          throws CalFacadeException {
+  public UpdateFromTimeZonesInfo updateFromTimeZones(
+          final String colHref,
+          final int limit,
+          final boolean checkOnly,
+          final UpdateFromTimeZonesInfo info) {
     return svci.updateFromTimeZones(colHref, limit, checkOnly, info);
   }
 
-  private void addOwnerHrefs(final BwAdminGroup ag) throws CalFacadeException {
+  private void addOwnerHrefs(final BwAdminGroup ag) {
     ownerHrefs.add(ag.getOwnerHref());
 
     getAdminGroupMembers(ag);

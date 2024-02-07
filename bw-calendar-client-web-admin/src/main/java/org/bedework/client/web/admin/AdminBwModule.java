@@ -49,7 +49,6 @@ public class AdminBwModule extends RwBwModule {
    *                      this allows a user to switch between and into
    *                      groups of which they are a member
    * @return boolean      false for problems.
-   * @throws Throwable on fatal error
    */
   @Override
   public boolean checkClient(final BwRequest request,
@@ -373,7 +372,7 @@ public class AdminBwModule extends RwBwModule {
   }
 
   private int setGroup(final BwRequest request,
-                       final BwAdminGroup adg) throws Throwable {
+                       final BwAdminGroup adg) {
     final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final AdminClient cl = (AdminClient)request.getClient();
 

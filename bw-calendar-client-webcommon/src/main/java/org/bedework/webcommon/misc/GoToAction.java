@@ -36,7 +36,7 @@ public class GoToAction extends BwAbstractAction {
 
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final Client cl = request.getClient();
 
     cl.setViewMode(Client.gridViewMode);

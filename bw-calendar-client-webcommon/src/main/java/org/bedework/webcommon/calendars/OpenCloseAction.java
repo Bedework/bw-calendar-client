@@ -44,7 +44,7 @@ import java.util.Set;
 public class OpenCloseAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     if (form.getGuest()) {
       return forwardNoAccess; // First line of defense
     }

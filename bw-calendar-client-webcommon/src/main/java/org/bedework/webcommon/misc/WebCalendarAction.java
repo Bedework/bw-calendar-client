@@ -69,9 +69,9 @@ import javax.servlet.http.HttpServletResponse;
 public class WebCalendarAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
-    Client cl = request.getClient();
-    BwModuleState mstate = request.getModule().getState();
+                      final BwActionFormBase form) {
+    final Client cl = request.getClient();
+    final BwModuleState mstate = request.getModule().getState();
 
     gotoDateView(request, mstate.getDate(), mstate.getViewType());
 
@@ -83,9 +83,9 @@ public class WebCalendarAction extends BwAbstractAction {
       user = svci.getUser();
     }*/
 
-    Locale loc = BwLocale.getLocale();
-    Calendar start = Calendar.getInstance(loc);
-    Calendar end = Calendar.getInstance(loc);
+    final Locale loc = BwLocale.getLocale();
+    final Calendar start = Calendar.getInstance(loc);
+    final Calendar end = Calendar.getInstance(loc);
     String name = request.getReqPar("name");
 
     if (name == null) {
@@ -94,73 +94,76 @@ public class WebCalendarAction extends BwAbstractAction {
 
     name = StringEscapeUtils.escapeJava(name);
 
-    String st = request.getReqPar("start");
+    final String st = request.getReqPar("start");
 
     if (st == null) {
       start.add(Calendar.WEEK_OF_YEAR, -1);
     } else {
-      int days = request.getIntReqPar("start", -32767);
+      final int days = request.getIntReqPar("start", -32767);
       if (days != -32767) {
         start.add(Calendar.DATE, days);
       } else {
-        Date jdt = DateTimeUtil.fromISODate(st);
+        final Date jdt = DateTimeUtil.fromISODate(st);
         start.setTime(jdt);
       }
     }
 
-    String et = request.getReqPar("end");
+    final String et = request.getReqPar("end");
 
     if (et == null) {
       // 1 week
       end.add(Calendar.MONTH, 1);
     } else {
-      int days = request.getIntReqPar("end", -32767);
+      final int days = request.getIntReqPar("end", -32767);
       if (days != -32767) {
         end.add(Calendar.DATE, days);
       } else {
-        Date jdt = DateTimeUtil.fromISODate(et);
+        final Date jdt = DateTimeUtil.fromISODate(et);
         end.setTime(jdt);
       }
     }
 
     // Don't allow more than about 3 months
-    Calendar check = Calendar.getInstance(loc);
+    final Calendar check = Calendar.getInstance(loc);
     check.setTime(start.getTime());
     check.add(Calendar.DATE, 31 * 3);
 
     if (check.before(end)) {
-      request.getResponse().sendError(HttpServletResponse.SC_BAD_REQUEST,
-                                      "dates");
+      request.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "dates");
       return forwardNull;
     }
 
-    String fexpr = request.getReqPar("fexpr");
+    final String fexpr = request.getReqPar("fexpr");
     if (fexpr == null) {
-      request.getResponse().sendError(HttpServletResponse.SC_BAD_REQUEST,
-                                      "no fexpr specified");
+      request.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "no fexpr specified");
       return forwardNull;
     }
 
     try {
-      BwDateTime sdt = BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(start.getTime()),
-                                                  true, false, null);
-      BwDateTime edt = BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(end.getTime()),
-                                                  true, false, null);
+      final BwDateTime sdt = BwDateTimeUtil.getDateTime(
+              DateTimeUtil.isoDate(start.getTime()),
+              true, false, null);
+      final BwDateTime edt = BwDateTimeUtil.getDateTime(
+              DateTimeUtil.isoDate(end.getTime()),
+              true, false, null);
 
       if (debug()) {
         debug("getEvents for start = " + sdt +
                  " end = " + edt);
       }
 
-      Collection<EventInfo> evs = cl.getEvents(fexpr,
-                                               sdt,
-                                               edt,
-                                               request.present("expanded"));
+      final Collection<EventInfo> evs = cl.getEvents(fexpr,
+                                                     sdt,
+                                                     edt,
+                                                     request.present("expanded"));
 
-      IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
+      final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
-      net.fortuna.ical4j.model.Calendar c = trans.toIcal(evs,
-                                                         Icalendar.methodTypePublish);
+      final net.fortuna.ical4j.model.Calendar c = trans.toIcal(
+              evs,
+              Icalendar.methodTypePublish);
 
       if (!name.endsWith(".ics")) {
         name += ".ics";
@@ -171,9 +174,9 @@ public class WebCalendarAction extends BwAbstractAction {
                                       name + "\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");
 
-      IcalendarUtil.writeCalendar(c, request.getResponse().getWriter());
-    } catch (CalFacadeAccessException cfae) {
-      request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
+      IcalendarUtil.writeCalendar(c, request.getWriter());
+    } catch (final CalFacadeAccessException cfae) {
+      request.sendError(HttpServletResponse.SC_FORBIDDEN, null);
     }
 
     return forwardNull;

@@ -47,7 +47,7 @@ import static org.bedework.util.misc.response.Response.Status.notFound;
 public class RenderEventAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     /*
     if (form.getNewSession()) {
       request.refresh();

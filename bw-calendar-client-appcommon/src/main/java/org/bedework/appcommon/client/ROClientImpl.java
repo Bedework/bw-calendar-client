@@ -75,6 +75,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -394,11 +395,36 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public void writeJson(final HttpServletResponse resp,
-                           final Object val) throws CalFacadeException {
+                        final Object val) throws CalFacadeException {
     try {
       mapper.writeValue(resp.getOutputStream(), val);
     } catch (final Throwable t) {
       throw new CalFacadeException(t);
+    }
+  }
+
+  @Override
+  public void outputJson(final HttpServletResponse resp,
+                         final String etag,
+                         final String[] header,
+                         final Object val) {
+    resp.setStatus(HttpServletResponse.SC_OK);
+
+    if (etag != null) {
+      resp.setHeader("etag", etag);
+    }
+
+    if (header != null) {
+      resp.setHeader(header[0], header[1]);
+    }
+
+    resp.setContentType("application/json; charset=UTF-8");
+
+    writeJson(resp, val);
+    try {
+      resp.getOutputStream().close();
+    } catch (final IOException ioe) {
+      throw new CalFacadeException(ioe);
     }
   }
 
@@ -707,8 +733,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwCalendar getCollection(final String path)
-          throws CalFacadeException {
+  public BwCalendar getCollection(final String path) {
     checkUpdate();
     return svci.getCalendarsHandler().get(path);
   }
@@ -1074,8 +1099,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public EventInfo getEvent(final String colPath,
                             final String name,
-                            final String recurrenceId)
-          throws CalFacadeException {
+                            final String recurrenceId) {
     return svci.getEventsHandler().get(colPath, name, recurrenceId);
   }
 

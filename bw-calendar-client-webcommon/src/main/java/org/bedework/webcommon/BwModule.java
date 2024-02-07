@@ -189,7 +189,7 @@ public class BwModule implements Logged, Serializable {
     return true;
   }
 
-  public void requestIn() throws Throwable {
+  public void requestIn() {
     if (getClient() == null) {
       return;
     }
@@ -202,7 +202,7 @@ public class BwModule implements Logged, Serializable {
     getClient().requestIn(currentReq.getConversationType());
   }
 
-  public void requestOut() throws Throwable {
+  public void requestOut() {
     if (getClient() == null) {
       return;
     }
@@ -215,9 +215,8 @@ public class BwModule implements Logged, Serializable {
   /** Close the session.
    *
    * @param cleanUp  true if we are cleaning up for id switch etc
-   * @throws Throwable on fatal error
    */
-  public void close(final boolean cleanUp) throws Throwable {
+  public void close(final boolean cleanUp) {
     final int convType = currentReq.getConversationType();
 
     try {
@@ -261,13 +260,12 @@ public class BwModule implements Logged, Serializable {
    *                      this allows a user to switch between and into
    *                      groups of which they are a member
    * @return boolean      false for problems.
-   * @throws Throwable on fatal error
    */
   public boolean checkClient(final BwRequest request,
                              final BwSession sess,
                              final String user,
                              boolean canSwitch,
-                             final ConfigCommon conf) throws Throwable {
+                             final ConfigCommon conf) {
     final BwActionFormBase form = request.getBwForm();
 
     if (conf.getPublicAdmin()) {
@@ -349,10 +347,8 @@ public class BwModule implements Logged, Serializable {
    *
    * @param request wrapper
    * @return int foward index
-   * @throws Throwable on fatal error
    */
-  protected int actionSetup(final BwRequest request) throws Throwable {
-    final Client cl = request.getClient();
+  protected int actionSetup(final BwRequest request) {
     final BwActionFormBase form = request.getBwForm();
 
     // Not public admin.
@@ -400,7 +396,7 @@ public class BwModule implements Logged, Serializable {
     return forwardNoAction;
   }
 
-  protected void checkMessaging(final BwRequest req) throws Throwable {
+  protected void checkMessaging(final BwRequest req) {
     // Nothing to do for read-only
   }
 
@@ -436,7 +432,7 @@ public class BwModule implements Logged, Serializable {
     }
   }
 
-  private void closeNow() throws Throwable {
+  private void closeNow() {
     Throwable t = null;
 
     try {
@@ -449,7 +445,7 @@ public class BwModule implements Logged, Serializable {
     }
 
     if (t != null) {
-      throw t;
+      throw new CalFacadeException(t);
     }
   }
 

@@ -354,7 +354,7 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   @Override
-  public void embedFilters(final BwRequest req) throws Throwable {
+  public void embedFilters(final BwRequest req) {
     req.setSessionAttr(BwRequest.bwFiltersListName,
                        req.getClient().getAllFilters());
   }
@@ -376,7 +376,7 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   @Override
-  public void embedAddContentCalendarCollections(final BwRequest request) throws Throwable {
+  public void embedAddContentCalendarCollections(final BwRequest request) {
     final RWClient cl = (RWClient)request.getClient();
     request.setSessionAttr(BwRequest.bwAddContentCollectionListName,
                        cl.getAddContentCollections());
@@ -619,9 +619,10 @@ public class BwSessionImpl implements Logged, BwSession {
    * ==================================================================== */
 
   @Override
-  public Collection<BwCategory> embedCategories(final BwRequest request,
-                                                final boolean refresh,
-                                                final int kind) throws Throwable {
+  public Collection<BwCategory> embedCategories(
+          final BwRequest request,
+          final boolean refresh,
+          final int kind) {
     final String attrName;
     Collection <BwCategory> vals;
 
@@ -680,9 +681,10 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   @Override
-  public Collection<BwCategory> getCategoryCollection(final BwRequest request,
-                                                      final int kind,
-                                                      final boolean forEventUpdate) throws Throwable {
+  public Collection<BwCategory> getCategoryCollection(
+          final BwRequest request,
+          final int kind,
+          final boolean forEventUpdate) {
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
     Collection<BwCategory> vals = null;

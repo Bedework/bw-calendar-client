@@ -56,7 +56,7 @@ public class AdminBwModule extends RwBwModule {
                              final BwSession sess,
                              final String user,
                              boolean canSwitch,
-                             final ConfigCommon conf) throws Throwable {
+                             final ConfigCommon conf) {
     if (!conf.getPublicAdmin()) {
       throw new RuntimeException("Admin client called for non admin app");
     }
@@ -206,9 +206,8 @@ public class AdminBwModule extends RwBwModule {
    *
    * @param request wrapper
    * @return int foward index
-   * @throws Throwable on fatal error
    */
-  protected int actionSetup(final BwRequest request) throws Throwable {
+  protected int actionSetup(final BwRequest request) {
     final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final AdminClient cl = (AdminClient)request.getClient();
 

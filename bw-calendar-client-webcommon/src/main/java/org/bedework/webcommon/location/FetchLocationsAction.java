@@ -54,7 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 public class FetchLocationsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final String fexpr = request.getReqPar("fexpr");
 
     if (fexpr != null) {
@@ -75,9 +75,6 @@ public class FetchLocationsAction extends BwAbstractAction {
       resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return forwardNull;
     }
-
-      /* Add an etag */
-    resp.addHeader("etag", changeToken);
 
     final BwSession sess = request.getSess();
 
@@ -103,8 +100,6 @@ public class FetchLocationsAction extends BwAbstractAction {
         return forwardNull;
     }
 
-    resp.setContentType("text/json; charset=UTF-8");
-
     final LocationsResponse locs = new LocationsResponse();
     locs.setLocations(vals);
 
@@ -126,21 +121,18 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     Response.ok(locs);
 
-    cl.writeJson(resp, locs);
-    resp.getOutputStream().close();
+    cl.outputJson(resp, changeToken, null, locs);
 
     return forwardNull;
   }
 
   private void doSearch(final BwRequest request,
                         final BwActionFormBase form,
-                        final String fexpr) throws Throwable {
+                        final String fexpr) {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
     form.setNocache(true);
-
-    resp.setContentType("text/json; charset=UTF-8");
 
     final LocationsResponse locs = new LocationsResponse();
 
@@ -157,7 +149,6 @@ public class FetchLocationsAction extends BwAbstractAction {
       locs.setMessage(ges.getMessage());
     }
 
-    cl.writeJson(resp, locs);
-    resp.getOutputStream().close();
+    cl.outputJson(resp, null, null, locs);
   }
 }

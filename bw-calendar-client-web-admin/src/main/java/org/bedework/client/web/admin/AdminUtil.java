@@ -46,10 +46,10 @@ public class AdminUtil implements ForwardDefs {
 
     final Set<String> prefGroupHrefs = cl.getPreferences().getPreferredGroups();
 
-    final List<BwGroup> prefGroups = new ArrayList<>(prefGroupHrefs.size());
+    final List<BwGroup<?>> prefGroups = new ArrayList<>(prefGroupHrefs.size());
 
     for (final String href: prefGroupHrefs) {
-      final BwGroup group = cl.getAdminGroup(href);
+      final BwGroup<?> group = cl.getAdminGroup(href);
 
       if (group == null) {
         continue;
@@ -73,17 +73,16 @@ public class AdminUtil implements ForwardDefs {
    * they are administering. We see if there is a suite associated with the
    * administrative group. If so, return.
    *
-   * <p>If not we call ourself for each parent group.
+   * <p>If not we call ourselves for each parent group.
    *
    * <p>If none is found we return null.
    *
    * @param request the request object
    * @param cl client
    * @return calendar suite wrapper
-   * @throws Throwable on fatal error
    */
   public static BwCalSuiteWrapper findCalSuite(final Request request,
-                                               final AdminClient cl) throws Throwable {
+                                               final AdminClient cl) {
     final String groupName = cl.getAdminGroupName();
     if (groupName == null) {
       return null;
@@ -98,7 +97,7 @@ public class AdminUtil implements ForwardDefs {
    * they are administering. We see if there is a suite associated with the
    * administrative group. If so, return.
    *
-   * <p>If not we call ourself for each parent group.
+   * <p>If not we call ourselves for each parent group.
    *
    * <p>If none is found we return null.
    *
@@ -106,11 +105,10 @@ public class AdminUtil implements ForwardDefs {
    * @param cl client
    * @param adg admin group
    * @return calendar suite wrapper
-   * @throws Throwable on fatal error
    */
   private static BwCalSuiteWrapper findCalSuite(final Request request,
                                                 final AdminClient cl,
-                                                final BwAdminGroup adg) throws Throwable {
+                                                final BwAdminGroup adg) {
     if (adg == null) {
       return null;
     }
@@ -125,7 +123,7 @@ public class AdminUtil implements ForwardDefs {
         return cs;
       }
 
-      for (final BwGroup parent: cl.findGroupParents(adg)) {
+      for (final BwGroup<?> parent: cl.findGroupParents(adg)) {
         cs = findCalSuite(request, cl, (BwAdminGroup)parent);
         if (cs != null) {
           return cs;

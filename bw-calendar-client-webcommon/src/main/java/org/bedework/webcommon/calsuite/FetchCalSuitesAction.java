@@ -43,25 +43,22 @@ import static org.bedework.util.misc.response.Response.Status.ok;
 public class FetchCalSuitesAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final Client cl = request.getClient();
 
     // Return as json list for widgets
     final Collection<BwCalSuite> vals = cl.getContextCalSuites();
 
-    final HttpServletResponse resp = request.getResponse();
-
     // Do this if ws get a filename?
     //resp.setHeader("Content-Disposition",
     //               "Attachment; Filename=\"calSuites.json\"");
-    resp.setContentType("application/json; charset=UTF-8");
 
     final CalSuitesResponse csr = new CalSuitesResponse();
     csr.setCalSuites(vals);
     csr.setStatus(ok);
 
-    cl.writeJson(resp, csr);
-    resp.getOutputStream().close();
+    final HttpServletResponse resp = request.getResponse();
+    cl.outputJson(resp, null, null, csr);
 
     return forwardNull;
   }

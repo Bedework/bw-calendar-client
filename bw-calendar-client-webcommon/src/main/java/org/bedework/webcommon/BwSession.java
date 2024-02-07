@@ -106,7 +106,7 @@ public interface BwSession extends Serializable {
    * @param req - current request
    * @throws Throwable
    */
-  void embedFilters(final BwRequest req) throws Throwable;
+  void embedFilters(final BwRequest req);
 
   /** Get the current view according to the current setting of curViewPeriod.
    * May be called when we change the view or if we need a refresh
@@ -134,9 +134,8 @@ public interface BwSession extends Serializable {
    * calendar collections are the leaf nodes only.
    *
    * @param request - current request
-   * @throws Throwable
    */
-  void embedAddContentCalendarCollections(BwRequest request) throws Throwable;
+  void embedAddContentCalendarCollections(BwRequest request);
 
   /* ====================================================================
    *                   Categories
@@ -151,23 +150,22 @@ public interface BwSession extends Serializable {
    * @param request - current request
    * @param refresh - true to force refresh
    * @param kind of entity
-   * @throws Throwable
    * @return collection of categories
    */
   Collection<BwCategory> embedCategories(BwRequest request,
                                          boolean refresh,
-                                         int kind) throws Throwable;
+                                         int kind);
 
   /**
    * @param request - current request
    * @param kind of entity
    * @param forEventUpdate true if we are about to update an event
    * @return collection - never null.
-   * @throws Throwable
    */
-  public Collection<BwCategory> getCategoryCollection(final BwRequest request,
-                                                      final int kind,
-                                                      final boolean forEventUpdate) throws Throwable;
+  public Collection<BwCategory> getCategoryCollection(
+          final BwRequest request,
+          final int kind,
+          final boolean forEventUpdate);
 
   /* Kind of entity we are referring to */
 

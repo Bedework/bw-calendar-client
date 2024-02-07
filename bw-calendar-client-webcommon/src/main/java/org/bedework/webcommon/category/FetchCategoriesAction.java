@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 public class FetchCategoriesAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     if (!"true".equals(request.getStringActionPar("catlist"))) {
       request.getSess().embedCategories(request, true,
                                         BwSession.editableEntity);
@@ -55,13 +55,15 @@ public class FetchCategoriesAction extends BwAbstractAction {
     final Collection<BwCategory> vals = request.getSess().getCategoryCollection(
             request, BwSession.ownersEntity, true);
 
-    final HttpServletResponse resp = request.getResponse();
-
+    final String[] header;
     if (!"true".equals(request.getStringActionPar("catnofile"))) {
-      resp.setHeader("Content-Disposition",
-                     "Attachment; Filename=\"categoryList.json\"");
+      header = new String[]{"Content-Disposition",
+                     "Attachment; Filename=\"categoryList.json\""};
+    } else {
+      header = null;
     }
-    resp.setContentType("application/json; charset=UTF-8");
+
+    final HttpServletResponse resp = request.getResponse();
 
     final Client cl = request.getClient();
     final CategoriesResponse cats = new CategoriesResponse();
@@ -69,8 +71,7 @@ public class FetchCategoriesAction extends BwAbstractAction {
 
     Response.ok(cats);
 
-    cl.writeJson(resp, cats);
-    resp.getOutputStream().close();
+    cl.outputJson(resp, null, header, cats);
 
     return forwardNull;
   }

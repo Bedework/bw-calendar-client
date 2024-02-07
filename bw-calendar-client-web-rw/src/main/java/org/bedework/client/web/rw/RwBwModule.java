@@ -25,7 +25,7 @@ public class RwBwModule extends BwModule {
     super(moduleName);
   }
 
-  protected int actionSetup(final BwRequest request) throws Throwable {
+  protected int actionSetup(final BwRequest request) {
     final Client cl = request.getClient();
     final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
 
@@ -37,7 +37,7 @@ public class RwBwModule extends BwModule {
   }
 
   @Override
-  protected void checkMessaging(final BwRequest req) throws Throwable {
+  protected void checkMessaging(final BwRequest req) {
     final RWClient cl = (RWClient)req.getClient();
     final BwRWActionForm form = (BwRWActionForm)req.getBwForm();
 

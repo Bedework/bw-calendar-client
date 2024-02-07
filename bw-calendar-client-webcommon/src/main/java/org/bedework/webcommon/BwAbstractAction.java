@@ -100,7 +100,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                BwActionFormBase frm) throws Throwable;
 
   @Override
-  public String performAction(final Request request) throws Throwable {
+  public String performAction(final Request request)  {
     final BwRequest bwreq = (BwRequest)request;
     final BwActionFormBase form = bwreq.getBwForm();
     String adminUserId = null;
@@ -392,9 +392,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request wrapper
    * @return config object
-   * @throws Throwable on fatal error
    */
-  public ConfigCommon setConfig(final BwRequest request) throws Throwable {
+  public ConfigCommon setConfig(final BwRequest request) {
     final BwActionFormBase form = request.getBwForm();
 
     if (form.configSet()) {
@@ -406,7 +405,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     String appname = sc.getInitParameter("bwappname");
 
-    if ((appname == null) || (appname.length() == 0)) {
+    if ((appname == null) || (appname.isEmpty())) {
       appname = "unknown-app-name";
     }
 
@@ -574,7 +573,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   private boolean filterAndQuery(final BwRequest request,
                                  final SearchParams params) {
-    final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
 
     params.setQuery(request.getReqPar("query"));
@@ -641,7 +639,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                       null);   // tzid
   }
   protected EventInfo findEvent(final BwRequest request,
-                                final EventKey ekey) throws Throwable {
+                                final EventKey ekey) {
     final Client cl = request.getClient();
     EventInfo ev = null;
 
@@ -708,14 +706,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param request     BwRequest for parameters
    * @return BwPrincipal     null if not found. Messages emitted
    */
-  protected BwPrincipal findPrincipal(final BwRequest request) {
+  protected BwPrincipal<?> findPrincipal(final BwRequest request) {
     final String str = request.getReqPar("user");
     if (str == null) {
       request.getErr().emit(ClientError.unknownUser, "null");
       return null;
     }
 
-    final BwPrincipal p = request.getClient().getUser(str);
+    final BwPrincipal<?> p = request.getClient().getUser(str);
     if (p == null) {
       request.getErr().emit(ClientError.unknownUser, str);
       return null;
@@ -747,10 +745,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param request   BwRequest for parameters
    * @param mode recurrence mode
    * @return EventInfo or null if not found
-   * @throws Throwable on fatal error
    */
   protected EventInfo findEvent(final BwRequest request,
-                                final Rmode mode) throws Throwable {
+                                final Rmode mode) {
     final Client cl = request.getClient();
     EventInfo ev = null;
 
@@ -835,7 +832,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   }
 
   protected BwCalendar findCalendar(final BwRequest request,
-                                    final String url) throws CalFacadeException {
+                                    final String url) {
     if (url == null) {
       return null;
     }
@@ -887,11 +884,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param request       action form
    * @param date         String yyyymmdd date or null
    * @param newViewType  requested new view or null
-   * @throws Throwable on fatal error
    */
   protected void gotoDateView(final BwRequest request,
                               final String date,
-                              String newViewType) throws Throwable {
+                              String newViewType) {
     final BwModuleState mstate = request.getModule().getState();
 
     //BwActionFormBase form = request.getBwForm();
@@ -1061,12 +1057,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param form          Action form
    * @param adminUserId   id we want to administer
    * @return BwSession never null
-   * @throws Throwable on fatal error
    */
   private BwSession getState(final BwRequest request,
                              final BwActionFormBase form,
                              final String adminUserId,
-                             final ConfigCommon conf) throws Throwable {
+                             final ConfigCommon conf) {
     BwSession s = BwWebUtil.getState(request.getRequest());
     final HttpSession sess = request.getRequest().getSession(false);
     final String appName = getAppName(sess);
@@ -1129,9 +1124,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *
    * @param request  Needed to locate session
    * @return true if no error found.
-   * @throws Throwable on fatal error
    */
-  private boolean checkMvarReq(final BwRequest request) throws Throwable {
+  private boolean checkMvarReq(final BwRequest request) {
     final Collection<String> mvs = request.getReqPars("setmvar");
     if (mvs == null) {
       return true;
@@ -1157,7 +1151,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       final String varName = reqpar.substring(0, start);
       String varVal = reqpar.substring(start + 1, reqpar.length() - 1);
 
-      if (varVal.length() == 0) {
+      if (varVal.isEmpty()) {
         varVal = null;
       }
 

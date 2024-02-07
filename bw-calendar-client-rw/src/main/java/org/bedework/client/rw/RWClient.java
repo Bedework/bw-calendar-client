@@ -126,7 +126,7 @@ public interface RWClient extends Client {
    * @return category entity or null.
    * @throws CalFacadeException on fatal error
    */
-  BwCategory getPersistentCategory(String uid) throws CalFacadeException;
+  BwCategory getPersistentCategory(String uid);
 
   /** Add the given category.
    *
@@ -152,17 +152,15 @@ public interface RWClient extends Client {
    *
    * @param val      BwEventProperty object to be deleted
    * @return result indicating what happened - null for not there
-   * @throws CalFacadeException on fatal error
    */
-  DeleteReffedEntityResult deleteCategory(BwCategory val) throws CalFacadeException;
+  DeleteReffedEntityResult deleteCategory(BwCategory val);
 
   /** Get the contact with the given uid.
    *
    * @param uid of contact
    * @return contact object
-   * @throws CalFacadeException on fatal error
    */
-  BwContact getPersistentContact(String uid) throws CalFacadeException;
+  BwContact getPersistentContact(String uid);
 
   /** Add the contact
    * @param val contact

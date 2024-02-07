@@ -163,8 +163,7 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public BwCalendar getCollection(final String path)
-          throws CalFacadeException {
+  public BwCalendar getCollection(final String path) {
     checkUpdate();
     BwCalendar col = svci.getCalendarsHandler().get(path);
     if (col != null) {
@@ -238,8 +237,7 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public BwCategory getPersistentCategory(final String uid)
-          throws CalFacadeException {
+  public BwCategory getPersistentCategory(final String uid) {
     return svci.getCategoriesHandler().getPersistent(uid);
   }
 
@@ -293,8 +291,7 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public DeleteReffedEntityResult deleteCategory(final BwCategory val)
-          throws CalFacadeException {
+  public DeleteReffedEntityResult deleteCategory(final BwCategory val) {
     if (val == null) {
       return null;
     }
@@ -320,8 +317,7 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public BwContact getPersistentContact(final String uid)
-          throws CalFacadeException {
+  public BwContact getPersistentContact(final String uid) {
     return svci.getContactsHandler().getPersistent(uid);
   }
 

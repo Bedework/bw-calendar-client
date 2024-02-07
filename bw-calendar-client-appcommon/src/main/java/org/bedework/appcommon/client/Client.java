@@ -175,6 +175,21 @@ public interface Client extends Serializable {
   void writeJson(HttpServletResponse resp,
                  Object val) throws CalFacadeException;
 
+  /** Write the value as json to the response stream.
+   * Sets status ok, dds header, writes data and closes stream.
+   *
+   * Adds content type header and possible additional.
+   *
+   * @param resp to write to
+   * @param etag added if non-null
+   * @param header if not null adds header with name and value.
+   * @param val to output
+   */
+  void outputJson(HttpServletResponse resp,
+                  String etag,
+                  String[] header,
+                  Object val);
+
   /** Return authentication relevant properties.
    *
    * @return AuthProperties object - never null.
@@ -422,9 +437,8 @@ public interface Client extends Serializable {
   /**
    * @param path for collection
    * @return collection object or null.
-   * @throws CalFacadeException on fatal error
    */
-  BwCalendar getCollection(String path) throws CalFacadeException;
+  BwCalendar getCollection(String path);
 
   /**
    * @param path for collection
@@ -784,12 +798,10 @@ public interface Client extends Serializable {
    * @param name       String possible name
    * @param recurrenceId null for entire event + overrides.
    * @return EventInfo or null
-   * @throws CalFacadeException on fatal error
    */
   EventInfo getEvent(String colPath,
                      String name,
-                     String recurrenceId)
-          throws CalFacadeException;
+                     String recurrenceId);
 
   /** Get events given the href. Return null for not
    * found. There should be only one event or none. For recurring, the

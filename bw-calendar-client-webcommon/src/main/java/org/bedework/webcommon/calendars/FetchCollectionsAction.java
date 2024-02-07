@@ -29,6 +29,7 @@ import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -46,7 +47,7 @@ import static org.bedework.util.misc.Util.escapeJava;
 public class FetchCollectionsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final BwSession sess = request.getSess();
     final CollectionsResponse cols = sess.getCollections(request);
     final Client cl = request.getClient();
@@ -57,10 +58,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
     if (format == null) {
       //resp.setHeader("Content-Disposition",
       //               "Attachment; Filename=\"categoryList.json\"");
-      resp.setContentType("application/json; charset=UTF-8");
-
-      cl.writeJson(resp, cols);
-      resp.getOutputStream().close();
+      cl.outputJson(resp, null, null, cols);
 
       return forwardNull;
     }
@@ -86,9 +84,12 @@ public class FetchCollectionsAction extends BwAbstractAction {
         return forwardNull;
       }
 
-      final PrintWriter pw = resp.getWriter();
-      
-      writeCols(cl, col, pw);
+      try (final PrintWriter pw = resp.getWriter()) {
+
+        writeCols(cl, col, pw);
+      } catch (final IOException ioe) {
+        throw new CalFacadeException(ioe);
+      }
     }
     
     return forwardNull;

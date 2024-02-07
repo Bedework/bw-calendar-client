@@ -40,33 +40,28 @@ import javax.servlet.http.HttpServletResponse;
 public class FetchAdminGroupsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final Client cl = request.getClient();
-    final HttpServletResponse resp = request.getResponse();
     form.setNocache(false);
     final String changeToken = cl.getCurrentChangeToken();
 
     final String ifNoneMatch = request.getRequest().getHeader("if-none-match");
+
+    final HttpServletResponse resp = request.getResponse();
 
     if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
       resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
       return forwardNull;
     }
 
-    /* Add an etag */
-    resp.addHeader("etag", changeToken);
-
     final var vals = cl.getAdminGroups();
-
-    resp.setContentType("text/json; charset=UTF-8");
 
     final AdminGroupsResponse adgs = new AdminGroupsResponse();
     adgs.setGroups(vals);
-    
+
     Response.ok(adgs);
 
-    cl.writeJson(resp, adgs);
-    resp.getOutputStream().close();
+    cl.outputJson(resp, changeToken, null, adgs);
 
     return forwardNull;
   }

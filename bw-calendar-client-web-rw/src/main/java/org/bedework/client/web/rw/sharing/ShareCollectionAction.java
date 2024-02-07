@@ -76,7 +76,7 @@ public class ShareCollectionAction extends RWActionBase {
       return forwardNotFound;
     }
 
-    final String cua = request.getCua(false);
+    final String cua = request.getCua();
     if (cua == null) {
       request.error(ValidationError.missingRecipients);
       return forwardRetry;

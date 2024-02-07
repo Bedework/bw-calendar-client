@@ -401,7 +401,7 @@ public class BwRequest extends Request {
     final String[] dts = dtsPar.split(token);
 
     for (final String dtVal: dts) {
-      if ((dtVal == null) || (dtVal.length() == 0)) {
+      if ((dtVal == null) || (dtVal.isEmpty())) {
         continue;
       }
 
@@ -458,8 +458,8 @@ public class BwRequest extends Request {
 
   /** Get date/time object
    *
-   * @param dtPar
-   * @param tzidPar
+   * @param dtPar name of request parameter for date
+   * @param tzidPar name of request parameter for tzid
    * @return date/time
    */
   public BwDateTime getDateTime(final String dtPar,
@@ -483,10 +483,9 @@ public class BwRequest extends Request {
    *
    * @param required boolean true if we require a calendar.
    * @return calendar or null for invalid path.
-   * @throws Throwable
    */
-  public BwCalendar getNewCal(final boolean required) throws Throwable {
-    String newCalPath = getReqPar("newCalPath");
+  public BwCalendar getNewCal(final boolean required) {
+    final String newCalPath = getReqPar("newCalPath");
     BwCalendar newCal = null;
 
     if (newCalPath == null) {
@@ -515,15 +514,14 @@ public class BwRequest extends Request {
    * change that calendar if newCalPath is specified. It will not
    * reset the calendar to the default.
    *
-   * @param ei
-   * @param changes
+   * @param ei the event
+   * @param changes to flag change
    * @return boolean false if none or errors
-   * @throws Throwable
    */
   public boolean setEventCalendar(final EventInfo ei,
-                                  final ChangeTable changes) throws Throwable {
-    BwEvent ev = ei.getEvent();
-    BwCalendar cal = getNewCal(false);
+                                  final ChangeTable changes) {
+    final BwEvent ev = ei.getEvent();
+    final BwCalendar cal = getNewCal(false);
 
     if (form.getErrorsEmitted()) {
       return false;
@@ -544,21 +542,20 @@ public class BwRequest extends Request {
     return true;
   }
 
-  /** Get calendars identified by multi-valued parameter calPath.
+  /** Get calendars identified by multivalued parameter calPath.
    *
    * @return Collection<BwCalendar> (possibly empty).
-   * @throws Throwable
    */
-  public Collection<BwCalendar> getCalendars() throws Throwable {
-    Collection<String> calPaths = getReqPars("calPath");
-    Collection<BwCalendar> cals = new ArrayList<>();
+  public Collection<BwCalendar> getCalendars() {
+    final Collection<String> calPaths = getReqPars("calPath");
+    final Collection<BwCalendar> cals = new ArrayList<>();
 
     if (calPaths == null) {
       return cals;
     }
 
-    for (String calPath: calPaths) {
-      BwCalendar cal = getClient().getCollection(calPath);
+    for (final String calPath: calPaths) {
+      final BwCalendar cal = getClient().getCollection(calPath);
 
       if (cal != null) {
         cals.add(cal);
@@ -570,22 +567,19 @@ public class BwRequest extends Request {
 
   /** Get collection identified by single-valued parameter colHref.
    *
-   * @param required
+   * @param required true => emit error if not present
    * @return BwCalendar or null.
-   * @throws Throwable
    */
-  public BwCalendar getCollection(final boolean required) throws Throwable {
+  public BwCalendar getCollection(final boolean required) {
     return getCalendar("colHref", required);
   }
 
   /** Get calendar user address identified by single-valued parameter cua.
    *
-   * @param required
    * @return String or null.
-   * @throws Throwable
    */
-  public String getCua(final boolean required) throws Throwable {
-    String cua = getReqPar("cua");
+  public String getCua() {
+    final String cua = getReqPar("cua");
 
     if (cua == null) {
       getErr().emit(ClientError.badRequest, "Missing cua");
@@ -597,11 +591,10 @@ public class BwRequest extends Request {
 
   /** Get calendar identified by single-valued parameter calPath.
    *
-   * @param required
+   * @param required true => emit error if not present
    * @return BwCalendar or null.
-   * @throws Throwable
    */
-  public BwCalendar getCalendar(final boolean required) throws Throwable {
+  public BwCalendar getCalendar(final boolean required) {
     if (present("calPath")) {               // TODO - drop this
       return getCalendar("calPath", required);
     }
@@ -610,14 +603,13 @@ public class BwRequest extends Request {
 
   /** Get calendar identified by single-valued request parameter specified.
    *
-   * @param reqParName
-   * @param required
+   * @param reqParName name of request parameter
+   * @param required true => emit error if not present
    * @return BwCalendar or null.
-   * @throws Throwable
    */
   public BwCalendar getCalendar(final String reqParName,
-                                final boolean required) throws Throwable {
-    String calPath = getReqPar(reqParName);
+                                final boolean required) {
+    final String calPath = getReqPar(reqParName);
 
     if (calPath == null) {
       if (required) {
@@ -627,7 +619,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    BwCalendar cal = getClient().getCollection(calPath);
+    final BwCalendar cal = getClient().getCollection(calPath);
 
     if (cal == null) {
       getErr().emit(ClientError.unknownCalendar, calPath);
@@ -646,10 +638,9 @@ public class BwRequest extends Request {
    * </ul>
    *
    * @return int schedule method
-   * @throws Throwable
    */
-  public int getSchedule() throws Throwable {
-    String schedStr = getReqPar("schedule");
+  public int getSchedule() {
+    final String schedStr = getReqPar("schedule");
 
     if (schedStr == null) {
       return ScheduleMethods.methodTypeNone;
@@ -679,9 +670,8 @@ public class BwRequest extends Request {
   /**
    * @param forExport true if we are to export the event
    * @return EventKey
-   * @throws Throwable
    */
-  public EventKey makeEventKey(boolean forExport) throws Throwable {
+  public EventKey makeEventKey(boolean forExport) {
     final String href = getReqPar("href");
 
     if (href != null) {
@@ -729,7 +719,7 @@ public class BwRequest extends Request {
     return ekey;
   }
 
-  public void embedAdminGroups() throws Throwable {
+  public void embedAdminGroups() {
     setSessionAttr(bwAdminGroupsInfoName,
                    getClient().getAdminGroups());
   }

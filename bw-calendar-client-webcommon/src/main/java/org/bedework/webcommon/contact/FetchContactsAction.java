@@ -57,12 +57,13 @@ public class FetchContactsAction
   }
 
   @Override
-  protected GetEntitiesResponse<BwContact> search(final BwRequest request,
-                                                  final String fexpr)
-          throws Throwable {
-    return request.getClient().getContacts(fexpr,
-                                           request.getIntReqPar("from", 0),
-                                           request.getIntReqPar("size", 10));
+  protected GetEntitiesResponse<BwContact> search(
+          final BwRequest request,
+          final String fexpr) {
+    return request.getClient().getContacts(
+            fexpr,
+            request.getIntReqPar("from", 0),
+            request.getIntReqPar("size", 10));
   }
 
   @Override

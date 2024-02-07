@@ -61,17 +61,16 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
    *
    * @param fexpr filter expression
    * @return Collection     of objects
-   * @throws Throwable on fatal error
    */
-  protected abstract GetEntitiesResponse<T> search(BwRequest request,
-                                                   String fexpr)
-          throws Throwable;
+  protected abstract GetEntitiesResponse<T> search(
+          BwRequest request,
+          String fexpr);
 
   protected abstract EventPropertiesResponse makeResponse(Collection<T> eprops);
 
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final String fexpr = request.getReqPar("fexpr");
 
     if (fexpr != null) {
@@ -93,9 +92,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
       return forwardNull;
     }
 
-    /* Add an etag */
-    resp.addHeader("etag", changeToken);
-
     final Collection<T> vals;
 
     final String kind = request.getReqPar("kind", "owners");
@@ -116,8 +112,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
         return forwardNull;
     }
 
-    resp.setContentType("text/json; charset=UTF-8");
-
     final EventPropertiesResponse epresp = makeResponse(vals);
 
     if (cl.getPublicAdmin()) {
@@ -136,15 +130,14 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
 
     Response.ok(epresp);
 
-    cl.writeJson(resp, epresp);
-    resp.getOutputStream().close();
+    cl.outputJson(resp, changeToken, null, epresp);
 
     return forwardNull;
   }
 
   private void doSearch(final BwRequest request,
                         final BwActionFormBase form,
-                        final String fexpr) throws Throwable {
+                        final String fexpr) {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
@@ -164,7 +157,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
       epresp.setMessage(ges.getMessage());
     }
 
-    cl.writeJson(resp, epresp);
-    resp.getOutputStream().close();
+    cl.outputJson(resp, null, null, epresp);
   }
 }

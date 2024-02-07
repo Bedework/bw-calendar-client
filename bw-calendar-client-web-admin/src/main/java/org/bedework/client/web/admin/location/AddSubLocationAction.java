@@ -49,9 +49,7 @@ public class AddSubLocationAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
-    final HttpServletResponse resp = request.getResponse();
-
+                      final BwAdminActionForm form) {
     /* Find the location we base the new one on
      */
     final String uid = request.getReqPar("uid");
@@ -74,6 +72,8 @@ public class AddSubLocationAction extends AdminActionBase {
 
     form.assignAddingLocation(false);
     form.setLocation(location);
+
+    final HttpServletResponse resp = request.getResponse();
 
     if (location == null) {
       resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -126,15 +126,11 @@ public class AddSubLocationAction extends AdminActionBase {
       return forwardNull;
     }
 
-    /* Return the new location */
-    resp.addHeader("etag", cl.getCurrentChangeToken());
-    resp.setContentType("text/json; charset=UTF-8");
-
     form.setLocation(newloc);
-    cl.writeJson(request.getResponse(), newloc);
-    resp.getOutputStream().close();
 
-    resp.setStatus(HttpServletResponse.SC_OK);
+    /* Return the new location */
+    cl.outputJson(resp, cl.getCurrentChangeToken(),
+                  null, newloc);
 
     return forwardNull;
   }

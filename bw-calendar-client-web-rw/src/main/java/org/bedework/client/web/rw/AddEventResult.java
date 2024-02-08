@@ -38,8 +38,8 @@ public class AddEventResult implements Serializable {
    * @param event
    * @param failedOverrides
    */
-  public AddEventResult(BwEvent event,
-                        Collection<BwEventProxy> failedOverrides) {
+  public AddEventResult(final BwEvent event,
+                        final Collection<BwEventProxy> failedOverrides) {
     this.event = event;
     this.failedOverrides = failedOverrides;
   }
@@ -47,7 +47,7 @@ public class AddEventResult implements Serializable {
   /**
    * @param val
    */
-  public void setEvent(BwEvent val) {
+  public void setEvent(final BwEvent val) {
     event = val;
   }
 
@@ -61,7 +61,7 @@ public class AddEventResult implements Serializable {
   /**
    * @param val
    */
-  public void setFailedOverrides(Collection<BwEventProxy> val) {
+  public void setFailedOverrides(final Collection<BwEventProxy> val) {
     failedOverrides = val;
   }
 

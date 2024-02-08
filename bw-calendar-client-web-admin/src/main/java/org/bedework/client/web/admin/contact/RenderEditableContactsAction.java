@@ -32,7 +32,7 @@ public class RenderEditableContactsAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     request.getSess().embedContactCollection(request,
                                              BwSession.editableEntity);
 

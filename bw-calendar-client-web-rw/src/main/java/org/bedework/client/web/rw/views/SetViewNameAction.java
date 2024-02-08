@@ -44,7 +44,7 @@ public class SetViewNameAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final String name = request.getReqPar("name");
 
     if (name == null) {

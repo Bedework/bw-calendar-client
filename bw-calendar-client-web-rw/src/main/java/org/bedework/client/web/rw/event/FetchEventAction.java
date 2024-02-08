@@ -62,7 +62,7 @@ public class FetchEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     if (cl.getPublicAdmin()) {
       // Handled by overide
       return forwardNoAccess;
@@ -73,7 +73,7 @@ public class FetchEventAction extends RWActionBase {
 
   protected int doTheAction(final BwRequest request,
                             final RWClient cl,
-                            final BwRWActionForm form) throws Throwable {
+                            final BwRWActionForm form) {
     form.assignAddingEvent(false);
 
     final Rmode mode;
@@ -118,10 +118,9 @@ public class FetchEventAction extends RWActionBase {
    * @param request bw request object
    * @param ei      event info
    * @return int forward.
-   * @throws Throwable on fatal error
    */
   protected int refreshEvent(final BwRequest request,
-                             final EventInfo ei) throws Throwable {
+                             final EventInfo ei) {
     final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
 
     if (ei == null) {

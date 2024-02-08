@@ -35,7 +35,7 @@ public class GetFiltersAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     request.getSess().embedFilters(request);
     return forwardSuccess;
   }

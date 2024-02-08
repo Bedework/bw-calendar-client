@@ -32,7 +32,7 @@ public class AuthUserListRenderAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     request.setSessionAttr(BwRequest.bwAuthUsersListName,
                            cl.getAllAuthUsers());
 

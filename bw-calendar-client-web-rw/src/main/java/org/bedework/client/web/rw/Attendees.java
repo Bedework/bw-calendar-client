@@ -20,7 +20,6 @@ package org.bedework.client.web.rw;
 
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.base.AttendeesEntity;
-import org.bedework.calfacade.exc.CalFacadeException;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -43,9 +42,9 @@ public class Attendees implements AttendeesEntity, Serializable {
   private Set<BwAttendee> deletedAttendees;
 
   /**
-   * @param val
+   * @param val set of attendees
    */
-  public void setQueriedExternalAttendees(Set<BwAttendee> val) {
+  public void setQueriedExternalAttendees(final Set<BwAttendee> val) {
     queriedExternalAttendees = val;
   }
 
@@ -84,7 +83,7 @@ public class Attendees implements AttendeesEntity, Serializable {
   /* (non-Javadoc)
    * @see org.bedework.calfacade.base.AttendeesEntity#setAttendees(java.util.Set)
    */
-  public void setAttendees(Set<BwAttendee> val) {
+  public void setAttendees(final Set<BwAttendee> val) {
     attendees = val;
   }
 
@@ -95,11 +94,9 @@ public class Attendees implements AttendeesEntity, Serializable {
     return attendees;
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#getNumAttendees()
-   */
+  @Override
   public int getNumAttendees() {
-    Set<BwAttendee> as = getAttendees();
+    final Set<BwAttendee> as = getAttendees();
     if (as == null) {
       return 0;
     }
@@ -107,13 +104,11 @@ public class Attendees implements AttendeesEntity, Serializable {
     return as.size();
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#addAttendee(org.bedework.calfacade.BwAttendee)
-   */
-  public void addAttendee(BwAttendee val) {
+  @Override
+  public void addAttendee(final BwAttendee val) {
     Set<BwAttendee> as = getAttendees();
     if (as == null) {
-      as = new TreeSet<BwAttendee>();
+      as = new TreeSet<>();
       setAttendees(as);
     }
 
@@ -121,22 +116,20 @@ public class Attendees implements AttendeesEntity, Serializable {
       as.add(val);
 
       if (addedAttendees == null) {
-        addedAttendees = new TreeSet<BwAttendee>();
+        addedAttendees = new TreeSet<>();
       }
 
       addedAttendees.add(val);
     }
 
-    if ((deletedAttendees != null) && deletedAttendees.contains(val)) {
+    if ((deletedAttendees != null)) {
       deletedAttendees.remove(val);
     }
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#removeAttendee(org.bedework.calfacade.BwAttendee)
-   */
-  public boolean removeAttendee(BwAttendee val) {
-    Set<BwAttendee> as = getAttendees();
+  @Override
+  public boolean removeAttendee(final BwAttendee val) {
+    final Set<BwAttendee> as = getAttendees();
     if (as == null) {
       return false;
     }
@@ -146,57 +139,42 @@ public class Attendees implements AttendeesEntity, Serializable {
     }
 
     if (deletedAttendees == null) {
-      deletedAttendees = new TreeSet<BwAttendee>();
+      deletedAttendees = new TreeSet<>();
     }
 
     deletedAttendees.add(val);
 
-    if ((addedAttendees != null) && addedAttendees.contains(val)) {
+    if ((addedAttendees != null)) {
       addedAttendees.remove(val);
     }
 
     return true;
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#copyAttendees()
-   */
+  @Override
   public Set<BwAttendee> copyAttendees() {
     if (getNumAttendees() == 0) {
       return null;
     }
-    TreeSet<BwAttendee> ts = new TreeSet<BwAttendee>();
 
-    for (BwAttendee att: getAttendees()) {
-      ts.add(att);
-    }
-
-    return ts;
+    return new TreeSet<>(getAttendees());
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#cloneAttendees()
-   */
+  @Override
   public Set<BwAttendee> cloneAttendees() {
     if (getNumAttendees() == 0) {
       return null;
     }
-    TreeSet<BwAttendee> ts = new TreeSet<BwAttendee>();
 
-    for (BwAttendee att: getAttendees()) {
-      ts.add((BwAttendee)att.clone());
-    }
-
-    return ts;
+    return new TreeSet<>(getAttendees());
   }
 
   /** Find an attendee entry for the given uri (calendar address).
    *
-   * @param uri
+   * @param uri of attendee
    * @return BwAttendee or null if none exists
-   * @throws CalFacadeException
    */
-  public BwAttendee findAttendee(String uri) throws CalFacadeException {
+  public BwAttendee findAttendee(final String uri) {
     if (getNumAttendees() == 0) {
       return null;
     }
@@ -209,8 +187,8 @@ public class Attendees implements AttendeesEntity, Serializable {
       }
     }
 
-    for (BwAttendee att: getAttendees()) {
-      String auri = att.getAttendeeUri();
+    for (final BwAttendee att: getAttendees()) {
+      final String auri = att.getAttendeeUri();
       int auriLen = auri.length();
       while (auri.charAt(auriLen - 1) == '/') {
         auriLen--;
@@ -227,25 +205,19 @@ public class Attendees implements AttendeesEntity, Serializable {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#setRecipients(java.util.Set)
-   */
-  public void setRecipients(Set<String> val) {
+  @Override
+  public void setRecipients(final Set<String> val) {
     recipients = val;
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#getRecipients()
-   */
+  @Override
   public Set<String> getRecipients() {
     return recipients;
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#getNumRecipients()
-   */
+  @Override
   public int getNumRecipients() {
-    Set<String> rs = getRecipients();
+    final Set<String> rs = getRecipients();
     if (rs == null) {
       return 0;
     }
@@ -253,26 +225,20 @@ public class Attendees implements AttendeesEntity, Serializable {
     return rs.size();
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#addRecipient(java.lang.String)
-   */
-  public void addRecipient(String val) {
+  @Override
+  public void addRecipient(final String val) {
     Set<String> rs = getRecipients();
     if (rs == null) {
       rs = new TreeSet<>();
       setRecipients(rs);
     }
 
-    if (!rs.contains(val)) {
-      rs.add(val);
-    }
+    rs.add(val);
   }
 
-  /* (non-Javadoc)
-   * @see org.bedework.calfacade.base.AttendeesEntity#removeRecipient(java.lang.String)
-   */
-  public boolean removeRecipient(String val) {
-    Set<String> rs = getRecipients();
+  @Override
+  public boolean removeRecipient(final String val) {
+    final Set<String> rs = getRecipients();
     if (rs == null) {
       return false;
     }

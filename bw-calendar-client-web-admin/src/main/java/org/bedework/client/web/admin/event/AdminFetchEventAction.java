@@ -18,7 +18,7 @@ public class AdminFetchEventAction extends FetchEventAction {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final int fwd = doTheAction(request, cl, form);
 
     if (((BwAdminActionForm)form).getSuggestionEnabled()) {

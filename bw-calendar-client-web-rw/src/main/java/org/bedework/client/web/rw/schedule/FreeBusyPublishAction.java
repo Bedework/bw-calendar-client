@@ -68,8 +68,8 @@ public class FreeBusyPublishAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
-    BwPrincipal principal = null;
+                      final BwRWActionForm form) {
+    BwPrincipal<?> principal = null;
 
     final BwModuleState mstate = request.getModule().getState();
 
@@ -91,7 +91,7 @@ public class FreeBusyPublishAction extends RWActionBase {
     }
 
     if (principal == null) {
-      request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+      request.sendError(HttpServletResponse.SC_NOT_FOUND, null);
       return forwardNull;
     }
 
@@ -101,8 +101,8 @@ public class FreeBusyPublishAction extends RWActionBase {
     if (calPath != null) {
       cal = cl.getCollection(calPath);
       if (cal == null) {
-        request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND,
-                                        calPath);
+        request.sendError(HttpServletResponse.SC_NOT_FOUND,
+                          calPath);
         return forwardNull;
       }
     }
@@ -124,8 +124,8 @@ public class FreeBusyPublishAction extends RWActionBase {
                                      max);
 
     if (tr == null) {
-      request.getResponse().sendError(HttpServletResponse.SC_BAD_REQUEST,
-                                      "dates");
+      request.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "dates");
       return forwardNull;
     }
 
@@ -166,9 +166,9 @@ public class FreeBusyPublishAction extends RWActionBase {
                                       "Attachment; Filename=\"freebusy.ics\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");
 
-      IcalendarUtil.writeCalendar(ical, request.getResponse().getWriter());
+      IcalendarUtil.writeCalendar(ical, request.getWriter());
     } catch (final CalFacadeAccessException cfae) {
-      request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
+      request.sendError(HttpServletResponse.SC_FORBIDDEN, null);
     }
 
     return forwardNull;

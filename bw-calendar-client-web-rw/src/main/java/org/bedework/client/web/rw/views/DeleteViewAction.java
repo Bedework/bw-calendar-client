@@ -48,7 +48,7 @@ public class DeleteViewAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     /* Check access
      */
     if (request.isGuest()) {

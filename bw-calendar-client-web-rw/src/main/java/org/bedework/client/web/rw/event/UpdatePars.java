@@ -67,7 +67,7 @@ public class UpdatePars {
     }
   }
 
-  public List<ValidationError> validate() throws Throwable {
+  public List<ValidationError> validate() {
     final int maxDescLen;
 
     if (submitApp) {

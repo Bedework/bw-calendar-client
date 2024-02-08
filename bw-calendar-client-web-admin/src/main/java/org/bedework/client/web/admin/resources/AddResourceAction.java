@@ -53,7 +53,7 @@ public class AddResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     String rclass = request.getReqPar("class");
     final String name = request.getReqPar("name");
     String contentType = request.getReqPar("ct");

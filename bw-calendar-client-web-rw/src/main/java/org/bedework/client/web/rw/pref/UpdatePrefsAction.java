@@ -21,6 +21,7 @@ package org.bedework.client.web.rw.pref;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwPreferences.CategoryMappings;
@@ -29,6 +30,7 @@ import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.util.timezones.TimezonesException;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.Collection;
@@ -75,7 +77,7 @@ public class UpdatePrefsAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final BwPreferences prefs;
     boolean tzChanged = false;
 
@@ -170,9 +172,13 @@ public class UpdatePrefsAction extends RWActionBase {
 
     str = request.getReqPar("defaultTzid");
     if (str != null) {
-      if (Timezones.getTz(str) != null) {
-        prefs.setDefaultTzid(str);
-        tzChanged = true;
+      try {
+        if (Timezones.getTz(str) != null) {
+          prefs.setDefaultTzid(str);
+          tzChanged = true;
+        }
+      } catch (final TimezonesException e) {
+        throw new CalFacadeException(e);
       }
     }
 

@@ -97,7 +97,7 @@ public class AttendeeRespond extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     if (request.present("initUpdate")) {
 //      ei = sched.initAttendeeUpdate(ei);
       final EventInfo ei = form.getEventInfo();
@@ -228,7 +228,7 @@ public class AttendeeRespond extends RWActionBase {
     return forwardSuccess;
   }
 
-  private void initSession(final BwRequest request) throws Throwable {
+  private void initSession(final BwRequest request) {
     final BwSession sess = request.getSess();
 
     sess.embedAddContentCalendarCollections(request);

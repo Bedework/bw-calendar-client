@@ -44,7 +44,7 @@ public class InitAddCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final BwSession sess = request.getSess();
     final BwCalendar cal = request.getCalendar(true);
 

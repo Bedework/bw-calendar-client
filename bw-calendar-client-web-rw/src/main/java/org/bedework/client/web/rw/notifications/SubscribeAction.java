@@ -41,7 +41,7 @@ public class SubscribeAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final HttpServletResponse response = request.getResponse();
 
     final boolean add = request.present("add");

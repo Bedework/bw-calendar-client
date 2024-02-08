@@ -49,7 +49,7 @@ public class MailEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final EventInfo ei = form.getEventInfo();
 
     if (ei == null) {
@@ -99,13 +99,12 @@ public class MailEventAction extends RWActionBase {
    * @param name     name for attachment
    * @param type     mimetype for attachment
    * @param cl       read-write client
-   * @throws Throwable on fatal error
    */
   private void mailMessage(final Message val,
                            final String att,
                            final String name,
                            final String type,
-                           final RWClient cl) throws Throwable {
+                           final RWClient cl) {
     final ObjectAttachment oa = new ObjectAttachment();
 
     oa.setOriginalName(name);

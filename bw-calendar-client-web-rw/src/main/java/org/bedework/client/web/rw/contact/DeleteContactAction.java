@@ -40,7 +40,7 @@ public class DeleteContactAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     form.setPropRefs(null);
 
     final String uid = form.getContact().getUid();

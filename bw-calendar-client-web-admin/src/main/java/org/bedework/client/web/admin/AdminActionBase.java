@@ -17,7 +17,7 @@ import org.bedework.webcommon.BwRequest;
 public abstract class AdminActionBase extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final AdminClient cl = (AdminClient)request.getClient();
 
     /* Check access
@@ -42,16 +42,16 @@ public abstract class AdminActionBase extends RWActionBase {
    * @param request   For request pars and BwSession
    * @param form       Admin action form
    * @return int      forward index
-   * @throws Throwable on fatal error
    */
   public abstract int doAction(BwRequest request,
                                AdminClient cl,
-                               BwAdminActionForm form) throws Throwable;
+                               BwAdminActionForm form);
 
   public BwAdminActionForm getAdminForm() {
     return (BwAdminActionForm)getForm();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public BwAdminGroup getUpdAdminGroup() {
     return getAdminForm().getUpdAdminGroup();
   }
@@ -59,6 +59,7 @@ public abstract class AdminActionBase extends RWActionBase {
   /**
    * @param val true for show group members
    */
+  @SuppressWarnings("UnusedDeclaration")
   public void setShowAgMembers(final boolean val) {
     getAdminForm().setShowAgMembers(val);
   }
@@ -66,6 +67,7 @@ public abstract class AdminActionBase extends RWActionBase {
   /**
    * @return true for show group members
    */
+  @SuppressWarnings("UnusedDeclaration")
   public boolean getShowAgMembers() {
     return getAdminForm().getShowAgMembers();
   }

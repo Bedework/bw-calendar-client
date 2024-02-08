@@ -60,7 +60,7 @@ public class InitAddEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     request.refresh();
 
     final BwEvent ev = new BwEventObj();
@@ -169,7 +169,7 @@ public class InitAddEventAction extends RWActionBase {
 
   protected void setEventCollection(final RWClient cl,
                                     final BwEvent ev,
-                                    final ChangeTable changes) throws Throwable {
+                                    final ChangeTable changes) {
     final String path;
 
     if (cl.getWebSubmit()) {

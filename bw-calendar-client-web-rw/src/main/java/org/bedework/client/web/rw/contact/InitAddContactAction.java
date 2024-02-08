@@ -36,7 +36,7 @@ import org.bedework.webcommon.BwRequest;
 public class InitAddContactAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     /* Set the objects to null so we get new ones.
      */
     form.assignAddingContact(true);

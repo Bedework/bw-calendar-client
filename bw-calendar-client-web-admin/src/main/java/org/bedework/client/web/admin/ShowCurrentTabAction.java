@@ -38,7 +38,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
 
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
 
     final BwAdminActionForm aform = (BwAdminActionForm)form;
 //    if (form.getNewSession()) {

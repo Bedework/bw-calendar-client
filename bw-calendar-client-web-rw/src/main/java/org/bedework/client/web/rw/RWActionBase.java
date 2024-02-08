@@ -20,14 +20,14 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class RWActionBase extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
      */
     if (cl.isGuest()) {
       if (actionIsWebService()) {
-        request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
+        request.sendError(HttpServletResponse.SC_FORBIDDEN, null);
 
         return forwardNull;
       }
@@ -52,11 +52,10 @@ public abstract class RWActionBase extends BwAbstractAction {
    * @param request   For request pars and BwSession
    * @param form       Admin action form
    * @return int      forward index
-   * @throws Throwable on fatal error
    */
   public abstract int doAction(BwRequest request,
                                RWClient cl,
-                               BwRWActionForm form) throws Throwable;
+                               BwRWActionForm form);
 
   public BwRWActionForm getRwForm() {
     return (BwRWActionForm)form;
@@ -65,6 +64,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   /**
    * @param val FormFile
    */
+  @SuppressWarnings("UnusedDeclaration")
   public void setImageUpload(final File val) {
     getForm().setImageUpload(val);
   }
@@ -72,82 +72,101 @@ public abstract class RWActionBase extends BwAbstractAction {
   /**
    * @return FormFile
    */
+  @SuppressWarnings("UnusedDeclaration")
   public File getImageUpload() {
     return getForm().getImageUpload();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setImageUploadFileName(final String val) {
     getForm().setImageUploadFileName(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public String getImageUploadFileName() {
     return getForm().getImageUploadFileName();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setImageUploadContentType(final String val) {
     getForm().setImageUploadContentType(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public String getImageUploadContentType() {
     return getForm().getImageUploadContentType();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setUploadFileFileName(final String val) {
     getForm().setUploadFileFileName(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public String getUploadFileFileName() {
     return getForm().getUploadFileFileName();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setUploadFile(final File val) {
     getForm().setUploadFile(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public File getUploadFile() {
     return getForm().getUploadFile();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setUploadFileContentType(final String val) {
     getForm().setUploadFileContentType(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public String getUploadFileContentType() {
     return getForm().getUploadFileContentType();
   }
 
   // ================== contact form elements ===================
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setContactUid(final String val) {
     getRwForm().setContactUid(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public String getContactUid() {
     return getRwForm().getContactUid();
   }
 
   // ================== location form elements ===================
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setLocationAddress(final BwString val) {
     getRwForm().setLocationAddress(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public BwString getLocationAddress() {
     return getRwForm().getLocationAddress();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setLocationSubaddress(final BwString val) {
     getRwForm().setLocationSubaddress(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public BwString getLocationSubaddress() {
     return getRwForm().getLocationSubaddress();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setLocationUid(final String val) {
     getRwForm().setLocationUid(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public String getLocationUid() {
     return getRwForm().getLocationUid();
   }

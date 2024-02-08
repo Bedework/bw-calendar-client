@@ -68,7 +68,7 @@ public class UpdateCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
       return forwardNoAccess;
@@ -123,7 +123,7 @@ public class UpdateCalendarAction extends RWActionBase {
     final Boolean bool = request.getBooleanReqPar("unremoveable");
     if (bool != null) {
       if (!form.getCurUserSuperUser()) {
-        return forwardNoAccess; // Only super user for that flag
+        return forwardNoAccess; // Only superuser for that flag
       }
 
       if (cal.getUnremoveable() != bool) {
@@ -204,19 +204,25 @@ public class UpdateCalendarAction extends RWActionBase {
     if (aclStr != null) {
       final AccessXmlUtil axu = new AccessXmlUtil(null, cl);
 
-      final Acl acl = axu.getAcl(aclStr, true);
+      try {
+        final Acl acl = axu.getAcl(aclStr, true);
 
-      if (axu.getErrorTag() != null) {
-        if (axu.getErrorTag().equals(WebdavTags.recognizedPrincipal)) {
-          request.error(CalFacadeException.principalNotFound,
-                        axu.getErrorMsg());
-        } else {
-          request.error(CalFacadeException.badRequest, axu.getErrorTag());
+        if (axu.getErrorTag() != null) {
+          if (axu.getErrorTag()
+                 .equals(WebdavTags.recognizedPrincipal)) {
+            request.error(CalFacadeException.principalNotFound,
+                          axu.getErrorMsg());
+          } else {
+            request.error(CalFacadeException.badRequest,
+                          axu.getErrorTag());
+          }
+          return forwardRetry;
         }
-        return forwardRetry;
-      }
 
-      cl.changeAccess(cal, acl.getAces(), true);
+        cl.changeAccess(cal, acl.getAces(), true);
+      } catch (final Throwable t) {
+        throw new CalFacadeException(t);
+      }
     }
 
     form.setParentCalendarPath(null);
@@ -246,7 +252,7 @@ public class UpdateCalendarAction extends RWActionBase {
   /* Set the collection type and alias
    */
   private void typeAndAlias(final BwRequest request,
-                            final boolean add) throws Throwable {
+                            final boolean add) {
     final BwActionFormBase form = request.getBwForm();
 
     final BwCalendar cal = form.getCalendar();
@@ -298,7 +304,7 @@ public class UpdateCalendarAction extends RWActionBase {
       cal.setRefreshRate(refreshRate);
     }
 
-    // Mozilla auto-fills hidden fields. Don't do this for public subscriptions.
+    // Mozilla autofills hidden fields. Don't do this for public subscriptions.
     if (!"public".equals(request.getReqPar("subType"))) {
       final String remoteId = request.getReqPar("remoteId");
       if (!Util.equalsString(remoteId, cal.getRemoteId())) {
@@ -342,7 +348,7 @@ public class UpdateCalendarAction extends RWActionBase {
    *
    * @return boolean  false means something wrong, message emitted
    */
-  private boolean validateCalendar(final BwRequest request) throws Throwable {
+  private boolean validateCalendar(final BwRequest request) {
     final BwActionFormBase form = request.getBwForm();
     boolean ok = true;
 

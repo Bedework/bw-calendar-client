@@ -34,7 +34,7 @@ public class SwitchAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     /* ============================================================
      *              Selecting a group - any access if no group set
      * ============================================================ */

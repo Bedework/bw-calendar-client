@@ -45,7 +45,7 @@ public class DeleteCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final String calPath = form.getCalendarPath();
     final BwCalendar cal = cl.getCollection(calPath);
     if (cal == null) {

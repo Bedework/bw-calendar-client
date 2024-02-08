@@ -16,7 +16,7 @@ public class InitEventTabAction extends SearchParamsAction {
 
   @Override
   public int doAction(final BwRequest request,
-                      final BwActionFormBase form) throws Throwable {
+                      final BwActionFormBase form) {
     ((BwAdminActionForm)form).assignCurrentTab(currentTab);
 
     return super.doAction(request, form);

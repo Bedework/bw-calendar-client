@@ -34,7 +34,7 @@ public class ApprovePublishAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     final AdminUpdatePars pars = new AdminUpdatePars(request, cl, form);
 
     final AdminClient adcl = (AdminClient)pars.cl;
@@ -168,8 +168,6 @@ public class ApprovePublishAction extends AdminActionBase {
 
   protected List<ValidationError> validate(final UpdatePars pars) {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
-    final var cl = pars.cl;
-
     final BwEvent ev = pars.ev;
 
     List<ValidationError> ves = adPars.validate();

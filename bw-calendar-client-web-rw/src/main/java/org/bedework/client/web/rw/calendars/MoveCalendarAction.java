@@ -51,7 +51,7 @@ public class MoveCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final boolean contents = request.present("contents");
 
     final BwCalendar cal = request.getCalendar(true);
@@ -86,7 +86,7 @@ public class MoveCalendarAction extends RWActionBase {
   private int moveCollection(final RWClient cl,
                              final BwCalendar cal,
                              final BwCalendar newCal,
-                             final BwRequest request) throws Throwable {
+                             final BwRequest request) {
     /* Check for references in views. For user extra simple mode only we will
      * automatically remove the subscription. For others we list the references
      */

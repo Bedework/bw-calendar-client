@@ -19,7 +19,6 @@
 package org.bedework.client.web.rw;
 
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.EventPeriod;
 import org.bedework.calsvci.SchedulingI.FbGranulatedResponse;
@@ -52,20 +51,20 @@ public class FormattedFreeBusy implements Serializable {
 
   /** Collection of FbDayPeriod
    */
-  private Collection<FbDayPeriod> days = new ArrayList<FbDayPeriod>();
+  private Collection<FbDayPeriod> days = new ArrayList<>();
 
   /** Class to represent a free busy day
    *
    * @author Mike Douglass
    */
   public static class FbDayPeriod implements Serializable {
-    private String dateString;
+    private final String dateString;
 
     /** Collection of FbPeriod
      */
-    private Collection<FbPeriod> periods = new ArrayList<FbPeriod>();
+    private Collection<FbPeriod> periods = new ArrayList<>();
 
-    FbDayPeriod(String dateString) {
+    FbDayPeriod(final String dateString) {
       this.dateString = dateString;
     }
 
@@ -82,7 +81,7 @@ public class FormattedFreeBusy implements Serializable {
      */
     public Collection<FbPeriod> getPeriods() {
       if (periods == null) {
-        periods = new ArrayList<FbPeriod>();
+        periods = new ArrayList<>();
       }
       return periods;
     }
@@ -105,14 +104,15 @@ public class FormattedFreeBusy implements Serializable {
 
     /** Constructor
      *
-     * @param minutesStart
-     * @param minutesLength
-     * @param type
-     * @param numBusy
-     * @param numTentative
+     * @param minutesStart Start time on minutes
+     * @param minutesLength length in minutes
+     * @param type From BwFreeBusyComponent
+     * @param numBusy Number of busy entries this period
+     * @param numTentative Number of tentative entries this period
      */
-    public FbPeriod(int minutesStart, int minutesLength, int type,
-                    int numBusy, int numTentative) {
+    public FbPeriod(final int minutesStart, final int minutesLength,
+                    final int type,
+                    final int numBusy, final int numTentative) {
       this.minutesStart = minutesStart;
       this.minutesLength = minutesLength;
       this.type = type;
@@ -147,7 +147,7 @@ public class FormattedFreeBusy implements Serializable {
     /**
      * @param val
      */
-    public void setNumBusy(int val) {
+    public void setNumBusy(final int val) {
       numBusy = val;
     }
 
@@ -161,7 +161,7 @@ public class FormattedFreeBusy implements Serializable {
     /**
      * @param val
      */
-    public void setNumTentative(int val) {
+    public void setNumTentative(final int val) {
       numTentative = val;
     }
 
@@ -184,13 +184,12 @@ public class FormattedFreeBusy implements Serializable {
   /** Constructor
    *
    * <p>Generates a formatted free busy object suitable for gui interfaces.
-   * @param fbresp
-   * @param loc
-   * @throws CalFacadeException
+   * @param fbresp response
+   * @param loc locale
    */
-  public FormattedFreeBusy(FbGranulatedResponse fbresp,
-                           Locale loc) throws CalFacadeException {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+  public FormattedFreeBusy(final FbGranulatedResponse fbresp,
+                           final Locale loc) {
+    final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
     if (fbresp.getAttendee() != null) {
       setAccount(fbresp.getAttendee().getAttendeeUri());
@@ -209,8 +208,8 @@ public class FormattedFreeBusy implements Serializable {
      * Maybe we should flag when the current locale goes over a daylight savings
      * boundary?
      */
-    Calendar startCal = Calendar.getInstance(loc);
-    Calendar endDayCal = Calendar.getInstance(loc);
+    final Calendar startCal = Calendar.getInstance(loc);
+    final Calendar endDayCal = Calendar.getInstance(loc);
 
     startCal.setTime(getStart().makeDate());
 
@@ -220,14 +219,14 @@ public class FormattedFreeBusy implements Serializable {
     /* We expect a number of BwFreeBusyComponent each containing a single
      * free busy period.
      */
-    long startMillis = getStart().makeDate().getTime();
+    final long startMillis = getStart().makeDate().getTime();
 
     // setup first day.
     FbDayPeriod day = new FbDayPeriod(sdf.format(startCal.getTime()));
     days.add(day);
     int dayStartMinutes = -1;
 
-    for (EventPeriod ep: fbresp.eps) {
+    for (final EventPeriod ep: fbresp.eps) {
       if (!startCal.before(endDayCal)) {
         // new day
 
@@ -239,8 +238,8 @@ public class FormattedFreeBusy implements Serializable {
         dayStartMinutes = -1;
       }
 
-      long pstartMillis = ep.getStart().getTime();
-      int plen = Math.round((ep.getEnd().getTime() - pstartMillis) / 60000);
+      final long pstartMillis = ep.getStart().getTime();
+      final int plen = Math.round((ep.getEnd().getTime() - pstartMillis) / 60000);
       int pstart = Math.round((pstartMillis - startMillis) / 60000);
 
       /* Decrement period start by start of day value.
@@ -262,7 +261,7 @@ public class FormattedFreeBusy implements Serializable {
    *
    * @param val String
    */
-  public void setAccount(String val) {
+  public void setAccount(final String val) {
     account = val;
   }
 
@@ -276,7 +275,7 @@ public class FormattedFreeBusy implements Serializable {
   /**
    * @param val
    */
-  public void setStart(BwDateTime val) {
+  public void setStart(final BwDateTime val) {
     start = val;
   }
 
@@ -290,7 +289,7 @@ public class FormattedFreeBusy implements Serializable {
   /**
    * @param val
    */
-  public void setEnd(BwDateTime val) {
+  public void setEnd(final BwDateTime val) {
     end = val;
   }
 
@@ -307,7 +306,7 @@ public class FormattedFreeBusy implements Serializable {
    */
   public Collection<FbDayPeriod> getDays() {
     if (days == null) {
-      days = new ArrayList<FbDayPeriod>();
+      days = new ArrayList<>();
     }
     return days;
   }

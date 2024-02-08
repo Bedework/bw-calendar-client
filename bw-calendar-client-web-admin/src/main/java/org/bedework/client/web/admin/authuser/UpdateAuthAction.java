@@ -40,7 +40,7 @@ public class UpdateAuthAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     /* Check access
      */
     if (!cl.isSuperUser()) {
@@ -68,26 +68,32 @@ public class UpdateAuthAction extends AdminActionBase {
     return forwardContinue;
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setEditAuthUserPublicEvents(final boolean val) {
     getAdminForm().setEditAuthUserPublicEvents(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setEditAuthUserContentAdmin(final boolean val) {
     getAdminForm().setEditAuthUserContentAdmin(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public void setEditAuthUserApprover(final boolean val) {
     getAdminForm().setEditAuthUserApprover(val);
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public boolean getEditAuthUserPublicEvents() {
     return getAdminForm().getEditAuthUserPublicEvents();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public boolean getEditAuthUserContentAdmin() {
     return getAdminForm().getEditAuthUserContentAdmin();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   public boolean getEditAuthUserApprover() {
     return getAdminForm().getEditAuthUserApprover();
   }

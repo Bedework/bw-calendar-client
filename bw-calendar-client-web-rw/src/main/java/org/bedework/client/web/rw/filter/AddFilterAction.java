@@ -47,7 +47,7 @@ public class AddFilterAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final BwFilterDef fd = new BwFilterDef();
     fd.setName(request.getReqPar("name"));
 

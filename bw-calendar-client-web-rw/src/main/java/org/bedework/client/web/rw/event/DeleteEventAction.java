@@ -59,7 +59,7 @@ public class DeleteEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final boolean publicAdmin = cl.getPublicAdmin();
     final boolean publicEvents = publicAdmin || cl.getWebSubmit();
     final boolean soft = request.getBooleanReqPar("soft", false) ||

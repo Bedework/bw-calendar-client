@@ -52,7 +52,7 @@ public class ShareReplyAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final NotificationType note = cl.findNotification(request.getReqPar("name"));
 
     if (note == null) {

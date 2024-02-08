@@ -43,7 +43,7 @@ public class RenderCalSuiteAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     final String name = form.getEditCalSuiteName();
 
     if (name == null) {

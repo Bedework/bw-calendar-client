@@ -49,7 +49,7 @@ public class UpdateResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     final String cancel = request.getReqPar("cancel");
     if (cancel != null) {
       return forwardCancelled;

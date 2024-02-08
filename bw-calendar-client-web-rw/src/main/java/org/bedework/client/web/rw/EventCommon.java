@@ -30,16 +30,15 @@ import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.base.StartEndComponent;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.mail.Message;
-import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.calsvci.EventsI.SetEntityCategoriesResult;
 import org.bedework.calsvci.SchedulingI.FbResponses;
-import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.EventProps.ValidateResult;
 import org.bedework.convert.ical.IcalUtil;
@@ -55,6 +54,7 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.util.timezones.TimezonesException;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
@@ -89,8 +89,7 @@ public class EventCommon {
   private static final BwLogger logger =
           new BwLogger().setLoggedClass(HttpServletUtils.class);
 
-  public static EventInfo refetchEvent(final BwRequest request)
-          throws Throwable {
+  public static EventInfo refetchEvent(final BwRequest request) {
     final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
     final EventInfo ei = form.getEventInfo();
 
@@ -105,14 +104,12 @@ public class EventCommon {
   /** Refetch an event given a copy of that event. Collection path, uid and possibly
    * recurrence id must be set.
    *
-   * @param request
+   * @param request wRequest object
    * @param event   BwEvent to refetch
    * @return EventInfo or null if not found
-   * @throws Throwable
    */
   public static EventInfo fetchEvent(final BwRequest request,
-                                     final BwEvent event)
-          throws Throwable {
+                                     final BwEvent event) {
     final RWClient cl = (RWClient)request.getClient();
     EventInfo ei = null;
 
@@ -174,7 +171,7 @@ public class EventCommon {
    * @return false for not found
    */
   public static void copyEvent(final BwRequest request,
-                               final BwEvent ev) throws Throwable {
+                               final BwEvent ev) {
     /* Refetch the event and switch it for a cloned copy.
      * guid and name must be set to null to avoid dup guid.
      */
@@ -195,12 +192,9 @@ public class EventCommon {
       /* For a public event remove all the suggested information and
        * any topical areas not owned by this suite
        */
-      final AdminClient adcl = (AdminClient)cl;
       evcopy.removeXproperties(BwXproperty.bedeworkSuggestedTo);
-      final BwPrincipal p = cl.getPrincipal(
+      final BwPrincipal<?> p = cl.getPrincipal(
               form.getCurrentCalSuite().getGroup().getOwnerHref());
-      final BwCalSuite cs = adcl.getCalSuite();
-
       final BwCalendar col = cl.getHome(p, false);
 
       if (col == null) {
@@ -231,7 +225,7 @@ public class EventCommon {
 
   /* Mostly for admin use at the moment. */
   public static void resetEvent(final BwRequest request,
-                            final boolean clearForm) throws Throwable {
+                            final boolean clearForm) {
     final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
     final RWClient cl = (RWClient)request.getClient();
     //form.setEventInfo(null);
@@ -279,11 +273,10 @@ public class EventCommon {
    * @param form action form
    * @param freebusy - true to do the freebusy thing.
    * @return int
-   * @throws Throwable on fatal error
    */
   public static int initMeeting(final BwRequest request,
                                 final BwRWActionForm form,
-                                final boolean freebusy) throws Throwable {
+                                final boolean freebusy) {
     final RWClient cl = (RWClient)request.getClient();
     final BwEvent ev = form.getEvent();
 
@@ -355,7 +348,6 @@ public class EventCommon {
    * @param intunitStr interval unit as string
    * @param interval value
    * @return int
-   * @throws Throwable on fatal error
    */
   public static int doFreeBusy(final BwRequest request,
                                final BwRWActionForm form,
@@ -363,7 +355,7 @@ public class EventCommon {
                                final String st,
                                final String et,
                                final String intunitStr,
-                               final int interval) throws Throwable {
+                               final int interval) {
     final RWClient cl = (RWClient)request.getClient();
     final BwModuleState mstate = request.getModule().getState();
 
@@ -381,9 +373,13 @@ public class EventCommon {
       end = tv.getLastDay();
       end.add(Calendar.DATE, 1);
     } else {
-      start = mstate.getCalInfo().getFirstDayOfThisWeek(Timezones.getDefaultTz(),
-                                                        DateTimeUtil
-                                                                .fromISODate(st));
+      try {
+        start = mstate.getCalInfo().getFirstDayOfThisWeek(
+                Timezones.getDefaultTz(),
+                DateTimeUtil.fromISODate(st));
+      } catch (final TimezonesException e) {
+        throw new CalFacadeException(e);
+      }
 
       // Set end to 1 week on.
       end = (Calendar)start.clone();
@@ -573,7 +569,7 @@ public class EventCommon {
     /* ------------------------- summary -------------------------- */
 
     final Collection<BwString> sums = ev.getSummaries();
-    if ((sums == null) || (sums.size() == 0)) {
+    if ((sums == null) || (sums.isEmpty())) {
       if (!nullOk) {
         ves = addError(ves, ValidationError.missingTitle);
       }
@@ -590,7 +586,7 @@ public class EventCommon {
     /* ------------------------- description ------------------------------- */
 
     final Collection<BwLongString> descs = ev.getDescriptions();
-    if ((descs == null) || (descs.size() == 0)) {
+    if ((descs == null) || (descs.isEmpty())) {
       if (!nullOk) {
         ves = addError(ves, ValidationError.missingDescription);
       }
@@ -715,17 +711,16 @@ public class EventCommon {
    * @param delete
    * @param update
    * @param recipient
-   * @param attendee
-   * @param initializing
-   * @param partstat
-   * @param role
-   * @param uri
-   * @param cn
-   * @param lang
-   * @param cutype
-   * @param dir
+   * @param attendee true for attendee
+   * @param initializing true for new meeting
+   * @param partstat parameter
+   * @param role parameter
+   * @param uri of attendee
+   * @param cn parameter
+   * @param lang parameter
+   * @param cutype cu type parameter
+   * @param dir directory
    * @return int
-   * @throws Throwable on fatal error
    */
   public static int doAttendee(final BwRequest request,
                                final BwRWActionForm form,
@@ -740,7 +735,7 @@ public class EventCommon {
                                final String cn,
                                final String lang,
                                final String cutype,
-                               final String dir) throws Throwable {
+                               final String dir) {
     final RWClient cl = (RWClient)request.getClient();
 
     if (uri == null) {
@@ -942,7 +937,7 @@ public class EventCommon {
   public static boolean setEventLocation(final BwRequest request,
                                          final EventInfo ei,
                                          final BwRWActionForm form,
-                                         final boolean webSubmit) throws Throwable {
+                                         final boolean webSubmit) {
     final RWClient cl = (RWClient)request.getClient();
     final BwEvent ev = ei.getEvent();
     final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
@@ -1057,12 +1052,11 @@ public class EventCommon {
    * @param ev event
    * @param skipNull - don't update for null values.
    * @param changes changetable
-   * @throws Throwable on fatal error
    */
   public static void setEventText(final BwRequest request,
                                   final BwEvent ev,
                                   final boolean skipNull,
-                                  final ChangeTable changes) throws Throwable {
+                                  final ChangeTable changes) {
     setEventSummary(request.getReqPar("summaryLang"),
                     request.getReqPar("summary"),
                     ev,
@@ -1082,7 +1076,7 @@ public class EventCommon {
       for (final String s: vals) {
         final int pos = s.indexOf(":");
 
-        String text = null;
+        final String text;
         String lang = null;
 
         if (pos > 0) {
@@ -1174,13 +1168,12 @@ public class EventCommon {
    * @return setEventCategoriesResult  with rcode = error forward or
    *                    forwardNoAction for validated OK or
    *                    forwardSuccess for calendar changed
-   * @throws Throwable on fatal error
    */
   public static SetEntityCategoriesResult setEntityCategories(
           final BwRequest request,
           final Set<BwCategory> extraCats,
           final CategorisedEntity ent,
-          final ChangeTable changes) throws Throwable {
+          final ChangeTable changes) {
     final RWClient cl = (RWClient)request.getClient();
 
     // XXX We should use the change table code for this.
@@ -1409,7 +1402,7 @@ public class EventCommon {
   private static BwLocation getLocation(final RWClient cl,
                                         final BwRWActionForm form,
                                         final String owner,
-                                        final boolean webSubmit) throws Throwable {
+                                        final boolean webSubmit) {
     BwLocation loc = null;
 
     if (!webSubmit) {
@@ -1454,7 +1447,7 @@ public class EventCommon {
 
   public static boolean notifySubmitter(final BwRequest request,
                                         final EventInfo ei,
-                                        final String submitterEmail) throws Throwable {
+                                        final String submitterEmail) {
     if (submitterEmail == null) {
       return false;
     }
@@ -1480,8 +1473,7 @@ public class EventCommon {
   private static PooledHttpClient http;
 
   public static boolean notifyEventReg(final BwRequest request,
-                                       final EventInfo ei)
-          throws Throwable {
+                                       final EventInfo ei) {
     final RWClient cl = (RWClient)request.getClient();
 
     final String evregToken = cl.getSystemProperties().getEventregAdminToken();
@@ -1497,18 +1489,24 @@ public class EventCommon {
      * do something with it.
      */
 
-    if (http == null) {
-      http = new PooledHttpClient(new URI(evregUrl));
+    try {
+      if (http == null) {
+        http = new PooledHttpClient(new URI(evregUrl));
+      }
+
+      final RequestBuilder rb = new RequestBuilder(
+              "info/eventChg.do");
+      rb.par("atkn", evregToken);
+      rb.par("href", ei.getEvent().getHref());
+
+      final ResponseHolder<?> resp =
+              http.get(rb.toString(),
+                       "application/xml",
+                       null); // No content expected
+
+      return resp.status == HttpServletResponse.SC_OK;
+    } catch (final Throwable t) {
+      throw new CalFacadeException(t);
     }
-
-    final RequestBuilder rb = new RequestBuilder("info/eventChg.do");
-    rb.par("atkn", evregToken);
-    rb.par("href", ei.getEvent().getHref());
-
-    final ResponseHolder resp = http.get(rb.toString(),
-                                                          "application/xml",
-                                                          null); // No content expected
-
-    return resp.status == HttpServletResponse.SC_OK;
   }
 }

@@ -37,7 +37,7 @@ public class DeleteAuthAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     /* Check access
      */
     if (!cl.isSuperUser()) {

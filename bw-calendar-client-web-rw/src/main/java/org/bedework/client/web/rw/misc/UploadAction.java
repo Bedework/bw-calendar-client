@@ -69,7 +69,7 @@ public class UploadAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final String transparency = request.getReqPar("transparency");
     if (!checkTransparency(transparency)) {
       request.getErr().emit(ValidationError.invalidTransparency, transparency);
@@ -97,7 +97,7 @@ public class UploadAction extends RWActionBase {
 
     final String fileName = upFile.getFileName();
 
-    if ((fileName == null) || (fileName.length() == 0)) {
+    if ((fileName == null) || (fileName.isEmpty())) {
       request.getErr().emit(ClientError.missingFileName, 1);
       return forwardRetry;
     }

@@ -50,7 +50,7 @@ public class AttendeeReply extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     return forwardEdit;
   }
 

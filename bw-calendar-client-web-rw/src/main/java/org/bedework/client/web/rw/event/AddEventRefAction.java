@@ -52,7 +52,7 @@ public class AddEventRefAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final int fwd = addEventRef(request, cl, form);
     if (fwd != forwardSuccess) {
       return fwd;
@@ -73,11 +73,10 @@ public class AddEventRefAction extends RWActionBase {
    * @param request bedework request object
    * @param form action form
    * @return int forward index sucess for OK or an error index.
-   * @throws Throwable on fatal error
    */
   private int addEventRef(final BwRequest request,
                           final RWClient cl,
-                          final BwRWActionForm form) throws Throwable {
+                          final BwRWActionForm form) {
 //    EventInfo ei = findEvent(request, Rmode.masterOnly);
 
     final EventKey ekey = form.getEventKey();

@@ -42,7 +42,7 @@ public class DeleteLocationAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final String uid = form.getLocationUid();
 
     if (uid == null) {

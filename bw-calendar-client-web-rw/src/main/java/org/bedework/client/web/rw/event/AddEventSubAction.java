@@ -49,7 +49,7 @@ public class AddEventSubAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final int fwd = addEventSub(request, cl, form);
     if (fwd != forwardSuccess) {
       return fwd;
@@ -71,7 +71,7 @@ public class AddEventSubAction extends RWActionBase {
    */
   private int addEventSub(final BwRequest request,
                           final RWClient cl,
-                          final BwRWActionForm form) throws Throwable {
+                          final BwRWActionForm form) {
     final EventKey ekey = form.getEventKey();
 
     if (ekey == null) {

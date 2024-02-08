@@ -37,7 +37,7 @@ public class InitAddLocationAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     /* Set the objects to null so we get new ones.
      */
     form.assignAddingLocation(true);

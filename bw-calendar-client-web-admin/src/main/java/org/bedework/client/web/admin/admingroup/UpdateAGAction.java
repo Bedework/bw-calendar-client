@@ -58,7 +58,7 @@ public class UpdateAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
 
     /* Check access
      */
@@ -99,10 +99,10 @@ public class UpdateAGAction extends AdminActionBase {
           return forwardRetry;
         }
 
-        final BwPrincipal newMbr;
+        final BwPrincipal<?> newMbr;
 
         if ("user".equals(kind)) {
-          BwPrincipal p = cl.getUser(mbr);
+          BwPrincipal<?> p = cl.getUser(mbr);
 
           if (p == null) {
             cl.addUser(mbr);
@@ -149,7 +149,7 @@ public class UpdateAGAction extends AdminActionBase {
           return forwardRetry;
         }
 
-        final BwPrincipal oldMbr;
+        final BwPrincipal<?> oldMbr;
 
         if ("user".equals(kind)) {
           oldMbr = cl.getUser(mbr);
@@ -216,6 +216,7 @@ public class UpdateAGAction extends AdminActionBase {
   /**
    * @param val Admin group group owner
    */
+  @SuppressWarnings("UnusedDeclaration")
   public void setAdminGroupGroupOwner(final String val) {
     getAdminForm().setAdminGroupGroupOwner(val);
   }
@@ -223,6 +224,7 @@ public class UpdateAGAction extends AdminActionBase {
   /**
    * @return group owner
    */
+  @SuppressWarnings("UnusedDeclaration")
   public String getAdminGroupGroupOwner() {
     return getAdminForm().getAdminGroupGroupOwner();
   }
@@ -230,6 +232,7 @@ public class UpdateAGAction extends AdminActionBase {
   /**
    * @param val event owner
    */
+  @SuppressWarnings("UnusedDeclaration")
   public void setAdminGroupEventOwner(final String val) {
     getAdminForm().setAdminGroupEventOwner(val);
   }
@@ -237,6 +240,7 @@ public class UpdateAGAction extends AdminActionBase {
   /**
    * @return owner
    */
+  @SuppressWarnings("UnusedDeclaration")
   public String getAdminGroupEventOwner() {
     return  getAdminForm().getAdminGroupEventOwner();
   }
@@ -307,8 +311,9 @@ public class UpdateAGAction extends AdminActionBase {
     return ok;
   }
 
-  private boolean validateAdminGroup(final BwRequest request,
-                                     final AdminClient cl) throws Throwable {
+  private boolean validateAdminGroup(
+          final BwRequest request,
+          final AdminClient cl) {
     boolean ok = true;
 
     final BwAdminGroup updAdminGroup = getAdminForm().getUpdAdminGroup();
@@ -328,11 +333,11 @@ public class UpdateAGAction extends AdminActionBase {
     }
 
     final String adminGroupGroupOwner = checkNull(getAdminForm().getAdminGroupGroupOwner());
-    final BwPrincipal updAgowner = cl.getPrincipal(updAdminGroup.getGroupOwnerHref());
+    final BwPrincipal<?> updAgowner = cl.getPrincipal(updAdminGroup.getGroupOwnerHref());
 
     if ((adminGroupGroupOwner != null) &&
         (!adminGroupGroupOwner.equals(updAgowner.getAccount()))) {
-      final BwPrincipal aggo = cl.getUser(adminGroupGroupOwner);
+      final BwPrincipal<?> aggo = cl.getUser(adminGroupGroupOwner);
 
       if (aggo == null) {
         request.error(ClientError.unknownUser, adminGroupGroupOwner);
@@ -348,7 +353,7 @@ public class UpdateAGAction extends AdminActionBase {
       return ok;
     }
 
-    final BwPrincipal ageo = cl.getUser(adminGroupEventOwner);
+    final BwPrincipal<?> ageo = cl.getUser(adminGroupEventOwner);
 
     final String prefix = cl.getAdminGroupsIdPrefix();
 

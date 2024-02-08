@@ -18,8 +18,10 @@
 */
 package org.bedework.client.web.admin.calsuite;
 
+import org.bedework.access.AccessException;
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
@@ -51,7 +53,7 @@ public class UpdateCalSuiteAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final AdminClient cl,
-                      final BwAdminActionForm form) throws Throwable {
+                      final BwAdminActionForm form) {
     final BwCalSuiteWrapper csw = form.getCalSuite();
 
     if (csw == null) {
@@ -73,9 +75,14 @@ public class UpdateCalSuiteAction extends AdminActionBase {
 
     final String aclStr = request.getReqPar("acl");
     if (aclStr != null) {
-      final Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr, true);
+      try {
+        final Acl acl = new AccessXmlUtil(null, cl).getAcl(aclStr,
+                                                           true);
 
-      cl.changeAccess(csw, acl.getAces(), true);
+        cl.changeAccess(csw, acl.getAces(), true);
+      } catch (final AccessException ae) {
+        throw new CalFacadeException(ae);
+      }
     }
 
     return forwardSuccess;

@@ -18,6 +18,7 @@
 */
 package org.bedework.client.web.rw.event;
 
+import org.bedework.access.AccessException;
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
@@ -57,6 +58,7 @@ import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.util.misc.response.Response;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.util.timezones.TimezonesException;
 import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -116,7 +118,7 @@ public class UpdateEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     return doUpdate(request, cl, form,
                     new UpdatePars(request, cl, form));
   }
@@ -124,7 +126,7 @@ public class UpdateEventAction extends RWActionBase {
   public int doUpdate(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form,
-                      final UpdatePars pars) throws Throwable {
+                      final UpdatePars pars) {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
       cl.rollback();
@@ -410,7 +412,7 @@ public class UpdateEventAction extends RWActionBase {
           ev.setRrules(newRrules);
           rruleChanged = true;
         } else {
-          if (rrules.size() == 0) {
+          if (rrules.isEmpty()) {
             rruleChanged = true;
           } else if (rrules.size() > 1) {
             oldRrules = new ArrayList<>(rrules);
@@ -541,7 +543,7 @@ public class UpdateEventAction extends RWActionBase {
     return true;
   }
 
-  protected boolean setLocation(final UpdatePars pars) throws Throwable {
+  protected boolean setLocation(final UpdatePars pars) {
     setEventLocation(pars.request, pars.ei, pars.form, pars.submitApp);
     return true;
   }
@@ -577,11 +579,11 @@ public class UpdateEventAction extends RWActionBase {
     return ger;
   }
 
-  protected boolean doAdditional(final UpdatePars pars) throws Throwable {
+  protected boolean doAdditional(final UpdatePars pars) {
     return true;
   }
 
-  protected int update(final UpdatePars pars) throws Throwable {
+  protected int update(final UpdatePars pars) {
     final var fwd = doUpdate(pars);
     if (fwd != forwardSuccess) {
       return fwd;
@@ -592,7 +594,7 @@ public class UpdateEventAction extends RWActionBase {
     return forwardSuccess;
   }
 
-  protected int doUpdate(final UpdatePars pars) throws Throwable {
+  protected int doUpdate(final UpdatePars pars) {
 
     if (debug()) {
       debug(pars.changes.toString());
@@ -645,6 +647,9 @@ public class UpdateEventAction extends RWActionBase {
       }
 
       throw cfe;
+    } catch (final AccessException e) {
+      pars.cl.rollback();
+      throw new CalFacadeException(e);
     }
 
     return forwardSuccess;
@@ -655,10 +660,9 @@ public class UpdateEventAction extends RWActionBase {
    * @param pars update parameters
    * @param evDateOnly true for date only
    * @return boolean  true if changed.
-   * @throws Throwable on fatal error
    */
   private boolean updateRExdates(final UpdatePars pars,
-                                 final boolean evDateOnly) throws Throwable {
+                                 final boolean evDateOnly) {
     Collection<BwDateTime> reqDates = pars.request.getRdates(evDateOnly);
     final BwEvent event = pars.ev;
 
@@ -755,7 +759,7 @@ public class UpdateEventAction extends RWActionBase {
    * forward success for change otherwise error.
    */
   protected int processXprops(final UpdatePars pars,
-                              final List<BwXproperty> extras) throws Throwable {
+                              final List<BwXproperty> extras)  {
     final ChangeTableEntry cte =
             pars.changes.getEntry(PropertyInfoIndex.XPROP);
     final List<String> unparsedxps =
@@ -1084,7 +1088,7 @@ public class UpdateEventAction extends RWActionBase {
    * We'll be rebuilding all of this anyway.
    */
   private List<BwXproperty> parseXprops(final UpdatePars pars,
-                                        final boolean publishEvent) throws Throwable {
+                                        final boolean publishEvent) {
     final Collection<String> unparsedxps =
             pars.request.getReqPars("xproperty");
 
@@ -1136,7 +1140,7 @@ public class UpdateEventAction extends RWActionBase {
         }
 
         // Remove empty ones.
-        if ((xp.getValue() == null) || (xp.getValue().length() == 0)) {
+        if ((xp.getValue() == null) || (xp.getValue().isEmpty())) {
           continue;
         }
 
@@ -1202,10 +1206,9 @@ public class UpdateEventAction extends RWActionBase {
    * @param request object
    * @param form object
    * @return String or null
-   * @throws Throwable on fatal error
    */
   public String getRrule(final BwRequest request,
-                         final BwActionFormBase form) throws Throwable {
+                         final BwActionFormBase form) {
     final StringBuilder rrule = new StringBuilder();
     final String freq = request.getReqPar("freq");
     if ((freq == null) || ("NONE".equals(freq)) ){
@@ -1254,7 +1257,11 @@ public class UpdateEventAction extends RWActionBase {
       }
       if (DateTimeUtil.isISODateTime(until)) {
         // Floating - convert to UTC using start timezone.
-        until = Timezones.getUtc(until, start.getTzid());
+        try {
+          until = Timezones.getUtc(until, start.getTzid());
+        } catch (final TimezonesException e) {
+          throw new CalFacadeException(e);
+        }
       } else if (!DateTimeUtil.isISODateTimeUTC(until)) {
         request.error(ValidationError.invalidRecurUntil, "until");
         return null;

@@ -94,10 +94,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param request   For request pars and BwSession
    * @param frm       Action form
    * @return int      forward index
-   * @throws Throwable on fatal error
    */
   public abstract int doAction(BwRequest request,
-                               BwActionFormBase frm) throws Throwable;
+                               BwActionFormBase frm);
 
   @Override
   public String performAction(final Request request)  {

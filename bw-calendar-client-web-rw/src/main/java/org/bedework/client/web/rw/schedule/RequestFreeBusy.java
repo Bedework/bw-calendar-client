@@ -70,7 +70,7 @@ public class RequestFreeBusy extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     try {
       final Collection<String> attendees = request.getReqPars("attendeeUri");
       final Set<String> attendeeUris = new TreeSet<>();
@@ -134,8 +134,8 @@ public class RequestFreeBusy extends RWActionBase {
       if (debug()) {
         error(t);
       }
-      request.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      t.getMessage());
+      request.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        t.getMessage());
     }
 
     return forwardNull;

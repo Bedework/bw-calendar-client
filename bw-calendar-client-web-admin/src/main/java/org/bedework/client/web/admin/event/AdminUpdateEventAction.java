@@ -48,7 +48,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form) throws Throwable {
+                      final BwRWActionForm form) {
     final AdminUpdatePars pars = new AdminUpdatePars(request, cl, form);
 
     if (pars.publishEvent || pars.approveEvent) {
@@ -71,7 +71,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   }
 
   @Override
-  protected boolean setLocation(final UpdatePars pars) throws Throwable {
+  protected boolean setLocation(final UpdatePars pars) {
     if (!adminEventLocation(pars.request, pars.ei)) {
       return false;
     }
@@ -101,7 +101,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   }
 
   @Override
-  protected boolean doAdditional(final UpdatePars pars) throws Throwable {
+  protected boolean doAdditional(final UpdatePars pars) {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
     if (isOwner(pars)) {
@@ -116,7 +116,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
    */
   @Override
   protected int processXprops(final UpdatePars pars,
-                            final List<BwXproperty> extras) throws Throwable {
+                            final List<BwXproperty> extras) {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
     if (adPars.updateSubmitEvent) {
@@ -134,7 +134,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   }
 
   @Override
-  protected int update(final UpdatePars pars) throws Throwable {
+  protected int update(final UpdatePars pars) {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
     final BwEvent ev = pars.ev;
@@ -236,7 +236,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
     return forwardSuccess;
   }
 
-  private List<SuggestedTo> doSuggested(final AdminUpdatePars pars) throws Throwable {
+  private List<SuggestedTo> doSuggested(final AdminUpdatePars pars) {
     final AdminClient cl = (AdminClient)pars.cl;
 
     if (!cl.getSystemProperties().getSuggestionEnabled()) {

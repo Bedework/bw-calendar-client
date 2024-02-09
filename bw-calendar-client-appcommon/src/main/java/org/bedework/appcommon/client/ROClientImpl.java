@@ -120,6 +120,8 @@ public class ROClientImpl implements Logged, Client {
 
   private String primaryPublicPath;
 
+  private static final Object primaryPublicPathLocker = new Object();
+
   private Collection<Locale>supportedLocales;
 
   private final ClientState cstate;
@@ -485,16 +487,19 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public String getPrimaryPublicPath() {
-    if (primaryPublicPath == null) {
-      final var primaryCal = svci.getCalendarsHandler().getPrimaryPublicPath();
-      if (primaryCal == null) {
-        throw new RuntimeException("No primary calendar set");
+    synchronized (primaryPublicPathLocker) {
+      if (primaryPublicPath == null) {
+        final var primaryCal = svci.getCalendarsHandler()
+                                   .getPrimaryPublicPath();
+        if (primaryCal == null) {
+          throw new CalFacadeException("No primary calendar set");
+        }
+
+        primaryPublicPath = primaryCal.getPath();
       }
 
-      primaryPublicPath = primaryCal.getPath();
+      return primaryPublicPath;
     }
-
-    return primaryPublicPath;
   }
 
   @Override
@@ -583,9 +588,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public Collection<BwGroup<?>> getAdminGroups()
           throws CalFacadeException {
-    refreshAdminGroupInfo();
-
-    return adminGroupsInfo;
+    return refreshAdminGroupInfo();
   }
 
   /* ------------------------------------------------------------
@@ -1362,12 +1365,12 @@ public class ROClientImpl implements Logged, Client {
     return svci.getPrefsHandler().get(p);
   }
 
-  protected void refreshAdminGroupInfo()
-          throws CalFacadeException {
-    if ((adminGroupsInfo != null) &&
+  protected Collection<BwGroup<?>> refreshAdminGroupInfo() {
+    final var res = adminGroupsInfo; // Save in case adminGroupsInfo set to null
+    if ((res != null) &&
             (System.currentTimeMillis() < (lastAdminGroupsInfoRefresh +
                                                    adminGroupsInfoRefreshInterval))) {
-      return;
+      return res;
     }
 
     synchronized (adminGroupLocker) {
@@ -1421,6 +1424,8 @@ public class ROClientImpl implements Logged, Client {
       }
 
       lastAdminGroupsInfoRefresh = System.currentTimeMillis();
+
+      return adminGroupsInfo;
     }
   }
 
@@ -1563,8 +1568,12 @@ public class ROClientImpl implements Logged, Client {
 
   protected void updated() {
     lastUpdate = System.currentTimeMillis();
-    adminGroupsInfo = null;
-    primaryPublicPath = null;
+    synchronized (adminGroupLocker) {
+      adminGroupsInfo = null;
+    }
+    synchronized (primaryPublicPathLocker) {
+      primaryPublicPath = null;
+    }
   }
 
   protected void checkUpdate() {

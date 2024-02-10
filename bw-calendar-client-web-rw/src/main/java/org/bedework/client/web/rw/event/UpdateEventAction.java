@@ -119,6 +119,11 @@ public class UpdateEventAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
+    if (form.getEventInfo() == null) {
+      // Session timed out and lost state?
+      return forwardError;
+    }
+
     return doUpdate(request, cl, form,
                     new UpdatePars(request, cl, form));
   }

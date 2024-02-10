@@ -49,6 +49,11 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
+    if (form.getEventInfo() == null) {
+      // Session timed out and lost state?
+      return forwardError;
+    }
+
     final AdminUpdatePars pars = new AdminUpdatePars(request, cl, form);
 
     if (pars.publishEvent || pars.approveEvent) {

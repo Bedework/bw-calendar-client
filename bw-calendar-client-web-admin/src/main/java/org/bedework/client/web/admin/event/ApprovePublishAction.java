@@ -35,6 +35,11 @@ public class ApprovePublishAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) {
+    if (form.getEventInfo() == null) {
+      // Session timed out and lost state?
+      return forwardError;
+    }
+
     final AdminUpdatePars pars = new AdminUpdatePars(request, cl, form);
 
     final AdminClient adcl = (AdminClient)pars.cl;

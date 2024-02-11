@@ -21,6 +21,9 @@ package org.bedework.webcommon;
 
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
+import org.bedework.util.misc.Util;
+
+import java.io.IOException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -59,26 +62,12 @@ public class BwSvciFilter implements Filter, Logged {
                        final FilterChain chain)
           throws ServletException {
     final HttpServletRequest hreq = (HttpServletRequest)req;
-    final HttpServletResponse hresp = (HttpServletResponse)resp;
     final HttpSession sess = hreq.getSession();
-    BwCallback cb = null;
+    BwCallback cb;
 
     Throwable thr = null;
 
     try {
-      /* cb is not set up at this point
-      cb = getCb(sess, "in");
-
-      if (cb != null) {
-        int status = cb.in();
-        if (status != HttpServletResponse.SC_OK) {
-          hresp.setStatus(status);
-          error("Callback.in status=" + status);
-          return;
-        }
-      }
-      */
-
       if (headDisallowed &&
               "HEAD".equals(hreq.getMethod())) {
         ((HttpServletResponse)resp).setStatus(HttpServletResponse.SC_OK);
@@ -93,12 +82,14 @@ public class BwSvciFilter implements Filter, Logged {
       try {
         chain.doFilter(req, resp);
       } catch (final Throwable dft) {
-        error("Exception in filter: ", dft);
-        thr = dft;
-        try {
-          cb.error(hreq, hresp, dft);
-        } catch (final Throwable t1) {
-          error("Callback exception: ", t1);
+        final Throwable cause = Util.getRootCause(dft);
+        if ((cause instanceof IOException) &&
+                (cause.getMessage().startsWith("Connection reset by peer"))) {
+          // Just warn
+          warn("Connection reset by peer");
+        } else {
+          error("Exception in filter: ", dft);
+          thr = dft;
         }
       }
 
@@ -109,11 +100,6 @@ public class BwSvciFilter implements Filter, Logged {
     } catch (final Throwable t) {
       error("Callback exception: ", t);
       thr = t;
-      try {
-        cb.error(hreq, hresp, t);
-      } catch (final Throwable t1) {
-        error("Callback exception: ", t1);
-      }
     } finally {
       try {
         cb = getCb(sess, "close");
@@ -125,13 +111,13 @@ public class BwSvciFilter implements Filter, Logged {
         error("Callback exception: ", t);
         thr = t;
       }
+    }
 
-      if (thr != null) {
-        if (thr instanceof ServletException) {
-          throw (ServletException)thr;
-        }
-        throw new ServletException(thr);
+    if (thr != null) {
+      if (thr instanceof ServletException) {
+        throw (ServletException)thr;
       }
+      throw new ServletException(thr);
     }
   }
 
@@ -168,20 +154,19 @@ public class BwSvciFilter implements Filter, Logged {
     }
   }
 
-  /* ====================================================================
+  /* ==============================================================
    *                   Logged methods
-   * ==================================================================== */
+   * ============================================================== */
 
   private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {
-    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+    if ((logger.getLoggedClass() == null) &&
+            (logger.getLoggedName() == null)) {
       logger.setLoggedClass(getClass());
     }
 
     return logger;
   }
 }
-
-

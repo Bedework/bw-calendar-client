@@ -322,7 +322,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       forward = forwards[forwardNoAccess];
       cl.rollback();
     } catch (final CalFacadeClosed cfc) {
-      request.error(ClientError.closed);
+      request.warn(ClientError.closed);
       warn("Interface closed");
       forward = forwards[forwardGotomain];
     } catch (final CalFacadeException cfe) {

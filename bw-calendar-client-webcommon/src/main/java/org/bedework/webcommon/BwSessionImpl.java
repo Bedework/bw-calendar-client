@@ -40,6 +40,7 @@ import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.AuthProperties;
+import org.bedework.calfacade.exc.CalFacadeClosed;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
@@ -317,6 +318,9 @@ public class BwSessionImpl implements Logged, BwSession {
         refreshView(req);
 //        mstate.setRefresh(false);
       }
+    } catch (final CalFacadeClosed cfc) {
+      // Pass it up
+      throw cfc;
     } catch (final Throwable t) {
       // Not much we can do here
       form.getErr().emit(t);

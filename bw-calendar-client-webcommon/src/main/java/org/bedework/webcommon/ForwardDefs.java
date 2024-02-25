@@ -187,6 +187,9 @@ public interface ForwardDefs {
   public static final int forwardSystemTab = 54;
 
   /** */
+  public static final int forwardLoggedOut = 55;
+
+  /** */
   public static final String[] forwards = {
     "success",
     "continue",
@@ -244,6 +247,8 @@ public interface ForwardDefs {
     "suggestionQueue",
     "users",
     "calsuite",
-    "system"
+    "system",
+
+    "loggedOut"
   };
 }

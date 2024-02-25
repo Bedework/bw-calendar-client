@@ -100,6 +100,9 @@ public interface ClientError extends Serializable {
   /** Error: Error processing image. */
   public static final String imageError = prefix + "imageerror";
 
+  /** Error: Session was logged out. Redo the operation. */
+  public static final String loggedOut = prefix + "loggedout";
+
   /** Error: the email has no recipient. */
   public static final String mailNoRecipient = prefix + "mail.norecipient";
 

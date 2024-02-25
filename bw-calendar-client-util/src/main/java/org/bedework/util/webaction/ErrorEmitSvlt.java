@@ -120,6 +120,12 @@ public class ErrorEmitSvlt implements MessageEmit {
 
   protected ArrayList<Msg> msgList = new ArrayList<>();
 
+  public static class NoSessionException extends RuntimeException {
+    public NoSessionException() {
+      super("No HTTP session");
+    }
+  }
+
   /** Get the error object. If we haven't already got one and
    * getErrorObjAttrName returns non-null create one and implant it in
    * the session.
@@ -138,7 +144,7 @@ public class ErrorEmitSvlt implements MessageEmit {
     final HttpSession sess = request.getSession(false);
 
     if (sess == null) {
-      throw new RuntimeException("No session!");
+      throw new NoSessionException();
     }
 
     final Object o = sess.getAttribute(errorObjAttrName);

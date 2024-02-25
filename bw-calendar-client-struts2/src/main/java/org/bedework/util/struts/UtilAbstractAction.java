@@ -222,12 +222,17 @@ public abstract class UtilAbstractAction extends ActionSupport
 
     //isPortlet = isPortletRequest(request);
 
-    err = ErrorEmitSvlt.getErrorObj(request, getId(),
-                                    getErrorObjErrProp(),
-                                    clearMessagesOnEntry());
-    msg = MessageEmitSvlt.getMessageObj(request, getId(),
-                                        getErrorObjErrProp(),
-                                        clearMessagesOnEntry());
+    try {
+      err = ErrorEmitSvlt.getErrorObj(request, getId(),
+                                      getErrorObjErrProp(),
+                                      clearMessagesOnEntry());
+      msg = MessageEmitSvlt.getMessageObj(request, getId(),
+                                          getErrorObjErrProp(),
+                                          clearMessagesOnEntry());
+    } catch (final ErrorEmitSvlt.NoSessionException nse) {
+      warn("No session exception");
+      return "errpr";
+    }
 
     /* Log the request - virtual domains can make it difficult to
        *  distinguish applications.

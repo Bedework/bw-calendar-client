@@ -48,7 +48,7 @@ public class MessageEmitSvlt extends ErrorEmitSvlt {
     final HttpSession sess = request.getSession(false);
 
     if (sess == null) {
-      throw new RuntimeException("No session!");
+      throw new NoSessionException();
     }
 
     final Object o = sess.getAttribute(messageObjAttrName);

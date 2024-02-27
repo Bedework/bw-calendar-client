@@ -529,93 +529,88 @@ public class BwSessionImpl implements Logged, BwSession {
     final Client cl = request.getClient();
     final boolean publicAdmin = cl.getPublicAdmin(); //form.getConfig().getPublicAdmin();
 
-    try {
-      final BwPrincipal<?> p;
+    final BwPrincipal<?> p;
 
-      if (cl.getWebSubmit() || cl.getPublicAuth()) {
-        // Use calsuite in form or default
-        String calSuiteName = form.getCalSuiteName();
-        if (calSuiteName == null) {
-          calSuiteName = form.getConfig().getCalSuite();
-          form.setCalSuiteName(calSuiteName);
-        }
+    if (cl.getWebSubmit() || cl.getPublicAuth()) {
+      // Use calsuite in form or default
+      String calSuiteName = form.getCalSuiteName();
+      if (calSuiteName == null) {
+        calSuiteName = form.getConfig().getCalSuite();
+        form.setCalSuiteName(calSuiteName);
+      }
 
-        if (calSuiteName == null) {
-          error("No default calendar suite - nor one requested");
-          return null;
-        }
+      if (calSuiteName == null) {
+        error("No default calendar suite - nor one requested");
+        return null;
+      }
 
-        final BwCalSuiteWrapper cs = cl.getCalSuite(calSuiteName);
+      final BwCalSuiteWrapper cs = cl.getCalSuite(calSuiteName);
 
-        if (cs == null) {
-          form.getErr().emit("No calendar suite with name ", calSuiteName);
-          return null;
-        }
+      if (cs == null) {
+        form.getErr().emit("No calendar suite with name ", calSuiteName);
+        return null;
+      }
         
-        form.setCurrentCalSuite(cs);
+      form.setCurrentCalSuite(cs);
 
-        p = cl.getPrincipal(cs.getGroup().getOwnerHref());
+      p = cl.getPrincipal(cs.getGroup().getOwnerHref());
 
-        if (debug()) {
-          debug("Get Calendar home for " + p.getPrincipalRef());
-        }
+      if (debug()) {
+        debug("Get Calendar home for " + p.getPrincipalRef());
+      }
 
-        col = cl.getHome(p, false);
+      col = cl.getHome(p, false);
+    } else {
+      if ((publicAdmin) && (form.getCurrentCalSuite() != null)) {
+        // Use calendar suite owner
+        p = cl.getPrincipal(
+                form.getCurrentCalSuite().getGroup()
+                    .getOwnerHref());
       } else {
-        if ((publicAdmin) && (form.getCurrentCalSuite() != null)) {
-          // Use calendar suite owner
-          p = cl.getPrincipal(
-                  form.getCurrentCalSuite().getGroup()
-                      .getOwnerHref());
-        } else {
-          p = cl.getCurrentPrincipal();
-        }
-
-        if (debug()) {
-          debug("Get Calendar home for " + p.getPrincipalRef());
-        }
-
-        col = cl.getHome(p, false);
+        p = cl.getCurrentPrincipal();
       }
+
+      if (debug()) {
+        debug("Get Calendar home for " + p.getPrincipalRef());
+      }
+
+      col = cl.getHome(p, false);
+    }
       
-      if (col == null) {
-        warn("No home collection for " + p.getPrincipalRef());
-        return null;
-      }
-
-      if (cl.isGuest() || cl.getPublicAuth()) {
-        final BwCalendar cloned = publicUserCollections.get(
-                col.getPath());
-
-        if (cloned != null) {
-          if (debug()) {
-            debug("Use cloned from map for " + col.getPath());
-          }
-
-          return cloned;
-        }
-      }
-
-      final BwCalendar cloned = getClonedCollection(request, col,
-                                                    false);
-
-      if (cloned == null) {
-        warn("Unable to clone " + col);
-        request.getErr().emit("Unable to clone user collection");
-        return null;
-      }
-
-      if (cl.isGuest()) {
-        synchronized (publicUserCollections) {
-          publicUserCollections.put(col.getPath(), cloned);
-        }
-      }
-
-      return cloned;
-    } catch (final CalFacadeException cfe) {
-      request.getErr().emit(cfe);
+    if (col == null) {
+      warn("No home collection for " + p.getPrincipalRef());
       return null;
     }
+
+    if (cl.isGuest() || cl.getPublicAuth()) {
+      final BwCalendar cloned = publicUserCollections.get(
+              col.getPath());
+
+      if (cloned != null) {
+        if (debug()) {
+          debug("Use cloned from map for " + col.getPath());
+        }
+
+        return cloned;
+      }
+    }
+
+    final BwCalendar cloned = getClonedCollection(request, col,
+                                                  false);
+
+    if (cloned == null) {
+      warn("Unable to clone " + col);
+      request.getErr().emit("Unable to clone user collection");
+      return null;
+    }
+
+    if (cl.isGuest()) {
+      synchronized (publicUserCollections) {
+        publicUserCollections.put(col.getPath(), cloned);
+      }
+    }
+
+    return cloned;
   }
 
   /* ====================================================================

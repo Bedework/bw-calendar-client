@@ -72,7 +72,7 @@ public class BwActionFormBase extends UtilActionForm
    */
   private ConfigCommon config;
 
-  private BwPrincipal adminUserId;
+  private BwPrincipal<?> adminUserId;
 
   private Locale requestedLocale;
 
@@ -127,7 +127,7 @@ public class BwActionFormBase extends UtilActionForm
 
   /** The groups of which our user is a member
    */
-  private Collection<BwGroup> currentGroups;
+  private Collection<BwGroup<?>> currentGroups;
 
   /* ....................................................................
    *           Event date and time fields
@@ -256,11 +256,9 @@ public class BwActionFormBase extends UtilActionForm
       m = newModule(n);
 
       /* clone the client from any active module */
-      if (modules.size() > 0) {
-        for (final BwModule from: modules.values()) {
-          if (from.getClient() != null) {
-            m.setClient(from.getClient().copy(m.getModuleName()));
-          }
+      for (final BwModule from: modules.values()) {
+        if (from.getClient() != null) {
+          m.setClient(from.getClient().copy(m.getModuleName()));
         }
       }
       modules.put(n, m);
@@ -272,14 +270,14 @@ public class BwActionFormBase extends UtilActionForm
   /** Called when we change the default client state enough to need
    * to ditch the other clients.
    */
-  public void flushModules(String name) {
+  public void flushModules(final String name) {
     String n = name;
 
     if (n == null) {
       n = BwModule.defaultModuleName;
     }
 
-    ArrayList<String> mnames = new ArrayList<>(modules.keySet());
+    final ArrayList<String> mnames = new ArrayList<>(modules.keySet());
 
     for (String s: mnames) {
       if (s.equals(n)) {
@@ -331,7 +329,7 @@ public class BwActionFormBase extends UtilActionForm
    * @return uid or null
    */
   public String getRequestedUid() {
-    String uid = requestedUid;
+    final String uid = requestedUid;
     requestedUid = null; // Only one go
     return uid;
   }
@@ -401,7 +399,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val Application visible directory information.
    */
   public void setDirInfo(final DirectoryInfo val) {
     dirInfo = val;
@@ -438,7 +436,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val token for event registration
    */
-  public void setEventRegAdminToken(String val) {
+  public void setEventRegAdminToken(final String val) {
     eventRegAdminToken = val;
   }
 
@@ -449,7 +447,7 @@ public class BwActionFormBase extends UtilActionForm
     return eventRegAdminToken;
   }
 
-  public void setAuthPars(AuthProperties val) {
+  public void setAuthPars(final AuthProperties val) {
     authpars = val;
   }
 
@@ -462,7 +460,7 @@ public class BwActionFormBase extends UtilActionForm
 
   /** Set a copy of the config parameters
    *
-   * @param val
+   * @param val A copy of the config parameters
    */
   public void setConfig(final ConfigCommon val) {
     config = val;
@@ -490,7 +488,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val
    */
-  public void assignAdminUserPrincipal(final BwPrincipal val) {
+  public void assignAdminUserPrincipal(final BwPrincipal<?> val) {
     adminUserId = val;
   }
 
@@ -586,20 +584,20 @@ public class BwActionFormBase extends UtilActionForm
 
   /** The groups of which our user is a member
    *
-   * @param val
+   * @param val The groups of which our user is a member
    */
-  public void setCurrentGroups(final Collection<BwGroup> val) {
+  public void setCurrentGroups(final Collection<BwGroup<?>> val) {
     currentGroups = val;
   }
 
   /**
    * @return user admin groups
    */
-  public Collection<BwGroup> getCurrentGroups() {
+  public Collection<BwGroup<?>> getCurrentGroups() {
     return currentGroups;
   }
 
-  public void assignCalendarUserAddress(String val) {
+  public void assignCalendarUserAddress(final String val) {
     calendarUserAddress = val;
   }
 

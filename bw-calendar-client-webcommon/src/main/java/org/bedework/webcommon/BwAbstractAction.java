@@ -119,7 +119,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (status != HttpServletResponse.SC_OK) {
       request.getResponse().setStatus(status);
       error("Callback.in status=" + status);
-      invalidateSession(request);
+      // Try not invalidating. There are multiple requests and this may
+      // cause errors in the one that got through
+      //invalidateSession(request);
       return forwards[forwardError];
     }
 

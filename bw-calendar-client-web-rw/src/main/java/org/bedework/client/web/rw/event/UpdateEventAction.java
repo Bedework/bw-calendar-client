@@ -1361,6 +1361,14 @@ public class UpdateEventAction extends RWActionBase {
     return getRwForm().getEventEndDate();
   }
 
+  public void setEventEndType(final String val) {
+    getRwForm().setEventEndType(val);
+  }
+
+  public String getEventEndType() {
+    return getRwForm().getEventEndType();
+  }
+
   public DurationBean getEventDuration() {
     return getRwForm().getEventDates().getDuration();
   }

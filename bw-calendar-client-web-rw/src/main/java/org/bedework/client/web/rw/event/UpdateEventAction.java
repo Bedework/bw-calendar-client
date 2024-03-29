@@ -144,6 +144,26 @@ public class UpdateEventAction extends RWActionBase {
       return forwardNoAction;
     }
 
+    /* Check request guid and recurrenceId match */
+    if (!request.present("guid")) {
+      request.getErr().emit(
+              ClientError.missingRequestPar, "guid");
+      return forwardError;
+    }
+
+    if (!request.getReqPar("guid").equals(ev.getUid())) {
+      request.getErr().emit(
+              ClientError.eventMismatch, "guid");
+      return forwardError;
+    }
+
+    if (!request.empty("recurrenceId") &&
+            !request.getReqPar("recurrenceId").equals(ev.getRecurrenceId())) {
+      request.getErr().emit(
+              ClientError.eventMismatch, "recurrenceId");
+      return forwardError;
+    }
+
     /*
     BwEventAnnotation ann = null;
     if (ev instanceof BwEventProxy) {

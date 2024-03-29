@@ -94,6 +94,9 @@ public interface ClientError extends Serializable {
   /** Error: duplicate uid. must be unique within the calendar collection. */
   public static final String duplicateUid = prefix + "duplicateuid";
 
+  /** Uid/recurrenceid mismatch: possibly updating in multiple browser tabs. */
+  public static final String eventMismatch = prefix + "event.mismatch";
+
   /** Error: there were <n> failed overrides. */
   public static final String failedOverrides = prefix + "failed.overrides";
 

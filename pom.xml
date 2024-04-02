@@ -33,4 +33,66 @@
     <url>https://github.com/Bedework/bw-calendar-client</url>
     <tag>HEAD</tag>
   </scm>
+
+  <dependencyManagement>
+    <!-- These dependencies ensure all transitive dependencies
+         during builds of this project resolve to project.version
+         and NOT the version set in bedework-parent
+    -->
+    <dependencies>
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-admin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-appcommon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-rw</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-struts2</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-taglib</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-util</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-web-admin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-web-rw</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bedework.bwwebcl</groupId>
+        <artifactId>bw-calendar-client-webcommon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

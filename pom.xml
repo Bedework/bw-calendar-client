@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.bedework</groupId>
     <artifactId>bedework-parent</artifactId>
-    <version>55</version>
+    <version>56-SNAPSHOT</version>
   </parent>
 
   <groupId>org.bedework.bwwebcl</groupId>
   <artifactId>bw-calendar-client</artifactId>
-  <version>4.1.2-SNAPSHOT</version>
+  <version>4.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Bedework: calendar web client</name>
   <description>Calendar web client code for bedework</description>

@@ -7,7 +7,7 @@
   <parent>
     <artifactId>bw-calendar-client</artifactId>
     <groupId>org.bedework.bwwebcl</groupId>
-    <version>4.1.1-SNAPSHOT</version>
+    <version>4.1.1</version>
   </parent>
 
   <artifactId>bw-calendar-client-web-rw</artifactId>

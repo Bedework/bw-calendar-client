@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>bw-calendar-client-taglib</artifactId>
+  <name>Bedework web client: Taglib classes</name>
 
   <dependencies>
     <dependency>

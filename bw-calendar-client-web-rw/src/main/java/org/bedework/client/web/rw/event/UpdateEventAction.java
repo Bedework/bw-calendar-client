@@ -144,26 +144,42 @@ public class UpdateEventAction extends RWActionBase {
       return forwardNoAction;
     }
 
-    /* Check request guid and recurrenceId match */
-    if (!request.present("guid")) {
-      request.getErr().emit(
-              ClientError.missingRequestPar, "guid");
-      return forwardError;
-    }
+    final var reqGuid = request.getReqPar("guid");
+    final var reqAdding = request.notNull("addEvent");
+    // pars value and request for adding may be
+    // inconsistent with multiple tabs.
 
-    if (!request.getReqPar("guid").equals(ev.getUid())) {
-      request.getErr().emit(
-              ClientError.eventMismatch, "guid");
-      return forwardError;
-    }
+    if (pars.adding || reqAdding) {
+      // Expect a null guid in request and event.
+      if ((reqGuid != null) || (ev.getUid() != null)) {
+        request.getErr().emit(
+                ClientError.eventMismatch, "guid");
+        return forwardError;
+      }
+    } else {
+      /* Check request guid and recurrenceId match */
+      if (reqGuid == null) {
+        request.getErr().emit(
+                ClientError.missingRequestPar, "guid");
+        return forwardError;
+      }
 
-    if (!request.empty("recurrenceId") &&
-            !request.getReqPar("recurrenceId").equals(ev.getRecurrenceId())) {
-      request.getErr().emit(
-              ClientError.eventMismatch, "recurrenceId");
-      return forwardError;
-    }
+      if (!reqGuid.equals(ev.getUid())) {
+        request.getErr().emit(
+                ClientError.eventMismatch, "guid");
+        return forwardError;
+      }
 
+      final var reqRid = request.getReqPar("recurrenceId");
+      final var evRid = ev.getRecurrenceId();
+
+      if (((reqRid != null) && !reqRid.equals(evRid)) ||
+              ((reqRid == null) && (evRid != null))) {
+        request.getErr().emit(
+                ClientError.eventMismatch, "recurrenceId");
+        return forwardError;
+      }
+    }
     /*
     BwEventAnnotation ann = null;
     if (ev instanceof BwEventProxy) {
@@ -489,7 +505,7 @@ public class UpdateEventAction extends RWActionBase {
     /* ------------------------ Rdates and exdates -------------------------- */
 
     boolean evDateOnly = false;
-    if (!form.getAddingEvent()) {
+    if (!pars.adding) {
       evDateOnly = ev.getDtstart().getDateType();
     } else if (!request.present("initDates")) {
       evDateOnly = form.getEventDates().getStartDate().getDateOnly();

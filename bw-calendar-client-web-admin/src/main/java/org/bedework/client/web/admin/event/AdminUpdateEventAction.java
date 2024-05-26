@@ -71,7 +71,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
 
   @Override
   protected boolean isOwner(final UpdatePars pars) {
-    return pars.form.getAddingEvent() ||
+    return pars.adding ||
             ((AdminClient)pars.cl).isCalSuiteEntity(pars.ev);
   }
 

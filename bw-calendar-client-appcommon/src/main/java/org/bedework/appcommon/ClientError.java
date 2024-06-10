@@ -173,6 +173,9 @@ public interface ClientError extends Serializable {
       You must remove the subscription from this view before deleting. */
   public static final String referencedSubscription = prefix + "referenced.subscription";
 
+  /** Refresh failed:  */
+  public static final String refreshCalendarFailed = prefix + "refresh.failed";
+
   /** Not found: there is no attendee identified by the uri. */
   public static final String unknownAttendee = prefix + "unknown.attendee";
 

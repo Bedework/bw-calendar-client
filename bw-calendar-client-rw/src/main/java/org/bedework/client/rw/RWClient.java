@@ -99,10 +99,15 @@ public interface RWClient extends Client {
    *
    * @param  val         BwCalendar object
    * @param  newParent   BwCalendar potential parent
-   * @throws CalFacadeException on fatal error
    */
   void moveCollection(BwCalendar val,
-                      BwCalendar newParent) throws CalFacadeException;
+                      BwCalendar newParent);
+
+  /** Refresh a subscription represented by this calendar object
+   *
+   * @param  val         BwCalendar object
+   */
+  Response refreshSubscription(BwCalendar val);
 
   /** Return a list of calendars in which calendar objects can be
    * placed by the current user.

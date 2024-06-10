@@ -213,13 +213,24 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public void moveCollection(final BwCalendar val,
-                             final BwCalendar newParent)
-          throws CalFacadeException {
+                             final BwCalendar newParent) {
     svci.getCalendarsHandler().move(val, newParent);
     updated();
     if (val.getPublick()) {
       flushCached();
     }
+  }
+
+  @Override
+  public Response refreshSubscription(final BwCalendar val) {
+    final var resp = svci.getCalendarsHandler()
+                         .refreshSubscription(val);
+    updated();
+    if (val.getPublick()) {
+      flushCached();
+    }
+
+    return resp;
   }
 
   @Override

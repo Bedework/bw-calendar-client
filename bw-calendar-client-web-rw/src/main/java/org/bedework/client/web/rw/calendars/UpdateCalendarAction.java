@@ -117,6 +117,19 @@ public class UpdateCalendarAction extends RWActionBase {
       }
     }
 
+    if (!add || !request.empty("refresh")) {
+      final var response = cl.refreshSubscription(cal);
+      if (response.isOk()) {
+        request.message(ClientMessage.refreshedCalendar);
+
+        return forwardContinue;
+      }
+
+      request.error(ClientError.refreshCalendarFailed,
+                    response.getMessage());
+      return forwardContinue;
+    }
+
     /* We are just adding or updating from the current form values.
      */
 

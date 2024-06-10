@@ -103,6 +103,9 @@ public interface ClientMessage extends Serializable {
   /** Event has been mailed. */
   public static final String mailedEvent = prefix + "mailed.event";
 
+  /** Calendar refreshed. */
+  public static final String refreshedCalendar = prefix + "refreshed.calendar";
+
   /** Schedule added. */
   public static final String scheduleAdded = prefix + "schedule.added";
 

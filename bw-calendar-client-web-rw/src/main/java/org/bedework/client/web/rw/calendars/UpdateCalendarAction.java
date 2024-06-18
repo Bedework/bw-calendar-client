@@ -117,7 +117,7 @@ public class UpdateCalendarAction extends RWActionBase {
       }
     }
 
-    if (!add || !request.empty("refresh")) {
+    if (!add && !request.empty("refresh")) {
       final var response = cl.refreshSubscription(cal);
       if (response.isOk()) {
         request.message(ClientMessage.refreshedCalendar);

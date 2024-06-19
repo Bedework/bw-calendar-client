@@ -12,33 +12,6 @@ import javax.servlet.http.HttpServletRequest;
  * User: mike Date: 3/31/22 Time: 14:18
  */
 public interface WebActionForm {
-  /** Inc waiting for resource
-   *
-   */
-  void incWaiters();
-
-  /** Dec waiting for resource
-   *
-   */
-  void decWaiters();
-
-  /** Get waiting for resource
-   *
-   * @return num waiting for resource
-   */
-  public int getWaiters();
-
-  /** Set inuse flag
-   *
-   * @param val boolean value of inuse flag
-   */
-  void assignInuse(boolean val);
-
-  /**
-   * @return boolean value of inuse flag
-   */
-  public boolean getInuse();
-
   /* ================ Properties methods ============== */
 
   /** Set initialised state

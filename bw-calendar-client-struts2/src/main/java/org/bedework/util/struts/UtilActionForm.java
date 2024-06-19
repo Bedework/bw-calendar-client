@@ -43,13 +43,6 @@ public class UtilActionForm implements WebActionForm {
 
   private Locale currentLocale;
 
-  /* ............... fields associated with locking ........... */
-
-  /** Requests waiting */
-  private int waiters;
-
-  private boolean inuse;
-
   /** Is nocache on?
    */
   protected boolean nocache;
@@ -131,38 +124,6 @@ public class UtilActionForm implements WebActionForm {
   /* ==========================================================
    *                          Methods
      ========================================================== */
-
-  /** Inc waiting for resource
-   *
-   */
-  public void incWaiters() {
-    waiters++;
-  }
-
-  /** Dec waiting for resource
-   *
-   */
-  public void decWaiters() {
-    waiters--;
-  }
-
-  /** Get waiting for resource
-   *
-   * @return num waiting for resource
-   */
-  public int getWaiters() {
-    return waiters;
-  }
-
-  @Override
-  public void assignInuse(final boolean val) {
-    inuse = val;
-  }
-
-  @Override
-  public boolean getInuse() {
-    return inuse;
-  }
 
   /* ================ Properties methods ============== */
 

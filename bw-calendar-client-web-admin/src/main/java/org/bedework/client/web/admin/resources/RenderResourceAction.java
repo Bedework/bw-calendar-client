@@ -45,7 +45,7 @@ public class RenderResourceAction extends AdminActionBase {
                       final BwAdminActionForm form) {
     final String name = form.getResourceName();
     if (name == null) {
-      request.getErr().emit(ValidationError.missingName);
+      request.error(ValidationError.missingName);
       return forwardRetry;
     }
 
@@ -66,7 +66,7 @@ public class RenderResourceAction extends AdminActionBase {
             cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
 
     if (resource == null) {
-      request.getErr().emit(ClientError.unknownResource, name);
+      request.error(ClientError.unknownResource, name);
       return forwardRetry;
     }
 

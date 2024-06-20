@@ -470,7 +470,7 @@ public class BwRWActionForm extends BwActionFormBase {
                 .encode(getSubmissionRoot(),
                         StandardCharsets.UTF_8);
       } catch (final Throwable t) {
-        getErr().emit(t);
+        error(t);
       }
     }
 

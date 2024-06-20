@@ -88,7 +88,7 @@ public class SetAlarmAction extends RWActionBase {
     }
 
     if (!Util.present(recipient)) {
-      form.getErr().emit(ClientError.mailNoRecipient, 1);
+      request.error(ClientError.mailNoRecipient, 1);
       return forwardRetry;
     }
 
@@ -119,11 +119,11 @@ public class SetAlarmAction extends RWActionBase {
     final var ueres =
             cl.updateEvent(new EventInfo(ev), true, null, false);
     if (!ueres.isOk()) {
-      form.getErr().emit(ueres.getMessage());
+      request.error(ueres.getMessage());
       return forwardError;
     }
 
-    form.getMsg().emit(ClientMessage.setAlarm);
+    request.message(ClientMessage.setAlarm);
 
     request.setRequestAttr(BwRequest.eventStateName,
                            evstate);

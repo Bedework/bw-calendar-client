@@ -92,7 +92,7 @@ public class DeleteEventAction extends RWActionBase {
         final Response resp = cl.deleteEvent(ei, !publicEvents);
 
         if (resp.getStatus() == Response.Status.notFound) {
-          form.getErr().emit(ClientError.unknownEvent);
+          request.error(ClientError.unknownEvent);
           return forwardNoAction;
         }
 
@@ -114,11 +114,11 @@ public class DeleteEventAction extends RWActionBase {
         final var ueres = cl.updateEvent(ei, true, null, false);
         if (!ueres.isOk()) {
           if (ueres.getStatus() == Response.Status.noAccess) {
-            form.getErr().emit(ClientError.noAccess);
+            request.error(ClientError.noAccess);
           } else if (ueres.getException() != null) {
-            form.getErr().emit(ClientError.exc, ueres.getException());
+            request.error(ClientError.exc, ueres.getException());
           } else {
-            form.getErr().emit(ueres.getMessage());
+            request.error(ueres.getMessage());
           }
           return forwardNoAction;
         }
@@ -127,7 +127,7 @@ public class DeleteEventAction extends RWActionBase {
         /* Can't really delete it - try annotating it */
           cl.markDeleted(ev);
         } catch (final CalFacadeAccessException cfe1) {
-          form.getErr().emit(ClientError.noAccess);
+          request.error(ClientError.noAccess);
           return forwardNoAction;
         }
       }
@@ -138,7 +138,7 @@ public class DeleteEventAction extends RWActionBase {
       notifySubmitter(request, ei, submitterEmail);
     }
 
-    form.getMsg().emit(ClientMessage.deletedEvents, 1);
+    request.message(ClientMessage.deletedEvents, 1);
     request.refresh();
     cl.clearSearchEntries();
 

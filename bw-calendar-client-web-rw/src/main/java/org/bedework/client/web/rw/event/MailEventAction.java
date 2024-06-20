@@ -60,7 +60,7 @@ public class MailEventAction extends RWActionBase {
 
     final String recipient = request.getReqPar("lastEmail");
     if (recipient == null) {
-      request.getErr().emit(ClientError.mailNoRecipient, 1);
+      request.error(ClientError.mailNoRecipient, 1);
       return forwardRetry;
     }
 
@@ -83,7 +83,7 @@ public class MailEventAction extends RWActionBase {
                 "event.ics", "text/calendar",
                 cl);
 
-    request.getMsg().emit(ClientMessage.mailedEvent);
+    request.message(ClientMessage.mailedEvent);
 
     return forwardSuccess;
   }

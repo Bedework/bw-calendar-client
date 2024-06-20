@@ -18,6 +18,7 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.webaction.Request;
@@ -39,7 +40,7 @@ public class BwCallbackImpl extends BwCallback implements
     this.form = form;
     final var ef = form.getErrorForward();
     if (ef == null) {
-      throw new RuntimeException("\"errorForward\" must be defined for servlet context");
+      throw new CalFacadeException("\"errorForward\" must be defined for servlet context");
     }
 
     if (!ef.startsWith("/")) {
@@ -105,7 +106,7 @@ public class BwCallbackImpl extends BwCallback implements
   public void error(final HttpServletRequest hreq,
                     final HttpServletResponse hresp,
                     final Throwable t) {
-    form.getErr().emit(t);
+    error(t);
 
     /* Redirect to an error action
        */

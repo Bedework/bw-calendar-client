@@ -59,7 +59,7 @@ public class RenderEventAction extends BwAbstractAction {
     final EventKey ekey = form.getEventKey();
 
     if (ekey == null) {
-      request.getErr().emit(ClientError.unknownEvent, "No key supplied");
+      request.error(ClientError.unknownEvent, "No key supplied");
       return forwardNoAction;
     }
 
@@ -82,7 +82,7 @@ public class RenderEventAction extends BwAbstractAction {
     if (rrcs.getStatus() == notFound) {
       form.setRruleComponents(null);
     } else if (!rrcs.isOk()) {
-      request.getErr().emit(rrcs.getMessage());
+      request.error(rrcs.getMessage());
       return forwardNoAction;
     } else {
       form.setRruleComponents(rrcs.getEntities());

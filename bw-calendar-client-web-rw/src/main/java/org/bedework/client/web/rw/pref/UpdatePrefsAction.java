@@ -348,7 +348,7 @@ public class UpdatePrefsAction extends RWActionBase {
       Timezones.setThreadDefaultTzid(prefs.getDefaultTzid());
     }
     form.setUserPreferences(prefs);
-    form.getMsg().emit(ClientMessage.updatedPrefs);
+    request.message(ClientMessage.updatedPrefs);
     return forwardSuccess;
   }
 

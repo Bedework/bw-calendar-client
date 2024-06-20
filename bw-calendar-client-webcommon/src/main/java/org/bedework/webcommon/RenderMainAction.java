@@ -72,7 +72,7 @@ public class RenderMainAction extends RenderAction {
         request.setRequestAttr(BwRequest.bwSearchResultName,
                                mstate.getSearchResult());
       } catch (final CalFacadeException cfe) {
-        request.getErr().emit(cfe);
+        request.error(cfe);
       }
     }
 

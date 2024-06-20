@@ -117,7 +117,7 @@ public class EventCommon {
 
     if (cal == null) {
       // Assume no access
-      request.getErr().emit(ClientError.noAccess);
+      request.error(ClientError.noAccess);
       return null;
     }
 
@@ -135,7 +135,7 @@ public class EventCommon {
 
       if (uid == null) {
         // Assume no access
-        request.getErr().emit(ClientError.noAccess);
+        request.error(ClientError.noAccess);
         return null;
       }
 
@@ -157,7 +157,7 @@ public class EventCommon {
     }
 
     if (ei == null) {
-      request.getErr().emit(ClientError.unknownEvent, key);
+      request.error(ClientError.unknownEvent, key);
       return null;
     } else if (logger.debug()) {
       logger.debug("Fetch event found " + ei.getEvent());
@@ -198,7 +198,7 @@ public class EventCommon {
       final BwCalendar col = cl.getHome(p, false);
 
       if (col == null) {
-        request.getErr().emit("No calendar home");
+        request.error("No calendar home");
       } else {
         final Collection<BwXproperty> aliases = evcopy.getXproperties(BwXproperty.bedeworkAlias);
 
@@ -420,7 +420,7 @@ public class EventCommon {
     if (sr.recipientResults != null) {
       for (final ScheduleRecipientResult srr: sr.recipientResults.values()) {
         if (srr.getStatus() != ScheduleStates.scheduleOk) {
-          form.getMsg().emit(ClientMessage.freebusyUnavailable, srr.recipient);
+          request.message(ClientMessage.freebusyUnavailable, srr.recipient);
         }
       }
     }
@@ -428,7 +428,7 @@ public class EventCommon {
     final BwDuration dur = new BwDuration();
 
     if (interval <= 0) {
-      form.getErr().emit(ClientError.badInterval, interval);
+      request.error(ClientError.badInterval, interval);
       return forwardError;
     }
 
@@ -447,7 +447,7 @@ public class EventCommon {
           dur.setWeeks(interval);
           break;
         default:
-          form.getErr().emit(ClientError.badIntervalUnit, interval);
+          request.error(ClientError.badIntervalUnit, interval);
           return forwardError;
       }
     } else {
@@ -463,37 +463,37 @@ public class EventCommon {
 
     form.setFormattedFreeBusy(ffb);
 
-    emitScheduleStatus(form, sr, true);
+    emitScheduleStatus(request, sr, true);
 
     return forwardSuccess;
   }
 
-  public static void emitScheduleStatus(final BwRWActionForm form,
+  public static void emitScheduleStatus(final BwRequest request,
                                          final ScheduleResult sr,
                                          final boolean errorsOnly) {
     if (sr.errorCode != null) {
-      form.getErr().emit(sr.errorCode, sr.extraInfo);
+      request.error(sr.errorCode, sr.extraInfo);
     }
 
     if (sr.ignored) {
-      form.getMsg().emit(ClientMessage.scheduleIgnored);
+      request.message(ClientMessage.scheduleIgnored);
     }
 
     if (sr.reschedule) {
-      form.getMsg().emit(ClientMessage.scheduleRescheduled);
+      request.message(ClientMessage.scheduleRescheduled);
     }
 
     if (sr.update) {
-      form.getMsg().emit(ClientMessage.scheduleUpdated);
+      request.message(ClientMessage.scheduleUpdated);
     }
 
     for (final ScheduleRecipientResult srr: sr.recipientResults.values()) {
       if (srr.getStatus() == ScheduleStates.scheduleDeferred) {
-        form.getMsg().emit(ClientMessage.scheduleDeferred, srr.recipient);
+        request.message(ClientMessage.scheduleDeferred, srr.recipient);
       } else if (srr.getStatus() == ScheduleStates.scheduleNoAccess) {
-        form.getErr().emit(ClientError.noSchedulingAccess, srr.recipient);
+        request.error(ClientError.noSchedulingAccess, srr.recipient);
       } else if (!errorsOnly) {
-        form.getMsg().emit(ClientMessage.scheduleSent, srr.recipient);
+        request.message(ClientMessage.scheduleSent, srr.recipient);
       }
     }
   }
@@ -522,7 +522,7 @@ public class EventCommon {
       final BwDateTime evend = ev.getDtend();
 
       if (evstart.after(evend)) {
-        request.getErr().emit(ValidationError.startAfterEnd);
+        request.error(ValidationError.startAfterEnd);
         ok = false;
       } else {
         end = IcalUtil.makeDtEnd(evend);
@@ -530,7 +530,7 @@ public class EventCommon {
     } else if (endType == StartEndComponent.endTypeDuration) {
       dur = new Duration(new Dur(ev.getDuration()));
     } else if (endType != StartEndComponent.endTypeNone) {
-      request.getErr().emit(ValidationError.invalidEndtype);
+      request.error(ValidationError.invalidEndtype);
       ok = false;
     }
 
@@ -739,7 +739,7 @@ public class EventCommon {
     final RWClient cl = (RWClient)request.getClient();
 
     if (uri == null) {
-      request.getErr().emit(ValidationError.invalidUser, "null");
+      request.error(ValidationError.invalidUser, "null");
       return forwardNoAction;
     }
 
@@ -774,7 +774,7 @@ public class EventCommon {
 
     final String calAddr = cl.uriToCaladdr(uri);
     if (calAddr == null) {
-      form.getErr().emit(ValidationError.invalidUser, uri);
+      request.error(ValidationError.invalidUser, uri);
       return forwardNoAction;
     }
 
@@ -810,7 +810,7 @@ public class EventCommon {
       }
 
       if (!found) {
-        form.getErr().emit(ClientError.unknownAttendee, calAddr);
+        request.error(ClientError.unknownAttendee, calAddr);
         return forwardNoAction;
       }
     }
@@ -825,7 +825,7 @@ public class EventCommon {
 
     if ((atts.getAttendees() != null) &&
             (atts.getAttendees().size() == maxAttendees)) {
-      form.getErr().emit(ValidationError.tooManyAttendees, uri);
+      request.error(ValidationError.tooManyAttendees, uri);
       return forwardNoAction;
     }
 
@@ -938,12 +938,9 @@ public class EventCommon {
                                          final EventInfo ei,
                                          final BwRWActionForm form,
                                          final boolean webSubmit) {
-    final RWClient cl = (RWClient)request.getClient();
     final BwEvent ev = ei.getEvent();
-    final ChangeTable changes = ei.getChangeset(cl.getCurrentPrincipalHref());
 
-    final BwLocation loc = getLocation(cl,
-                                       form,
+    final BwLocation loc = getLocation(request,
                                        ev.getOwnerHref(), webSubmit);
     final BwLocation eloc = ev.getLocation();
 
@@ -952,6 +949,8 @@ public class EventCommon {
     }
 
     if ((loc == null) || !loc.equals(eloc)) {
+      final ChangeTable changes = 
+              ei.getChangeset(request.getClient().getCurrentPrincipalHref());
       changes.changed(PropertyInfoIndex.LOCATION,
                       eloc, loc);
       ev.setLocation(loc);
@@ -1029,7 +1028,7 @@ public class EventCommon {
       try {
         c = cl.getPersistentContact(uid);
       } catch (final Throwable t) {
-        form.getErr().emit(t);
+        request.error(t);
         return false;
       }
     }
@@ -1374,7 +1373,7 @@ public class EventCommon {
     secr.rcode = forwardSuccess;
 
     if (secr.numCreated > 0) {
-      request.getMsg().emit(ClientMessage.addedCategories, secr.numCreated);
+      request.message(ClientMessage.addedCategories, secr.numCreated);
     }
 
     return secr;
@@ -1399,10 +1398,11 @@ public class EventCommon {
     return !text.equals(evText.getValue());
   }
 
-  private static BwLocation getLocation(final RWClient cl,
-                                        final BwRWActionForm form,
+  private static BwLocation getLocation(final BwRequest req,
                                         final String owner,
                                         final boolean webSubmit) {
+    final RWClient cl = (RWClient)req.getClient();
+    final BwRWActionForm form = (BwRWActionForm)req.getBwForm();
     BwLocation loc = null;
 
     if (!webSubmit) {
@@ -1438,7 +1438,7 @@ public class EventCommon {
       loc = cer.getEntity();
 
       if (cer.isAdded()) {
-        form.getMsg().emit(ClientMessage.addedLocations, 1);
+        req.message(ClientMessage.addedLocations, 1);
       }
     }
 

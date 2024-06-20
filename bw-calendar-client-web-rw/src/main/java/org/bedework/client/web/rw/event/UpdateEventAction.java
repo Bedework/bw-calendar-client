@@ -152,20 +152,20 @@ public class UpdateEventAction extends RWActionBase {
     if (pars.adding || reqAdding) {
       // Expect a null guid in request and event.
       if ((reqGuid != null) || (ev.getUid() != null)) {
-        request.getErr().emit(
+        request.error(
                 ClientError.eventMismatch, "guid");
         return forwardError;
       }
     } else {
       /* Check request guid and recurrenceId match */
       if (reqGuid == null) {
-        request.getErr().emit(
+        request.error(
                 ClientError.missingRequestPar, "guid");
         return forwardError;
       }
 
       if (!reqGuid.equals(ev.getUid())) {
-        request.getErr().emit(
+        request.error(
                 ClientError.eventMismatch, "guid");
         return forwardError;
       }
@@ -175,7 +175,7 @@ public class UpdateEventAction extends RWActionBase {
 
       if (((reqRid != null) && !reqRid.equals(evRid)) ||
               ((reqRid == null) && (evRid != null))) {
-        request.getErr().emit(
+        request.error(
                 ClientError.eventMismatch, "recurrenceId");
         return forwardError;
       }
@@ -195,7 +195,7 @@ public class UpdateEventAction extends RWActionBase {
     */
 
     if (request.hasCopy()) {
-      request.getErr().emit("copy no longer supported - use fetch action");
+      request.error("copy no longer supported - use fetch action");
 
       return forwardError;
     }
@@ -355,7 +355,7 @@ public class UpdateEventAction extends RWActionBase {
 
     final String link = Util.checkNull(request.getReqPar("eventLink"));
     if ((link != null) && (Util.validURI(link) == null)) {
-      form.getErr().emit(ValidationError.invalidUri);
+      request.error(ValidationError.invalidUri);
       retry = true;
     }
 
@@ -436,7 +436,7 @@ public class UpdateEventAction extends RWActionBase {
       final String rrule = getRrule(request, form);
       Collection<String> oldRrules = null;
 
-      if (form.getErrorsEmitted()) {
+      if (request.getErrorsEmitted()) {
         // Unrecoverable? Error in form.
         cl.rollback();
         validationError = true;
@@ -659,7 +659,7 @@ public class UpdateEventAction extends RWActionBase {
       }
 
       if (ur.schedulingResult != null) {
-        emitScheduleStatus(pars.form, ur.schedulingResult, false);
+        emitScheduleStatus(pars.request, ur.schedulingResult, false);
       }
 
       pars.form.assignAddingEvent(false);
@@ -938,7 +938,7 @@ public class UpdateEventAction extends RWActionBase {
       final long maxSize = cl.getUserMaxEntitySize();
 
       if (file.getLength() > maxSize) {
-        request.getErr().emit(ValidationError.tooLarge, file.getLength(), maxSize);
+        request.error(ValidationError.tooLarge, file.getLength(), maxSize);
         pi.retry = true;
         return pi;
       }
@@ -978,7 +978,7 @@ public class UpdateEventAction extends RWActionBase {
       } else {
         imageCol = cl.getCollection(imagecolPath);
         if (imageCol == null) {
-          request.getErr().emit(ClientError.missingImageDirectory);
+          request.error(ClientError.missingImageDirectory);
           return pi;
         }
       }
@@ -997,7 +997,7 @@ public class UpdateEventAction extends RWActionBase {
 
       if (pi.image != null) {
         if (!request.getBooleanReqPar("replaceImage", false)) {
-          request.getErr().emit(ClientError.duplicateImage);
+          request.error(ClientError.duplicateImage);
           pi.retry = true;
           return pi;
         }
@@ -1005,7 +1005,7 @@ public class UpdateEventAction extends RWActionBase {
         replace = true;
 
         if (!cl.getResourceContent(pi.image)) {
-          request.getErr().emit("Missing content for " +
+          request.error("Missing content for " +
                                         imageCol.getPath() + "/" + fns.fn);
           pi.retry = true;
           return pi;
@@ -1030,7 +1030,7 @@ public class UpdateEventAction extends RWActionBase {
           error(t);
         }
 
-        request.getErr().emit(ClientError.imageError);
+        request.error(ClientError.imageError);
         pi.retry = true;
         return pi;
       }
@@ -1049,7 +1049,7 @@ public class UpdateEventAction extends RWActionBase {
       if (pi.thumbnail != null) {
         replaceThumb = true;
         if (!cl.getResourceContent(pi.image)) {
-          request.getErr().emit("Missing content for " +
+          request.error("Missing content for " +
                                         imageCol.getPath() + "/" +
                                         fns.thumbFn);
           pi.retry = true;
@@ -1083,7 +1083,7 @@ public class UpdateEventAction extends RWActionBase {
     } catch (final Throwable t) {
       if (debug()) {
         error(t);
-        request.getErr().emit(t);
+        request.error(t);
       }
     }
 

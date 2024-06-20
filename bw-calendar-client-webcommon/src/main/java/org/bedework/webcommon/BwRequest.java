@@ -40,6 +40,8 @@ import org.bedework.util.misc.response.Response;
 import org.bedework.util.servlet.filters.ConfiguredXSLTFilter;
 import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.util.webaction.ErrorEmitSvlt;
+import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
@@ -190,8 +192,10 @@ public class BwRequest extends Request {
                    final HttpServletResponse response,
                    final Map<String, String> params,
                    final String actionPath,
+                   final ErrorEmitSvlt err,
+                   final MessageEmitSvlt msg,
                    final WebActionForm form) {
-    super(request, response, params, actionPath, form);
+    super(request, response, params, actionPath, err, msg, form);
   }
 
   void setSess(final BwSession val) {
@@ -564,7 +568,7 @@ public class BwRequest extends Request {
     final BwEvent ev = ei.getEvent();
     final BwCalendar cal = getNewCal(false);
 
-    if (form.getErrorsEmitted()) {
+    if (getErrorsEmitted()) {
       return false;
     }
 

@@ -126,7 +126,7 @@ public class AttendeeRespond extends RWActionBase {
     if ("REFRESH".equals(methStr)) {
       final ScheduleResult sr = cl.requestRefresh(ei,
                                                   request.getReqPar("comment"));
-      emitScheduleStatus(form, sr, false);
+      emitScheduleStatus(request, sr, false);
 
       initSession(request);
 
@@ -192,7 +192,7 @@ public class AttendeeRespond extends RWActionBase {
 
     if (ves != null) {
       for (final org.bedework.calfacade.exc.ValidationError ve: ves) {
-        form.getErr().emit(ve.getErrorCode(), ve.getExtra());
+        request.error(ve.getErrorCode(), ve.getExtra());
       }
       return forwardValidationError;
     }
@@ -217,11 +217,11 @@ public class AttendeeRespond extends RWActionBase {
 
     final UpdateResult ur = cl.updateEvent(ei, false, null, false);
     if (!ur.isOk()) {
-      form.getErr().emit(ur.getMessage());
+      request.error(ur.getMessage());
       return forwardError;
     }
 
-    emitScheduleStatus(form, ur.schedulingResult, false);
+    emitScheduleStatus(request, ur.schedulingResult, false);
 
     initSession(request);
 

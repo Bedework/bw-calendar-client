@@ -128,7 +128,7 @@ public class ProcessInboxEvent extends RWActionBase {
         cl.deleteEvent(einf, false);
       }
 
-      form.getMsg().emit(ClientMessage.scheduleColCopyDeleted);
+      request.message(ClientMessage.scheduleColCopyDeleted);
       return forwardNoMeeting;
     }
 
@@ -148,7 +148,7 @@ public class ProcessInboxEvent extends RWActionBase {
     if (rrcs.getStatus() == notFound) {
       form.setRruleComponents(null);
     } else if (!rrcs.isOk()) {
-      request.getErr().emit(rrcs.getMessage());
+      request.error(rrcs.getMessage());
       return forwardNoAction;
     } else {
       form.setRruleComponents(rrcs.getEntities());

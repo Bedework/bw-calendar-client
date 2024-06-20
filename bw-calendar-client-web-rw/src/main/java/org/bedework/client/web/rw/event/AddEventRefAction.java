@@ -115,7 +115,7 @@ public class AddEventRefAction extends RWActionBase {
     final String transparency = request.getReqPar("transparency");
     if (transparency != null) {
       if (!BwEvent.validTransparency(transparency)) {
-        form.getErr().emit(ValidationError.invalidTransparency, transparency);
+        request.error(ValidationError.invalidTransparency, transparency);
         return forwardBadValue;
       }
 
@@ -126,15 +126,15 @@ public class AddEventRefAction extends RWActionBase {
 
     try {
       cl.addEvent(eref, true, false);
-      form.getMsg().emit(ClientMessage.addedEventrefs, 1);
+      request.message(ClientMessage.addedEventrefs, 1);
     } catch (final RuntimeException rte) {
       if (CalFacadeException.duplicateGuid.equals(rte.getMessage())) {
-        form.getErr().emit(ClientError.duplicateUid);
+        request.error(ClientError.duplicateUid);
         return forwardDuplicate;
       }
 
       if (CalFacadeException.collectionNotFound.equals(rte.getMessage())) {
-        form.getErr().emit(ValidationError.missingCalendar);
+        request.error(ValidationError.missingCalendar);
         return forwardDuplicate;
       }
 

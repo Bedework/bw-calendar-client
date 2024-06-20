@@ -55,6 +55,8 @@ import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.struts.UtilAbstractAction;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
+import org.bedework.util.webaction.ErrorEmitSvlt;
+import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 import org.bedework.webcommon.config.ClientConfigurations;
@@ -352,8 +354,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                final HttpServletResponse response,
                                final Map<String, String> params,
                                final String actionPath,
+                               final ErrorEmitSvlt err,
+                               final MessageEmitSvlt msg,
                                final WebActionForm form) {
-    return new BwRequest(request, response, params, actionPath, form);
+    return new BwRequest(request, response, params, actionPath, err, msg, form);
   }
 
   private void setLocale(final BwRequest request,
@@ -518,7 +522,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                          max);
 
         if (tr == null) {
-          form.getErr().emit(ClientError.badRequest, "dates");
+          request.error(ClientError.badRequest, "dates");
           return forwardNoAction;
         }
 
@@ -646,7 +650,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     if (ekey.getColPath() == null) {
       // bogus request
-      request.getErr().emit(ValidationError.missingCalendarPath);
+      request.error(ValidationError.missingCalendarPath);
       return null;
     }
 
@@ -693,7 +697,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (ev == null) {
-      request.getErr().emit(ClientError.unknownEvent, key);
+      request.error(ClientError.unknownEvent, key);
       return null;
     } else if (debug()) {
       debug("Get event found " + ev.getEvent());
@@ -710,13 +714,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   protected BwPrincipal<?> findPrincipal(final BwRequest request) {
     final String str = request.getReqPar("user");
     if (str == null) {
-      request.getErr().emit(ClientError.unknownUser, "null");
+      request.error(ClientError.unknownUser, "null");
       return null;
     }
 
     final BwPrincipal<?> p = request.getClient().getUser(str);
     if (p == null) {
-      request.getErr().emit(ClientError.unknownUser, str);
+      request.error(ClientError.unknownUser, str);
       return null;
     }
 
@@ -762,7 +766,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                        ekey.getRecurrenceId());
 
       if (ev == null) {
-        request.getErr().emit(ClientError.unknownEvent,
+        request.error(ClientError.unknownEvent,
                 /*eid*/ekey.getName());
         return null;
       } else if (debug()) {
@@ -822,7 +826,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     if (ev == null) {
-      request.getErr().emit(ClientError.unknownEvent, /*eid*/
+      request.error(ClientError.unknownEvent, /*eid*/
                             guid);
       return null;
     } else if (debug()) {
@@ -1042,7 +1046,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final int thisYear = form.getToday().getFormatted().getYear();
 
     if ((year < (thisYear - 50)) || (year > (thisYear + 50))) {
-      form.getErr().emit(ValidationError.invalidDate, year);
+      req.error(ValidationError.invalidDate, year);
       return false;
     }
 

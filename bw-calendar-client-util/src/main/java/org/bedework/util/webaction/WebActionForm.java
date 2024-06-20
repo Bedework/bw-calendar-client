@@ -1,7 +1,5 @@
 package org.bedework.util.webaction;
 
-import org.bedework.util.servlet.MessageEmit;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Set;
@@ -44,43 +42,6 @@ public interface WebActionForm {
    * @return boolean true for nocache
    */
   public boolean getNocache();
-
-  /**
-   * @param val MessageEmit
-   */
-  void setErr(final MessageEmit val);
-
-  /**
-   * @return MessageEmit
-   */
-  MessageEmit getErr();
-
-  /**
-   * @return boolean
-   */
-  boolean getErrorsEmitted();
-
-  /**
-   * @param val message object
-   */
-  void setMsg(MessageEmit val);
-
-  /**
-   * @return boolean
-   */
-  MessageEmit getMsg();
-
-  /**
-   * @return boolean
-   */
-  @SuppressWarnings("unused")
-  boolean getMessagesEmitted();
-
-  /** Can be called by a page to signal an exceptiuon
-   *
-   * @param t exception
-   */
-  void setException(Throwable t);
 
   /**
    * @param val application vars

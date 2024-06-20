@@ -262,14 +262,14 @@ public abstract class UtilAbstractAction extends ActionSupport
       form.setSchemeHostPort(HttpServletUtils.getURLshp(request));
       form.setContext(HttpServletUtils.getContext(request));
       form.setUrlPrefix(HttpServletUtils.getURLPrefix(request));
-      form.setErr(err);
-      form.setMsg(msg);
       form.assignSessionId(getSessionId(request));
 
       final Request req =
               getRequest(request, response,
                          params,
                          request.getPathTranslated(),
+                         err,
+                         msg,
                          form);
 
       if (debug()) {
@@ -362,8 +362,10 @@ public abstract class UtilAbstractAction extends ActionSupport
                                final HttpServletResponse response,
                                final Map<String, String> params,
                                final String actionPath,
+                               final ErrorEmitSvlt err,
+                               final MessageEmitSvlt msg,
                                final WebActionForm form) {
-    return new Request(request, response, params, actionPath, form);
+    return new Request(request, response, params, actionPath, err, msg, form);
   }
 
   /** Override this to get the contentName from different sources

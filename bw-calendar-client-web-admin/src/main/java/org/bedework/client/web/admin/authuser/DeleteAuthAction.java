@@ -49,7 +49,7 @@ public class DeleteAuthAction extends AdminActionBase {
     // XXX This was set up to remove the current auth user,
     // svci.getUserAuth().removeAuth("SHould be the selected user");
 
-    request.getMsg().emit(ClientMessage.deletedAuthuser);
+    request.message(ClientMessage.deletedAuthuser);
 
     return forwardContinue;
   }

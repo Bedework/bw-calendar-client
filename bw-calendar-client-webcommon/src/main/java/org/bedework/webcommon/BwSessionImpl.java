@@ -229,12 +229,13 @@ public class BwSessionImpl implements Logged, BwSession {
 
       /* This only till we make module state the request scope form */
       if (form.getEventDates() == null) {
-        form.assignEventDates(new EventDates(cl.getCurrentPrincipalHref(),
-                                               mstate.getCalInfo(),
-                                               form.getHour24(),
-                                               form.getEndDateType(),
-                                               config.getMinIncrement(),
-                                               form.getErr()));
+        form.assignEventDates(
+                new EventDates(cl.getCurrentPrincipalHref(),
+                               mstate.getCalInfo(),
+                               form.getHour24(),
+                               form.getEndDateType(),
+                               config.getMinIncrement(),
+                               req.getErr()));
       }
 
       if (mstate.getEventDates() == null) {
@@ -323,7 +324,7 @@ public class BwSessionImpl implements Logged, BwSession {
       throw cfc;
     } catch (final Throwable t) {
       // Not much we can do here
-      form.getErr().emit(t);
+      req.error(t);
     }
   }
 
@@ -427,7 +428,7 @@ public class BwSessionImpl implements Logged, BwSession {
       }
 
       if (col == null) {
-        request.getErr().emit("No home collection");
+        request.error("No home collection");
         return null;
       } 
 
@@ -449,7 +450,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       if (cloned == null) {
         warn("Unable to clone " + col);
-        request.getErr().emit("Unable to clone home collection");
+        request.error("Unable to clone home collection");
         return null;
       }
 
@@ -459,7 +460,7 @@ public class BwSessionImpl implements Logged, BwSession {
       
       return cloned;
     } catch (final CalFacadeException cfe) {
-      request.getErr().emit(cfe);
+      request.error(cfe);
       return null;
     }
   }
@@ -490,7 +491,7 @@ public class BwSessionImpl implements Logged, BwSession {
       }
 
       if (root == null) {
-        request.getErr().emit("Unable to access public collections");
+        request.error("Unable to access public collections");
         warn("Unable to access public collections");
         return null;
       }
@@ -513,7 +514,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       return clonedPublicCollections[accessIndex];
     } catch (final CalFacadeException cfe) {
-      request.getErr().emit(cfe);
+      request.error(cfe);
       return null;
     }
   }
@@ -547,7 +548,7 @@ public class BwSessionImpl implements Logged, BwSession {
       final BwCalSuiteWrapper cs = cl.getCalSuite(calSuiteName);
 
       if (cs == null) {
-        form.getErr().emit("No calendar suite with name ", calSuiteName);
+        request.error("No calendar suite with name ", calSuiteName);
         return null;
       }
         
@@ -600,7 +601,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
     if (cloned == null) {
       warn("Unable to clone " + col);
-      request.getErr().emit("Unable to clone user collection");
+      request.error("Unable to clone user collection");
       return null;
     }
 
@@ -767,7 +768,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       return getContactCollator().getCollatedCollection(vals);
     } catch (final CalFacadeException cfe) {
-      request.getErr().emit(cfe);
+      request.error(cfe);
       return new ArrayList<>();
     }
   }
@@ -937,7 +938,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       return getLocationCollator().getCollatedCollection(vals);
     } catch (final Throwable t) {
-      request.getErr().emit(t);
+      request.error(t);
       return new ArrayList<>();
     }
   }
@@ -1048,31 +1049,23 @@ public class BwSessionImpl implements Logged, BwSession {
       }
 
       final FilterBase filter = getFilter(req, null);
-      TimeView tv = null;
-
-      switch (mstate.getViewType()) {
-        case BedeworkDefs.vtToday:
-        case BedeworkDefs.vtDay:
-          tv = new DayView(form.getErr(),
-                           mstate.getViewMcDate(),
-                           filter);
-          break;
-        case BedeworkDefs.vtWeek:
-          tv = new WeekView(form.getErr(),
+      final TimeView tv = switch (mstate.getViewType()) {
+        case BedeworkDefs.vtToday, BedeworkDefs.vtDay ->
+                new DayView(req.getErr(),
                             mstate.getViewMcDate(),
                             filter);
-          break;
-        case BedeworkDefs.vtMonth:
-          tv = new MonthView(form.getErr(),
-                             mstate.getViewMcDate(),
-                             filter);
-          break;
-        case BedeworkDefs.vtYear:
-          tv = new YearView(form.getErr(),
-                            mstate.getViewMcDate(),
-                            form.getShowYearData(), filter);
-          break;
-      }
+        case BedeworkDefs.vtWeek -> new WeekView(req.getErr(),
+                                                 mstate.getViewMcDate(),
+                                                 filter);
+        case BedeworkDefs.vtMonth -> new MonthView(req.getErr(),
+                                                   mstate.getViewMcDate(),
+                                                   filter);
+        case BedeworkDefs.vtYear -> new YearView(req.getErr(),
+                                                 mstate.getViewMcDate(),
+                                                 form.getShowYearData(),
+                                                 filter);
+        default -> null;
+      };
 
       mstate.setCurTimeView(tv);
 
@@ -1081,7 +1074,7 @@ public class BwSessionImpl implements Logged, BwSession {
       }
     } catch (final Throwable t) {
       // Not much we can do here
-      req.getErr().emit(t);
+      req.error(t);
     }
   }
 
@@ -1102,12 +1095,12 @@ public class BwSessionImpl implements Logged, BwSession {
       final GetFilterDefResponse gfdr = cl.getFilter(filterName);
 
       if (gfdr.getStatus() == Response.Status.notFound) {
-        form.getErr().emit(ClientError.unknownFilter, filterName);
+        req.error(ClientError.unknownFilter, filterName);
         return null;
       }
 
       if (gfdr.getStatus() != Response.Status.ok) {
-        form.getErr().emit(ClientError.exc, gfdr.getMessage());
+        req.error(ClientError.exc, gfdr.getMessage());
         return null;
       }
       
@@ -1125,7 +1118,7 @@ public class BwSessionImpl implements Logged, BwSession {
     if (fdef.getFilters() == null) {
       final ParseResult pr = cl.parseFilter(fdef);
       if (!pr.ok) {
-        req.getErr().emit(pr.message);
+        req.error(pr.message);
       }
     }
 

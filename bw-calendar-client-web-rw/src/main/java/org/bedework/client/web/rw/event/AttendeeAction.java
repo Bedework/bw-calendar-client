@@ -114,7 +114,7 @@ public class AttendeeAction extends RWActionBase {
             return res;
           }
         } catch (final Throwable t) {
-          request.getErr().emit(ClientError.unknownAttendee, s);
+          request.error(ClientError.unknownAttendee, s);
           return forwardNoAction;
         }
       }

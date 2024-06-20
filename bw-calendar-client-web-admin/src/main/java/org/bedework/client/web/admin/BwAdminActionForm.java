@@ -205,20 +205,16 @@ public class BwAdminActionForm extends BwRWActionForm {
       updAdminGroup = val;
     }
 
-    try {
-      String href = updAdminGroup.getGroupOwnerHref();
+    String href = updAdminGroup.getGroupOwnerHref();
 
-      if (href != null) {
-        setAdminGroupGroupOwner(href);
-      }
+    if (href != null) {
+      setAdminGroupGroupOwner(href);
+    }
 
-      href = updAdminGroup.getOwnerHref();
+    href = updAdminGroup.getOwnerHref();
 
-      if (href != null) {
-        setAdminGroupEventOwner(href);
-      }
-    } catch (final Throwable t) {
-      err.emit(t);
+    if (href != null) {
+      setAdminGroupEventOwner(href);
     }
   }
 
@@ -589,7 +585,7 @@ public class BwAdminActionForm extends BwRWActionForm {
         return URLEncoder.encode(getWorkflowRoot(),
                                  StandardCharsets.UTF_8);
       } catch (final Throwable t) {
-        getErr().emit(t);
+        error(t);
       }
     }
 

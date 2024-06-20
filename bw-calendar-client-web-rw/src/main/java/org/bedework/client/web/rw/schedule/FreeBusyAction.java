@@ -77,7 +77,7 @@ public class FreeBusyAction extends RWActionBase {
     }
 
     if (uri == null) {
-      form.getErr().emit(ClientError.unknownUser);
+      request.error(ClientError.unknownUser);
       return forwardNotFound;
     }
 

@@ -124,7 +124,7 @@ public class FetchEventAction extends RWActionBase {
     final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
 
     if (ei == null) {
-      request.getErr().emit(ClientError.unknownEvent);
+      request.error(ClientError.unknownEvent);
       return forwardNotFound;
     }
 
@@ -181,7 +181,7 @@ public class FetchEventAction extends RWActionBase {
     if (rrcs.getStatus() == notFound) {
       form.setRruleComponents(null);
     } else if (!rrcs.isOk()) {
-      request.getErr().emit(rrcs.getMessage());
+      request.error(rrcs.getMessage());
       return forwardNoAction;
     } else {
       form.setRruleComponents(rrcs.getEntities());

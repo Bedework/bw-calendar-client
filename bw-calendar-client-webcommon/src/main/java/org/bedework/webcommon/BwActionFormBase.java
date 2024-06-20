@@ -41,7 +41,6 @@ import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.UtilActionForm;
-import org.bedework.util.timezones.TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -410,23 +408,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public DirectoryInfo getDirInfo() {
     return dirInfo;
-  }
-
-  /* ====================================================================
-   *                   Timezones
-   * ==================================================================== */
-
-  /** Get a list of system and user timezones
-   *
-   * @return Collection of timezone names
-   */
-  public Collection<TimeZoneName> getTimeZoneNames() {
-    try {
-      return Timezones.getTzNames();
-    } catch (Throwable t) {
-      getErr().emit(t);
-      return new TreeSet<TimeZoneName>();
-    }
   }
 
   /* ====================================================================
@@ -923,15 +904,11 @@ public class BwActionFormBase extends UtilActionForm
    */
   public void setEventInfo(final EventInfo val,
                            final boolean newEvent) {
-    try {
-      event = val.getEvent();
-      eventInfo = val;
+    event = val.getEvent();
+    eventInfo = val;
 
-      if (!newEvent) {
-        getEventDates().setFromEvent(event);
-      }
-    } catch (final Throwable t) {
-      err.emit(t);
+    if (!newEvent) {
+      getEventDates().setFromEvent(event);
     }
   }
 

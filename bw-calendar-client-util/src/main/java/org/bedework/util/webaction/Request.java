@@ -134,6 +134,9 @@ public class Request extends ReqUtil implements Logged {
    */
   protected String moduleName;
 
+  private final ErrorEmitSvlt err;
+  private final MessageEmitSvlt msg;
+
   /**
    * @param request the http request
    * @param response the response
@@ -145,10 +148,14 @@ public class Request extends ReqUtil implements Logged {
                  final HttpServletResponse response,
                  final Map<String, String> params,
                  final String actionPath,
+                 final ErrorEmitSvlt err,
+                 final MessageEmitSvlt msg,
                  final WebActionForm form) {
     super(request, response);
     this.params = params;
     this.actionPath = actionPath;
+    this.err = err;
+    this.msg = msg;
     this.form = form;
 
     final String at = params.get(actionTypeKey);
@@ -211,12 +218,22 @@ public class Request extends ReqUtil implements Logged {
     getErr().emit(pname, o);
   }
 
+  /** Emit message with given property name and Object values
+   *
+   * @param pname - property name
+   * @param o1 - object to display
+   * @param o2 - object to display
+   */
+  public void error(final String pname,
+                    final Object o1, final Object o2) {
+    getErr().emit(pname, o1, o2);
+  }
+
   /**
    * @return MessageEmit
    */
   public MessageEmit getErr() {
-    errFlag = true;
-    return form.getErr();
+    return err;
   }
 
   /** Emit message with given property name
@@ -241,14 +258,14 @@ public class Request extends ReqUtil implements Logged {
    * @return MessageEmit
    */
   public MessageEmit getMsg() {
-    return form.getMsg();
+    return msg;
   }
 
   /**
    * @return boolean
    */
   public boolean getErrorsEmitted() {
-    return errFlag || form.getErrorsEmitted();
+    return errFlag || getErr().messagesEmitted();
   }
 
   /**

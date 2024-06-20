@@ -95,12 +95,12 @@ public class AddEventSubAction extends RWActionBase {
 
       if (col == null) {
         // Not correct forward
-        form.getErr().emit(ClientError.unknownCalendar);
+        request.error(ClientError.unknownCalendar);
         return forwardNoAction;
       }
 
       if (col.getCalType() != BwCalendar.calTypeEventList) {
-        form.getErr().emit(ClientError.badRequest);
+        request.error(ClientError.badRequest);
         return forwardNoAction;
       }
     } else {

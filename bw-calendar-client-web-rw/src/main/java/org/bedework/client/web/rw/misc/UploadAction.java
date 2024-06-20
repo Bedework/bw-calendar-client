@@ -72,13 +72,13 @@ public class UploadAction extends RWActionBase {
                       final BwRWActionForm form) {
     final String transparency = request.getReqPar("transparency");
     if (!checkTransparency(transparency)) {
-      request.getErr().emit(ValidationError.invalidTransparency, transparency);
+      request.error(ValidationError.invalidTransparency, transparency);
       return forwardRetry;
     }
 
     final String status = request.getReqPar("status");
     if (!checkStatus(status)) {
-      request.getErr().emit(ValidationError.invalidStatus, status);
+      request.error(ValidationError.invalidStatus, status);
       return forwardRetry;
     }
 
@@ -98,7 +98,7 @@ public class UploadAction extends RWActionBase {
     final String fileName = upFile.getFileName();
 
     if ((fileName == null) || (fileName.isEmpty())) {
-      request.getErr().emit(ClientError.missingFileName, 1);
+      request.error(ClientError.missingFileName, 1);
       return forwardRetry;
     }
 
@@ -164,7 +164,7 @@ public class UploadAction extends RWActionBase {
             col = cl.getCollection(newCalPath);
 
             if (col == null) {
-              request.getErr().emit(ValidationError.missingCalendar);
+              request.error(ValidationError.missingCalendar);
               return forwardRetry;
             }
           }
@@ -180,7 +180,7 @@ public class UploadAction extends RWActionBase {
             path = cl.getPreferredCollectionPath(icalName);
 
             if (path == null) {
-              request.getErr().emit(ValidationError.missingCalendar);
+              request.error(ValidationError.missingCalendar);
             }
           }
 
@@ -192,7 +192,7 @@ public class UploadAction extends RWActionBase {
         col = cl.getCollection(newCalPath);
 
         if (col == null) {
-          request.getErr().emit(ValidationError.missingCalendar);
+          request.error(ValidationError.missingCalendar);
         }
 
         ev.setScheduleMethod(ScheduleMethods.methodTypeNone);
@@ -217,13 +217,13 @@ public class UploadAction extends RWActionBase {
             if (!cfe.getMessage().equals(CalFacadeException.noRecurrenceInstances)) {
               throw cfe;
             }
-            request.getErr().emit(cfe.getMessage(), cfe.getExtra());
+            request.error(cfe.getMessage(), cfe.getExtra());
           }*/
         } else {
           final var ueres =
                   cl.updateEvent(ei, false, null, false);
           if (!ueres.isOk()) {
-            request.getErr().emit(ueres.getMessage());
+            request.error(ueres.getMessage());
             return forwardError;
           }
           numEventsUpdated++;
@@ -233,7 +233,7 @@ public class UploadAction extends RWActionBase {
       if (debug()) {
         cfe.printStackTrace();
       }
-      request.getErr().emit(cfe.getMessage(), cfe.getExtra());
+      request.error(cfe.getMessage(), cfe.getExtra());
       return forwardBadData;
     } catch (final Throwable t) {
       t.printStackTrace();
@@ -241,11 +241,11 @@ public class UploadAction extends RWActionBase {
     }
 
     if (numFailedOverrides > 0) {
-      request.getErr().emit(ClientError.failedOverrides, numFailedOverrides);
+      request.error(ClientError.failedOverrides, numFailedOverrides);
     }
 
-    request.getMsg().emit(ClientMessage.addedEvents, numEventsAdded);
-    request.getMsg().emit(ClientMessage.updatedEvents, numEventsUpdated);
+    request.message(ClientMessage.addedEvents, numEventsAdded);
+    request.message(ClientMessage.updatedEvents, numEventsUpdated);
 
     return forwardSuccess;
   }
@@ -259,7 +259,7 @@ public class UploadAction extends RWActionBase {
     // Scheduling method - should contain a single entity
 
     if (ic.size() != 1) {
-      request.getErr().emit(ValidationError.invalidSchedData);
+      request.error(ValidationError.invalidSchedData);
       return forwardRetry;
     }
 
@@ -279,7 +279,7 @@ public class UploadAction extends RWActionBase {
       final BwOrganizer org = ev.getOrganizer();
 
       if (org == null) {
-        request.getErr().emit(ValidationError.missingOrganizer);
+        request.error(ValidationError.missingOrganizer);
         return forwardRetry;
       }
 
@@ -309,7 +309,7 @@ public class UploadAction extends RWActionBase {
 
       cl.addEvent(ei, false, true);
 
-      request.getMsg().emit(ClientMessage.addedEvents, 1);
+      request.message(ClientMessage.addedEvents, 1);
     }
 
     return forwardSuccess;

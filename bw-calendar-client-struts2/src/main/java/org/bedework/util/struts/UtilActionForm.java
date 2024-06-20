@@ -19,7 +19,6 @@
 package org.bedework.util.struts;
 
 import org.bedework.util.misc.Util;
-import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.util.webaction.WebActionForm;
 
@@ -46,14 +45,6 @@ public class UtilActionForm implements WebActionForm {
   /** Is nocache on?
    */
   protected boolean nocache;
-
-  /** An error object reinitialised at each entry to the abstract action
-   */
-  protected transient MessageEmit err;
-
-  /** A message object reinitialised at each entry to the abstract action
-   */
-  protected transient MessageEmit msg;
 
   /** Application variables. These can be set with request parameters and
    * dumped into the page for use by jsp and xslt.
@@ -158,45 +149,6 @@ public class UtilActionForm implements WebActionForm {
   @Override
   public boolean getNocache() {
     return nocache;
-  }
-
-  @Override
-  public void setErr(final MessageEmit val) {
-    err = val;
-  }
-
-  @Override
-  public MessageEmit getErr() {
-    return err;
-  }
-
-  @Override
-  public boolean getErrorsEmitted() {
-    return err.messagesEmitted();
-  }
-
-  @Override
-  public void setMsg(final MessageEmit val) {
-    msg = val;
-  }
-
-  @Override
-  public MessageEmit getMsg() {
-    return msg;
-  }
-
-  @Override
-  public boolean getMessagesEmitted() {
-    return msg.messagesEmitted();
-  }
-
-  @Override
-  public void setException(final Throwable t) {
-    if (err == null) {
-      t.printStackTrace();
-    } else {
-      err.emit(t);
-    }
   }
 
   @Override

@@ -133,7 +133,7 @@ public class AdminUtil implements ForwardDefs {
       }
     } catch (final CalFacadeAccessException cfe) {
       // Access is set incorrectly
-      request.getErr().emit(ClientError.noCalsuiteAccess, adg.getPrincipalRef());
+      request.error(ClientError.noCalsuiteAccess, adg.getPrincipalRef());
     }
 
     return null;

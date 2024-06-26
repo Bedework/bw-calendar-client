@@ -74,7 +74,7 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
     final String fexpr = request.getReqPar("fexpr");
 
     if (fexpr != null) {
-      doSearch(request, form, fexpr);
+      doSearch(request, fexpr);
 
       return forwardNull;
     }
@@ -86,7 +86,7 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
-    form.setNocache(false);
+    request.setNocache(false);
 
     final Collection<T> vals;
 
@@ -134,12 +134,11 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
   }
 
   private void doSearch(final BwRequest request,
-                        final BwActionFormBase form,
                         final String fexpr) {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
-    form.setNocache(true);
+    request.setNocache(true);
 
     resp.setContentType("text/json; charset=UTF-8");
 

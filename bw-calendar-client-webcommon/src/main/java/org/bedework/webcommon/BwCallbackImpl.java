@@ -33,12 +33,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class BwCallbackImpl extends BwCallback implements
         HttpAppLogger {
-  final BwActionFormBase form;
+  BwRequest request;
   final String errorForward;
 
-  BwCallbackImpl(final BwActionFormBase form) {
-    this.form = form;
-    final var ef = form.getErrorForward();
+  BwCallbackImpl(final Request request) {
+    final var ef = request.getErrorForward();
     if (ef == null) {
       throw new CalFacadeException("\"errorForward\" must be defined for servlet context");
     }
@@ -55,8 +54,9 @@ public class BwCallbackImpl extends BwCallback implements
       /* On the way in we set up the client from the default client
          embedded in the form.
        */
+    request = (BwRequest)req;
     //synchronized (form) {
-      final BwModule module = form.fetchModule(req.getModuleName());
+      final BwModule module = request.getModule();
       if (debug()) {
         debug("About to claim module " + module.getModuleName());
       }
@@ -75,7 +75,8 @@ public class BwCallbackImpl extends BwCallback implements
 
   @Override
   public void out(final HttpServletRequest hreq) {
-    final BwModule module = form.fetchModule(
+    final BwModule module =
+            request.getModules().fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
     if (debug()) {
@@ -88,7 +89,8 @@ public class BwCallbackImpl extends BwCallback implements
   @Override
   public void close(final HttpServletRequest hreq,
                     final boolean cleanUp) {
-    final BwModule module = form.fetchModule(
+    final BwModule module =
+            request.getModules().fetchModule(
             (String)hreq.getAttribute(Request.moduleNamePar));
 
     if (debug()) {

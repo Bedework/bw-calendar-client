@@ -58,7 +58,7 @@ public class FetchLocationsAction extends BwAbstractAction {
     final String fexpr = request.getReqPar("fexpr");
 
     if (fexpr != null) {
-      doSearch(request, form, fexpr);
+      doSearch(request, fexpr);
 
       return forwardNull;
     }
@@ -70,7 +70,7 @@ public class FetchLocationsAction extends BwAbstractAction {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
-    form.setNocache(false);
+    request.setNocache(false);
 
     final BwSession sess = request.getSess();
 
@@ -125,12 +125,11 @@ public class FetchLocationsAction extends BwAbstractAction {
   }
 
   private void doSearch(final BwRequest request,
-                        final BwActionFormBase form,
                         final String fexpr) {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
-    form.setNocache(true);
+    request.setNocache(true);
 
     final LocationsResponse locs = new LocationsResponse();
 

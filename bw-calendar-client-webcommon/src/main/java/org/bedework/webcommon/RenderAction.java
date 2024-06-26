@@ -39,15 +39,14 @@ public class RenderAction extends BwAbstractAction {
 
   @Override
   public String getContentName(final Request req) {
-    final BwActionFormBase form = (BwActionFormBase)req.getForm();
     final PresentationState ps = req.getPresentationState();
     String contentName = ps.getContentName();
 
     if (contentName != null) {
-      form.setContentName(contentName);
+      req.setContentName(contentName);
     } else {
-      contentName = form.getContentName();
-      form.setContentName(null);  // It's a one shot and we're about to render
+      contentName = req.getContentName();
+      req.setContentName(null);  // It's a one shot and we're about to render
     }
 
     return contentName;

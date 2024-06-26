@@ -154,10 +154,11 @@ public class WebCalendarAction extends BwAbstractAction {
                  " end = " + edt);
       }
 
-      final Collection<EventInfo> evs = cl.getEvents(fexpr,
-                                                     sdt,
-                                                     edt,
-                                                     request.present("expanded"));
+      final Collection<EventInfo> evs =
+              cl.getEvents(fexpr,
+                           sdt,
+                           edt,
+                           request.present("expanded"));
 
       final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));
 
@@ -168,7 +169,7 @@ public class WebCalendarAction extends BwAbstractAction {
       if (!name.endsWith(".ics")) {
         name += ".ics";
       }
-      form.setContentName(name);
+      request.setContentName(name);
       request.getResponse().setHeader("Content-Disposition",
                                       "Attachment; Filename=\"" +
                                       name + "\"");

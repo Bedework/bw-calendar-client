@@ -423,7 +423,7 @@ public class BwTagUtils extends BwTagUtilCommon {
     curIndent = closeTag(out, curIndent, "monthvalues");
 
     curIndent = openTag(out, curIndent, "yearvalues", true);
-    for (final var yearVals: mstate.getYearVals()) {
+    for (final var yearVals: calInfo.getYearVals()) {
       outTagged(out, indent, "val", yearVals);
     }
     outTagged(out, indent, "start", mstate.getViewStartDate().getYear());

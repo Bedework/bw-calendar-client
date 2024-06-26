@@ -135,7 +135,7 @@ public class SearchParamsAction extends BwAbstractAction {
     final HttpServletResponse response = request.getResponse();
 
     if (forFeederOneShot || generateCalendarContent) {
-      form.setNocache(false);
+      request.setNocache(false);
 
       if (!request.contentChanged()) {
         return forwardNull;
@@ -172,7 +172,7 @@ public class SearchParamsAction extends BwAbstractAction {
         }
       }
 
-      String contentName = form.getContentName();
+      String contentName = request.getContentName();
       if (contentName == null) {
         if (generateIcal) {
           contentName = "calendar.ics";

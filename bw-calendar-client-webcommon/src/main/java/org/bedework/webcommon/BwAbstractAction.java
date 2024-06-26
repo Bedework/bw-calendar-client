@@ -1102,7 +1102,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     /* Ensure we have a client
        */
 
-    form.fetchModule(request.getModuleName()).
+    request.getModule().
             checkClient(request, s, adminUserId, false, conf);
 
     return s;

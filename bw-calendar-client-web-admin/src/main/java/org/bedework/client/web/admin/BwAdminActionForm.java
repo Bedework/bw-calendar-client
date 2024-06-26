@@ -547,10 +547,7 @@ public class BwAdminActionForm extends BwRWActionForm {
    * ==================================================================== */
 
   public BwModule newModule(final String name) {
-    final var m = new AdminBwModule(name);
-    m.getState().setYearVals(getYearVals());
-
-    return m;
+    return new AdminBwModule(name);
   }
 
   /* ====================================================================

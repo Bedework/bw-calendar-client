@@ -24,7 +24,6 @@ import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /** Abstract class an instance of which is used to signal open and close
  * events to the web application.
@@ -70,18 +69,17 @@ public abstract class BwCallback implements Serializable {
 
   public static BwCallback getCb(final Request request,
                                  final BwActionFormBase form) {
-    final HttpSession hsess = request.getRequest().getSession();
-    BwCallback cb = (BwCallback)hsess.getAttribute(BwCallback.cbAttrName);
+    BwCallbackImpl cb =
+            (BwCallbackImpl)request.getSessionAttr(BwCallback.cbAttrName);
     if (cb == null) {
       /* create a call back object for the filter */
 
-      cb = new BwCallbackImpl(form);
-      hsess.setAttribute(BwCallback.cbAttrName, cb);
+      cb = new BwCallbackImpl(request);
+      request.setSessionAttr(BwCallback.cbAttrName, cb);
     }
 
-    final BwCallbackImpl impl = (BwCallbackImpl)cb;
-    if (impl.debug()) {
-      impl.debug("checkSvci-- set req in cb - form action path = " +
+    if (cb.debug()) {
+      cb.debug("checkSvci-- set req in cb - form action path = " +
                          request.getActionPath() +
                          " conv-type = " + request.getConversationType());
     }

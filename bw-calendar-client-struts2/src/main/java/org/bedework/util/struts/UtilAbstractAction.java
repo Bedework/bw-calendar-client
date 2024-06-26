@@ -246,23 +246,12 @@ public abstract class UtilAbstractAction extends ActionSupport
     }
 
     try {
-      if (!form.getInitialised()) {
-        // Do one time settings
-        form.setNocache(false);
-
-        form.setInitialised(true);
-      }
-
       getErrorForward(request, form);
-      form.setBrowserType(HttpServletUtils.getBrowserType(request));
       if (form.getCurrentUser() == null) {
         form.assignCurrentUser(HttpServletUtils.remoteUser(request));
       } // Otherwise we check it later in checklogout.
-      form.setUrl(HttpServletUtils.getUrl(request));
       form.setSchemeHostPort(HttpServletUtils.getURLshp(request));
       form.setContext(HttpServletUtils.getContext(request));
-      form.setUrlPrefix(HttpServletUtils.getURLPrefix(request));
-      form.assignSessionId(getSessionId(request));
 
       final Request req =
               getRequest(request, response,
@@ -271,17 +260,6 @@ public abstract class UtilAbstractAction extends ActionSupport
                          err,
                          msg,
                          form);
-
-      if (debug()) {
-        req.dumpRequest();
-//        dumpParams(params);
-      }
-
-      req.checkNocache();
-
-      /* Set up presentation values from request
-       */
-      req.doPresentation();
 
       final String contentName = getContentName(req);
 
@@ -374,11 +352,10 @@ public abstract class UtilAbstractAction extends ActionSupport
    * @return String name of content
    */
   public String getContentName(final Request req) {
-    final var form = req.getForm();
     final PresentationState ps = req.getPresentationState();
     final String contentName = ps.getContentName();
 
-    form.setContentName(contentName);
+    req.setContentName(contentName);
 
     return contentName;
   }

@@ -160,7 +160,7 @@ public class AdminBwModule extends RwBwModule {
             debug("Client-- reinit for user " + user);
           }
 
-          form.flushModules(request.getModuleName());
+          request.getModules().flushModules(request.getModuleName());
 
           ((AdminClientImpl)client).reinit(form.getCurrentUser(),
                                            user,
@@ -391,7 +391,7 @@ public class AdminBwModule extends RwBwModule {
     final var p = cl.getPrincipal(adg.getOwnerHref());
 
     if ((p == null) ||
-            !form.fetchModule(request.getModuleName())
+            !request.getModule()
                  .checkClient(request,
                               request.getSess(),
                               p.getAccount(),

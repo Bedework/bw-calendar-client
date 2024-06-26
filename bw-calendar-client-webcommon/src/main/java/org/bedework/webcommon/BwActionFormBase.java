@@ -23,7 +23,6 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
@@ -43,13 +42,10 @@ import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.UtilActionForm;
 import org.bedework.util.timezones.Timezones;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,8 +55,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BwActionFormBase extends UtilActionForm
         implements Logged, BedeworkDefs {
-  private final Map<String, BwModule> modules = new ConcurrentHashMap<>();
-
   private DateTimeFormatter today;
 
   private BwSynchInfo synchInfo;
@@ -224,66 +218,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public BwActionFormBase getCalForm() {
     return this;
-  }
-
-  /* ....................................................................
-   *                       Modules
-   * .................................................................... */
-
-  public BwModule newModule(final String name) {
-    final var m = new BwModule(name);
-    m.getState().setYearVals(getYearVals());
-
-    return m;
-  }
-
-  public void setModule(final String name, final BwModule module) {
-    modules.put(name, module);
-  }
-
-  public synchronized  BwModule fetchModule(final String name) {
-    String n = name;
-
-    if (n == null) {
-      n = BwModule.defaultModuleName;
-    }
-
-    BwModule m = modules.get(n);
-
-    if (m == null) {
-      m = newModule(n);
-
-      /* clone the client from any active module */
-      for (final BwModule from: modules.values()) {
-        if (from.getClient() != null) {
-          m.setClient(from.getClient().copy(m.getModuleName()));
-        }
-      }
-      modules.put(n, m);
-    }
-
-    return m;
-  }
-
-  /** Called when we change the default client state enough to need
-   * to ditch the other clients.
-   */
-  public void flushModules(final String name) {
-    String n = name;
-
-    if (n == null) {
-      n = BwModule.defaultModuleName;
-    }
-
-    final ArrayList<String> mnames = new ArrayList<>(modules.keySet());
-
-    for (String s: mnames) {
-      if (s.equals(n)) {
-        continue;
-      }
-
-      modules.remove(s);
-    }
   }
 
   /**
@@ -621,20 +555,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String fetchCurrentAdminUser() {
     return currentAdminUser;
-  }
-
-  /**
-   * @param name - the client name or null
-   * @return a named client object
-   */
-  public Client fetchClient(final String name) {
-    BwModule m = fetchModule(name);
-
-    if (m == null) {
-      return null;
-    }
-
-    return m.getClient();
   }
 
   /**

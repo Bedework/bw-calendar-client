@@ -124,7 +124,7 @@ public class RequestFreeBusy extends RWActionBase {
       final ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
                                             null, null, false);
 
-      form.setContentName("freebusy.js");
+      request.setContentName("freebusy.js");
       resp.setHeader("Content-Disposition",
                      "Attachment; Filename=\"freebusy.js\"");
       resp.setContentType("text/json; charset=UTF-8");

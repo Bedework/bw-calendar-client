@@ -86,6 +86,9 @@ public class CalendarInfo implements Serializable {
   /** internal values for the minutes of the hour */
   private final String[] minuteVals;
 
+  private String[] yearVals;
+  private static final int numYearVals = 10;
+
   /* What we store in the formtters table */
   private static class Formatters implements Serializable {
     DateFormat dayFormatter;
@@ -567,6 +570,24 @@ public class CalendarInfo implements Serializable {
     c.set(Calendar.MILLISECOND, 0);
 
     return c;
+  }
+
+  /**
+   * @return year values
+   */
+  public String[] getYearVals() {
+    if (yearVals == null) {
+      yearVals = new String[numYearVals];
+      final int year = java.util.Calendar.getInstance()
+                                         .get(java.util.Calendar.YEAR);
+      //curYear = String.valueOf(year);
+
+      for (int i = 0; i < numYearVals; i++) {
+        yearVals[i] = String.valueOf(year + i);
+      }
+    }
+
+    return yearVals;
   }
 
   /* ====================================================================

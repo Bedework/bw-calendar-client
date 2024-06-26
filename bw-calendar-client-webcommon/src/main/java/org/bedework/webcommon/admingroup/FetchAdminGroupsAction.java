@@ -39,7 +39,7 @@ public class FetchAdminGroupsAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) {
-    form.setNocache(false);
+    request.setNocache(false);
 
     if (!request.contentChanged()) {
       return forwardNull;

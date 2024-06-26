@@ -423,7 +423,7 @@ public class BwModule implements Logged, Serializable {
 
       sb.append(refreshInterval);
       sb.append("; URL=");
-      sb.append(request.getForm().getUrlPrefix());
+      sb.append(request.getUrlPrefix());
       if (!refreshAction.startsWith("/")) {
         sb.append("/");
       }

@@ -167,7 +167,7 @@ public class ExportAction extends BwAbstractAction {
 
     resp.setHeader("Content-Disposition",
                    "Attachment; Filename=\"" +
-                           form.getContentName() + "\"");
+                           request.getContentName() + "\"");
 
     try (final Writer wtr = resp.getWriter()) {
       final String ct = request.getReqPar("content-type");

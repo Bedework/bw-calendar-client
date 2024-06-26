@@ -92,8 +92,6 @@ public class BwModuleState implements Serializable {
 
   private String searchLimits = "fromToday";
 
-  private String[] yearVals;
-
   public BwModuleState(final String moduleName) {
     this.moduleName = moduleName;
   }
@@ -416,17 +414,6 @@ public class BwModuleState implements Serializable {
    */
   public String getDate() {
     return date;
-  }
-
-  public void setYearVals(final String[] val) {
-    yearVals = val;
-  }
-
-  /**
-   * @return year values
-   */
-  public String[] getYearVals() {
-    return yearVals;
   }
 
   /* later

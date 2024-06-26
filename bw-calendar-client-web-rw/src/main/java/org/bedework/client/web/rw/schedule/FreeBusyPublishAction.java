@@ -161,7 +161,7 @@ public class FreeBusyPublishAction extends RWActionBase {
         ical.getComponents().add(vfreeBusy);
       }
 
-      form.setContentName("freebusy.ics");
+      request.setContentName("freebusy.ics");
       request.getResponse().setHeader("Content-Disposition",
                                       "Attachment; Filename=\"freebusy.ics\"");
       request.getResponse().setContentType("text/calendar; charset=UTF-8");

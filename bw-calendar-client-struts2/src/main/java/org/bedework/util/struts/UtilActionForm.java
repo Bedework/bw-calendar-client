@@ -23,10 +23,7 @@ import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.util.webaction.WebActionForm;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,28 +33,11 @@ import javax.servlet.http.HttpServletRequest;
  * @author Mike Douglass
  */
 public class UtilActionForm implements WebActionForm {
-  /** Have we initialised?
-   */
-  protected boolean initialised;
-
   private Locale currentLocale;
-
-  /** Is nocache on?
-   */
-  protected boolean nocache;
-
-  /** Application variables. These can be set with request parameters and
-   * dumped into the page for use by jsp and xslt.
-   */
-  protected HashMap<String, String> appVars;
 
   /** One shot content name.
    */
   protected String contentName;
-
-  /** Incoming URL.
-   */
-  protected String url;
 
   /* URL Components are here for the benefit of jsp to avoid cluttering up
      pages with code.
@@ -71,19 +51,10 @@ public class UtilActionForm implements WebActionForm {
    */
   protected String context;
 
-  /** scheme + host + port part of the url together with the context.
-   */
-  protected String urlPrefix;
-
   /**
    * The current authenticated user. May be null
    */
   protected String currentUser;
-
-  /**
-   * Session id -
-   */
-  protected String sessionId;
 
   /**
    * provided by servlet parameter - minus context
@@ -94,11 +65,6 @@ public class UtilActionForm implements WebActionForm {
    * Confirmation id - require this on forms
    */
   protected String confirmationId;
-
-  /**
-   * Browser type
-   */
-  protected String browserType = "default";
 
   /* ...........................................................
    *                       Uploads and exports
@@ -119,16 +85,6 @@ public class UtilActionForm implements WebActionForm {
   /* ================ Properties methods ============== */
 
   @Override
-  public void setInitialised(final boolean val) {
-    initialised = val;
-  }
-
-  @Override
-  public boolean getInitialised() {
-    return initialised;
-  }
-
-  @Override
   public void setCurrentLocale(final Locale val) {
     currentLocale = val;
   }
@@ -139,50 +95,6 @@ public class UtilActionForm implements WebActionForm {
       return Locale.getDefault();
     }
     return currentLocale;
-  }
-
-  @Override
-  public void setNocache(final boolean val) {
-    nocache = val;
-  }
-
-  @Override
-  public boolean getNocache() {
-    return nocache;
-  }
-
-  @Override
-  public void setAppVarsTbl(final HashMap<String, String> val) {
-    appVars = val;
-  }
-
-  @Override
-  @SuppressWarnings("unused")
-  public Set<Map.Entry<String, String>> getAppVars() {
-    if (appVars == null) {
-      return new HashMap<String, String>().entrySet();
-    }
-    return appVars.entrySet();
-  }
-
-  @Override
-  public void setContentName(final String val) {
-    contentName = val;
-  }
-
-  @Override
-  public String getContentName() {
-    return contentName;
-  }
-
-  @Override
-  public void setUrl(final String val) {
-    url = val;
-  }
-
-  @Override
-  public String getUrl() {
-    return url;
   }
 
   @Override
@@ -206,16 +118,6 @@ public class UtilActionForm implements WebActionForm {
   }
 
   @Override
-  public void setUrlPrefix(final String val) {
-    urlPrefix = val;
-  }
-
-  @Override
-  public String getUrlPrefix() {
-    return urlPrefix;
-  }
-
-  @Override
   public void assignCurrentUser(final String val) {
     currentUser = val;
   }
@@ -223,16 +125,6 @@ public class UtilActionForm implements WebActionForm {
   @Override
   public String getCurrentUser() {
     return currentUser;
-  }
-
-  @Override
-  public void assignSessionId(final String val) {
-    sessionId = val;
-  }
-
-  @Override
-  public String getSessionId() {
-    return sessionId;
   }
 
   @Override
@@ -257,16 +149,6 @@ public class UtilActionForm implements WebActionForm {
     }
 
     return confirmationId;
-  }
-
-  @Override
-  public void setBrowserType(final String val) {
-    browserType = val;
-  }
-
-  @Override
-  public String getBrowserType() {
-    return browserType;
   }
 
   @Override

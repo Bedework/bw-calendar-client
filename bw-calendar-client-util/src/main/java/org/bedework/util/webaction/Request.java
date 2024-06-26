@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -48,6 +49,9 @@ public class Request extends ReqUtil implements Logged {
 
   public final static String appvarsAttrName =
           "org.bedework.client.appvars";
+
+  public final static String urlPrefixAttrName =
+          "org.bedework.client.urlprefix";
 
   /** */
   public final static int actionTypeUnknown = 0;
@@ -66,6 +70,8 @@ public class Request extends ReqUtil implements Logged {
 
   protected int actionType;
 
+  protected boolean noCache;
+
   /* request parameter names */
 
   /** */
@@ -82,12 +88,13 @@ public class Request extends ReqUtil implements Logged {
     /** */
     public static final String moduleNameKey = "mdl";
 
-  /** In the absence of a conversation parameter we assume that a conversation
-   * starts with actionType=action and ends with actionType=render.
+  /** In the absence of a conversation parameter we assume that a
+   * conversation starts with actionType=action and ends with
+   * actionType=render.
    *
-   * Conversations are related to the persistence framework and allow us to keep
-   * a persistence engine session running until the sequence of actions is
-   * completed.
+   * Conversations are related to the persistence framework and
+   * allow us to keep a persistence engine session running until
+   * the sequence of actions is completed.
    */
   public final static int conversationTypeUnknown = 0;
 
@@ -134,6 +141,8 @@ public class Request extends ReqUtil implements Logged {
    */
   protected String moduleName;
 
+  private final String errorForward;
+
   private final ErrorEmitSvlt err;
   private final MessageEmitSvlt msg;
 
@@ -179,10 +188,45 @@ public class Request extends ReqUtil implements Logged {
     }
 
     moduleName = getStringActionPar(moduleNameKey);
+
+    if (debug()) {
+      dumpRequest();
+    }
+
+    setRequestAttr(urlPrefixAttrName,
+                   HttpServletUtils.getURLPrefix(request));
+
+    final HttpSession session = request.getSession();
+    final ServletContext sc = session.getServletContext();
+
+    errorForward = sc.getInitParameter("errorForward");
+    if (errorForward == null) {
+      throw new RuntimeException("errorForward not set");
+    }
+
+    checkNocache();
+
+    /* Set up presentation values from request
+     */
+    //doPresentation();
   }
 
   public Map<String, String> getParams() {
     return params;
+  }
+
+  /** Returns the scheme + host + port part of the url together with the
+   *  path up to the servlet path. This allows us to append a new action to
+   *  the end.
+   *
+   *  @return  String   the URL prefix
+   */
+  public String getUrlPrefix() {
+    return (String)getRequestAttr(urlPrefixAttrName);
+  }
+
+  public String getErrorForward() {
+    return errorForward;
   }
 
   /**
@@ -405,19 +449,20 @@ public class Request extends ReqUtil implements Logged {
     return params.get(name);
   }
 
-  /* We handle our own nocache headers but, if we are running with nocache,
-   * we need to be able to disable it for the occasional response.
+  /* We handle our own nocache headers but, if we are running
+   * with nocache, we need to be able to disable it for the
+   * occasional response.
    *
-   * <p>This gets around an IE problem when attempting to deliver files.
-   * IE requires caching on or it is unable to locate the file it is
-   * supposed to be delivering.
+   * <p>This gets around an IE problem when attempting to
+   * deliver files. IE requires caching on, or it is unable to
+   * locate the file it is supposed to be delivering.
    */
   public void checkNocache() {
     String reqpar = getReqPar("nocacheSticky");
 
     if (reqpar != null) {
       /* (re)set the default */
-      form.setNocache(reqpar.equals("yes"));
+      setNocache(reqpar.equals("yes"));
     }
 
     /* Look for a one-shot setting
@@ -425,24 +470,43 @@ public class Request extends ReqUtil implements Logged {
 
     reqpar = getReqPar("nocache");
 
-    if ((reqpar == null) && (!form.getNocache())) {
+    if ((reqpar == null) && (!getNocache())) {
       return;
     }
 
     /* If we got a request parameter it overrides the default
      */
-    boolean nocache = form.getNocache();
+    boolean nc = getNocache();
 
     if (reqpar != null) {
-      nocache = reqpar.equals("yes");
+      nc = reqpar.equals("yes");
     }
 
-    if (nocache) {
+    if (nc) {
       response.setHeader("Pragma", "No-cache");
       //response.setHeader("Cache-Control", "no-cache");
       response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
       response.setDateHeader("Expires", 1);
     }
+  }
+
+  public void setNocache(final boolean val) {
+    noCache = val;
+  }
+
+  public boolean getNocache() {
+    return noCache;
+  }
+
+  public void setContentName(final String val) {
+    getPresentationState().setContentName(val);
+  }
+
+  /**
+   * @return contentName if present or set
+   */
+  public String getContentName() {
+    return getPresentationState().getContentName();
   }
 
   /** Check for logout request or force logout if user changed.
@@ -475,9 +539,9 @@ public class Request extends ReqUtil implements Logged {
     return true;
   }
 
-  /* ==============================================================
+  /* ========================================================
    *                  Application variable methods
-   * ============================================================== */
+   * ======================================================== */
 
   /**
    * @return app vars
@@ -531,7 +595,7 @@ public class Request extends ReqUtil implements Logged {
       final String varName = reqpar.substring(0, start);
       String varVal = reqpar.substring(start + 1, reqpar.length() - 1);
 
-      if (varVal.length() == 0) {
+      if (varVal.isEmpty()) {
         varVal = null;
       }
 
@@ -539,8 +603,6 @@ public class Request extends ReqUtil implements Logged {
         return "badRequest";
       }
     }
-
-    getForm().setAppVarsTbl(appVars);
 
     return null;
   }
@@ -568,9 +630,9 @@ public class Request extends ReqUtil implements Logged {
     return true;
   }
 
-  /* ====================================================================
+  /* ========================================================
    *               Presentation state methods
-   * ==================================================================== */
+   * ======================================================== */
 
   /**
    */
@@ -588,16 +650,8 @@ public class Request extends ReqUtil implements Logged {
       debug("Set presentation state");
     }
 
-    final HttpServletRequest req = getRequest();
-
-    ps.checkBrowserType(req);
-    ps.checkContentType(req);
-    ps.checkContentName(req);
-    ps.checkNoXSLT(req);
-    ps.checkRefreshXslt(req);
-    ps.checkSkinName(req);
-
-    setRequestAttr(PresentationState.presentationAttrName, ps);
+    setRequestAttr(PresentationState.presentationAttrName,
+                   ps.reinit(getRequest()));
 
     if (debug()) {
       ps.debugDump("action");
@@ -610,33 +664,23 @@ public class Request extends ReqUtil implements Logged {
   public PresentationState getPresentationState() {
     final String attrName = PresentationState.presentationAttrName;
 
-    final Object o = getSessionAttr(attrName);
+    final Object o = getRequestAttr(attrName);
     final PresentationState ps;
 
     if (!(o instanceof PresentationState)) {
-      ps = new PresentationState();
-      initPresentationState(ps);
-
-      setSessionAttr(attrName, ps);
+      ps = new PresentationState().reinit(getRequest());
     } else {
       ps = (PresentationState)o;
     }
 
+    setRequestAttr(attrName, ps);
+
     return  ps;
   }
 
-  /**
-   * @param ps PresentationState
-   */
-  protected void initPresentationState(final PresentationState ps) {
-
-    ps.setBrowserType(getForm().getBrowserType());
-    ps.setNoXSLTSticky(false);
-  }
-
-  /* ====================================================================
+  /* ============================================================
    *                   Logged methods
-   * ==================================================================== */
+   * ============================================================ */
 
   private final BwLogger logger = new BwLogger();
 

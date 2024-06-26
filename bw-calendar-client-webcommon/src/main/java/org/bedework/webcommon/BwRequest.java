@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -63,6 +64,8 @@ import javax.servlet.http.HttpSession;
 public class BwRequest extends Request {
   private BwSession sess;
 
+  private final String modulesClass;
+  private BwModules modules;
   private BwModule module;
 
   private Client cl;
@@ -196,6 +199,14 @@ public class BwRequest extends Request {
                    final MessageEmitSvlt msg,
                    final WebActionForm form) {
     super(request, response, params, actionPath, err, msg, form);
+
+    final HttpSession session = request.getSession();
+    final ServletContext sc = session.getServletContext();
+
+    modulesClass = sc.getInitParameter("modulesClass");
+    if (modulesClass == null) {
+      throw new RuntimeException("modulesClass not set");
+    }
   }
 
   void setSess(final BwSession val) {
@@ -209,9 +220,27 @@ public class BwRequest extends Request {
     return sess;
   }
 
+  public BwModules getModules() {
+    modules = (BwModules)getSessionAttr(BwModules.modulesAttrName);
+    if (modules == null) {
+      if (debug()) {
+        debug("No modules in session - creating " +
+                      modulesClass);
+      }
+      modules = (BwModules)Util.getObject(modulesClass,
+                                          BwModules.class);
+      setSessionAttr(BwModules.modulesAttrName, modules);
+    } else if (debug()) {
+      debug("Found modules in session with class " +
+                    modules.getClass());
+    }
+
+    return modules;
+  }
+
   public BwModule getModule() {
     if (module == null) {
-      module = getBwForm().fetchModule(getModuleName());
+      module = getModules().fetchModule(getModuleName());
       request.setAttribute(moduleStateName, module.getState());
     }
 
@@ -277,7 +306,7 @@ public class BwRequest extends Request {
 
   public Client getClient() {
     if (cl == null) {
-      cl = getBwForm().fetchClient(getModuleName());
+      cl = getModule().getClient();
       request.setAttribute(embeddedClientName, cl);
     }
 
@@ -779,17 +808,18 @@ public class BwRequest extends Request {
 
     final BwActionFormBase form = getBwForm();
 
-    final BwModule module = form.fetchModule(getModuleName());
+    final BwModule module = getModule();
     final BwModuleState mstate = module.getState();
 
     PresentationState ps = mstate.getPresentationState();
 
     if (ps == null) {
-      ps = new PresentationState();
-      initPresentationState(ps);
+      ps = new PresentationState().reinit(getRequest());
 
       mstate.setPresentationState(ps);
     }
+
+    setRequestAttr(PresentationState.presentationAttrName, ps);
 
     ConfiguredXSLTFilter.XSLTConfig xc = mstate.getXsltConfig();
 

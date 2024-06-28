@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon;
 
-import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.webaction.Request;
 
 /** This is a no-op action
@@ -39,15 +38,14 @@ public class RenderAction extends BwAbstractAction {
 
   @Override
   public String getContentName(final Request req) {
-    final PresentationState ps = req.getPresentationState();
-    String contentName = ps.getContentName();
+    String contentName = req.getContentName();
 
     if (contentName != null) {
-      req.setContentName(contentName);
-    } else {
-      contentName = req.getContentName();
-      req.setContentName(null);  // It's a one shot and we're about to render
+      return contentName;
     }
+
+    contentName = req.getReqPar("contentName");
+    req.setContentName(null);  // It's a one shot and we're about to render
 
     return contentName;
   }

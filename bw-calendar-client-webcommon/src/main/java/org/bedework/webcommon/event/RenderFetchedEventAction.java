@@ -19,7 +19,6 @@
 package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.webaction.Request;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
@@ -46,15 +45,14 @@ public class RenderFetchedEventAction extends BwAbstractAction {
 
   @Override
   public String getContentName(final Request req) {
-    final PresentationState ps = req.getPresentationState();
-    String contentName = ps.getContentName();
+    String contentName = req.getContentName();
 
     if (contentName != null) {
-      req.setContentName(contentName);
-    } else {
-      contentName = req.getContentName();
-      req.setContentName(null);  // It's a one shot and we're about to render
+      return contentName;
     }
+
+    contentName = req.getReqPar("contentName");
+    req.setContentName(null);  // It's a one shot and we're about to render
 
     return contentName;
   }

@@ -23,7 +23,6 @@ import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.servlet.HttpServletUtils;
-import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.webaction.ErrorEmitSvlt;
 import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
@@ -246,7 +245,6 @@ public abstract class UtilAbstractAction extends ActionSupport
     }
 
     try {
-      getErrorForward(request, form);
       if (form.getCurrentUser() == null) {
         form.assignCurrentUser(HttpServletUtils.remoteUser(request));
       } // Otherwise we check it later in checklogout.
@@ -352,12 +350,7 @@ public abstract class UtilAbstractAction extends ActionSupport
    * @return String name of content
    */
   public String getContentName(final Request req) {
-    final PresentationState ps = req.getPresentationState();
-    final String contentName = ps.getContentName();
-
-    req.setContentName(contentName);
-
-    return contentName;
+    return req.getContentName();
   }
 
   /** Set the global id to some name for logging
@@ -382,18 +375,6 @@ public abstract class UtilAbstractAction extends ActionSupport
    */
   public String getErrorObjErrProp() {
     return "org.bedework.util.error.exc";
-  }
-
-  public void getErrorForward(final HttpServletRequest request,
-                                final UtilActionForm form) {
-    if (form.getErrorForward() != null) {
-      return;
-    }
-
-    final HttpSession session = request.getSession();
-    final ServletContext sc = session.getServletContext();
-
-    form.assignErrorForward(sc.getInitParameter("errorForward"));
   }
 
   public String getFormClass(final HttpServletRequest request) {

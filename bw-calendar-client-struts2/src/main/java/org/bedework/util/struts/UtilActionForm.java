@@ -23,7 +23,6 @@ import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.util.webaction.WebActionForm;
 
 import java.io.File;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,12 +32,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author Mike Douglass
  */
 public class UtilActionForm implements WebActionForm {
-  private Locale currentLocale;
-
-  /** One shot content name.
-   */
-  protected String contentName;
-
   /* URL Components are here for the benefit of jsp to avoid cluttering up
      pages with code.
    */
@@ -55,11 +48,6 @@ public class UtilActionForm implements WebActionForm {
    * The current authenticated user. May be null
    */
   protected String currentUser;
-
-  /**
-   * provided by servlet parameter - minus context
-   */
-  private String errorForward;
 
   /**
    * Confirmation id - require this on forms
@@ -83,19 +71,6 @@ public class UtilActionForm implements WebActionForm {
      ========================================================== */
 
   /* ================ Properties methods ============== */
-
-  @Override
-  public void setCurrentLocale(final Locale val) {
-    currentLocale = val;
-  }
-
-  @Override
-  public Locale getCurrentLocale() {
-    if (currentLocale == null) {
-      return Locale.getDefault();
-    }
-    return currentLocale;
-  }
 
   @Override
   public void setSchemeHostPort(final String val) {
@@ -125,16 +100,6 @@ public class UtilActionForm implements WebActionForm {
   @Override
   public String getCurrentUser() {
     return currentUser;
-  }
-
-  @Override
-  public void assignErrorForward(final String val) {
-    errorForward = val;
-  }
-
-  @Override
-  public String getErrorForward() {
-    return errorForward;
   }
 
   @Override

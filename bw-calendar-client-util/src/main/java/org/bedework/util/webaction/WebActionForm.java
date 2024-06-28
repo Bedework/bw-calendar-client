@@ -1,7 +1,5 @@
 package org.bedework.util.webaction;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -9,16 +7,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface WebActionForm {
   /* ================ Properties methods ============== */
-
-  /**
-   * @param val current locale
-   */
-  void setCurrentLocale(Locale val);
-
-  /**
-   * @return current locale
-   */
-  public Locale getCurrentLocale();
 
   /**
    * @param val schema + host + port part of uri
@@ -52,10 +40,6 @@ public interface WebActionForm {
    * @return String
    */
   String getCurrentUser();
-
-  void assignErrorForward(String val);
-
-  String getErrorForward();
 
   /** This should not be setConfirmationId as that exposes it to the incoming
    * request.

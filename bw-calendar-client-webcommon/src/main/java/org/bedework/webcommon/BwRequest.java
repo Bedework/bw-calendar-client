@@ -44,6 +44,7 @@ import org.bedework.util.webaction.ErrorEmitSvlt;
 import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
+import org.bedework.util.webaction.WebGlobals;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -207,6 +208,23 @@ public class BwRequest extends Request {
     if (modulesClass == null) {
       throw new RuntimeException("modulesClass not set");
     }
+
+    getPresentationState().reinit(request);
+  }
+
+  public BwWebGlobals getBwGlobals() {
+    return (BwWebGlobals)getGlobals();
+  }
+
+  public WebGlobals getGlobals() {
+    var globals = (WebGlobals)getSessionAttr(WebGlobals.webGlobalsAttrName);
+
+    if (globals == null) {
+      globals = new BwWebGlobals();
+      setSessionAttr(WebGlobals.webGlobalsAttrName, globals);
+    }
+
+    return globals;
   }
 
   void setSess(final BwSession val) {
@@ -256,8 +274,6 @@ public class BwRequest extends Request {
     final String changeToken = cl.getCurrentChangeToken();
 
     final String ifNoneMatch = request.getHeader("if-none-match");
-
-    final HttpServletResponse resp = getResponse();
 
     if ((changeToken != null) && changeToken.equals(ifNoneMatch)) {
       getResponse().setStatus(HttpServletResponse.SC_NOT_MODIFIED);
@@ -374,16 +390,16 @@ public class BwRequest extends Request {
       return IcalDefs.entityTypeEvent;
     }
 
-    if ("task".equals(s)) {
-      return IcalDefs.entityTypeTodo;
-    }
-
-    if ("journal".equals(s)) {
-      return IcalDefs.entityTypeJournal;
-    }
-
-    if ("freebusy".equals(s)) {
-      return IcalDefs.entityTypeFreeAndBusy;
+    switch (s) {
+      case "task" -> {
+        return IcalDefs.entityTypeTodo;
+      }
+      case "journal" -> {
+        return IcalDefs.entityTypeJournal;
+      }
+      case "freebusy" -> {
+        return IcalDefs.entityTypeFreeAndBusy;
+      }
     }
 
     getErr().emit(ValidationError.invalidEntityType, s);
@@ -560,7 +576,6 @@ public class BwRequest extends Request {
    */
   public BwCalendar getNewCal(final boolean required) {
     final String newCalPath = getReqPar("newCalPath");
-    BwCalendar newCal = null;
 
     if (newCalPath == null) {
       if (required) {
@@ -569,7 +584,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    newCal = getClient().getCollection(newCalPath);
+    final BwCalendar newCal = getClient().getCollection(newCalPath);
     if (newCal == null) {
       getErr().emit(ClientError.unknownCalendar, newCalPath);
       return null;
@@ -720,21 +735,20 @@ public class BwRequest extends Request {
       return ScheduleMethods.methodTypeNone;
     }
 
-    if ("none".equals(schedStr)) {
-      return ScheduleMethods.methodTypeNone;
-    }
-
-    if ("request".equals(schedStr)) {
-      return ScheduleMethods.methodTypeRequest;
-    }
-
-    if ("reconfirm".equals(schedStr)) {
-      // Use refresh to indicate we want to reconfirm
-      return ScheduleMethods.methodTypeRefresh;
-    }
-
-    if ("publish".equals(schedStr)) {
-      return ScheduleMethods.methodTypePublish;
+    switch (schedStr) {
+      case "none" -> {
+        return ScheduleMethods.methodTypeNone;
+      }
+      case "request" -> {
+        return ScheduleMethods.methodTypeRequest;
+      }
+      case "reconfirm" -> {
+        // Use refresh to indicate we want to reconfirm
+        return ScheduleMethods.methodTypeRefresh;
+      }
+      case "publish" -> {
+        return ScheduleMethods.methodTypePublish;
+      }
     }
 
     getErr().emit(ValidationError.invalidSchedMethod, schedStr);
@@ -805,8 +819,6 @@ public class BwRequest extends Request {
   @Override
   public PresentationState getPresentationState() {
     /* First try to get it from the module. */
-
-    final BwActionFormBase form = getBwForm();
 
     final BwModule module = getModule();
     final BwModuleState mstate = module.getState();

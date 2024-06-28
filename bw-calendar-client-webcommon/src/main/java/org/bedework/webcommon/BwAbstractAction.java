@@ -43,7 +43,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.BwCreatorFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
-import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
@@ -64,7 +63,6 @@ import org.bedework.webcommon.config.ClientConfigurations;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -161,8 +159,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final Client cl = bwreq.getClient();
     final BwModuleState mstate = bwreq.getModule().getState();
-
-    setLocale(bwreq, mstate, form);
 
     form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
     form.assignCurUserSuperUser(cl.isSuperUser());
@@ -358,39 +354,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                final MessageEmitSvlt msg,
                                final WebActionForm form) {
     return new BwRequest(request, response, params, actionPath, err, msg, form);
-  }
-
-  private void setLocale(final BwRequest request,
-                         final BwModuleState mstate,
-                         final BwActionFormBase form) {
-    final Collection<Locale> reqLocales = request.getLocales();
-    final String reqLoc = request.getReqPar("locale");
-
-    if (reqLoc != null) {
-      if ("default".equals(reqLoc)) {
-        form.setRequestedLocale(null);
-      } else {
-        try {
-          final Locale loc = Util.makeLocale(reqLoc);
-          form.setRequestedLocale(loc); // Make it stick
-        } catch (final Throwable t) {
-          // Ignore bad parameter?
-        }
-      }
-    }
-
-    final Locale loc =
-            request.getClient().getUserLocale(reqLocales,
-                                        form.getRequestedLocale());
-
-    if (loc != null) {
-      BwLocale.setLocale(loc);
-      final Locale cloc = form.getCurrentLocale();
-      if ((cloc == null) || (!cloc.equals(loc))) {
-        mstate.setRefresh(true);
-      }
-      form.setCurrentLocale(loc);
-    }
   }
 
   /** Set the config object.

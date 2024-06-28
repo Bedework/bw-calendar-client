@@ -91,7 +91,7 @@ public class Request extends ReqUtil implements Logged {
   /** In the absence of a conversation parameter we assume that a
    * conversation starts with actionType=action and ends with
    * actionType=render.
-   *
+   * <p>
    * Conversations are related to the persistence framework and
    * allow us to keep a persistence engine session running until
    * the sequence of actions is completed.
@@ -206,9 +206,18 @@ public class Request extends ReqUtil implements Logged {
 
     checkNocache();
 
-    /* Set up presentation values from request
-     */
-    //doPresentation();
+    getGlobals().reset(this);
+  }
+
+  public WebGlobals getGlobals() {
+    var globals = (WebGlobals)getSessionAttr(WebGlobals.webGlobalsAttrName);
+
+    if (globals == null) {
+      globals = new WebGlobals();
+      setSessionAttr(WebGlobals.webGlobalsAttrName, globals);
+    }
+
+    return globals;
   }
 
   public Map<String, String> getParams() {
@@ -633,30 +642,6 @@ public class Request extends ReqUtil implements Logged {
   /* ========================================================
    *               Presentation state methods
    * ======================================================== */
-
-  /**
-   */
-  public void doPresentation() {
-    final PresentationState ps = getPresentationState();
-
-    if (ps == null) {
-      if (debug()) {
-        debug("No presentation state");
-      }
-      return;
-    }
-
-    if (debug()) {
-      debug("Set presentation state");
-    }
-
-    setRequestAttr(PresentationState.presentationAttrName,
-                   ps.reinit(getRequest()));
-
-    if (debug()) {
-      ps.debugDump("action");
-    }
-  }
 
   /**
    * @return PresentationState

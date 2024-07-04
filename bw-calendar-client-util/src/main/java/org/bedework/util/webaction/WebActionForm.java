@@ -29,18 +29,6 @@ public interface WebActionForm {
    */
   String getContext();
 
-  /** This should not be setCurrentUser as that exposes it to the incoming
-   * request.
-   *
-   * @param val      String user id
-   */
-  void assignCurrentUser(String val);
-
-  /**
-   * @return String
-   */
-  String getCurrentUser();
-
   /** This should not be setConfirmationId as that exposes it to the incoming
    * request.
    *

@@ -288,7 +288,7 @@ public class BwModule implements Logged, Serializable {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
       calSuiteName = conf.getCalSuite();
-    } else if (!user.equals(form.getCurrentUser())) {
+    } else if (!user.equals(request.getCurrentUser())) {
       /* !publicAdmin: We're never allowed to switch identity as a user client.
        */
       return false;
@@ -314,13 +314,13 @@ public class BwModule implements Logged, Serializable {
       if (readWrite) {
         client = new RWClientImpl(conf,
                                   getModuleName(),
-                                  form.getCurrentUser(),
+                                  request.getCurrentUser(),
                                   user,
                                   form.getAppType());
       } else {
         client = new ROClientImpl(conf,
                                   getModuleName(),
-                                  form.getCurrentUser(),
+                                  request.getCurrentUser(),
                                   user,
                                   calSuiteName,
                                   form.getAppType(),

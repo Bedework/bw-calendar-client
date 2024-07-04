@@ -245,9 +245,6 @@ public abstract class UtilAbstractAction extends ActionSupport
     }
 
     try {
-      if (form.getCurrentUser() == null) {
-        form.assignCurrentUser(HttpServletUtils.remoteUser(request));
-      } // Otherwise we check it later in checklogout.
       form.setSchemeHostPort(HttpServletUtils.getURLshp(request));
       form.setContext(HttpServletUtils.getContext(request));
 
@@ -269,9 +266,9 @@ public abstract class UtilAbstractAction extends ActionSupport
                            "Attachment; Filename=\"" + contentName + "\"");
       }
 
-      /* ----------------------------------------------------------------
+      /* ----------------------------------------------------------
          Everything is set up and ready to go. Execute something
-         ---------------------------------------------------------------- */
+         ---------------------------------------------------------- */
 
       /* NO portlet
       if (!isPortlet) {

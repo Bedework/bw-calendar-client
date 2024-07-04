@@ -27,7 +27,6 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
-import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.configs.AuthProperties;
@@ -64,8 +63,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   private ConfigCommon config;
 
-  private BwPrincipal<?> adminUserId;
-
   private Locale requestedLocale;
 
   private String requestedUid;
@@ -88,11 +85,6 @@ public class BwActionFormBase extends UtilActionForm
   /** true if this is a guest (unauthenticated) user
    */
   private boolean guest;
-
-  /**
-   * The current administrative user.
-   */
-  protected String currentAdminUser;
 
   private boolean superUser;
 
@@ -400,19 +392,6 @@ public class BwActionFormBase extends UtilActionForm
   public boolean configSet() {
     return config != null;
   }
-  /**
-   * @param val
-   */
-  public void assignAdminUserPrincipal(final BwPrincipal<?> val) {
-    adminUserId = val;
-  }
-
-  /**
-   * @return admin userid
-   */
-  public String getAdminUserId() {
-    return adminUserId.getAccount();
-  }
 
   /* ====================================================================
    *                   Current authenticated user Methods
@@ -536,25 +515,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public boolean getNewSession() {
     return newSession;
-  }
-
-  /** This should not be setCurrentAdminUser as that exposes it to the incoming
-   * request. This holds whatever account we are running as. We may be running
-   * as something other than the authenticated account - e.g. public admin
-   * of a calendar suite. We need this to hold that cvalue as we may
-   * not have a client embedded on entry.
-   *
-   * @param val      String user id
-   */
-  public void assignCurrentAdminUser(final String val) {
-    currentAdminUser = val;
-  }
-
-  /**
-   * @return admin user id
-   */
-  public String fetchCurrentAdminUser() {
-    return currentAdminUser;
   }
 
   /**

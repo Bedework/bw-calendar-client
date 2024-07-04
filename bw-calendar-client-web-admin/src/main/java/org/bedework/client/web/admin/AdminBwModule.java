@@ -14,7 +14,7 @@ import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminClientImpl;
 import org.bedework.client.admin.AdminConfig;
 import org.bedework.client.web.rw.RwBwModule;
-import org.bedework.webcommon.BwActionFormBase;
+import org.bedework.util.webaction.Request;
 import org.bedework.webcommon.BwCallback;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
@@ -63,7 +63,7 @@ public class AdminBwModule extends RwBwModule {
     final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final BwModuleState mstate = getState();
     AdminClient client = (AdminClient)getClient();
-    final BwCallback cb = BwCallback.getCb(request, form);
+    final BwCallback cb = BwCallback.getCb(request);
     String calSuiteName = null;
 
     if (client != null) {
@@ -87,7 +87,7 @@ public class AdminBwModule extends RwBwModule {
         final List<String> approvers =
                 client.getCalsuitePreferences().getCalsuiteApproversList();
 
-        if (approvers.contains(form.getCurrentUser())) {
+        if (approvers.contains(request.getCurrentUser())) {
           form.assignCurUserApproverUser(true);
         }
 
@@ -162,7 +162,7 @@ public class AdminBwModule extends RwBwModule {
 
           request.getModules().flushModules(request.getModuleName());
 
-          ((AdminClientImpl)client).reinit(form.getCurrentUser(),
+          ((AdminClientImpl)client).reinit(request.getCurrentUser(),
                                            user,
                                            calSuiteName);
 
@@ -177,7 +177,7 @@ public class AdminBwModule extends RwBwModule {
 
         client = new AdminClientImpl(conf,
                                      getModuleName(),
-                                     form.getCurrentUser(),
+                                     request.getCurrentUser(),
                                      user,
                                      calSuiteName);
 
@@ -190,8 +190,8 @@ public class AdminBwModule extends RwBwModule {
         sess.reset(request);
       }
 
-      final var pr = client.getCurrentPrincipal();
-      form.assignCurrentAdminUser(pr.getAccount());
+      request.getBwGlobals().changeCurrentUser(
+              client.getCurrentPrincipal());
     } catch (final CalFacadeException cfe) {
       throw cfe;
     } catch (final Throwable t) {
@@ -395,7 +395,7 @@ public class AdminBwModule extends RwBwModule {
                  .checkClient(request,
                               request.getSess(),
                               p.getAccount(),
-                              isMember(adg, form),
+                              isMember(adg, request),
                               cl.getConf())) {
       return forwardNoAccess;
     }
@@ -404,7 +404,7 @@ public class AdminBwModule extends RwBwModule {
   }
 
   private boolean isMember(final BwAdminGroup ag,
-                           final BwActionFormBase form) {
-    return ag.isMember(String.valueOf(form.getCurrentUser()), false);
+                           final Request request) {
+    return ag.isMember(String.valueOf(request.getCurrentUser()), false);
   }
 }

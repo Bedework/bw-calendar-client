@@ -45,11 +45,6 @@ public class UtilActionForm implements WebActionForm {
   protected String context;
 
   /**
-   * The current authenticated user. May be null
-   */
-  protected String currentUser;
-
-  /**
    * Confirmation id - require this on forms
    */
   protected String confirmationId;
@@ -90,16 +85,6 @@ public class UtilActionForm implements WebActionForm {
   @Override
   public String getContext() {
     return context;
-  }
-
-  @Override
-  public void assignCurrentUser(final String val) {
-    currentUser = val;
-  }
-
-  @Override
-  public String getCurrentUser() {
-    return currentUser;
   }
 
   @Override

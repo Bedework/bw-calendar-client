@@ -67,8 +67,7 @@ public abstract class BwCallback implements Serializable {
   public abstract void close(HttpServletRequest hreq,
                              boolean cleanUp);
 
-  public static BwCallback getCb(final Request request,
-                                 final BwActionFormBase form) {
+  public static BwCallback getCb(final Request request) {
     BwCallbackImpl cb =
             (BwCallbackImpl)request.getSessionAttr(BwCallback.cbAttrName);
     if (cb == null) {

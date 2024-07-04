@@ -104,7 +104,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final BwActionFormBase form = bwreq.getBwForm();
     String adminUserId = null;
 
-    final BwCallback cb = BwCallback.getCb(request, form);
+    final BwCallback cb = BwCallback.getCb(request);
 
     final int status;
 
@@ -128,11 +128,11 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final ConfigCommon conf = setConfig(bwreq);
 
     if (conf.getGuestMode()) {
-      form.assignCurrentUser(null);
+      request.clearCurrentUser();
     } else {
-      adminUserId = form.fetchCurrentAdminUser();
+      adminUserId = ((BwRequest)request).getBwGlobals().getCurrentAdminUser();
       if (adminUserId == null) {
-        adminUserId = form.getCurrentUser();
+        adminUserId = request.getCurrentUser();
       }
     }
 
@@ -160,7 +160,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final Client cl = bwreq.getClient();
     final BwModuleState mstate = bwreq.getModule().getState();
 
-    form.assignAdminUserPrincipal(cl.getCurrentPrincipal());
+    ((BwRequest)request).getBwGlobals().changeAdminUserId(
+            cl.getCurrentPrincipal());
     form.assignCurUserSuperUser(cl.isSuperUser());
 
     // We need to have set the current locale before we do this.
@@ -1050,7 +1051,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.assignNewSession(true);
 
       s = new BwSessionImpl(conf,
-                            form.getCurrentUser(),
+                            request.getCurrentUser(),
                             appName);
 
       BwWebUtil.setState(request.getRequest(), s);

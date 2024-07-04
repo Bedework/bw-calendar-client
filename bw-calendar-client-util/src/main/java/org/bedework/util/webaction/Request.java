@@ -526,7 +526,8 @@ public class Request extends ReqUtil implements Logged {
     final String reqUser = HttpServletUtils.remoteUser(request);
 
     final boolean forceLogout =
-            !Util.equalsString(reqUser, form.getCurrentUser());
+            !Util.equalsString(reqUser,
+                               getGlobals().getCurrentUser());
 
     if (forceLogout || (request.getParameter(requestLogout) != null)) {
       final HttpSession sess = request.getSession(false);
@@ -538,6 +539,14 @@ public class Request extends ReqUtil implements Logged {
     }
 
     return null;
+  }
+
+  public String getCurrentUser() {
+    return getGlobals().getCurrentUser();
+  }
+
+  public void clearCurrentUser() {
+    getGlobals().currentUser = null;
   }
 
   /** Clean up - we're about to logout

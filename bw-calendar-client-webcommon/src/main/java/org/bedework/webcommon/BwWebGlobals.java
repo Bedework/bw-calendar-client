@@ -3,6 +3,7 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.util.misc.Util;
 import org.bedework.util.webaction.WebGlobals;
@@ -15,6 +16,13 @@ import java.util.Locale;
  */
 public class BwWebGlobals extends WebGlobals {
   private Locale requestedLocale;
+
+  private BwPrincipal<?> adminUserId;
+
+  /**
+   * The current administrative user.
+   */
+  protected String currentAdminUser;
 
   public void reset(final BwRequest req) {
     super.reset(req);
@@ -57,5 +65,31 @@ public class BwWebGlobals extends WebGlobals {
    */
   public Locale getRequestedLocale() {
     return requestedLocale;
+  }
+
+  /**
+   * This holds whatever account we are running as. We may be running
+   * as something other than the authenticated account - e.g. public admin
+   * of a calendar suite. We need this to hold that cvalue as we may
+   * not have a client embedded on entry.
+   *
+   * @return admin user id
+   */
+  public String getCurrentAdminUser() {
+    return currentAdminUser;
+  }
+
+  public void changeAdminUserId(final BwPrincipal<?> val) {
+    adminUserId = val;
+  }
+  /**
+   * @return admin userid
+   */
+  public String getAdminUserId() {
+    return adminUserId.getAccount();
+  }
+
+  public void changeCurrentUser(final BwPrincipal<?> val) {
+    currentUser = val.getAccount();
   }
 }

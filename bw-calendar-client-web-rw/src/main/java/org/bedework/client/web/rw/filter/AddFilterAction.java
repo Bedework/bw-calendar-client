@@ -78,8 +78,6 @@ public class AddFilterAction extends RWActionBase {
       return forwardNotAdded;
     }
 
-    form.assignReloadRequired(true);
-
     return forwardSuccess;
   }
 }

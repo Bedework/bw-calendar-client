@@ -130,7 +130,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     if (conf.getGuestMode()) {
       request.clearCurrentUser();
     } else {
-      adminUserId = ((BwRequest)request).getBwGlobals().getCurrentAdminUser();
+      adminUserId = bwreq.getBwGlobals().getCurrentAdminUser();
       if (adminUserId == null) {
         adminUserId = request.getCurrentUser();
       }
@@ -140,7 +140,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       debug("About to get state");
     }
 
-    final BwSession bsess = getState(bwreq, form,
+    final BwSession bsess = getState(bwreq,
                                      adminUserId, conf);
 
     if (debug()) {
@@ -159,15 +159,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final Client cl = bwreq.getClient();
     final BwModuleState mstate = bwreq.getModule().getState();
+    final var globals = bwreq.getBwGlobals();
 
-    ((BwRequest)request).getBwGlobals().changeAdminUserId(
+    globals.changeAdminUserId(
             cl.getCurrentPrincipal());
-    form.assignCurUserSuperUser(cl.isSuperUser());
 
     // We need to have set the current locale before we do this.
     mstate.setCalInfo(CalendarInfo.getInstance());
 
-    form.setGuest(bsess.isGuest());
+    form.setGuest(cl.isGuest());
 
     final BwPreferences prefs = cl.getPreferences();
 
@@ -183,7 +183,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setCalSuiteName(request.getReqPar("cs"));
     }
 
-    if (form.getNewSession()) {
+    if (bsess.isNewSession()) {
       if (adminUserId != null) {
         final var loginMsg = "Logged in to " + conf.getAppType() +
                 " as " + adminUserId;
@@ -233,7 +233,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     bsess.prepareRender(bwreq);
 
-    if (form.getNewSession()) {
+    if (bsess.isNewSession()) {
       gotoDateView(bwreq,
                    mstate.getDate(),
                    mstate.getViewType());
@@ -392,7 +392,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   protected int setSearchParams(final BwRequest request,
                                 final SearchParams params,
                                 final boolean gridMode) {
-    final BwActionFormBase form = request.getBwForm();
     final BwModuleState mstate = request.getModule().getState();
     final Client cl = request.getClient();
 
@@ -1023,12 +1022,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * <p>We also carry out a number of web related operations.
    *
    * @param request       HttpServletRequest Needed to locate session
-   * @param form          Action form
    * @param adminUserId   id we want to administer
    * @return BwSession never null
    */
   private BwSession getState(final BwRequest request,
-                             final BwActionFormBase form,
                              final String adminUserId,
                              final ConfigCommon conf) {
     BwSession s = BwWebUtil.getState(request.getRequest());
@@ -1042,16 +1039,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                       sess.getMaxInactiveInterval());
       }
 
-      form.assignNewSession(false);
+      s.resetNewSession();
     } else {
       if (debug()) {
         debug("getState-- get new object");
       }
 
-      form.assignNewSession(true);
-
       s = new BwSessionImpl(conf,
-                            request.getCurrentUser(),
                             appName);
 
       BwWebUtil.setState(request.getRequest(), s);

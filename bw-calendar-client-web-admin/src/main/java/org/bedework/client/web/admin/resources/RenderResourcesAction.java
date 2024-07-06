@@ -40,7 +40,7 @@ public class RenderResourcesAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) {
-    if (form.getNewSession()) {
+    if (request.isNewSession()) {
       request.refresh();
       return forwardGotomain;
     }

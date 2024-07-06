@@ -135,7 +135,7 @@ public class UpdateCalendarAction extends RWActionBase {
 
     final Boolean bool = request.getBooleanReqPar("unremoveable");
     if (bool != null) {
-      if (!form.getCurUserSuperUser()) {
+      if (!cl.isSuperUser()) {
         return forwardNoAccess; // Only superuser for that flag
       }
 

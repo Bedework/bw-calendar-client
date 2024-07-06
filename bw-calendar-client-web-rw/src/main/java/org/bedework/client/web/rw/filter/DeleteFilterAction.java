@@ -68,8 +68,6 @@ public class DeleteFilterAction extends RWActionBase {
       return forwardNoAction;
     }
 
-    form.assignReloadRequired(true);
-
     return forwardSuccess;
   }
 }

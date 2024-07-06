@@ -190,8 +190,7 @@ public class AdminBwModule extends RwBwModule {
         sess.reset(request);
       }
 
-      request.getBwGlobals().changeCurrentUser(
-              client.getCurrentPrincipal());
+      request.getBwGlobals().reset(client);
     } catch (final CalFacadeException cfe) {
       throw cfe;
     } catch (final Throwable t) {

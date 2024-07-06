@@ -220,7 +220,16 @@ public class BwRequest extends Request {
     var globals = (WebGlobals)getSessionAttr(WebGlobals.webGlobalsAttrName);
 
     if (globals == null) {
-      globals = new BwWebGlobals();
+
+      final HttpSession session = request.getSession();
+      final ServletContext sc = session.getServletContext();
+
+      final var globalsClass = sc.getInitParameter("globalsClass");
+      if (globalsClass == null) {
+        throw new RuntimeException("globalsClass not set");
+      }
+      globals = (BwWebGlobals)Util.getObject(globalsClass,
+                                             BwWebGlobals.class);
       setSessionAttr(WebGlobals.webGlobalsAttrName, globals);
     }
 
@@ -236,6 +245,10 @@ public class BwRequest extends Request {
    */
   public BwSession getSess() {
     return sess;
+  }
+
+  public boolean isNewSession() {
+    return (sess == null) || (sess.isNewSession());
   }
 
   public BwModules getModules() {

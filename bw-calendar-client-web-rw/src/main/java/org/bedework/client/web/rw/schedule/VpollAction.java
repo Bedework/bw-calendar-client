@@ -32,7 +32,7 @@ public class VpollAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
-    if (form.getNewSession()) {
+    if (request.isNewSession()) {
       request.refresh();
       return forwardGotomain;
     }

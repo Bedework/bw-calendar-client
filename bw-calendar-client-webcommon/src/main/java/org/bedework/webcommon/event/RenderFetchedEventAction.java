@@ -33,7 +33,7 @@ public class RenderFetchedEventAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) {
-    if (form.getNewSession() || (form.getEventInfo() == null)) {
+    if (request.isNewSession() || (form.getEventInfo() == null)) {
       // Assume logged out - could be someone messing around.
       request.refresh();
       request.error(ClientError.loggedOut);

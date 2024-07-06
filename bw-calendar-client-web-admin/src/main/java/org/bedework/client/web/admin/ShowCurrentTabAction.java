@@ -41,7 +41,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
                       final BwActionFormBase form) {
 
     final BwAdminActionForm aform = (BwAdminActionForm)form;
-//    if (form.getNewSession()) {
+//    if (request.isNewSession()) {
       request.refresh();
 //    }
 

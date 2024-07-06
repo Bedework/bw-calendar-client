@@ -28,7 +28,7 @@ public class RenderAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) {
-    if (form.getNewSession()) {
+    if (request.isNewSession()) {
       request.refresh();
 //      return forwardGotomain;
     }

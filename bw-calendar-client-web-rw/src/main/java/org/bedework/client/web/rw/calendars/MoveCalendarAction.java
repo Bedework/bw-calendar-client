@@ -66,7 +66,7 @@ public class MoveCalendarAction extends RWActionBase {
       return forwardInUse;
     }
 
-    if (cal.getUnremoveable() && !form.getCurUserSuperUser()) {
+    if (cal.getUnremoveable() && !cl.isSuperUser()) {
       // Only super user can move the unremovable
       return forwardNoAccess;
     }

@@ -3,9 +3,11 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.util.misc.Util;
+import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.WebGlobals;
 
 import java.util.Collection;
@@ -79,9 +81,6 @@ public class BwWebGlobals extends WebGlobals {
     return currentAdminUser;
   }
 
-  public void changeAdminUserId(final BwPrincipal<?> val) {
-    adminUserId = val;
-  }
   /**
    * @return admin userid
    */
@@ -89,7 +88,18 @@ public class BwWebGlobals extends WebGlobals {
     return adminUserId.getAccount();
   }
 
-  public void changeCurrentUser(final BwPrincipal<?> val) {
-    currentUser = val.getAccount();
+  public void reset(final Client cl) {
+    currentAdminUser = cl.getCurrentPrincipal().getAccount();
+  }
+
+  public void changeAdminUserId(final BwPrincipal<?> val) {
+    adminUserId = val;
+  }
+
+  /**
+   * @return default timezoneid
+   */
+  public String getDefaultTzid() {
+    return Timezones.getThreadDefaultTzid();
   }
 }

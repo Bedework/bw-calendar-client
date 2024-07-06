@@ -87,6 +87,8 @@ public class BwSessionImpl implements Logged, BwSession {
 
   private final boolean publicAdmin;
 
+  private boolean newSession = true;
+
   private BwAuthUserPrefs curAuthUserPrefs;
 
   private static final ConcurrentHashMap<String, Counts> countsMap =
@@ -98,10 +100,6 @@ public class BwSessionImpl implements Logged, BwSession {
   private static final BwCalendar[] clonedPublicCollections = {null, null};
   private static Collection<BwView> publicViews;
 
-  /** The current user - null for guest
-   */
-  private String user;
-
   private AuthProperties authpars;
 
   private transient CollectionCollator<BwContact> contactCollator;
@@ -111,16 +109,13 @@ public class BwSessionImpl implements Logged, BwSession {
   /** Constructor for a Session
    *
    * @param config     our config
-   * @param user       String user id
    * @param appName    String identifying particular application
    */
   public BwSessionImpl(final ConfigCommon config,
-                       final String user,
                        final String appName) {
     super();
     
     this.config = config;
-    this.user = user;
 
     publicAdmin = config.getPublicAdmin();
 
@@ -168,18 +163,13 @@ public class BwSessionImpl implements Logged, BwSession {
   }
 
   @Override
-  public void setUser(final String val) {
-    user = val;
+  public boolean isNewSession() {
+    return newSession;
   }
 
   @Override
-  public String getUser() {
-    return user;
-  }
-
-  @Override
-  public boolean isGuest() {
-    return user == null;
+  public void resetNewSession() {
+    newSession = false;
   }
 
   @Override

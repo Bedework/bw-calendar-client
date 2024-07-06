@@ -57,22 +57,16 @@ public interface BwSession extends Serializable {
    */
   long getSessionNum();
 
-  /** The current user
+  /**
    *
-   * @param val   String user
+   * @return true if this is first request for this session.
    */
-  void setUser(String val);
+  boolean isNewSession();
 
   /**
-   * @return String
+   * Flag this as not new
    */
-  String getUser();
-
-  /** Is this a guest user?
-   *
-   * @return boolean true for a guest
-   */
-  boolean isGuest();
+  void resetNewSession();
 
   /** Prepare state of session for render
    *

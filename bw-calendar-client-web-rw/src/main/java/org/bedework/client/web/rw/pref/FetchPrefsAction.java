@@ -58,7 +58,7 @@ public class FetchPrefsAction extends RWActionBase {
     final String str = request.getReqPar("user");
     if (str != null) {
       /* Fetch a given users preferences */
-      if (!form.getCurUserSuperUser()) {
+      if (!cl.isSuperUser()) {
         return forwardNoAccess; // First line of defence
       }
 

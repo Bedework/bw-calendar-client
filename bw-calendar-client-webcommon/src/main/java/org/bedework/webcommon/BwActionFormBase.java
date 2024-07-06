@@ -39,11 +39,9 @@ import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.UtilActionForm;
-import org.bedework.util.timezones.Timezones;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,8 +61,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   private ConfigCommon config;
 
-  private Locale requestedLocale;
-
   private String requestedUid;
 
   /* This should be a cloned copy only */
@@ -73,11 +69,6 @@ public class BwActionFormBase extends UtilActionForm
   /* This should be a cloned copy only */
   private DirectoryInfo dirInfo;
 
-  /* Transient result that only needs to stick around till the next action URL */
-  private Object lastResult;
-
-  private boolean newSession;
-
   private BwSession sess;
 
   private boolean markDeleted;
@@ -85,8 +76,6 @@ public class BwActionFormBase extends UtilActionForm
   /** true if this is a guest (unauthenticated) user
    */
   private boolean guest;
-
-  private boolean superUser;
 
   /** true if we are showing the public face
    */
@@ -186,13 +175,10 @@ public class BwActionFormBase extends UtilActionForm
    *                   Preferences
    * .............................................................. */
 
-  private BwPreferences preferences;
-
   private BwPreferences userPreferences;
 
   private UpdateFromTimeZonesInfo updateFromTimeZonesInfo;
 
-  private boolean reloadRequired;
   private String calendarUserAddress;
 
   /* ====================================================================
@@ -226,21 +212,6 @@ public class BwActionFormBase extends UtilActionForm
     return synchInfo;
   }
 
-  /** null if we are going with defaults or browser selection.
-   *
-   * @param val
-   */
-  public void setRequestedLocale(final Locale val) {
-    requestedLocale = val;
-  }
-
-  /**
-   * @return locale or null
-   */
-  public Locale getRequestedLocale() {
-    return requestedLocale;
-  }
-
   /** One shot from a request.
    *
    * @param val
@@ -258,35 +229,6 @@ public class BwActionFormBase extends UtilActionForm
     return uid;
   }
 
-  /** Result of last action - only needed for rendering till another action changes it
-   *
-   * @param val
-   */
-  public void setLastResult(final Object val) {
-    lastResult = val;
-  }
-
-  /**
-   * @return locale or null
-   */
-  public Object getLastResult() {
-    return lastResult;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignReloadRequired(final boolean val) {
-    reloadRequired = val;
-  }
-
-  /**
-   * @return boolean
-   */
-  public boolean getReloadRequired() {
-    return reloadRequired;
-  }
-
   /**
    * @param val
    */
@@ -299,13 +241,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public BwFilterDef getCurrentFilter() {
     return currentFilter;
-  }
-
-  /**
-   * @return default timezoneid
-   */
-  public String getDefaultTzid() {
-    return Timezones.getThreadDefaultTzid();
   }
 
   /**
@@ -398,21 +333,6 @@ public class BwActionFormBase extends UtilActionForm
    * DO NOT set with setXXX. Use assign
    * ==================================================================== */
 
-  /**
-   * @param val
-   */
-  public void assignCurUserSuperUser(final boolean val) {
-    superUser = val;
-  }
-
-  /**
-  *
-   * @return true for superuser
-   */
-  public boolean getCurUserSuperUser() {
-    return superUser;
-  }
-
   /** apptype
    *
    * @return boolean
@@ -501,20 +421,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getCalendarUserAddress() {
     return calendarUserAddress;
-  }
-
-  /**
-   * @param val true for new session
-   */
-  public void assignNewSession(final boolean val) {
-    newSession = val;
-  }
-
-  /**
-   * @return boolean  true for new session
-   */
-  public boolean getNewSession() {
-    return newSession;
   }
 
   /**

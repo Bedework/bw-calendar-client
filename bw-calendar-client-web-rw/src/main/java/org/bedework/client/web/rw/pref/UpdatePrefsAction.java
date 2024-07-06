@@ -84,7 +84,7 @@ public class UpdatePrefsAction extends RWActionBase {
     /* Refetch the prefs */
     if (cl.getPublicAdmin() && (request.getReqPar("user") != null)) {
       /* Fetch a given users preferences */
-      if (!form.getCurUserSuperUser()) {
+      if (!cl.isSuperUser()) {
         return forwardNoAccess; // First line of defence
       }
 

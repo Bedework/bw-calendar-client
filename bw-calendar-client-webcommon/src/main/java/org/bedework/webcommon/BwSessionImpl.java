@@ -127,32 +127,6 @@ public class BwSessionImpl implements Logged, BwSession {
     req.setSessionAttr(changeTokenAttr, "");
   }
 
-  /* NOTE: This is NOT intended to turn a relative URL into an
-  absolute URL. It is a convenience for development which turns a
-  not fully specified url into a url referring to the server.
-
-  This will not work if they are treated as relative to the servlet.
-
-  In production mode, the appRoot will normally be fully specified to a
-  different web server.
-* /
-  private String prefixUri(final String schemeHostPort,
-                           final String val) {
-    if (val.toLowerCase().startsWith("http")) {
-      return val;
-    }
-
-    StringBuilder sb = new StringBuilder(schemeHostPort);
-
-    if (!val.startsWith("/")) {
-      sb.append("/");
-    }
-    sb.append(val);
-
-    return sb.toString();
-  }
-  */
-
   /* ======================================================================
    *                     Property methods
    * ====================================================================== */

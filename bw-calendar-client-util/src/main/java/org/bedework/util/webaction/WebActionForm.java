@@ -8,16 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface WebActionForm {
   /* ================ Properties methods ============== */
 
-  /**
-   * @param val schema + host + port part of uri
-   */
-  void setSchemeHostPort(String val);
-
-  /**
-   * @return schema + host + port part of uri
-   */
-  String getSchemeHostPort();
-
   /** Set the part of the URL that identifies the application.
    *
    * @param val       context path in form "/" + name-of-app, e.g. /kiosk

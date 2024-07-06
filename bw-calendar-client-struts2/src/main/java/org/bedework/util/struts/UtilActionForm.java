@@ -35,9 +35,6 @@ public class UtilActionForm implements WebActionForm {
   /* URL Components are here for the benefit of jsp to avoid cluttering up
      pages with code.
    */
-  /** First part of URL. Allows us to target services on same host.
-   */
-  protected String schemeHostPort;
 
   /** The part of the URL that identifies the application -
    * Of the form "/" + name-of-app, e.g. /kiosk
@@ -66,16 +63,6 @@ public class UtilActionForm implements WebActionForm {
      ========================================================== */
 
   /* ================ Properties methods ============== */
-
-  @Override
-  public void setSchemeHostPort(final String val) {
-    schemeHostPort = val;
-  }
-
-  @Override
-  public String getSchemeHostPort() {
-    return schemeHostPort;
-  }
 
   @Override
   public void setContext(final String val) {

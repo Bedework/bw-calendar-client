@@ -245,7 +245,6 @@ public abstract class UtilAbstractAction extends ActionSupport
     }
 
     try {
-      form.setSchemeHostPort(HttpServletUtils.getURLshp(request));
       form.setContext(HttpServletUtils.getContext(request));
 
       final Request req =

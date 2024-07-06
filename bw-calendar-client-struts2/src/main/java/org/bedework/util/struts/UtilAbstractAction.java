@@ -22,7 +22,6 @@ import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpAppLogger;
-import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.webaction.ErrorEmitSvlt;
 import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
@@ -245,8 +244,6 @@ public abstract class UtilAbstractAction extends ActionSupport
     }
 
     try {
-      form.setContext(HttpServletUtils.getContext(request));
-
       final Request req =
               getRequest(request, response,
                          params,

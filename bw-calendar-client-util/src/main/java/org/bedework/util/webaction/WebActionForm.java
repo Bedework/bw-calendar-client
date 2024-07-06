@@ -8,17 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface WebActionForm {
   /* ================ Properties methods ============== */
 
-  /** Set the part of the URL that identifies the application.
-   *
-   * @param val       context path in form "/" + name-of-app, e.g. /kiosk
-   */
-  void setContext(String val);
-
-  /**
-   * @return String
-   */
-  String getContext();
-
   /** This should not be setConfirmationId as that exposes it to the incoming
    * request.
    *

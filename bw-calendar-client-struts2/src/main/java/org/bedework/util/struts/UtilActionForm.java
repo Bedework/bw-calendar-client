@@ -36,11 +36,6 @@ public class UtilActionForm implements WebActionForm {
      pages with code.
    */
 
-  /** The part of the URL that identifies the application -
-   * Of the form "/" + name-of-app, e.g. /kiosk
-   */
-  protected String context;
-
   /**
    * Confirmation id - require this on forms
    */
@@ -63,16 +58,6 @@ public class UtilActionForm implements WebActionForm {
      ========================================================== */
 
   /* ================ Properties methods ============== */
-
-  @Override
-  public void setContext(final String val) {
-    context = val;
-  }
-
-  @Override
-  public String getContext() {
-    return context;
-  }
 
   @Override
   public void assignConfirmationId(final String val) {

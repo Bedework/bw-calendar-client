@@ -7,11 +7,13 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.util.misc.Util;
+import org.bedework.util.timezones.TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.WebGlobals;
 
 import java.util.Collection;
 import java.util.Locale;
+import java.util.TreeSet;
 
 /**
  * User: mike Date: 6/26/24 Time: 22:53
@@ -101,5 +103,18 @@ public class BwWebGlobals extends WebGlobals {
    */
   public String getDefaultTzid() {
     return Timezones.getThreadDefaultTzid();
+  }
+
+  /** Get a list of system and user timezones
+   *
+   * @return Collection of timezone names
+   */
+  public Collection<TimeZoneName> getTimeZoneNames() {
+    try {
+      return Timezones.getTzNames();
+    } catch (final Throwable t) {
+      error(t);
+      return new TreeSet<TimeZoneName>();
+    }
   }
 }

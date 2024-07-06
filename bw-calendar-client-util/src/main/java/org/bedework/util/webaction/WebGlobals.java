@@ -3,14 +3,17 @@
 */
 package org.bedework.util.webaction;
 
+import org.bedework.util.logging.BwLogger;
+import org.bedework.util.logging.Logged;
 import org.bedework.util.servlet.HttpServletUtils;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
  * User: mike Date: 6/26/24 Time: 23:04
  */
-public class WebGlobals {
+public class WebGlobals implements Logged, Serializable {
   // Stored in session
   public final static String webGlobalsAttrName = "web_globals";
 
@@ -40,5 +43,20 @@ public class WebGlobals {
       return Locale.getDefault();
     }
     return currentLocale;
+  }
+
+  /* ==============================================================
+   *                   Logged methods
+   * ============================================================== */
+
+  private final BwLogger logger = new BwLogger();
+
+  @Override
+  public BwLogger getLogger() {
+    if ((logger.getLoggedClass() == null) && (logger.getLoggedName() == null)) {
+      logger.setLoggedClass(getClass());
+    }
+
+    return logger;
   }
 }

@@ -10,6 +10,19 @@
   <uri>https://bedework.org/jsp/taglib/bedework</uri>
 
   <tag>
+    <description>Define a form element</description>
+    <name>form</name>
+    <tag-class>org.bedework.webcommon.taglib.BwFormTag</tag-class>
+    <body-content>JSP</body-content>
+
+    <attribute>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
     <description>Set a PropertiesEntity value</description>
     <name>setProperty</name>
     <tag-class>org.bedework.webcommon.taglib.SetPropertyTag</tag-class>

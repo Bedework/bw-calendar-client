@@ -1,7 +1,7 @@
 /* ********************************************************************
     Appropriate copyright notice
 */
-package org.bedework.util.struts;
+package org.bedework.webcommon.taglib;
 
 import org.bedework.util.misc.Util;
 

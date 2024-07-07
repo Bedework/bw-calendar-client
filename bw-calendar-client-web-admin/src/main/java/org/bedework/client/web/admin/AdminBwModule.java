@@ -220,10 +220,6 @@ public class AdminBwModule extends RwBwModule {
     form.assignOneGroup(cl.getOneGroup());
     form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
 
-    form.assignSuggestionEnabled(sysprops.getSuggestionEnabled());
-    form.assignWorkflowEnabled(sysprops.getWorkflowEnabled());
-    form.assignWorkflowRoot(sysprops.getWorkflowRoot());
-    form.assignSubmissionRoot(sysprops.getSubmissionRoot());
     form.assignUserMaintOK(cl.getUserMaintOK());
 
     // Refresh current auth user prefs.

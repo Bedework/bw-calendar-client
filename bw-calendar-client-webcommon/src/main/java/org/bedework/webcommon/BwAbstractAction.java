@@ -58,7 +58,6 @@ import org.bedework.util.webaction.ErrorEmitSvlt;
 import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
-import org.bedework.webcommon.config.ClientConfigurations;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -125,7 +124,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardError];
     }
 
-    final ConfigCommon conf = setConfig(bwreq);
+    final ConfigCommon conf = bwreq.getConfig();
+    form.setConfig(conf);
 
     if (conf.getGuestMode()) {
       request.clearCurrentUser();
@@ -195,7 +195,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       form.setHour24(form.getConfig().getHour24());
       if (!cl.getPublicAdmin() &&
-              !form.getSubmitApp() &&
+              !bwreq.getSubmitApp() &&
               !form.getGuest()) {
         form.setHour24(prefs.getHour24());
       }
@@ -355,38 +355,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                                final MessageEmitSvlt msg,
                                final WebActionForm form) {
     return new BwRequest(request, response, params, actionPath, err, msg, form);
-  }
-
-  /** Set the config object.
-   *
-   * @param request wrapper
-   * @return config object
-   */
-  public ConfigCommon setConfig(final BwRequest request) {
-    final BwActionFormBase form = request.getBwForm();
-
-    if (form.configSet()) {
-      return form.getConfig();
-    }
-
-    final HttpSession session = request.getRequest().getSession();
-    final ServletContext sc = session.getServletContext();
-
-    String appname = sc.getInitParameter("bwappname");
-
-    if ((appname == null) || (appname.isEmpty())) {
-      appname = "unknown-app-name";
-    }
-
-    final ConfigCommon conf = ClientConfigurations
-            .getConfigs().getClientConfig(appname);
-    if (conf == null) {
-      throw new CalFacadeException("No config available for app " + appname);
-    }
-
-//    conf = (ConfigCommon)conf.clone();
-    form.setConfig(conf); // So we can get an svci object and set defaults
-    return conf;
   }
 
   protected int setSearchParams(final BwRequest request,

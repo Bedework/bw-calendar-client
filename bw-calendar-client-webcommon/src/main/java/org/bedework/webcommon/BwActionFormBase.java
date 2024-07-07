@@ -312,33 +312,12 @@ public class BwActionFormBase extends UtilActionForm
     return config;
   }
 
-  /** True if we have a config object set.
+  /**
    *
-   * @return boolean
-   */
-  public boolean configSet() {
-    return config != null;
-  }
-
-  /* ====================================================================
-   *                   Current authenticated user Methods
-   * DO NOT set with setXXX. Use assign
-   * ==================================================================== */
-
-  /** apptype
-   *
-   * @return boolean
+   * @return string application type from configuration
    */
   public String getAppType() {
     return config.getAppType();
-  }
-
-  /** True for submitApp
-   *
-   * @return boolean
-   */
-  public boolean getSubmitApp() {
-    return BedeworkDefs.appTypeWebsubmit.equals(getAppType());
   }
 
   public void assignMarkDeleted(final boolean val) {

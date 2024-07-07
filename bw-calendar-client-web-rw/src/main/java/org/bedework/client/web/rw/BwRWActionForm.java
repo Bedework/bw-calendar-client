@@ -20,8 +20,6 @@ import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModule;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 /**
@@ -75,8 +73,6 @@ public class BwRWActionForm extends BwActionFormBase {
    * .............................................................. */
 
   private BwCalendar meetingCal;
-
-  private String submissionRoot;
 
   private String parentCalendarPath;
 
@@ -434,47 +430,6 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public BwCalendar getMeetingCal() {
     return meetingCal;
-  }
-
-  /**
-   *
-   * @param val root of the workflow collections
-   */
-  public void assignSubmissionRoot(final String val) {
-    submissionRoot = val;
-  }
-
-  /** Return the unencoded root of the workflow collections
-   *
-   * @return String path.
-   */
-  public String getSubmissionRoot() {
-    return submissionRoot;
-  }
-
-  /** Return the encoded root of the submissions calendars
-   *
-   * @return String path.
-   */
-  public String getEncodedSubmissionRoot() {
-    if (getSubmissionRoot() == null) {
-      return "";
-    }
-
-    final String appType = getAppType();
-
-    if (appTypeWebsubmit.equals(appType) ||
-            appTypeWebadmin.equals(appType)) {
-      try {
-        return URLEncoder
-                .encode(getSubmissionRoot(),
-                        StandardCharsets.UTF_8);
-      } catch (final Throwable t) {
-        error(t);
-      }
-    }
-
-    return "";
   }
 
   /** Save the Path of the soon-to-be parent

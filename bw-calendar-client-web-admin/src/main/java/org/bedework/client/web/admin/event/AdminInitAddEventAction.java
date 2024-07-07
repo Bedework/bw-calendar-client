@@ -4,7 +4,7 @@
 package org.bedework.client.web.admin.event;
 
 import org.bedework.client.web.admin.AdminUtil;
-import org.bedework.client.web.admin.BwAdminActionForm;
+import org.bedework.client.web.admin.BwAdminWebGlobals;
 import org.bedework.client.web.rw.event.InitAddEventAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
@@ -24,7 +24,7 @@ public class AdminInitAddEventAction extends InitAddEventAction {
     sess.embedContactCollection(request, BwSession.preferredEntity);
     sess.embedLocations(request, BwSession.preferredEntity);
 
-    if (((BwAdminActionForm)form).getSuggestionEnabled()) {
+    if (((BwAdminWebGlobals)request.getBwGlobals()).getSuggestionEnabled()) {
       AdminUtil.embedPreferredAdminGroups(request);
       AdminUtil.embedCalsuiteAdminGroups(request);
     }

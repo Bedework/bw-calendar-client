@@ -14,8 +14,6 @@ import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.webcommon.BwModule;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 
@@ -95,14 +93,6 @@ public class BwAdminActionForm extends BwRWActionForm {
   private CalSuiteResource calSuiteResource;
 
   private List<CalSuiteResource> calSuiteResources;
-
-  /* ..............................................................
-   *                       Misc
-   * .............................................................. */
-
-  private boolean suggestionEnabled;
-  private boolean workflowEnabled;
-  private String workflowRoot;
 
   /**
    * @param val admin group name
@@ -560,64 +550,5 @@ public class BwAdminActionForm extends BwRWActionForm {
    */
   public Collection<BwCalendar> getPreferredCalendars() {
     return getCurAuthUserPrefs().getCalendarPrefs().getPreferred();
-  }
-
-  /* ====================================================================
-   *                   Misc
-   * ==================================================================== */
-
-  /** Return the encoded root of the workflow collections
-   *
-   * @return String path.
-   */
-  public String getEncodedWorkflowRoot() {
-    final String appType = getAppType();
-
-    if (appTypeWebadmin.equals(appType)) {
-      if (getWorkflowRoot() == null) {
-        return "";
-      }
-
-      try {
-        return URLEncoder.encode(getWorkflowRoot(),
-                                 StandardCharsets.UTF_8);
-      } catch (final Throwable t) {
-        error(t);
-      }
-    }
-
-    return "";
-  }
-
-  /**
-   *
-   * @param val root of the workflow collections
-   */
-  public void assignWorkflowRoot(final String val) {
-    workflowRoot = val;
-  }
-
-  /** Return the unencoded root of the workflow collections
-   *
-   * @return String path.
-   */
-  public String getWorkflowRoot() {
-    return workflowRoot;
-  }
-
-  public void assignSuggestionEnabled(final boolean val) {
-    suggestionEnabled = val;
-  }
-
-  public boolean getSuggestionEnabled() {
-    return suggestionEnabled;
-  }
-
-  public void assignWorkflowEnabled(final boolean val) {
-    workflowEnabled = val;
-  }
-
-  public boolean getWorkflowEnabled() {
-    return workflowEnabled;
   }
 }

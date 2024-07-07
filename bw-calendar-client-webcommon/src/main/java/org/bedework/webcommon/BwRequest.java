@@ -20,6 +20,7 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
+import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
@@ -45,6 +46,7 @@ import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 import org.bedework.util.webaction.WebGlobals;
+import org.bedework.webcommon.config.ClientConfigurations;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -79,6 +81,9 @@ public class BwRequest extends Request {
       viewTypeMap.put(BedeworkDefs.viewPeriodNames[i], i);
     }
   }
+
+  /** config stored in session */
+  public final static String configSessionAttrName = "bw_client_config";
 
   /** client stored in request */
   public final static String embeddedClientName = "bw_embedded_client";
@@ -185,6 +190,8 @@ public class BwRequest extends Request {
   /** subscription status stored in session */
   public final static String bwSubscriptionStatus = "bw_subscription_status";
 
+  protected ConfigCommon config;
+
   /**
    * @param request the http request
    * @param response the response
@@ -210,10 +217,52 @@ public class BwRequest extends Request {
     }
 
     getPresentationState().reinit(request);
+
+    // Embed the config or fetch it
+
+    config = (ConfigCommon)getSessionAttr(configSessionAttrName);
+
+    if (config == null) {
+      // Fetch and embed.
+      String appname = sc.getInitParameter("bwappname");
+
+      if ((appname == null) || (appname.isEmpty())) {
+        appname = "unknown-app-name";
+      }
+
+      config = ClientConfigurations.getConfigs()
+                                   .getClientConfig(appname);
+      if (config == null) {
+        throw new CalFacadeException(
+                "No config available for app " + appname);
+      }
+
+      setSessionAttr(configSessionAttrName, config);
+    }
   }
 
   public BwWebGlobals getBwGlobals() {
     return (BwWebGlobals)getGlobals();
+  }
+
+  public ConfigCommon getConfig() {
+    return config;
+  }
+
+  /**
+   *
+   * @return string application type from configuration
+   */
+  public String getAppType() {
+    return config.getAppType();
+  }
+
+  /** True for submitApp
+   *
+   * @return boolean
+   */
+  public boolean getSubmitApp() {
+    return BedeworkDefs.appTypeWebsubmit.equals(getAppType());
   }
 
   public WebGlobals getGlobals() {

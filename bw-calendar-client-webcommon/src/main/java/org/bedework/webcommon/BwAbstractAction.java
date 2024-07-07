@@ -997,16 +997,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     mstate.setRefresh(true);
   }
 
-  /* ********************************************************************
+  /* **************************************************************
                              private methods
-     ******************************************************************** */
+     ************************************************************** */
 
   private boolean checkDateInRange(final BwRequest req,
                                    final int year) {
-    final BwActionFormBase form = req.getBwForm();
+    final BwWebGlobals globals = req.getBwGlobals();
 
     // XXX make system parameters for allowable start/end year
-    final int thisYear = form.getToday().getFormatted().getYear();
+    final int thisYear = globals.getToday().getFormatted().getYear();
 
     if ((year < (thisYear - 50)) || (year > (thisYear + 50))) {
       req.error(ValidationError.invalidDate, year);

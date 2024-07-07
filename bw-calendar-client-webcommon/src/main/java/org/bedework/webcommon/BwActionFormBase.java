@@ -20,7 +20,6 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ConfigCommon;
-import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.calfacade.BwCalendar;
@@ -34,14 +33,12 @@ import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
-import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.UtilActionForm;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,8 +49,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BwActionFormBase extends UtilActionForm
         implements Logged, BedeworkDefs {
-  private DateTimeFormatter today;
-
   private BwSynchInfo synchInfo;
 
   /** This object will be set up appropriately for the kind of client,
@@ -421,21 +416,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getCalendarUserAddress() {
     return calendarUserAddress;
-  }
-
-  /**
-   * @return DateTimeFormatter today
-   */
-  public DateTimeFormatter getToday() {
-    if (today != null) {
-      return today;
-    }
-
-      today = new DateTimeFormatter(
-              BwDateTimeUtil.getDateTime(
-                      new Date(System.currentTimeMillis())));
-
-    return today;
   }
 
   /**
@@ -883,9 +863,6 @@ public class BwActionFormBase extends UtilActionForm
 
   @Override
   public void reset(final HttpServletRequest request) {
-    today = null;
-
-    //key.reset();
   }
 
   /* ====================================================================

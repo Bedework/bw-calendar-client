@@ -72,7 +72,8 @@ import java.util.TimeZone;
  * @author Mike Douglass   douglm - rpi.edu
  *  @version 1.0
  */
-public class DateTimeFormatter implements Comparable, Comparator, Serializable {
+public class DateTimeFormatter
+        implements Comparable<DateTimeFormatter>, Comparator, Serializable {
   /** The date/time we are handling.
    */
   private BwDateTime date;
@@ -674,7 +675,7 @@ public class DateTimeFormatter implements Comparable, Comparator, Serializable {
     return dt1.date.compareTo(dt2.date);
   }
 
-  public int compareTo(final Object o2) {
+  public int compareTo(final DateTimeFormatter o2) {
     return compare(this, o2);
   }
 
@@ -685,6 +686,6 @@ public class DateTimeFormatter implements Comparable, Comparator, Serializable {
 
   @Override
   public boolean equals(final Object obj) {
-    return compareTo(obj) == 0;
+    return compareTo((DateTimeFormatter)obj) == 0;
   }
 }

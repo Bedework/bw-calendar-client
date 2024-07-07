@@ -3,15 +3,18 @@
 */
 package org.bedework.webcommon;
 
+import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.locale.BwLocale;
+import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.misc.Util;
 import org.bedework.util.timezones.TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.WebGlobals;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TreeSet;
 
@@ -19,6 +22,8 @@ import java.util.TreeSet;
  * User: mike Date: 6/26/24 Time: 22:53
  */
 public class BwWebGlobals extends WebGlobals {
+  private DateTimeFormatter today;
+
   private Locale requestedLocale;
 
   private BwPrincipal<?> adminUserId;
@@ -31,6 +36,21 @@ public class BwWebGlobals extends WebGlobals {
   public void reset(final BwRequest req) {
     super.reset(req);
     setLocale(req);
+  }
+
+  /**
+   * @return DateTimeFormatter today
+   */
+  public DateTimeFormatter getToday() {
+    final var now = new Date(System.currentTimeMillis());
+    if (today != null) {
+      return today;
+    }
+
+    today = new DateTimeFormatter(
+            BwDateTimeUtil.getDateTime(now));
+
+    return today;
   }
 
   private void setLocale(final BwRequest request) {

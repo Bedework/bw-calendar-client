@@ -76,9 +76,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   private boolean publicView;
 
-  private String[] yearVals;
-  private static final int numYearVals = 10;
-
   /** Whether we show year data
    */
   private boolean showYearData;
@@ -823,28 +820,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getEventEndType() {
     return getEventDates().getEndType();
-  }
-
-  /* ====================================================================
-   *                Date and time labels for select boxes
-   * ==================================================================== */
-
-  /**
-   * @return year values
-   */
-  public String[] getYearVals() {
-    if (yearVals == null) {
-      yearVals = new String[numYearVals];
-      final int year = java.util.Calendar.getInstance()
-                                         .get(java.util.Calendar.YEAR);
-      //curYear = String.valueOf(year);
-
-      for (int i = 0; i < numYearVals; i++) {
-        yearVals[i] = String.valueOf(year + i);
-      }
-    }
-
-    return yearVals;
   }
 
   /**

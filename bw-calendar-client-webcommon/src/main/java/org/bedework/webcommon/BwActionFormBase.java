@@ -28,7 +28,6 @@ import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
-import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
@@ -57,9 +56,6 @@ public class BwActionFormBase extends UtilActionForm
   private ConfigCommon config;
 
   private String requestedUid;
-
-  /* This should be a cloned copy only */
-  private AuthProperties authpars;
 
   /* This should be a cloned copy only */
   private DirectoryInfo dirInfo;
@@ -279,17 +275,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getEventRegAdminToken() {
     return eventRegAdminToken;
-  }
-
-  public void setAuthPars(final AuthProperties val) {
-    authpars = val;
-  }
-
-  /**
-   * @return SystemProperties object
-   */
-  public AuthProperties getAuthpars() {
-    return authpars;
   }
 
   /** Set a copy of the config parameters

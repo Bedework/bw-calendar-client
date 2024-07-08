@@ -36,6 +36,8 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
 
   private boolean notag;
 
+  private String[] yearVals;
+
   /**
    * Constructor
    */
@@ -50,8 +52,6 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
     try {
       /* Try to retrieve the value */
       final var val = (TimeDateComponents)getObject(true);
-      final var yearVals = (String[])getObject(
-              getName(), getScope(), "yearVals", true);
 
       final JspWriter out = pageContext.getOut();
 
@@ -100,5 +100,13 @@ public class SelectDateTimeTag extends NameScopePropertyTag {
 
   public boolean getNotag() {
     return notag;
+  }
+
+  public void setYearVals(final String[] val) {
+    yearVals = val;
+  }
+
+  public String[] getYearVals() {
+    return yearVals;
   }
 }

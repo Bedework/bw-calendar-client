@@ -112,13 +112,13 @@ public class BwSessionImpl implements Logged, BwSession {
    * @param appName    String identifying particular application
    */
   public BwSessionImpl(final ConfigCommon config,
+                       final AuthProperties authpars,
                        final String appName) {
     super();
     
     this.config = config;
-
     publicAdmin = config.getPublicAdmin();
-
+    this.authpars = authpars;
     setSessionNum(appName);
   }
 
@@ -266,9 +266,6 @@ public class BwSessionImpl implements Logged, BwSession {
         if (debug()) {
           debug("After embed prefs");
         }
-
-        authpars = cl.getAuthProperties().cloneIt();
-        form.setAuthPars(authpars);
 
         form.setEventRegAdminToken(
                 cl.getSystemProperties().getEventregAdminToken());

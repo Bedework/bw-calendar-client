@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSession;
 public class BwWebUtil {
   /** Name of the session attribute holding our session state
    */
-  public static final String sessStateAttr = "org.bedework.sessstate";
+  public static final String sessStateAttr = "org_bedework_sessstate";
 
   /** Try to get the session state object  embedded in
    *  the current session.

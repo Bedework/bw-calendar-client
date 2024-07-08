@@ -97,7 +97,7 @@ public class AdminBwModule extends RwBwModule {
 
         if (adminGroupImpliesApprover &&
                 (cs.getGroup() != null) &&
-                cs.getGroup().getAccount().equals(form.getAdminGroupName())) {
+                cs.getGroup().getAccount().equals(client.getAdminGroupName())) {
           form.assignCurUserApproverUser(true);
         }
       }
@@ -215,9 +215,6 @@ public class AdminBwModule extends RwBwModule {
       return forwardNoAccess;
     }
 
-    final var sysprops = cl.getSystemProperties();
-
-    form.assignOneGroup(cl.getOneGroup());
     form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
 
     form.assignUserMaintOK(cl.getUserMaintOK());
@@ -270,7 +267,7 @@ public class AdminBwModule extends RwBwModule {
                         final boolean initCheck) {
     final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
 
-    final AdminClient cl = (AdminClient)request.getClient();
+    final var cl = (AdminClient)request.getClient();
 
     if (cl.getGroupSet()) {
       return forwardNoAction;
@@ -368,7 +365,6 @@ public class AdminBwModule extends RwBwModule {
 
   private int setGroup(final BwRequest request,
                        final BwAdminGroup adg) {
-    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final AdminClient cl = (AdminClient)request.getClient();
 
     cl.getMembers(adg);
@@ -378,8 +374,8 @@ public class AdminBwModule extends RwBwModule {
     }
 
     cl.setAdminGroupName(adg.getAccount());
-    form.assignAdminGroupName(adg.getAccount());
     cl.setGroupSet(true);
+    request.getBwGlobals().reset(cl);
 
     //int access = getAccess(request, getMessages());
 

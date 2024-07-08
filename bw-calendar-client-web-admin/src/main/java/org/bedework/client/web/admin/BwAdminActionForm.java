@@ -29,9 +29,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    *                   Admin group fields
    * .............................................................. */
 
-  private boolean oneGroup;
-  private String adminGroupName;
-
   /** True if we are adding a new administrative group
    */
   private boolean addingAdmingroup;
@@ -111,34 +108,6 @@ public class BwAdminActionForm extends BwRWActionForm {
   /* ==============================================================
    *                   Admin groups
    * ============================================================== */
-
-  /**
-   * @param val true if there is only one group
-   */
-  public void assignOneGroup(final boolean val) {
-    oneGroup = val;
-  }
-
-  /**
-   * @return true if there is only one group
-   */
-  public boolean getOneGroup() {
-    return oneGroup;
-  }
-
-  /**
-   * @param val admin group name
-   */
-  public void assignAdminGroupName(final String val) {
-    adminGroupName = val;
-  }
-
-  /**
-   * @return String admin group name
-   */
-  public String getAdminGroupName() {
-    return adminGroupName;
-  }
 
   /** Not set - invisible to jsp
    *

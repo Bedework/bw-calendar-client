@@ -44,6 +44,8 @@ public interface BwSession extends Serializable {
    *                     Property methods
    *  ============================================================= */
 
+  void finishInit(AuthProperties authpars);
+
   /**
    * Call to reset state and flush objects.
    * @param req - current request

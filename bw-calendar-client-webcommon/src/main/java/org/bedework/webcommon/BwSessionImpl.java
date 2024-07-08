@@ -112,14 +112,17 @@ public class BwSessionImpl implements Logged, BwSession {
    * @param appName    String identifying particular application
    */
   public BwSessionImpl(final ConfigCommon config,
-                       final AuthProperties authpars,
                        final String appName) {
     super();
     
     this.config = config;
     publicAdmin = config.getPublicAdmin();
-    this.authpars = authpars;
     setSessionNum(appName);
+  }
+
+  @Override
+  public void finishInit(final AuthProperties authpars) {
+    this.authpars = authpars;
   }
 
   @Override
@@ -127,9 +130,9 @@ public class BwSessionImpl implements Logged, BwSession {
     req.setSessionAttr(changeTokenAttr, "");
   }
 
-  /* ======================================================================
+  /* ============================================================
    *                     Property methods
-   * ====================================================================== */
+   * ============================================================ */
 
   @Override
   public long getSessionNum() {

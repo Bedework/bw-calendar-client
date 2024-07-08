@@ -4,6 +4,7 @@
 package org.bedework.client.web.admin;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.rw.BwRWWebGlobals;
 
 import java.net.URLEncoder;
@@ -19,6 +20,10 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
   private boolean workflowEnabled;
   private String workflowRoot;
   private String encodedWorkflowRoot;
+
+  private boolean oneGroup;
+
+  private String adminGroupName;
 
   public boolean isSuperUser() {
     return superUser;
@@ -48,7 +53,22 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
     return encodedWorkflowRoot;
   }
 
+  /**
+   * @return true if there is only one group
+   */
+  public boolean getOneGroup() {
+    return oneGroup;
+  }
+
+  /**
+   * @return String admin group name
+   */
+  public String getAdminGroupName() {
+    return adminGroupName;
+  }
+
   public void reset(final Client cl) {
+    final AdminClient adcl = (AdminClient)cl;
     superUser = cl.isSuperUser();
     super.reset(cl);
 
@@ -61,5 +81,8 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
       encodedWorkflowRoot = URLEncoder.encode(workflowRoot,
                                               StandardCharsets.UTF_8);
     }
+
+    oneGroup = adcl.getOneGroup();
+    adminGroupName = adcl.getAdminGroupName();
   }
 }

@@ -996,7 +996,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   private BwSession getState(final BwRequest request,
                              final String adminUserId,
                              final ConfigCommon conf) {
-    final Client cl = request.getClient();
     BwSession s = BwWebUtil.getState(request.getRequest());
     final HttpSession sess = request.getRequest().getSession(false);
     final String appName = getAppName(sess);
@@ -1015,7 +1014,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
 
       s = new BwSessionImpl(conf,
-                            cl.getAuthProperties().cloneIt(),
                             appName);
 
       BwWebUtil.setState(request.getRequest(), s);
@@ -1032,6 +1030,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     request.getModule().
             checkClient(request, s, adminUserId, false, conf);
+
+    final Client cl = request.getClient();
+    s.finishInit(cl.getAuthProperties().cloneIt());
 
     return s;
   }

@@ -90,7 +90,7 @@ public class SuggestAction extends AdminActionBase {
       return forwardNull;
     }
 
-    final String csHref = form.getCurrentCalSuite().getGroup().getPrincipalRef();
+    final String csHref = globals.getCurrentCalSuite().getGroup().getPrincipalRef();
 
     final List<BwXproperty> props =
             ev.getXproperties(BwXproperty.bedeworkSuggestedTo);

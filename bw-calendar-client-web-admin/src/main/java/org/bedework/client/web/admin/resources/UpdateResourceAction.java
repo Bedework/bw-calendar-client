@@ -50,6 +50,7 @@ public class UpdateResourceAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) {
+    final var globals = request.getBwGlobals();
     final String cancel = request.getReqPar("cancel");
     if (cancel != null) {
       return forwardCancelled;
@@ -70,7 +71,7 @@ public class UpdateResourceAction extends AdminActionBase {
     final String update = request.getReqPar("update");
     final String remove = request.getReqPar("remove");
 
-    final BwResource r = cl.getCSResource(form.getCurrentCalSuite(), name, type);
+    final BwResource r = cl.getCSResource(globals.getCurrentCalSuite(), name, type);
     if (r == null) {
       request.error(ClientError.unknownResource, name);
       return forwardNotFound;

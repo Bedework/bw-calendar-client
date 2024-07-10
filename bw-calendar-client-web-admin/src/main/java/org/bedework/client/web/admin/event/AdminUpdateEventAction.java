@@ -159,7 +159,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
             getClearFormsOnSubmit();
 
     if (clearFormPref == null) {
-      clearForm = ((AdminConfig)form.getConfig())
+      clearForm = ((AdminConfig)pars.request.getConfig())
               .getDefaultClearFormsOnSubmit();
     } else {
       clearForm = Boolean.parseBoolean(clearFormPref);

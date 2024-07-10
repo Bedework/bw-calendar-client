@@ -490,18 +490,18 @@ public class BwSessionImpl implements Logged, BwSession {
 
   public BwCalendar getUserCollections(final BwRequest request) {
     final BwCalendar col;
-    final BwActionFormBase form = request.getBwForm();
-    final Client cl = request.getClient();
+    final var globals = request.getBwGlobals();
+    final var cl = request.getClient();
     final boolean publicAdmin = cl.getPublicAdmin(); //form.getConfig().getPublicAdmin();
 
     final BwPrincipal<?> p;
 
     if (cl.getWebSubmit() || cl.getPublicAuth()) {
       // Use calsuite in form or default
-      String calSuiteName = form.getCalSuiteName();
+      String calSuiteName = globals.getCalSuiteName();
       if (calSuiteName == null) {
-        calSuiteName = form.getConfig().getCalSuite();
-        form.setCalSuiteName(calSuiteName);
+        calSuiteName = request.getConfig().getCalSuite();
+        globals.setCalSuiteName(calSuiteName);
       }
 
       if (calSuiteName == null) {
@@ -516,7 +516,7 @@ public class BwSessionImpl implements Logged, BwSession {
         return null;
       }
         
-      form.setCurrentCalSuite(cs);
+      globals.setCurrentCalSuite(cs);
 
       p = cl.getPrincipal(cs.getGroup().getOwnerHref());
 
@@ -526,10 +526,10 @@ public class BwSessionImpl implements Logged, BwSession {
 
       col = cl.getHome(p, false);
     } else {
-      if ((publicAdmin) && (form.getCurrentCalSuite() != null)) {
+      if ((publicAdmin) && (globals.getCurrentCalSuite() != null)) {
         // Use calendar suite owner
         p = cl.getPrincipal(
-                form.getCurrentCalSuite().getGroup()
+                globals.getCurrentCalSuite().getGroup()
                     .getOwnerHref());
       } else {
         p = cl.getCurrentPrincipal();
@@ -1018,16 +1018,19 @@ public class BwSessionImpl implements Logged, BwSession {
                 new DayView(req.getErr(),
                             mstate.getViewMcDate(),
                             filter);
-        case BedeworkDefs.vtWeek -> new WeekView(req.getErr(),
-                                                 mstate.getViewMcDate(),
-                                                 filter);
-        case BedeworkDefs.vtMonth -> new MonthView(req.getErr(),
-                                                   mstate.getViewMcDate(),
-                                                   filter);
-        case BedeworkDefs.vtYear -> new YearView(req.getErr(),
-                                                 mstate.getViewMcDate(),
-                                                 form.getShowYearData(),
-                                                 filter);
+        case BedeworkDefs.vtWeek ->
+                new WeekView(req.getErr(),
+                             mstate.getViewMcDate(),
+                             filter);
+        case BedeworkDefs.vtMonth ->
+                new MonthView(req.getErr(),
+                              mstate.getViewMcDate(),
+                              filter);
+        case BedeworkDefs.vtYear ->
+                new YearView(req.getErr(),
+                             mstate.getViewMcDate(),
+                             req.getConfig().getShowYearData(),
+                             filter);
         default -> null;
       };
 

@@ -51,6 +51,7 @@ public class RemoveResourceAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) {
+    final var globals = request.getBwGlobals();
     final String cancel = request.getReqPar("cancel");
     if (cancel != null) {
       return forwardCancelled;
@@ -68,13 +69,13 @@ public class RemoveResourceAction extends AdminActionBase {
     }
 
     final BwResource r =
-            cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
+            cl.getCSResource(globals.getCurrentCalSuite(), name, rclass);
     if (r == null) {
       request.error(ClientError.unknownResource, name);
       return forwardNotFound;
     }
 
-    cl.deleteCSResource(form.getCurrentCalSuite(), name, rclass);
+    cl.deleteCSResource(globals.getCurrentCalSuite(), name, rclass);
     request.message(ClientMessage.deletedResource);
     return forwardSuccess;
   }

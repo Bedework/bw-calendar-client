@@ -63,7 +63,7 @@ public class RenderResourceAction extends AdminActionBase {
 
     final String mod = request.getReqPar("mod");
     final BwResource resource =
-            cl.getCSResource(form.getCurrentCalSuite(), name, rclass);
+            cl.getCSResource(request.getBwGlobals().getCurrentCalSuite(), name, rclass);
 
     if (resource == null) {
       request.error(ClientError.unknownResource, name);

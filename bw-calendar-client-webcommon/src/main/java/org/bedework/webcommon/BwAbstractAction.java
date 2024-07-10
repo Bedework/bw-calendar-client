@@ -50,7 +50,6 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
-import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.struts.UtilAbstractAction;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
@@ -125,7 +124,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     final ConfigCommon conf = bwreq.getConfig();
-    form.setConfig(conf);
 
     if (conf.getGuestMode()) {
       request.clearCurrentUser();
@@ -168,7 +166,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     final BwPreferences prefs = cl.getPreferences();
 
     if (cl.getWebSubmit() && (request.getReqPar("cs") != null)) {
-      form.setCalSuiteName(request.getReqPar("cs"));
+      globals.setCalSuiteName(request.getReqPar("cs"));
     }
 
     if (bsess.isNewSession()) {
@@ -181,7 +179,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         info(loginMsg);
       }
 
-      form.setHour24(form.getConfig().getHour24());
+      form.setHour24(conf.getHour24());
       if (!cl.getPublicAdmin() &&
               !bwreq.getSubmitApp() &&
               !cl.isGuest()) {
@@ -243,13 +241,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       error(t);
     }
 
-    final PresentationState ps = request.getPresentationState();
+    final var ps = request.getPresentationState();
 
     if (ps.getAppRoot() == null) {
-      ps.setAppRoot(suffixRoot(bwreq,
-                               form.getConfig().getAppRoot()));
+      ps.setAppRoot(suffixRoot(bwreq, conf.getAppRoot()));
       ps.setBrowserResourceRoot(suffixRoot(bwreq,
-                                           form.getConfig().getBrowserResourceRoot()));
+                                           conf.getBrowserResourceRoot()));
 
       // Set the default skin
 
@@ -1083,8 +1080,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   private String suffixRoot(final BwRequest req,
                             final String val) {
-    final BwActionFormBase form = req.getBwForm();
-
     final StringBuilder sb = new StringBuilder(val);
 
     /* If we're running as a portlet change the app root to point to a
@@ -1099,9 +1094,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
      */
 
-    if (!appTypeWebsubmit.equals(form.getConfig().getAppType())) { 
+    if (!appTypeWebsubmit.equals(req.getConfig().getAppType())) {
       /* If calendar suite is non-null append that. */
-      final String calSuite = form.getConfig().getCalSuite();
+      final String calSuite = req.getConfig().getCalSuite();
       if (calSuite != null) {
         sb.append(".");
         sb.append(calSuite);

@@ -60,7 +60,6 @@ public class AdminBwModule extends RwBwModule {
     }
 
     final var globals = (BwAdminWebGlobals)request.getGlobals();
-    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final BwModuleState mstate = getState();
     AdminClient client = (AdminClient)getClient();
     final BwCallback cb = BwCallback.getCb(request);
@@ -77,7 +76,7 @@ public class AdminBwModule extends RwBwModule {
       final BwCalSuiteWrapper cs =
               AdminUtil.findCalSuite(request,
                                      client);
-      form.setCurrentCalSuite(cs);
+      globals.setCurrentCalSuite(cs);
 
       if (cs != null) {
         calSuiteName = cs.getName();
@@ -93,7 +92,7 @@ public class AdminBwModule extends RwBwModule {
 
         // If membership of an admin group implies approver - use that
         final boolean adminGroupImpliesApprover =
-                ((AdminConfig)form.getConfig()).getAdminGroupApprovers();
+                ((AdminConfig)request.getConfig()).getAdminGroupApprovers();
 
         if (adminGroupImpliesApprover &&
                 (cs.getGroup() != null) &&
@@ -102,7 +101,7 @@ public class AdminBwModule extends RwBwModule {
         }
       }
 
-      form.setCalSuiteName(calSuiteName);
+      globals.setCalSuiteName(calSuiteName);
 
       if (debug()) {
         if (cs != null) {
@@ -326,7 +325,7 @@ public class AdminBwModule extends RwBwModule {
          */
 
         final boolean noGroupAllowed =
-                ((AdminConfig)form.getConfig()).getNoGroupAllowed();
+                ((AdminConfig)request.getConfig()).getNoGroupAllowed();
         if (cl.isSuperUser() || noGroupAllowed) {
           cl.setAdminGroupName(null);
           cl.setGroupSet(true);

@@ -146,6 +146,7 @@ public class UpdateEventAction extends RWActionBase {
 
     final var reqGuid = request.getReqPar("guid");
     final var reqAdding = request.notNull("addEvent");
+    final var globals = request.getBwGlobals();
     // pars value and request for adding may be
     // inconsistent with multiple tabs.
 
@@ -317,7 +318,7 @@ public class UpdateEventAction extends RWActionBase {
 
     /* -------------------------- CalSuite ------------------------------ */
 
-    ev.setCalSuite(form.getCalSuiteName());
+    ev.setCalSuite(globals.getCalSuiteName());
 
     /* -------------------------- Location ------------------------------ */
 

@@ -266,10 +266,8 @@ public class BwModule implements Logged, Serializable {
                              final String user,
                              final boolean canSwitch,
                              final ConfigCommon conf) {
-    final BwActionFormBase form = request.getBwForm();
-
     if (conf.getPublicAdmin()) {
-      throw new RuntimeException("Non-admin client called for admin app");
+      throw new CalFacadeException("Non-admin client called for admin app");
     }
 
     final boolean readWrite = conf.getReadWrite();
@@ -306,39 +304,33 @@ public class BwModule implements Logged, Serializable {
       return true;
     }
 
-    try {
-      if (debug()) {
-        debug("Client-- getResource new object for user " + user);
-      }
-
-      if (readWrite) {
-        client = new RWClientImpl(conf,
-                                  getModuleName(),
-                                  request.getCurrentUser(),
-                                  user,
-                                  form.getAppType());
-      } else {
-        client = new ROClientImpl(conf,
-                                  getModuleName(),
-                                  request.getCurrentUser(),
-                                  user,
-                                  calSuiteName,
-                                  form.getAppType(),
-                                  true);
-      }
-
-      setClient(client);
-      setRequest(request);
-
-      // Didn't release module - just reflag entry
-      requestIn();
-      mstate.setRefresh(true);
-      sess.reset(request);
-    } catch (final CalFacadeException cfe) {
-      throw cfe;
-    } catch (final Throwable t) {
-      throw new CalFacadeException(t);
+    if (debug()) {
+      debug("Client-- getResource new object for user " + user);
     }
+
+    if (readWrite) {
+      client = new RWClientImpl(conf,
+                                getModuleName(),
+                                request.getCurrentUser(),
+                                user,
+                                request.getConfig().getAppType());
+    } else {
+      client = new ROClientImpl(conf,
+                                getModuleName(),
+                                request.getCurrentUser(),
+                                user,
+                                calSuiteName,
+                                request.getConfig().getAppType(),
+                                true);
+    }
+
+    setClient(client);
+    setRequest(request);
+
+    // Didn't release module - just reflag entry
+    requestIn();
+    mstate.setRefresh(true);
+    sess.reset(request);
 
     return true;
   }
@@ -349,11 +341,9 @@ public class BwModule implements Logged, Serializable {
    * @return int foward index
    */
   protected int actionSetup(final BwRequest request) {
-    final BwActionFormBase form = request.getBwForm();
-
     // Not public admin.
 
-    final ConfigCommon conf = form.getConfig();
+    final ConfigCommon conf = request.getConfig();
 
     String refreshAction = request.getRefreshAction();
     Integer refreshInt = request.getRefreshInt();

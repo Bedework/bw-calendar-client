@@ -54,6 +54,7 @@ public class AddResourceAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) {
+    final var globals = request.getBwGlobals();
     String rclass = request.getReqPar("class");
     final String name = request.getReqPar("name");
     String contentType = request.getReqPar("ct");
@@ -86,7 +87,7 @@ public class AddResourceAction extends AdminActionBase {
       }
     }
 
-    BwResource r = cl.getCSResource(form.getCurrentCalSuite(),
+    BwResource r = cl.getCSResource(globals.getCurrentCalSuite(),
                                     name, rclass);
     if (r != null) {
       request.error(ClientError.duplicateResource);
@@ -102,7 +103,7 @@ public class AddResourceAction extends AdminActionBase {
     contentType += "\ttype=" + type;
     r.setContentType(contentType);
 
-    cl.addCSResource(form.getCurrentCalSuite(), r, rclass);
+    cl.addCSResource(globals.getCurrentCalSuite(), r, rclass);
 
     form.setResourceName(name);
     form.setResourceClass(rclass);

@@ -8,6 +8,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.locale.BwLocale;
+import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.misc.Util;
 import org.bedework.util.timezones.TimeZoneName;
@@ -40,6 +41,10 @@ public class BwWebGlobals extends WebGlobals {
    * The current administrative user.
    */
   protected String currentAdminUser;
+
+  private BwCalSuiteWrapper currentCalSuite;
+
+  private String calSuiteName;
 
   public void reset(final BwRequest req) {
     super.reset(req);
@@ -130,6 +135,37 @@ public class BwWebGlobals extends WebGlobals {
    */
   public String getAdminUserId() {
     return adminUserId.getAccount();
+  }
+
+  /**
+   *
+   * @param val Current calSuite for the application
+   */
+  public void setCurrentCalSuite(final BwCalSuiteWrapper val) {
+    currentCalSuite = val;
+  }
+
+  /**
+   * @return BwCalSuiteWrapper
+   */
+  public BwCalSuiteWrapper getCurrentCalSuite() {
+    return currentCalSuite;
+  }
+
+  /**
+   *
+   * @param val Name of current CalSuite.
+   */
+  public void setCalSuiteName(final String val) {
+    calSuiteName = val;
+  }
+
+  /** name of current CalSuite.
+   *
+   * @return String
+   */
+  public String getCalSuiteName() {
+    return calSuiteName;
   }
 
   public void reset(final Client cl) {

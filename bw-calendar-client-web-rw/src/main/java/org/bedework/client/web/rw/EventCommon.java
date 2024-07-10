@@ -175,6 +175,7 @@ public class EventCommon {
     /* Refetch the event and switch it for a cloned copy.
      * guid and name must be set to null to avoid dup guid.
      */
+    final var globals = request.getBwGlobals();
     final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
     final Client cl = request.getClient();
     EventInfo ei = fetchEvent(request, ev);
@@ -194,7 +195,7 @@ public class EventCommon {
        */
       evcopy.removeXproperties(BwXproperty.bedeworkSuggestedTo);
       final BwPrincipal<?> p = cl.getPrincipal(
-              form.getCurrentCalSuite().getGroup().getOwnerHref());
+              globals.getCurrentCalSuite().getGroup().getOwnerHref());
       final BwCalendar col = cl.getHome(p, false);
 
       if (col == null) {
@@ -881,7 +882,7 @@ public class EventCommon {
       /* The location id from the form didn't change so they didn't select from
        * the list. If we allow auto create - did they provide a new location
        */
-      if (form.getConfig().getAutoCreateLocations()) {
+      if (req.getConfig().getAutoCreateLocations()) {
         BwLocation l = form.getLocation();
 
         final ValidateResult vr = validateLocation(req, form);
@@ -989,7 +990,7 @@ public class EventCommon {
 
     if (!form.retrieveCtctId().getChanged()) {
       /* Didn't select from list. Do we allow auto-create */
-      if (form.getConfig().getAutoCreateContacts()) {
+      if (request.getConfig().getAutoCreateContacts()) {
         c = form.getContact();
 
         final ValidateResult vr = validateContact(request, form);

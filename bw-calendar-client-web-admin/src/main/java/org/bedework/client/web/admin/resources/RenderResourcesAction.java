@@ -40,6 +40,7 @@ public class RenderResourcesAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) {
+    final var globals = request.getBwGlobals();
     if (request.isNewSession()) {
       request.refresh();
       return forwardGotomain;
@@ -47,7 +48,7 @@ public class RenderResourcesAction extends AdminActionBase {
 
     final List<CalSuiteResource> resources =
             getResources(cl,
-                         form.getCurrentCalSuite());
+                         globals.getCurrentCalSuite());
 
     // TODO: add admin-only suite resources if logged-in user is a superadmin
     form.setCalSuiteResources(resources);

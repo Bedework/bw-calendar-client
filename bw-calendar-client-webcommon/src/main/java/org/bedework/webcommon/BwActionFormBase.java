@@ -19,7 +19,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
-import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.calfacade.BwCalendar;
@@ -29,7 +28,6 @@ import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
@@ -49,28 +47,11 @@ public class BwActionFormBase extends UtilActionForm
         implements Logged, BedeworkDefs {
   private BwSynchInfo synchInfo;
 
-  /** This object will be set up appropriately for the kind of client,
-   * e.g. admin, guest etc.
-   */
-  private ConfigCommon config;
-
   private String requestedUid;
 
   private boolean markDeleted;
 
-  /** Whether we show year data
-   */
-  private boolean showYearData;
-
   private BwFilterDef currentFilter;
-
-  /* ..............................................................
-   *                       Calendar suites
-   * .............................................................. */
-
-  private BwCalSuiteWrapper currentCalSuite;
-
-  private String calSuiteName;
 
   /** The groups of which our user is a member
    */
@@ -85,8 +66,6 @@ public class BwActionFormBase extends UtilActionForm
   private boolean hour24;
 
   private String endDateType;
-
-  private int minIncrement;
 
   //private TimeDateComponents rdate;
 
@@ -247,34 +226,6 @@ public class BwActionFormBase extends UtilActionForm
     return eventRegAdminToken;
   }
 
-  /** Set a copy of the config parameters
-   *
-   * @param val A copy of the config parameters
-   */
-  public void setConfig(final ConfigCommon val) {
-    config = val;
-
-    /* Set defaults */
-    setMinIncrement(config.getMinIncrement());
-    assignShowYearData(config.getShowYearData());
-  }
-
-  /** Return a cloned copy of the config parameters
-   *
-   * @return Config object
-   */
-  public ConfigCommon getConfig() {
-    return config;
-  }
-
-  /**
-   *
-   * @return string application type from configuration
-   */
-  public String getAppType() {
-    return config.getAppType();
-  }
-
   public void assignMarkDeleted(final boolean val) {
     markDeleted = val;
   }
@@ -286,37 +237,6 @@ public class BwActionFormBase extends UtilActionForm
   /* ==============================================================
    *                   Calendar suites
    * ============================================================== */
-
-  /** Current calSuite for the application
-   *
-   * @param val
-   */
-  public void setCurrentCalSuite(final BwCalSuiteWrapper val) {
-    currentCalSuite = val;
-  }
-
-  /**
-   * @return BwCalSuiteWrapper
-   */
-  public BwCalSuiteWrapper getCurrentCalSuite() {
-    return currentCalSuite;
-  }
-
-  /** Name of current CalSuite.
-   *
-   * @param val
-   */
-  public void setCalSuiteName(final String val) {
-    calSuiteName = val;
-  }
-
-  /** name of current CalSuite.
-   *
-   * @return String
-   */
-  public String getCalSuiteName() {
-    return calSuiteName;
-  }
 
   /* ==============================================================
    *                   groups
@@ -347,20 +267,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getCalendarUserAddress() {
     return calendarUserAddress;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignShowYearData(final boolean val) {
-    showYearData = val;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getShowYearData() {
-    return showYearData;
   }
 
   /* ====================================================================
@@ -653,21 +559,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getEndDateType() {
     return endDateType;
-  }
-
-  /**
-   * @param val
-   */
-  public void setMinIncrement(final int val) {
-    minIncrement = val;
-    eventDates = null;   // reset it
-  }
-
-  /**
-   * @return int
-   */
-  public int getMinIncrement() {
-    return minIncrement;
   }
 
   /** Return an object representing an events start date.

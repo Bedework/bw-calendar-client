@@ -30,6 +30,7 @@ import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.BwAdminActionForm;
+import org.bedework.client.web.admin.BwAdminWebGlobals;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedResponseEvent;
 import org.bedework.util.calendar.PropertyIndex;
@@ -60,11 +61,12 @@ public class SuggestAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl,
                       final BwAdminActionForm form) {
+    final var globals = (BwAdminWebGlobals)request.getGlobals();
     final HttpServletResponse response = request.getResponse();
 
     /* Check access
      */
-    if (!form.getCurUserApproverUser()) {
+    if (!globals.getCurUserApproverUser()) {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       return forwardNull;
     }

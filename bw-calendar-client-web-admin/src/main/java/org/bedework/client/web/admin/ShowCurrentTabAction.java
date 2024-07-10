@@ -3,6 +3,7 @@
 */
 package org.bedework.client.web.admin;
 
+import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.webcommon.BwActionFormBase;
@@ -39,9 +40,9 @@ public class ShowCurrentTabAction extends RenderMainAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) {
+    final var globals = (BwAdminWebGlobals)request.getBwGlobals();
 
-    final BwAdminActionForm aform = (BwAdminActionForm)form;
-//    if (request.isNewSession()) {
+    //    if (request.isNewSession()) {
       request.refresh();
 //    }
 
@@ -49,13 +50,13 @@ public class ShowCurrentTabAction extends RenderMainAction {
 
     if (!cl.isApprover()) {
       // Force to approval q
-      aform.assignCurrentTab("approvalQueue");
+      globals.assignCurrentTab("approvalQueue");
     }
 
-    final var fwd = forwardsTab.get(aform.getCurrentTab());
+    final var fwd = forwardsTab.get(globals.getCurrentTab());
     if (fwd == null) {
-      throw new RuntimeException("No forward - tab not defined: " +
-              aform.getCurrentTab());
+      throw new CalFacadeException("No forward - tab not defined: " +
+                                           globals.getCurrentTab());
     }
 
     if (eventSearchTab.contains(fwd)) {

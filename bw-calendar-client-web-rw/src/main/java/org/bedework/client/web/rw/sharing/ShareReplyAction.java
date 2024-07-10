@@ -25,6 +25,7 @@ import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -53,6 +54,7 @@ public class ShareReplyAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
+    final var globals = (BwRWWebGlobals)request.getGlobals();
     final NotificationType note = cl.findNotification(request.getReqPar("name"));
 
     if (note == null) {
@@ -100,7 +102,7 @@ public class ShareReplyAction extends RWActionBase {
     }
 
     cl.removeNotification(note);
-    form.setNotificationInfo(null); // force a refresh
+    globals.setNotificationInfo(null); // force a refresh
     cl.flushState();
 
     if (error) {

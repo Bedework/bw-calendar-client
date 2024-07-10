@@ -110,7 +110,7 @@ public class ShareCollectionAction extends RWActionBase {
 
       final AccessType at = new AccessType();
 
-      if (form.getGuest()) {
+      if (cl.isGuest()) {
         // No more than read
         at.setRead(true);
       } else {

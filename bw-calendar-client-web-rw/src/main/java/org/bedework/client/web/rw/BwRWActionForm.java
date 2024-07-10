@@ -14,11 +14,8 @@ import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calsvci.SchedulingI.FbResponses;
-import org.bedework.client.rw.InOutBoxInfo;
-import org.bedework.client.rw.NotificationInfo;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
-import org.bedework.webcommon.BwModule;
 
 import java.util.Collection;
 
@@ -163,10 +160,6 @@ public class BwRWActionForm extends BwActionFormBase {
   /* ..............................................................
    *                   Notifications, Inbox
    * .............................................................. */
-
-  private NotificationInfo notificationInfo;
-
-  private InOutBoxInfo inBoxInfo;
 
   /* ====================================================================
    *                   Events
@@ -939,41 +932,5 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public String getSnsubject() {
     return snsubject;
-  }
-
-  /* ==============================================================
-   *                       Modules
-   * ============================================================== */
-
-  public BwModule newModule(final String name) {
-    return new RwBwModule(name);
-  }
-
-  /**
-   * @param val NotificationInfo
-   */
-  public void setNotificationInfo(final NotificationInfo val) {
-    notificationInfo = val;
-  }
-
-  /**
-   * @return NotificationInfo
-   */
-  public NotificationInfo getNotificationInfo() {
-    return notificationInfo;
-  }
-
-  /**
-   * @param val
-   */
-  public void setInBoxInfo(final InOutBoxInfo val) {
-    inBoxInfo = val;
-  }
-
-  /**
-   * @return InOutBoxInfo
-   */
-  public InOutBoxInfo getInBoxInfo() {
-    return inBoxInfo;
   }
 }

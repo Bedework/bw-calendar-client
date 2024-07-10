@@ -75,14 +75,6 @@ public class WebCalendarAction extends BwAbstractAction {
 
     gotoDateView(request, mstate.getDate(), mstate.getViewType());
 
-    /*String userId = request.getReqPar("user");
-
-    if (userId != null) {
-      user = svci.findUser(userId, false);
-    } else if (!form.getGuest()) {
-      user = svci.getUser();
-    }*/
-
     final Locale loc = BwLocale.getLocale();
     final Calendar start = Calendar.getInstance(loc);
     final Calendar end = Calendar.getInstance(loc);

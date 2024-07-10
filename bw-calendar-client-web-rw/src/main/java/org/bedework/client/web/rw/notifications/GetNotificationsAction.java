@@ -21,6 +21,7 @@ package org.bedework.client.web.rw.notifications;
 import org.bedework.client.rw.NotificationInfo;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -36,10 +37,11 @@ public class GetNotificationsAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
-    NotificationInfo ni = form.getNotificationInfo();
+    final var globals = (BwRWWebGlobals)request.getGlobals();
+    NotificationInfo ni = globals.getNotificationInfo();
     if (ni == null) {
       ni = new NotificationInfo();
-      form.setNotificationInfo(ni);
+      globals.setNotificationInfo(ni);
     }
 
     ni.refresh(cl, false);

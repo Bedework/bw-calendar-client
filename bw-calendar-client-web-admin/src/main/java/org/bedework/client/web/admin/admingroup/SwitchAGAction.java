@@ -23,6 +23,7 @@ import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.AdminBwModule;
 import org.bedework.client.web.admin.BwAdminActionForm;
+import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.webcommon.BwRequest;
 
 /** This action switches the users Admin Groups.
@@ -38,20 +39,14 @@ public class SwitchAGAction extends AdminActionBase {
     /* ============================================================
      *              Selecting a group - any access if no group set
      * ============================================================ */
-
-    /* Check access - no don't
-
-    if (!form.getCurUserContentAdminUser()) {
-      return forwardNoAccess;
-    }
-    */
+    final var globals = (BwRWWebGlobals)request.getGlobals();
 
     cl.setGroupSet(false);
     cl.setChoosingGroup(false);
 
     cl.refreshAdminGroups();
 
-    form.setNotificationInfo(null);
+    globals.setNotificationInfo(null);
 
     // Back to main menu. Abstract action will do the rest.
 

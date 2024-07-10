@@ -16,7 +16,8 @@ public class ShowTabAction extends RenderAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) {
-    ((BwAdminActionForm)form).assignCurrentTab(currentTab);
+    final var globals = (BwAdminWebGlobals)request.getBwGlobals();
+    globals.assignCurrentTab(currentTab);
 
     return super.doAction(request, form);
   }

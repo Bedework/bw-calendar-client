@@ -86,7 +86,7 @@ public class FreeBusyPublishAction extends RWActionBase {
       principal = cl.calAddrToPrincipal(cua);
     } else if (userId != null) {
       principal = cl.getUser(userId);
-    } else if (!form.getGuest()) {
+    } else if (!cl.isGuest()) {
       principal = cl.getCurrentPrincipal();
     }
 

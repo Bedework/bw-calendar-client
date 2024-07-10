@@ -22,6 +22,7 @@ import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeForbidden;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -50,6 +51,7 @@ public class RemoveAllAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
+    final var globals = (BwRWWebGlobals)request.getGlobals();
     final HttpServletResponse response = request.getResponse();
 
     int status;
@@ -73,7 +75,7 @@ public class RemoveAllAction extends RWActionBase {
       status = HttpServletResponse.SC_FORBIDDEN;
     }
 
-    form.setNotificationInfo(null); // force a refresh
+    globals.setNotificationInfo(null); // force a refresh
     cl.flushState();
 
     response.setStatus(status);

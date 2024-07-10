@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 public class BwAdminWebGlobals extends BwRWWebGlobals {
   private boolean superUser;
 
+  private String currentTab = "main";
+
   private boolean suggestionEnabled;
   private boolean workflowEnabled;
   private String workflowRoot;
@@ -25,8 +27,30 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
 
   private String adminGroupName;
 
+  private boolean userMaintOK;
+
+  private boolean adminGroupMaintOK;
+
+  /* Settings for current authenticated user */
+  private boolean curUserContentAdminUser;
+  private boolean curUserApproverUser;
+
   public boolean isSuperUser() {
     return superUser;
+  }
+
+  /**
+   * @param val admin group name
+   */
+  public void assignCurrentTab(final String val) {
+    currentTab = val;
+  }
+
+  /**
+   * @return String admin group name
+   */
+  public String getCurrentTab() {
+    return currentTab;
   }
 
   public boolean getSuggestionEnabled() {
@@ -67,6 +91,56 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
     return adminGroupName;
   }
 
+  /** Show whether user entries can be displayed or modified with this
+   * class. Some sites may use other mechanisms.
+   *
+   * @return boolean    true if user maintenance is implemented.
+   */
+  public boolean getUserMaintOK() {
+    return userMaintOK;
+  }
+
+  /** Show whether admin group maintenance is available.
+   * Some sites may use other mechanisms.
+   *
+   * @return boolean    true if admin group maintenance is implemented.
+   */
+  public boolean getAdminGroupMaintOK() {
+    return adminGroupMaintOK;
+  }
+
+  /** True for contentAdminUser
+   *
+   * @param val boolean
+   */
+  public void assignCurUserContentAdminUser(final boolean val) {
+    curUserContentAdminUser = val;
+  }
+
+  /** True for contentAdminUser
+   *
+   * @return boolean
+   */
+  public boolean getCurUserContentAdminUser() {
+    return curUserContentAdminUser;
+  }
+
+  /** True for approver
+   *
+   * @param val boolean
+   */
+  public void assignCurUserApproverUser(final boolean val) {
+    curUserApproverUser = val;
+  }
+
+  /** True for approver
+   *
+   * @return boolean
+   */
+  public boolean getCurUserApproverUser() {
+    return curUserApproverUser;
+  }
+
   public void reset(final Client cl) {
     final AdminClient adcl = (AdminClient)cl;
     superUser = cl.isSuperUser();
@@ -84,5 +158,7 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
 
     oneGroup = adcl.getOneGroup();
     adminGroupName = adcl.getAdminGroupName();
+
+    userMaintOK = adcl.getUserMaintOK();
   }
 }

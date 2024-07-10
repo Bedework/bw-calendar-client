@@ -4,6 +4,8 @@
 package org.bedework.client.web.rw;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.client.rw.InOutBoxInfo;
+import org.bedework.client.rw.NotificationInfo;
 import org.bedework.webcommon.BwWebGlobals;
 
 import java.net.URLEncoder;
@@ -17,6 +19,12 @@ import java.nio.charset.StandardCharsets;
 public class BwRWWebGlobals extends BwWebGlobals {
   private String submissionRoot;
   private String encodedSubmissionRoot = "";
+
+  private String imageUploadDirectory;
+
+  private NotificationInfo notificationInfo;
+
+  private InOutBoxInfo inBoxInfo;
 
   /** Return the unencoded root of the workflow collections
    *
@@ -34,6 +42,41 @@ public class BwRWWebGlobals extends BwWebGlobals {
     return encodedSubmissionRoot;
   }
 
+  /**
+   * @return path or null
+   */
+  public String getImageUploadDirectory() {
+    return imageUploadDirectory;
+  }
+
+  /**
+   * @param val NotificationInfo
+   */
+  public void setNotificationInfo(final NotificationInfo val) {
+    notificationInfo = val;
+  }
+
+  /**
+   * @return NotificationInfo
+   */
+  public NotificationInfo getNotificationInfo() {
+    return notificationInfo;
+  }
+
+  /**
+   * @param val
+   */
+  public void setInBoxInfo(final InOutBoxInfo val) {
+    inBoxInfo = val;
+  }
+
+  /**
+   * @return InOutBoxInfo
+   */
+  public InOutBoxInfo getInBoxInfo() {
+    return inBoxInfo;
+  }
+
   public void reset(final Client cl) {
     super.reset(cl);
 
@@ -47,5 +90,9 @@ public class BwRWWebGlobals extends BwWebGlobals {
                 StandardCharsets.UTF_8);
       }
     }
+
+    final var prefs = cl.getPreferences();
+
+    imageUploadDirectory = prefs.getDefaultImageDirectory();
   }
 }

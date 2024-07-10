@@ -6,6 +6,7 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwPrincipal;
+import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.misc.Util;
@@ -25,6 +26,13 @@ public class BwWebGlobals extends WebGlobals {
   private DateTimeFormatter today;
 
   private Locale requestedLocale;
+
+  /* This should be a cloned copy only */
+  private DirectoryInfo dirInfo;
+
+  /** true if this is a guest (unauthenticated) user
+   */
+  private boolean guest;
 
   private BwPrincipal<?> adminUserId;
 
@@ -92,6 +100,20 @@ public class BwWebGlobals extends WebGlobals {
   }
 
   /**
+   * @return DirectoryInfo
+   */
+  public DirectoryInfo getDirInfo() {
+    return dirInfo;
+  }
+
+  /**
+   * @return true for guest
+   */
+  public boolean getGuest() {
+    return guest;
+  }
+
+  /**
    * This holds whatever account we are running as. We may be running
    * as something other than the authenticated account - e.g. public admin
    * of a calendar suite. We need this to hold that cvalue as we may
@@ -111,6 +133,11 @@ public class BwWebGlobals extends WebGlobals {
   }
 
   public void reset(final Client cl) {
+    if (dirInfo == null) {
+      dirInfo = cl.getDirectoryInfo();
+    }
+
+    guest = cl.isGuest();
     currentAdminUser = cl.getCurrentPrincipal().getAccount();
   }
 

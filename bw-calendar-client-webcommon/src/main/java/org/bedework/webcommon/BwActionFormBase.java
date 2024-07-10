@@ -26,7 +26,6 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
-import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
@@ -57,20 +56,7 @@ public class BwActionFormBase extends UtilActionForm
 
   private String requestedUid;
 
-  /* This should be a cloned copy only */
-  private DirectoryInfo dirInfo;
-
-  private BwSession sess;
-
   private boolean markDeleted;
-
-  /** true if this is a guest (unauthenticated) user
-   */
-  private boolean guest;
-
-  /** true if we are showing the public face
-   */
-  private boolean publicView;
 
   /** Whether we show year data
    */
@@ -137,8 +123,6 @@ public class BwActionFormBase extends UtilActionForm
   /* ..............................................................
    *                       Uploads and exports
    * .............................................................. */
-
-  private String imageUploadDirectory;
 
   private String eventRegAdminToken;
 
@@ -243,20 +227,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public UpdateFromTimeZonesInfo getUpdateFromTimeZonesInfo() {
     return updateFromTimeZonesInfo;
-  }
-
-  /**
-   * @param val Application visible directory information.
-   */
-  public void setDirInfo(final DirectoryInfo val) {
-    dirInfo = val;
-  }
-
-  /**
-   * @return DirectoryInfo
-   */
-  public DirectoryInfo getDirInfo() {
-    return dirInfo;
   }
 
   /* ====================================================================
@@ -380,34 +350,6 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val true for guest
-   */
-  public void setGuest(final boolean val) {
-    guest = val;
-  }
-
-  /**
-   * @return true for guest
-   */
-  public boolean getGuest() {
-    return guest;
-  }
-
-  /**
-   * @param val
-   */
-  public void setPublicView(final boolean val) {
-    publicView = val;
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getPublicView() {
-    return publicView;
-  }
-
-  /**
    * @param val
    */
   public void assignShowYearData(final boolean val) {
@@ -419,20 +361,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public boolean getShowYearData() {
     return showYearData;
-  }
-
-  /**
-   * @param val
-   */
-  public void assignImageUploadDirectory(final String val) {
-    imageUploadDirectory = val;
-  }
-
-  /**
-   * @return path or null
-   */
-  public String getImageUploadDirectory() {
-    return imageUploadDirectory;
   }
 
   /* ====================================================================
@@ -786,35 +714,8 @@ public class BwActionFormBase extends UtilActionForm
     return getEventDates().getEndType();
   }
 
-  /**
-   * @param val session
-   */
-  public void setSession(final BwSession val) {
-    sess = val;
-  }
-
-  /**
-   * @return session
-   */
-  public BwSession getSession() {
-    return  sess;
-  }
-
   @Override
   public void reset(final HttpServletRequest request) {
-  }
-
-  /* ====================================================================
-   *                Private methods
-   * ==================================================================== */
-
-  public boolean publicAdmin() {
-    try {
-      return getConfig().getPublicAdmin();
-    } catch (final Throwable t) {
-      t.printStackTrace();
-      return false;
-    }
   }
 
   /* ====================================================================

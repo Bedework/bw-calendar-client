@@ -20,6 +20,7 @@ package org.bedework.client.web.rw.notifications;
 
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -46,6 +47,7 @@ public class RemoveAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
+    final var globals = (BwRWWebGlobals)request.getGlobals();
     int forward;
 
     try {
@@ -56,7 +58,7 @@ public class RemoveAction extends RWActionBase {
       request.error(ca.getMessage());
     }
 
-    form.setNotificationInfo(null); // force a refresh
+    globals.setNotificationInfo(null); // force a refresh
     cl.flushState();
 
     return forward;

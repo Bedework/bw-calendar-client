@@ -45,7 +45,8 @@ public class OpenCloseAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request,
                       final BwActionFormBase form) {
-    if (form.getGuest()) {
+    final var cl = request.getClient();
+    if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
     }
 
@@ -80,12 +81,13 @@ public class OpenCloseAction extends BwAbstractAction {
       cos.remove(path);
     }
 
-    if (request.getClient().getPublicAdmin()) {
-      request.getSess().embedCollections(request);
+    final var sess = request.getSess();
+    if (cl.getPublicAdmin()) {
+      sess.embedCollections(request);
     }
-    request.getSess().embedUserCollections(request);
-    request.getSess().embedCategories(request, false,
-                                      BwSession.ownersEntity);
+    sess.embedUserCollections(request);
+    sess.embedCategories(request, false,
+                         BwSession.ownersEntity);
 
     return forwardSuccess;
   }

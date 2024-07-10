@@ -27,23 +27,23 @@ public class RwBwModule extends BwModule {
   @Override
   protected void checkMessaging(final BwRequest req) {
     final RWClient cl = (RWClient)req.getClient();
-    final BwRWActionForm form = (BwRWActionForm)req.getBwForm();
+    final var globals = (BwRWWebGlobals)req.getGlobals();
 
     if (!cl.getPublicAdmin()) {
-      InOutBoxInfo ib = form.getInBoxInfo();
+      InOutBoxInfo ib = globals.getInBoxInfo();
       if (ib == null) {
         ib = new InOutBoxInfo(cl, true);
-        form.setInBoxInfo(ib);
+        globals.setInBoxInfo(ib);
       } else {
         ib.refresh(cl, false);
       }
     }
 
     if (shouldCheckNotifications(req)) {
-      NotificationInfo ni = form.getNotificationInfo();
+      NotificationInfo ni = globals.getNotificationInfo();
       if (ni == null) {
         ni = new NotificationInfo();
-        form.setNotificationInfo(ni);
+        globals.setNotificationInfo(ni);
       }
 
       ni.refresh(cl, false);
@@ -57,12 +57,12 @@ public class RwBwModule extends BwModule {
   @Override
   protected FilterBase defaultSearchFilter(final BwRequest req) {
     final RWClient cl = (RWClient)req.getClient();
-    final BwRWActionForm form = (BwRWActionForm)req.getBwForm();
+    final var globals = (BwRWWebGlobals)req.getGlobals();
 
     FilterBase filter = null;
 
     if (cl.getWebUser()) {
-      final var inBoxInfo = form.getInBoxInfo();
+      final var inBoxInfo = globals.getInBoxInfo();
       if ((inBoxInfo != null) && (inBoxInfo.getColPath() != null)) {
         filter = new BwCollectionFilter(null,
                                         inBoxInfo.getColPath());

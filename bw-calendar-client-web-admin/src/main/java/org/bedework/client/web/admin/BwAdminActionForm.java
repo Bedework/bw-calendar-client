@@ -4,15 +4,12 @@
 package org.bedework.client.web.admin;
 
 import org.bedework.appcommon.CalSuiteResource;
-import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.calfacade.svc.UserAuth;
-import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.web.rw.BwRWActionForm;
-import org.bedework.webcommon.BwModule;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,8 +20,6 @@ import javax.servlet.http.HttpServletRequest;
  * User: mike Date: 3/9/21 Time: 22:25
  */
 public class BwAdminActionForm extends BwRWActionForm {
-  private String currentTab = "main";
-
   /* ..............................................................
    *                   Admin group fields
    * .............................................................. */
@@ -37,8 +32,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    */
   private boolean showAgMembers;
 
-  private boolean adminGroupMaintOK;
-
   private BwAdminGroup updAdminGroup;
 
   /** Group owner and group event owner */
@@ -49,8 +42,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    *                   Authorised user fields
    * .............................................................. */
 
-  private boolean userMaintOK;
-
   /** Value built out of checked boxes.
    */
   private int editAuthUserType;
@@ -58,14 +49,6 @@ public class BwAdminActionForm extends BwRWActionForm {
   /** User object we are creating or modifying
    */
   private BwAuthUser editAuthUser;
-
-  /* Settings for current authenticated user */
-  private boolean curUserContentAdminUser;
-  private boolean curUserApproverUser;
-
-  /** Auth prefs for the currently logged in user
-   */
-  private BwAuthUserPrefs curAuthUserPrefs;
 
   /* ..............................................................
    *                       Calendar suites
@@ -90,20 +73,6 @@ public class BwAdminActionForm extends BwRWActionForm {
   private CalSuiteResource calSuiteResource;
 
   private List<CalSuiteResource> calSuiteResources;
-
-  /**
-   * @param val admin group name
-   */
-  public void assignCurrentTab(final String val) {
-    currentTab = val;
-  }
-
-  /**
-   * @return String admin group name
-   */
-  public String getCurrentTab() {
-    return currentTab;
-  }
 
   /* ==============================================================
    *                   Admin groups
@@ -136,22 +105,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    */
   public boolean getShowAgMembers() {
     return showAgMembers;
-  }
-
-  /**
-   * @param val true for admin group maint allowed
-   */
-  public void assignAdminGroupMaintOK(final boolean val) {
-    adminGroupMaintOK = val;
-  }
-
-  /** Show whether admin group maintenance is available.
-   * Some sites may use other mechanisms.
-   *
-   * @return boolean    true if admin group maintenance is implemented.
-   */
-  public boolean getAdminGroupMaintOK() {
-    return adminGroupMaintOK;
   }
 
   /**
@@ -227,22 +180,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    *                   Authorised user maintenance
    * ============================================================== */
 
-  /**
-   * @param val
-   */
-  public void assignUserMaintOK(final boolean val) {
-    userMaintOK = val;
-  }
-
-  /** Show whether user entries can be displayed or modified with this
-   * class. Some sites may use other mechanisms.
-   *
-   * @return boolean    true if user maintenance is implemented.
-   */
-  public boolean getUserMaintOK() {
-    return userMaintOK;
-  }
-
   /** Only called if the flag is set - it's a checkbox.
    *
    * @param val always true
@@ -312,52 +249,6 @@ public class BwAdminActionForm extends BwRWActionForm {
    */
   public BwAuthUser getEditAuthUser() {
     return editAuthUser;
-  }
-
-  /** True for contentAdminUser
-   *
-   * @param val boolean
-   */
-  public void assignCurUserContentAdminUser(final boolean val) {
-    curUserContentAdminUser = val;
-  }
-
-  /** True for contentAdminUser
-   *
-   * @return boolean
-   */
-  public boolean getCurUserContentAdminUser() {
-    return curUserContentAdminUser;
-  }
-
-  /** True for approver
-   *
-   * @param val boolean
-   */
-  public void assignCurUserApproverUser(final boolean val) {
-    curUserApproverUser = val;
-  }
-
-  /** True for approver
-   *
-   * @return boolean
-   */
-  public boolean getCurUserApproverUser() {
-    return curUserApproverUser;
-  }
-
-  /**
-   * @param val
-   */
-  public void setCurAuthUserPrefs(final BwAuthUserPrefs val) {
-    curAuthUserPrefs = val;
-  }
-
-  /**
-   * @return auth user prefs
-   */
-  public BwAuthUserPrefs getCurAuthUserPrefs() {
-    return curAuthUserPrefs;
   }
 
   /* ==============================================================
@@ -499,25 +390,5 @@ public class BwAdminActionForm extends BwRWActionForm {
     super.reset(request);
 
     editAuthUserType = 0;
-  }
-
-  /* ====================================================================
-   *                       Modules
-   * ==================================================================== */
-
-  public BwModule newModule(final String name) {
-    return new AdminBwModule(name);
-  }
-
-  /* ====================================================================
-   *                   Calendars
-   * ==================================================================== */
-
-  /** Get the preferred calendars for the current user
-   *
-   * @return Collection  preferred calendars
-   */
-  public Collection<BwCalendar> getPreferredCalendars() {
-    return getCurAuthUserPrefs().getCalendarPrefs().getPreferred();
   }
 }

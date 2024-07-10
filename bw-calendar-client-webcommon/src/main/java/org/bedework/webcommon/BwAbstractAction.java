@@ -147,8 +147,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       debug("Obtained state");
     }
 
-    form.setSession(bsess);
-
     bwreq.setSess(bsess);
 
     if (bwreq.present("refresh")) {
@@ -167,17 +165,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     // We need to have set the current locale before we do this.
     mstate.setCalInfo(CalendarInfo.getInstance());
 
-    form.setGuest(cl.isGuest());
-
     final BwPreferences prefs = cl.getPreferences();
-
-    if (BedeworkDefs.appTypeWebpublic.equals(cl.getAppType()) ||
-            cl.getPublicAuth()) {
-      // force public view on - off by default
-      form.setPublicView(true);
-    } else {
-      form.assignImageUploadDirectory(prefs.getDefaultImageDirectory());
-    }
 
     if (cl.getWebSubmit() && (request.getReqPar("cs") != null)) {
       form.setCalSuiteName(request.getReqPar("cs"));
@@ -196,12 +184,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       form.setHour24(form.getConfig().getHour24());
       if (!cl.getPublicAdmin() &&
               !bwreq.getSubmitApp() &&
-              !form.getGuest()) {
+              !cl.isGuest()) {
         form.setHour24(prefs.getHour24());
       }
 
       form.setEndDateType(BwPreferences.preferredEndTypeDuration);
-      if (!cl.getPublicAdmin() && !form.getGuest()) {
+      if (!cl.getPublicAdmin() && !cl.isGuest()) {
         form.setEndDateType(prefs.getPreferredEndType());
       }
 
@@ -253,10 +241,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     } catch (final Throwable t) {
       error("Unable to set default tzid");
       error(t);
-    }
-
-    if (form.getDirInfo() == null) {
-      form.setDirInfo(cl.getDirectoryInfo());
     }
 
     final PresentationState ps = request.getPresentationState();

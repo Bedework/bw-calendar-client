@@ -72,7 +72,7 @@ public class FreeBusyAction extends RWActionBase {
 
     if (userId != null) {
       uri = cl.getCalendarAddress(userId);
-    } else if (!form.getGuest()) {
+    } else if (!cl.isGuest()) {
       uri = cl.getCurrentCalendarAddress();
     }
 

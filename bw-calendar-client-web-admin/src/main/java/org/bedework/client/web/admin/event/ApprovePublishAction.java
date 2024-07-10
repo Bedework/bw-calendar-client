@@ -14,6 +14,7 @@ import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.BwAdminActionForm;
+import org.bedework.client.web.admin.BwAdminWebGlobals;
 import org.bedework.client.web.rw.event.UpdatePars;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.sysevents.events.publicAdmin.EntityApprovalResponseEvent;
@@ -40,14 +41,14 @@ public class ApprovePublishAction extends AdminActionBase {
       return forwardError;
     }
 
-    final AdminUpdatePars pars = new AdminUpdatePars(request, cl, form);
-
-    final AdminClient adcl = (AdminClient)pars.cl;
+    final var globals = (BwAdminWebGlobals)request.getGlobals();
+    final var pars = new AdminUpdatePars(request, cl, form);
+    final var adcl = (AdminClient)pars.cl;
 
     final BwEvent ev = pars.ev;
 
     if (pars.approveEvent) {
-      if (!form.getCurUserApproverUser()) {
+      if (!globals.getCurUserApproverUser()) {
         cl.rollback();
         return forwardNoAccess;
       }

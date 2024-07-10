@@ -139,7 +139,6 @@ public class UpdatePrefsAction extends RWActionBase {
           return forwardNotFound;
         }
         prefs.setDefaultImageDirectory(str);
-        form.assignImageUploadDirectory(str);
       }
 
       final int maxEntitySize =

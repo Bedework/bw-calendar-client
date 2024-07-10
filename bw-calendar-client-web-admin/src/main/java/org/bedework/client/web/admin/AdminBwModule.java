@@ -7,7 +7,6 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
-import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
@@ -57,9 +56,10 @@ public class AdminBwModule extends RwBwModule {
                              boolean canSwitch,
                              final ConfigCommon conf) {
     if (!conf.getPublicAdmin()) {
-      throw new RuntimeException("Admin client called for non admin app");
+      throw new CalFacadeException("Admin client called for non admin app");
     }
 
+    final var globals = (BwAdminWebGlobals)request.getGlobals();
     final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
     final BwModuleState mstate = getState();
     AdminClient client = (AdminClient)getClient();
@@ -88,7 +88,7 @@ public class AdminBwModule extends RwBwModule {
                 client.getCalsuitePreferences().getCalsuiteApproversList();
 
         if (approvers.contains(request.getCurrentUser())) {
-          form.assignCurUserApproverUser(true);
+          globals.assignCurUserApproverUser(true);
         }
 
         // If membership of an admin group implies approver - use that
@@ -98,7 +98,7 @@ public class AdminBwModule extends RwBwModule {
         if (adminGroupImpliesApprover &&
                 (cs.getGroup() != null) &&
                 cs.getGroup().getAccount().equals(client.getAdminGroupName())) {
-          form.assignCurUserApproverUser(true);
+          globals.assignCurUserApproverUser(true);
         }
       }
 
@@ -129,7 +129,7 @@ public class AdminBwModule extends RwBwModule {
           throw new CalFacadeException("Null user for public admin.");
         }
 
-        canSwitch = canSwitch || form.getCurUserContentAdminUser() ||
+        canSwitch = canSwitch || globals.getCurUserContentAdminUser() ||
                 client.isSuperUser();
 
         final String curUser = pr.getAccount();
@@ -206,34 +206,29 @@ public class AdminBwModule extends RwBwModule {
    * @return int foward index
    */
   protected int actionSetup(final BwRequest request) {
-    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
-    final AdminClient cl = (AdminClient)request.getClient();
+    final var globals = (BwAdminWebGlobals)request.getGlobals();
+    final var cl = (AdminClient)request.getClient();
 
-    final BwAuthUser au = cl.getAuthUser(cl.getAuthPrincipal());
+    final var au = cl.getAuthUser(cl.getAuthPrincipal());
 
     if ((au == null) || au.isUnauthorized()) {
       return forwardNoAccess;
     }
 
-    form.assignAdminGroupMaintOK(cl.getAdminGroupMaintOK());
-
-    form.assignUserMaintOK(cl.getUserMaintOK());
-
     // Refresh current auth user prefs.
     final BwAuthUserPrefs prefs = au.getPrefs();
 
     ((BwSessionImpl)request.getSess()).setCurAuthUserPrefs(prefs);
-    form.setCurAuthUserPrefs(prefs);
 
     if (!cl.getGroupSet()) {
       // Set default access rights.
 
-      form.assignCurUserContentAdminUser(au.isContentAdminUser());
-      form.assignCurUserApproverUser(au.isApproverUser());
+      globals.assignCurUserContentAdminUser(au.isContentAdminUser());
+      globals.assignCurUserApproverUser(au.isApproverUser());
     }
 
     if (debug()) {
-      info("form.getGroupSet()=" + cl.getGroupSet());
+      info("getGroupSet()=" + cl.getGroupSet());
       info("-------- isSuperUser: " + cl.isSuperUser());
     }
 

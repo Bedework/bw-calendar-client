@@ -27,6 +27,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
@@ -51,6 +52,7 @@ public class SetAlarmAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
+    final var globals = (BwRWWebGlobals)request.getBwGlobals();
     final BwEvent ev = form.getEvent();
     final EventState evstate = form.getEventState();
 
@@ -86,6 +88,7 @@ public class SetAlarmAction extends RWActionBase {
     if (!Util.present(recipient)) {
       recipient = cl.getPreferences().getEmail();
     }
+    globals.setLastEmail(recipient);
 
     if (!Util.present(recipient)) {
       request.error(ClientError.mailNoRecipient, 1);

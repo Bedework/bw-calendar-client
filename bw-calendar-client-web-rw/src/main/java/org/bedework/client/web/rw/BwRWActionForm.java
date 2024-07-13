@@ -8,7 +8,6 @@ import org.bedework.appcommon.SelectId;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
-import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.EventPropertiesReference;
@@ -28,10 +27,6 @@ public class BwRWActionForm extends BwActionFormBase {
    * .............................................................. */
 
   private boolean addingEvent;
-
-  /** Event copy before mods applied - temp till we finish change table stuff
-   */
-  private BwEvent savedEvent;
 
   private Collection<AddEventResult> addEventResults;
 
@@ -137,17 +132,6 @@ public class BwRWActionForm extends BwActionFormBase {
                                                   SelectId.AHasPrecedence);
 
   /* ..............................................................
-   *                   Preferences
-   * .............................................................. */
-
-  /** Last email address used to mail message. By default set to
-   * preferences value.
-   */
-  private String lastEmail;
-
-  private String lastSubject;
-
-  /* ..............................................................
    *                   public events submission
    * .............................................................. */
 
@@ -156,10 +140,6 @@ public class BwRWActionForm extends BwActionFormBase {
   private String sntext;
 
   private String snsubject;
-
-  /* ..............................................................
-   *                   Notifications, Inbox
-   * .............................................................. */
 
   /* ====================================================================
    *                   Events
@@ -177,20 +157,6 @@ public class BwRWActionForm extends BwActionFormBase {
    */
   public boolean getAddingEvent() {
     return addingEvent;
-  }
-
-  /** Event passed between actions
-   * @param val
-   */
-  public void assignSavedEvent(final BwEvent val) {
-    savedEvent = val;
-  }
-
-  /**
-   * @return event
-   */
-  public BwEvent retrieveSavedEvent() {
-    return savedEvent;
   }
 
   /**

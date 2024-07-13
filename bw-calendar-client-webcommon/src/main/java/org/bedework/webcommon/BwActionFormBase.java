@@ -24,11 +24,9 @@ import org.bedework.appcommon.EventKey;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
-import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
@@ -45,27 +43,17 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BwActionFormBase extends UtilActionForm
         implements Logged, BedeworkDefs {
-  private BwSynchInfo synchInfo;
-
   private String requestedUid;
 
   private boolean markDeleted;
 
   private BwFilterDef currentFilter;
 
-  /** The groups of which our user is a member
-   */
-  private Collection<BwGroup<?>> currentGroups;
-
   /* ....................................................................
    *           Event date and time fields
    * .................................................................... */
 
   private EventDates eventDates;
-
-  private boolean hour24;
-
-  private String endDateType;
 
   //private TimeDateComponents rdate;
 
@@ -149,20 +137,6 @@ public class BwActionFormBase extends UtilActionForm
     return this;
   }
 
-  /**
-   * @param val
-   */
-  public void setSynchInfo(final BwSynchInfo val) {
-    synchInfo = val;
-  }
-
-  /**
-   * @return info or null
-   */
-  public BwSynchInfo getSynchInfo() {
-    return synchInfo;
-  }
-
   /** One shot from a request.
    *
    * @param val
@@ -232,29 +206,6 @@ public class BwActionFormBase extends UtilActionForm
 
   public boolean getMarkDeleted() {
     return markDeleted;
-  }
-
-  /* ==============================================================
-   *                   Calendar suites
-   * ============================================================== */
-
-  /* ==============================================================
-   *                   groups
-   * ============================================================== */
-
-  /** The groups of which our user is a member
-   *
-   * @param val The groups of which our user is a member
-   */
-  public void setCurrentGroups(final Collection<BwGroup<?>> val) {
-    currentGroups = val;
-  }
-
-  /**
-   * @return user admin groups
-   */
-  public Collection<BwGroup<?>> getCurrentGroups() {
-    return currentGroups;
   }
 
   public void assignCalendarUserAddress(final String val) {
@@ -529,36 +480,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public Collection<RecurRuleComponents> getRruleComponents() {
     return rruleComponents;
-  }
-
-  /**
-   * @param val
-   */
-  public void setHour24(final boolean val) {
-    hour24 = val;
-    eventDates = null;   // reset it
-  }
-
-  /**
-   * @return bool
-   */
-  public boolean getHour24() {
-    return hour24;
-  }
-
-  /**
-   * @param val
-   */
-  public void setEndDateType(final String val) {
-    endDateType = val;
-    eventDates = null;   // reset it
-  }
-
-  /**
-   * @return bool
-   */
-  public String getEndDateType() {
-    return endDateType;
   }
 
   /** Return an object representing an events start date.

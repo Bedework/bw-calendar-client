@@ -36,11 +36,6 @@ public class UtilActionForm implements WebActionForm {
      pages with code.
    */
 
-  /**
-   * Confirmation id - require this on forms
-   */
-  protected String confirmationId;
-
   /* ...........................................................
    *                       Uploads and exports
    * ........................................................... */
@@ -58,20 +53,6 @@ public class UtilActionForm implements WebActionForm {
      ========================================================== */
 
   /* ================ Properties methods ============== */
-
-  @Override
-  public void assignConfirmationId(final String val) {
-    confirmationId = val;
-  }
-
-  @Override
-  public String getConfirmationId() {
-    if (confirmationId == null) {
-      confirmationId = Util.makeRandomString(16, 35);
-    }
-
-    return confirmationId;
-  }
 
   @Override
   public void reset(final HttpServletRequest request) {

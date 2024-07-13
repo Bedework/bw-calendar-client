@@ -54,10 +54,6 @@ public class InitAddCalendarAction extends RWActionBase {
 
     form.setParentCalendarPath(cal.getPath());
 
-    /* We need the synch info to get information about connectors
-     */
-    form.setSynchInfo(cl.getSynchInfo());
-
     /* Set the objects to null so we get new ones.
      */
     form.setCalendar(null);

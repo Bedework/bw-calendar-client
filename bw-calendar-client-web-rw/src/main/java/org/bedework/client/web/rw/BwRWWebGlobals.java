@@ -4,8 +4,10 @@
 package org.bedework.client.web.rw;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.client.rw.InOutBoxInfo;
 import org.bedework.client.rw.NotificationInfo;
+import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwWebGlobals;
 
 import java.net.URLEncoder;
@@ -17,6 +19,7 @@ import java.nio.charset.StandardCharsets;
  * Time: 16:00
  */
 public class BwRWWebGlobals extends BwWebGlobals {
+  private BwSynchInfo synchInfo;
   private String submissionRoot;
   private String encodedSubmissionRoot = "";
 
@@ -25,6 +28,20 @@ public class BwRWWebGlobals extends BwWebGlobals {
   private NotificationInfo notificationInfo;
 
   private InOutBoxInfo inBoxInfo;
+
+  /** Last email address used to mail message. By default set to
+   * preferences value.
+   */
+  private String lastEmail;
+
+  private String subject;
+
+  /**
+   * @return info or null
+   */
+  public BwSynchInfo getSynchInfo() {
+    return synchInfo;
+  }
 
   /** Return the unencoded root of the workflow collections
    *
@@ -70,6 +87,22 @@ public class BwRWWebGlobals extends BwWebGlobals {
     inBoxInfo = val;
   }
 
+  public void setLastEmail(final String val) {
+    lastEmail = val;
+  }
+
+  public String getLastEmail() {
+    return lastEmail;
+  }
+
+  public void setSubject(final String val) {
+    subject = val;
+  }
+
+  public String getSubject() {
+    return subject;
+  }
+
   /**
    * @return InOutBoxInfo
    */
@@ -79,6 +112,8 @@ public class BwRWWebGlobals extends BwWebGlobals {
 
   public void reset(final Client cl) {
     super.reset(cl);
+
+    synchInfo = ((RWClient)cl).getSynchInfo();
 
     final var sysprops = cl.getSystemProperties();
 

@@ -76,7 +76,6 @@ public class InitAddEventAction extends RWActionBase {
 
     form.setEventInfo(ei, true);
 
-    form.assignSavedEvent(new BwEventObj());
     form.resetSelectIds();
 
     final ChangeTable changes =

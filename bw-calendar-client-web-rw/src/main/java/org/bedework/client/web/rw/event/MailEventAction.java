@@ -24,9 +24,9 @@ import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.mail.ObjectAttachment;
-import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
@@ -50,7 +50,8 @@ public class MailEventAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
-    final EventInfo ei = form.getEventInfo();
+    final var globals = (BwRWWebGlobals)request.getBwGlobals();
+    final var ei = form.getEventInfo();
 
     if (ei == null) {
       return forwardNoAction;
@@ -63,6 +64,7 @@ public class MailEventAction extends RWActionBase {
       request.error(ClientError.mailNoRecipient, 1);
       return forwardRetry;
     }
+    globals.setLastEmail(recipient);
 
     String subject = request.getReqPar("subject");
     if (!Util.present(subject)) {

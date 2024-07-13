@@ -132,7 +132,6 @@ public class FetchEventAction extends RWActionBase {
     final BwEvent ev = ei.getEvent();
 
     form.setEventInfo(ei, false);
-    form.assignSavedEvent((BwEvent)ev.clone());
     form.assignAddingEvent(false);
 
     String str = null;

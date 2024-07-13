@@ -5,6 +5,7 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.client.Client;
+import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.locale.BwLocale;
@@ -28,6 +29,8 @@ public class BwWebGlobals extends WebGlobals {
 
   private Locale requestedLocale;
 
+  private boolean hour24;
+
   /* This should be a cloned copy only */
   private DirectoryInfo dirInfo;
 
@@ -41,6 +44,10 @@ public class BwWebGlobals extends WebGlobals {
    * The current administrative user.
    */
   protected String currentAdminUser;
+
+  /** The groups of which our user is a member
+   */
+  private Collection<BwGroup<?>> currentGroups;
 
   private BwCalSuiteWrapper currentCalSuite;
 
@@ -105,6 +112,20 @@ public class BwWebGlobals extends WebGlobals {
   }
 
   /**
+   * @param val true for 24 hour times
+   */
+  public void setHour24(final boolean val) {
+    hour24 = val;
+  }
+
+  /**
+   * @return bool
+   */
+  public boolean getHour24() {
+    return hour24;
+  }
+
+  /**
    * @return DirectoryInfo
    */
   public DirectoryInfo getDirInfo() {
@@ -135,6 +156,21 @@ public class BwWebGlobals extends WebGlobals {
    */
   public String getAdminUserId() {
     return adminUserId.getAccount();
+  }
+
+  /** The groups of which our user is a member
+   *
+   * @param val The groups of which our user is a member
+   */
+  public void setCurrentGroups(final Collection<BwGroup<?>> val) {
+    currentGroups = val;
+  }
+
+  /**
+   * @return user admin groups
+   */
+  public Collection<BwGroup<?>> getCurrentGroups() {
+    return currentGroups;
   }
 
   /**

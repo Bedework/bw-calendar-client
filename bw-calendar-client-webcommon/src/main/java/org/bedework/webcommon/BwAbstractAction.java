@@ -179,17 +179,27 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         info(loginMsg);
       }
 
-      form.setHour24(conf.getHour24());
+      globals.setHour24(conf.getHour24());
       if (!cl.getPublicAdmin() &&
               !bwreq.getSubmitApp() &&
               !cl.isGuest()) {
-        form.setHour24(prefs.getHour24());
+        globals.setHour24(prefs.getHour24());
       }
 
-      form.setEndDateType(BwPreferences.preferredEndTypeDuration);
+      final String endDateType;
       if (!cl.getPublicAdmin() && !cl.isGuest()) {
-        form.setEndDateType(prefs.getPreferredEndType());
+        endDateType = prefs.getPreferredEndType();
+      } else {
+        endDateType = BwPreferences.preferredEndTypeDuration;
       }
+      form.assignEventDates(
+              new EventDates(cl.getCurrentPrincipalHref(),
+                             mstate.getCalInfo(),
+                             globals.getHour24(),
+                             endDateType,
+                             conf.getMinIncrement(),
+                             request.getErr()));
+
 
       bsess.embedFilters(bwreq);
 

@@ -152,8 +152,9 @@ public class BwSessionImpl implements Logged, BwSession {
   @Override
   public void prepareRender(final BwRequest req) {
     final BwActionFormBase form = req.getBwForm();
-    final Client cl = req.getClient();
-    final BwModuleState mstate = req.getModule().getState();
+    final var cl = req.getClient();
+    final var mstate = req.getModule().getState();
+    final var globals = req.getBwGlobals();
 
     req.setRequestAttr(BwRequest.bwSearchParamsName,
                        cl.getSearchParams());
@@ -194,22 +195,11 @@ public class BwSessionImpl implements Logged, BwSession {
 
       form.assignCalendarUserAddress(cl.getCurrentCalendarAddress());
 
-      /* This only till we make module state the request scope form */
-      if (form.getEventDates() == null) {
-        form.assignEventDates(
-                new EventDates(cl.getCurrentPrincipalHref(),
-                               mstate.getCalInfo(),
-                               form.getHour24(),
-                               form.getEndDateType(),
-                               config.getMinIncrement(),
-                               req.getErr()));
-      }
-
       if (mstate.getEventDates() == null) {
         mstate.assignEventDates(form.getEventDates());
       }
 
-      mstate.getEventDates().setHour24(form.getHour24());
+      //mstate.getEventDates().setHour24(req.getConfig().getHour24());
 
       final String lastChangeToken = (String)req.getSessionAttr(changeTokenAttr);
       final String changeToken = cl.getCurrentChangeToken();
@@ -273,7 +263,7 @@ public class BwSessionImpl implements Logged, BwSession {
         form.setEventRegAdminToken(
                 cl.getSystemProperties().getEventregAdminToken());
 
-        form.setCurrentGroups(cl.getCurrentPrincipal().getGroups());
+        globals.setCurrentGroups(cl.getCurrentPrincipal().getGroups());
 
         //req.setSessionAttr(refreshTimeAttr, now);
       }

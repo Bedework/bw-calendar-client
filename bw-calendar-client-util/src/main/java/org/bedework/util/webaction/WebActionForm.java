@@ -8,18 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface WebActionForm {
   /* ================ Properties methods ============== */
 
-  /** This should not be setConfirmationId as that exposes it to the incoming
-   * request.
-   *
-   * @param val      String confirmation id
-   */
-  void assignConfirmationId(String val);
-
-  /**
-   * @return String
-   */
-  String getConfirmationId();
-
   void reset(HttpServletRequest request);
 
   /**

@@ -78,6 +78,7 @@ public class UpdatePrefsAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl,
                       final BwRWActionForm form) {
+    final var globals = request.getBwGlobals();
     final BwPreferences prefs;
     boolean tzChanged = false;
 
@@ -208,7 +209,7 @@ public class UpdatePrefsAction extends RWActionBase {
 
     if (request.present("hour24")) {
       prefs.setHour24(request.getBooleanReqPar("hour24"));
-      form.setHour24(prefs.getHour24());
+      globals.setHour24(prefs.getHour24());
     }
 
     str = request.getReqPar("skin");
@@ -303,7 +304,6 @@ public class UpdatePrefsAction extends RWActionBase {
       if (BwPreferences.preferredEndTypeDuration.equals(str) ||
           BwPreferences.preferredEndTypeDate.equals(str)) {
         prefs.setPreferredEndType(str);
-        form.setEndDateType(prefs.getPreferredEndType());
       } else {
         request.error(ValidationError.invalidPrefEndType);
         return forwardBadPref;
@@ -358,18 +358,12 @@ public class UpdatePrefsAction extends RWActionBase {
 
     final String ls = s.toLowerCase();
 
-    if ("list".equals(ls)) {
-      return ls;
-    }
+    return switch (ls) {
+      case "list" -> ls;
+      case "daily" -> ls;
+      case "grid" -> ls;
+      default -> null;
+    };
 
-    if ("daily".equals(ls)) {
-      return ls;
-    }
-
-    if ("grid".equals(ls)) {
-      return ls;
-    }
-
-    return null;
   }
 }

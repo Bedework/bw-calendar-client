@@ -39,8 +39,7 @@ import org.bedework.webcommon.BwRequest;
 public class UpdateAuthAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {
@@ -49,13 +48,13 @@ public class UpdateAuthAction extends AdminActionBase {
 
     /* We are just updating from the current form values.
      */
-    final BwAuthUser au = form.getEditAuthUser();
+    final BwAuthUser au = getAdminForm().getEditAuthUser();
 
     if (au == null) {
       return forwardRetry;
     }
 
-    au.setUsertype(form.getEditAuthUserType());
+    au.setUsertype(getAdminForm().getEditAuthUserType());
 
     if (debug()) {
       debug("Update authUser " + au);

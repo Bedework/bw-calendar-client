@@ -41,8 +41,8 @@ import org.bedework.webcommon.BwRequest;
 public class DeleteLocationAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
+    final var form = getRwForm();
     final String uid = form.getLocationUid();
 
     if (uid == null) {

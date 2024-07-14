@@ -36,8 +36,7 @@ import org.bedework.webcommon.BwRequest;
 public class DeleteAuthAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {

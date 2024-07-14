@@ -28,8 +28,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class ReloadAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     request.getSess().embedFilters(request);
 
     return forwardSuccess;

@@ -39,8 +39,7 @@ import org.bedework.webcommon.BwRequest;
 public class FetchAuthAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {
@@ -62,7 +61,7 @@ public class FetchAuthAction extends AdminActionBase {
       info("Retrieved auth user " + au);
     }
 
-    form.setEditAuthUser(au);
+    getAdminForm().setEditAuthUser(au);
 
     return forwardContinue;
   }

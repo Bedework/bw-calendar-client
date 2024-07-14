@@ -31,7 +31,6 @@ import org.bedework.appcommon.client.SearchParams;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
@@ -90,11 +89,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   /** This is the routine which does the work.
    *
    * @param request   For request pars and BwSession
-   * @param frm       Action form
    * @return int      forward index
    */
-  public abstract int doAction(BwRequest request,
-                               BwActionFormBase frm);
+  public abstract int doAction(BwRequest request);
 
   @Override
   public String performAction(final Request request)  {
@@ -303,7 +300,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       }
       */
 
-      forward = forwards[doAction(bwreq, form)];
+      forward = forwards[doAction(bwreq)];
 
 //      bsess.prepareRender(bwreq);
     } catch (final CalFacadeAccessException cfae) {
@@ -628,27 +625,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return ev;
   }
 
-  /** Find a principal object given a "user" request parameter.
-   *
-   * @param request     BwRequest for parameters
-   * @return BwPrincipal     null if not found. Messages emitted
-   */
-  protected BwPrincipal<?> findPrincipal(final BwRequest request) {
-    final String str = request.getReqPar("user");
-    if (str == null) {
-      request.error(ClientError.unknownUser, "null");
-      return null;
-    }
-
-    final BwPrincipal<?> p = request.getClient().getUser(str);
-    if (p == null) {
-      request.error(ClientError.unknownUser, str);
-      return null;
-    }
-
-    return p;
-  }
-
   /** Method to retrieve an event. An event is identified by the calendar +
    * guid + recurrence id. We also take the subscription id as a parameter so
    * we can pass it along in the result for display purposes.
@@ -756,15 +732,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     }
 
     return ev;
-  }
-
-  protected BwCalendar findCalendar(final BwRequest request,
-                                    final String url) {
-    if (url == null) {
-      return null;
-    }
-
-    return request.getClient().getCollection(url);
   }
 
   /** An image processed to produce a thumbnail and storeable resources

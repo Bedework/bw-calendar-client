@@ -31,7 +31,6 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.AddEventResult;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
@@ -68,8 +67,7 @@ public class UploadAction extends RWActionBase {
   @SuppressWarnings("rawtypes")
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final String transparency = request.getReqPar("transparency");
     if (!checkTransparency(transparency)) {
       request.error(ValidationError.invalidTransparency, transparency);
@@ -127,18 +125,17 @@ public class UploadAction extends RWActionBase {
       }
 
       final Collection<AddEventResult> aers = new ArrayList<>();
-      form.setAddEventResults(aers);
+      getRwForm().setAddEventResults(aers);
 
       final Iterator it = ic.iterator();
 
       while (it.hasNext()) {
         final Object o = it.next();
 
-        if (!(o instanceof EventInfo)) {
+        if (!(o instanceof final EventInfo ei)) {
           continue;
         }
 
-        final EventInfo ei = (EventInfo)o;
         final BwEvent ev = ei.getEvent();
 
         /* Make up a unique name for the event. */

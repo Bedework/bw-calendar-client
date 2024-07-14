@@ -25,7 +25,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -44,9 +43,8 @@ import java.util.List;
 public class DeleteCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    final String calPath = form.getCalendarPath();
+                      final RWClient cl) {
+    final String calPath = getRwForm().getCalendarPath();
     final BwCalendar cal = cl.getCollection(calPath);
     if (cal == null) {
       request.error(ClientError.unknownCalendar, calPath);

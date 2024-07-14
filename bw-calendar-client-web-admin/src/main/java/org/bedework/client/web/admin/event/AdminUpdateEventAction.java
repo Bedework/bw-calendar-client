@@ -4,7 +4,6 @@
 package org.bedework.client.web.admin.event;
 
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEvent.SuggestedTo;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.exc.ValidationError;
@@ -16,7 +15,6 @@ import org.bedework.client.admin.AdminClient;
 import org.bedework.client.admin.AdminConfig;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.admin.BwAdminActionForm;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.event.UpdateEventAction;
 import org.bedework.client.web.rw.event.UpdatePars;
 import org.bedework.sysevents.events.SysEventBase;
@@ -47,14 +45,13 @@ import static org.bedework.util.misc.response.Response.Status.ok;
 public class AdminUpdateEventAction extends UpdateEventAction {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    if (form.getEventInfo() == null) {
+                      final RWClient cl) {
+    if (getRwForm().getEventInfo() == null) {
       // Session timed out and lost state?
       return forwardError;
     }
 
-    final AdminUpdatePars pars = new AdminUpdatePars(request, cl, form);
+    final AdminUpdatePars pars = new AdminUpdatePars(request, cl);
 
     if (pars.publishEvent || pars.approveEvent) {
       // Cannot publish/approve while updating.
@@ -62,7 +59,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       return forwardError;
     }
 
-    final int fwd = super.doUpdate(request, cl, form, pars);
+    final int fwd = super.doUpdate(request, cl, pars);
 
     pars.ev.setPublick(true);
 
@@ -140,20 +137,17 @@ public class AdminUpdateEventAction extends UpdateEventAction {
 
   @Override
   protected int update(final UpdatePars pars) {
-    final AdminUpdatePars adPars = (AdminUpdatePars)pars;
-
-    final BwEvent ev = pars.ev;
-
-    final AdminClient adcl = (AdminClient)pars.cl;
-
-    final BwAdminActionForm form = (BwAdminActionForm)pars.form;
+    final var adPars = (AdminUpdatePars)pars;
+    final var ev = pars.ev;
+    final var adcl = (AdminClient)pars.cl;
+    final var form = (BwAdminActionForm)pars.request.getBwForm();
 
     final var fwd = super.doUpdate(pars);
     if (fwd != forwardSuccess) {
       return fwd;
     }
 
-    boolean clearForm = false;
+    final boolean clearForm;
 
     final String clearFormPref = adcl.getCalsuitePreferences().
             getClearFormsOnSubmit();

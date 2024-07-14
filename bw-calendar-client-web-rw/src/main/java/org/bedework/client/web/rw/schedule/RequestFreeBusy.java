@@ -69,8 +69,7 @@ import javax.servlet.http.HttpServletResponse;
 public class RequestFreeBusy extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     try {
       final Collection<String> attendees = request.getReqPars("attendeeUri");
       final Set<String> attendeeUris = new TreeSet<>();

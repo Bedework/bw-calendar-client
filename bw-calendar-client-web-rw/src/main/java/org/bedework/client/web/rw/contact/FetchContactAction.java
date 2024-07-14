@@ -39,8 +39,8 @@ import org.bedework.webcommon.BwRequest;
 public class FetchContactAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
+    final var form = getRwForm();
     /* User requested a contact from the list. Retrieve it, embed it in
      * the form so we can display the page
      */

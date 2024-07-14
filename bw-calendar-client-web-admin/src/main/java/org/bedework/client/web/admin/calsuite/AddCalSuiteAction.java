@@ -48,8 +48,7 @@ import org.bedework.webcommon.BwRequest;
 public class AddCalSuiteAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     final String name = request.getReqPar("name");
 
     if (name == null) {

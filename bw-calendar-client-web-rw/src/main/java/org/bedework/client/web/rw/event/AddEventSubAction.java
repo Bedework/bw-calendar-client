@@ -48,14 +48,13 @@ import java.util.SortedSet;
 public class AddEventSubAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    final int fwd = addEventSub(request, cl, form);
+                      final RWClient cl) {
+    final int fwd = addEventSub(request, cl);
     if (fwd != forwardSuccess) {
       return fwd;
     }
 
-    final String start = form.getEvent().getDtstart().getDate().substring(0, 8);
+    final var start = getRwForm().getEvent().getDtstart().getDate().substring(0, 8);
     gotoDateView(request, start,
                  BedeworkDefs.vtDay);
 
@@ -70,9 +69,8 @@ public class AddEventSubAction extends RWActionBase {
    * returns int forward index sucess for OK or an error index.
    */
   private int addEventSub(final BwRequest request,
-                          final RWClient cl,
-                          final BwRWActionForm form) {
-    final EventKey ekey = form.getEventKey();
+                          final RWClient cl) {
+    final EventKey ekey = getRwForm().getEventKey();
 
     if (ekey == null) {
       return forwardNoAction;

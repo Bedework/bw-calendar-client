@@ -23,7 +23,6 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -41,12 +40,12 @@ import java.util.Set;
  */
 public class RenderCalendarAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     /* User requested a calendar from the list. Retrieve it, embed it in
      * the form so we can display the page
      */
 
+    final var form = request.getBwForm();
     final String calPath = form.getCalPath();
 
     if (calPath == null) {

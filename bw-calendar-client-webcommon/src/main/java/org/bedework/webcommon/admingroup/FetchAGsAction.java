@@ -33,8 +33,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchAGsAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     request.embedAdminGroups();
 
     return forwardSuccess;

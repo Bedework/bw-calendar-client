@@ -57,9 +57,7 @@ import static org.bedework.util.misc.Util.checkNull;
 public class UpdateAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
-
+                      final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {
@@ -69,6 +67,8 @@ public class UpdateAGAction extends AdminActionBase {
     if (request.getReqPar("delete") != null) {
       return forwardDelete;
     }
+
+    final var form = getAdminForm();
 
     cl.setChoosingGroup(false); // reset
     final boolean add = form.getAddingAdmingroup();

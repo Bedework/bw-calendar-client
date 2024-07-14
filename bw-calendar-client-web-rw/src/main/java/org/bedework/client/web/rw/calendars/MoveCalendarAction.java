@@ -50,8 +50,7 @@ import java.util.List;
 public class MoveCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final boolean contents = request.present("contents");
 
     final BwCalendar cal = request.getCalendar(true);

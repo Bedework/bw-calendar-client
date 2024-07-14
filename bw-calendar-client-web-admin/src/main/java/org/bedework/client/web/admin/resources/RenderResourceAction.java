@@ -41,8 +41,8 @@ import org.bedework.webcommon.BwRequest;
 public class RenderResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
+    final var form = getAdminForm();
     final String name = form.getResourceName();
     if (name == null) {
       request.error(ValidationError.missingName);

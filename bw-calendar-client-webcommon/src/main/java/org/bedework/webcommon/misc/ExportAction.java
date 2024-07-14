@@ -36,7 +36,6 @@ import org.bedework.jsforj.model.JSGroup;
 import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.Calendar;
@@ -69,8 +68,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ExportAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final String calPath = request.getReqPar("calPath");
     final Client cl = request.getClient();
 
@@ -122,7 +120,7 @@ public class ExportAction extends BwAbstractAction {
                                              null),   // tzid
                   null);
         } else if (dl.equals("limited")) {
-          tr = form.getEventDates().getTimeRange();
+          tr = getBwForm().getEventDates().getTimeRange();
         }
       }
       

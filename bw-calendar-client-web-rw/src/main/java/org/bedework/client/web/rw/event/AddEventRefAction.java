@@ -28,7 +28,6 @@ import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.webcommon.BwRequest;
@@ -51,14 +50,13 @@ import org.bedework.webcommon.BwRequest;
 public class AddEventRefAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    final int fwd = addEventRef(request, cl, form);
+                      final RWClient cl) {
+    final int fwd = addEventRef(request, cl);
     if (fwd != forwardSuccess) {
       return fwd;
     }
 
-    final String start = form.getEvent().getDtstart().getDate().substring(0, 8);
+    final String start = getRwForm().getEvent().getDtstart().getDate().substring(0, 8);
     gotoDateView(request, start,
                  BedeworkDefs.vtDay);
 
@@ -71,14 +69,13 @@ public class AddEventRefAction extends RWActionBase {
    * parameter newCalPath.
    *
    * @param request bedework request object
-   * @param form action form
    * @return int forward index sucess for OK or an error index.
    */
   private int addEventRef(final BwRequest request,
-                          final RWClient cl,
-                          final BwRWActionForm form) {
+                          final RWClient cl) {
 //    EventInfo ei = findEvent(request, Rmode.masterOnly);
 
+    final var form = request.getBwForm();
     final EventKey ekey = form.getEventKey();
 
     if (ekey == null) {

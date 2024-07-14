@@ -42,8 +42,7 @@ import org.bedework.webcommon.BwSession;
  */
 public class SearchNextAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final Client cl = request.getClient();
 
     final int offset = request.getIntReqPar("offset", -1);

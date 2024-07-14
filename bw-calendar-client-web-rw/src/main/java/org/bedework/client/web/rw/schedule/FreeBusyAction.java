@@ -21,10 +21,9 @@ package org.bedework.client.web.rw.schedule;
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.Attendees;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.IcalDefs;
-import org.bedework.client.web.rw.Attendees;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
@@ -61,8 +60,7 @@ import static org.bedework.client.web.rw.EventCommon.doFreeBusy;
 public class FreeBusyAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     String uri = null;
     final BwModuleState mstate = request.getModule().getState();
 
@@ -97,6 +95,6 @@ public class FreeBusyAction extends RWActionBase {
     att.setPartstat(IcalDefs.partstatValAccepted);
     atts.addAttendee(att);
 
-    return doFreeBusy(request, form, atts, st, et, intunitStr, interval);
+    return doFreeBusy(request, atts, st, et, intunitStr, interval);
   }
 }

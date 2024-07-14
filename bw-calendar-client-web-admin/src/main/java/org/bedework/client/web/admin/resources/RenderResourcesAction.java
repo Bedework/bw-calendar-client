@@ -38,8 +38,8 @@ import java.util.List;
 public class RenderResourcesAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
+    final var form = getAdminForm();
     final var globals = request.getBwGlobals();
     if (request.isNewSession()) {
       request.refresh();

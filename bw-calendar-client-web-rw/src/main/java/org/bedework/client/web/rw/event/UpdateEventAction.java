@@ -117,20 +117,19 @@ import static org.bedework.util.misc.response.Response.Status.ok;
 public class UpdateEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
+    final var form = getRwForm();
     if (form.getEventInfo() == null) {
       // Session timed out and lost state?
       return forwardError;
     }
 
-    return doUpdate(request, cl, form,
-                    new UpdatePars(request, cl, form));
+    return doUpdate(request, cl,
+                    new UpdatePars(request, cl));
   }
 
   public int doUpdate(final BwRequest request,
                       final RWClient cl,
-                      final BwRWActionForm form,
                       final UpdatePars pars) {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
@@ -147,6 +146,7 @@ public class UpdateEventAction extends RWActionBase {
     final var reqGuid = request.getReqPar("guid");
     final var reqAdding = request.notNull("addEvent");
     final var globals = request.getBwGlobals();
+    final var form = (BwRWActionForm)request.getBwForm();
     // pars value and request for adding may be
     // inconsistent with multiple tabs.
 
@@ -204,7 +204,7 @@ public class UpdateEventAction extends RWActionBase {
     /* ------------------- Change attendee list ------------------- */
 
     if (request.present("editEventAttendees")) {
-      final int res = initMeeting(request, form, true);
+      final int res = initMeeting(request, true);
 
       if (res != forwardSuccess) {
         return res;
@@ -216,7 +216,7 @@ public class UpdateEventAction extends RWActionBase {
     /* ----------------- Turn event into meeting ------------------ */
 
     if (request.present("makeEventIntoMeeting")) {
-      final int res = initMeeting(request, form, true);
+      final int res = initMeeting(request, true);
 
       if (res != forwardSuccess) {
         return res;
@@ -586,7 +586,7 @@ public class UpdateEventAction extends RWActionBase {
   }
 
   protected boolean setLocation(final UpdatePars pars) {
-    setEventLocation(pars.request, pars.ei, pars.form, pars.submitApp);
+    setEventLocation(pars.request, pars.ei, pars.submitApp);
     return true;
   }
 
@@ -663,7 +663,7 @@ public class UpdateEventAction extends RWActionBase {
         emitScheduleStatus(pars.request, ur.schedulingResult, false);
       }
 
-      pars.form.assignAddingEvent(false);
+      ((BwRWActionForm)pars.request.getBwForm()).assignAddingEvent(false);
 
       /* -------------------------- Access ------------------------------ */
 

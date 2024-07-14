@@ -52,9 +52,9 @@ import org.bedework.webcommon.BwRequest;
 public class AddResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     final var globals = request.getBwGlobals();
+    final var form = getAdminForm();
     String rclass = request.getReqPar("class");
     final String name = request.getReqPar("name");
     String contentType = request.getReqPar("ct");

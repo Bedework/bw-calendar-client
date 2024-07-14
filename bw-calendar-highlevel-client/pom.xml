@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.bedework.bwwebcl</groupId>
+    <artifactId>bw-calendar-client</artifactId>
+    <version>4.1.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>bw-calendar-highlevel-client</artifactId>
+  <packaging>pom</packaging>
+  <name>Bedework: calendar high-level web client</name>
+  <description>High level calendar web client code for bedework</description>
+</project>

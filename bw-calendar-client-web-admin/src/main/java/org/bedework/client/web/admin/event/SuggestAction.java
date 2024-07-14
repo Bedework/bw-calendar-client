@@ -59,8 +59,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SuggestAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     final var globals = (BwAdminWebGlobals)request.getGlobals();
     final HttpServletResponse response = request.getResponse();
 

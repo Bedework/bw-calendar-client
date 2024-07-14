@@ -123,13 +123,6 @@ public interface Client extends Serializable {
    */
   void postNotification(SysEventBase ev);
 
-  /** End a (possibly long-running) transaction. In the web environment
-   * this should in some way check version numbers to detect concurrent updates
-   * and fail with an exception.
-   *
-   */
-  void endTransaction();
-
   /**
    * @return a change token for the current indexed data
    */

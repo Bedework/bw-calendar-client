@@ -49,8 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 public class RemoveAllAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final var globals = (BwRWWebGlobals)request.getGlobals();
     final HttpServletResponse response = request.getResponse();
 

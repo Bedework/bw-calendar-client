@@ -32,8 +32,6 @@ import org.bedework.util.misc.response.GetEntitiesResponse;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
-import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.Date;
@@ -46,8 +44,7 @@ import static org.bedework.util.misc.response.Response.Status.notFound;
  */
 public class RenderEventAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     /*
     if (request.isNewSession()) {
       request.refresh();
@@ -55,7 +52,8 @@ public class RenderEventAction extends BwAbstractAction {
     }
     */
 
-    final BwModuleState mstate = request.getModule().getState();
+    final var mstate = request.getModule().getState();
+    final var form = request.getBwForm();
     final EventKey ekey = form.getEventKey();
 
     if (ekey == null) {

@@ -42,9 +42,8 @@ import org.bedework.webcommon.BwRequest;
 public class RenderCalSuiteAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
-    final String name = form.getEditCalSuiteName();
+                      final AdminClient cl) {
+    final String name = getAdminForm().getEditCalSuiteName();
 
     if (name == null) {
       request.error(ValidationError.missingName);
@@ -60,7 +59,7 @@ public class RenderCalSuiteAction extends AdminActionBase {
 
     cs.setContext(null);
     cs.setDefaultContext(false);
-    form.setCalSuite(cs);
+    getAdminForm().setCalSuite(cs);
 
     final String reqpar = request.getReqPar("delete");
 

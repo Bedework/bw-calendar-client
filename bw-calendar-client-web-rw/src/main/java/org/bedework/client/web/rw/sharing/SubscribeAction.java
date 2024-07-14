@@ -53,8 +53,7 @@ import org.bedework.webcommon.BwRequest;
 public class SubscribeAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final String colName = request.getReqPar("colName");
     if (colName == null) {
       request.error(ClientError.badRequest, "Missing colName");

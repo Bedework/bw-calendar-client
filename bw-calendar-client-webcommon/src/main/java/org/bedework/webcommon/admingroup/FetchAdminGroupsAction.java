@@ -23,7 +23,6 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.responses.AdminGroupsResponse;
 import org.bedework.util.misc.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches admin groups and writes them as a json object.
@@ -37,8 +36,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchAdminGroupsAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     request.setNocache(false);
 
     if (!request.contentChanged()) {

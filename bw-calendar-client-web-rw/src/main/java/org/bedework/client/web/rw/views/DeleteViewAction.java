@@ -47,8 +47,7 @@ import org.bedework.webcommon.BwRequest;
 public class DeleteViewAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     /* Check access
      */
     if (request.isGuest()) {

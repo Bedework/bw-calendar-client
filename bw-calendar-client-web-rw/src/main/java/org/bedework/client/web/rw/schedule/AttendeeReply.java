@@ -49,8 +49,7 @@ import org.bedework.webcommon.BwRequest;
 public class AttendeeReply extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     return forwardEdit;
   }
 

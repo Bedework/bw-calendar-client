@@ -15,9 +15,8 @@ import org.bedework.webcommon.BwSession;
  */
 public class AdminInitAddEventAction extends InitAddEventAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
-    final int fwd = super.doAction(request, form);
+  public int doAction(final BwRequest request) {
+    final int fwd = super.doAction(request);
 
     final BwSession sess = request.getSess();
 

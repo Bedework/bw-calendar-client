@@ -41,8 +41,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FetchCategoriesAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     if (!"true".equals(request.getStringActionPar("catlist"))) {
       request.getSess().embedCategories(request, true,
                                         BwSession.editableEntity);

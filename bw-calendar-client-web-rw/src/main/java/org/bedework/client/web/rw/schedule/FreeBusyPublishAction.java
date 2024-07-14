@@ -67,8 +67,7 @@ import javax.servlet.http.HttpServletResponse;
 public class FreeBusyPublishAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     BwPrincipal<?> principal = null;
 
     final BwModuleState mstate = request.getModule().getState();

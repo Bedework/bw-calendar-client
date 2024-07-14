@@ -17,9 +17,8 @@ import org.bedework.webcommon.BwSession;
 public class AdminFetchEventAction extends FetchEventAction {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    final int fwd = doTheAction(request, cl, form);
+                      final RWClient cl) {
+    final int fwd = doTheAction(request, cl);
 
     if (((BwAdminWebGlobals)request.getBwGlobals()).getSuggestionEnabled()) {
       AdminUtil.embedPreferredAdminGroups(request);

@@ -20,7 +20,6 @@ package org.bedework.webcommon.calendars;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -43,8 +42,7 @@ import java.util.Set;
  */
 public class OpenCloseAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final var cl = request.getClient();
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense
@@ -65,14 +63,14 @@ public class OpenCloseAction extends BwAbstractAction {
 
     final boolean open = request.getBooleanReqPar("open", true);
 
-    Set<String> cos = form.getCalendarsOpenState();
+    Set<String> cos = getBwForm().getCalendarsOpenState();
     if ((cos == null) && !open) {
       return forwardSuccess;
     }
 
     if (cos == null) {
       cos = new HashSet<>();
-      form.setCalendarsOpenState(cos);
+      getBwForm().setCalendarsOpenState(cos);
     }
 
     if (open) {

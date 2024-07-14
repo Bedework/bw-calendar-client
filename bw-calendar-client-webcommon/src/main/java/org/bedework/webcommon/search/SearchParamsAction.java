@@ -77,8 +77,7 @@ public class SearchParamsAction extends BwAbstractAction {
   private boolean listMode;
 
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final BwModuleState mstate = request.getModule().getState();
     final SearchParams params = new SearchParams();
     final Client cl = request.getClient();

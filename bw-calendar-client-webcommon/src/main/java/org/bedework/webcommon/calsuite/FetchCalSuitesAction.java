@@ -42,8 +42,7 @@ import static org.bedework.util.misc.response.Response.Status.ok;
  */
 public class FetchCalSuitesAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final Client cl = request.getClient();
 
     // Return as json list for widgets

@@ -20,7 +20,6 @@ package org.bedework.webcommon.event;
 
 import org.bedework.appcommon.EventKey;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /**
@@ -39,17 +38,16 @@ import org.bedework.webcommon.BwRequest;
  */
 public class EventKeyAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final EventKey ekey = request.makeEventKey(false);
-    form.setEventKey(ekey);
+    request.getBwForm().setEventKey(ekey);
 
     if (ekey == null) {
       return forwardNoAction;
     }
 
     request.setRequestAttr(BwRequest.eventStateName,
-                           form.getEventState());
+                           request.getBwForm().getEventState());
 
     return forwardSuccess;
   }

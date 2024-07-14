@@ -7,7 +7,6 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwString;
 import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.io.File;
@@ -19,8 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class RWActionBase extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final RWClient cl = (RWClient)request.getClient();
 
     /* Check access
@@ -35,9 +33,7 @@ public abstract class RWActionBase extends BwAbstractAction {
       return forwardNoAccess; // First line of defence
     }
 
-    return doAction(request,
-                    cl,
-                    (BwRWActionForm)form);
+    return doAction(request, cl);
   }
 
   /**
@@ -54,8 +50,7 @@ public abstract class RWActionBase extends BwAbstractAction {
    * @return int      forward index
    */
   public abstract int doAction(BwRequest request,
-                               RWClient cl,
-                               BwRWActionForm form);
+                               RWClient cl);
 
   public BwRWActionForm getRwForm() {
     return (BwRWActionForm)form;

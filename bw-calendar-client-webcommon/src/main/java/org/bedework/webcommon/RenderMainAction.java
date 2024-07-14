@@ -29,8 +29,7 @@ import org.bedework.calfacade.exc.CalFacadeException;
  */
 public class RenderMainAction extends RenderAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final BwModuleState mstate = request.getModule().getState();
     final Client cl = request.getClient();
     final TimeView tv = mstate.getCurTimeView();

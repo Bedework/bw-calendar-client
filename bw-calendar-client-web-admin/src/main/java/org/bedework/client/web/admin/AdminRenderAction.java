@@ -29,9 +29,8 @@ import org.bedework.webcommon.BwRequest;
 public class AdminRenderAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
-    form.assignCalSuites(request.getClient().getContextCalSuites());
+                      final AdminClient cl) {
+    getAdminForm().assignCalSuites(request.getClient().getContextCalSuites());
     request.embedAdminGroups();
 
     return forwardSuccess;

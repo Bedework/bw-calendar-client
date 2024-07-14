@@ -61,19 +61,18 @@ import static org.bedework.util.misc.response.Response.Status.notFound;
 public class FetchEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     if (cl.getPublicAdmin()) {
       // Handled by overide
       return forwardNoAccess;
     }
 
-    return doTheAction(request, cl, form);
+    return doTheAction(request, cl);
   }
 
   protected int doTheAction(final BwRequest request,
-                            final RWClient cl,
-                            final BwRWActionForm form) {
+                            final RWClient cl) {
+    final var form = getRwForm();
     form.assignAddingEvent(false);
 
     final Rmode mode;

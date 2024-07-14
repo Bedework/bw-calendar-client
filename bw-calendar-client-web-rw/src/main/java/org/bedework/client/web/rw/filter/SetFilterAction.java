@@ -44,9 +44,8 @@ import org.bedework.webcommon.BwRequest;
 public class SetFilterAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    final GetFilterDefResponse gfdr = request.getFilterDef();
+                      final RWClient cl) {
+    final var gfdr = request.getFilterDef();
 
     if (gfdr.getStatus() == Response.Status.notFound) {
       return forwardNotFound;
@@ -56,7 +55,7 @@ public class SetFilterAction extends RWActionBase {
       return forwardError;
     }
     
-    form.setCurrentFilter(gfdr.getFilterDef());
+    getRwForm().setCurrentFilter(gfdr.getFilterDef());
     request.refresh();
     return forwardSuccess;
   }

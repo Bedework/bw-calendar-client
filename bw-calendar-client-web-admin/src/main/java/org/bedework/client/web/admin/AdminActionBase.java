@@ -6,9 +6,7 @@ package org.bedework.client.web.admin;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /**
@@ -16,8 +14,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public abstract class AdminActionBase extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final AdminClient cl = (AdminClient)request.getClient();
 
     /* Check access
@@ -26,26 +23,21 @@ public abstract class AdminActionBase extends RWActionBase {
       return forwardNoAccess; // First line of defence
     }
 
-    return doAction(request,
-                    cl,
-                    (BwAdminActionForm)form);
+    return doAction(request, cl);
   }
 
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     throw new RuntimeException("Should never be called");
   }
 
   /** This is the routine which does the work.
    *
    * @param request   For request pars and BwSession
-   * @param form       Admin action form
    * @return int      forward index
    */
   public abstract int doAction(BwRequest request,
-                               AdminClient cl,
-                               BwAdminActionForm form);
+                               AdminClient cl);
 
   public BwAdminActionForm getAdminForm() {
     return (BwAdminActionForm)getForm();

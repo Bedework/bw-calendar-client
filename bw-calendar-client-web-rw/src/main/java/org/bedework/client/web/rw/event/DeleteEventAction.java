@@ -58,11 +58,11 @@ import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 public class DeleteEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    final boolean publicAdmin = cl.getPublicAdmin();
-    final boolean publicEvents = publicAdmin || cl.getWebSubmit();
-    final boolean soft = request.getBooleanReqPar("soft", false) ||
+                      final RWClient cl) {
+    final var form = getRwForm();
+    final var publicAdmin = cl.getPublicAdmin();
+    final var publicEvents = publicAdmin || cl.getWebSubmit();
+    final var soft = request.getBooleanReqPar("soft", false) ||
             form.getMarkDeleted();
 
     String submitterEmail = null;

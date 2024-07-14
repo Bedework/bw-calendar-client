@@ -71,8 +71,7 @@ import static org.bedework.util.misc.response.Response.Status.notFound;
 public class ProcessInboxEvent extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     if (!request.present("calPath")) {
       // Just continue
 
@@ -81,6 +80,7 @@ public class ProcessInboxEvent extends RWActionBase {
       return forwardContinue;
     }
 
+    final var form = getRwForm();
     final boolean preserveInbox = request.present("preserveInbox");
     form.assignAddingEvent(false);
 

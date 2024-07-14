@@ -34,8 +34,7 @@ import org.bedework.webcommon.BwRequest;
 public class GetFiltersAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     request.getSess().embedFilters(request);
     return forwardSuccess;
   }

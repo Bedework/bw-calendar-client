@@ -23,7 +23,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -38,8 +37,8 @@ import org.bedework.webcommon.BwRequest;
 public class RenderViewAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
+    final var form = getRwForm();
     final String name = form.getViewName();
 
     if (name == null) {

@@ -53,8 +53,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FetchLocationsAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final String fexpr = request.getReqPar("fexpr");
 
     if (fexpr != null) {

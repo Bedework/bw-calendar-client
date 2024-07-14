@@ -46,8 +46,7 @@ import org.bedework.webcommon.BwRequest;
 public class AddFilterAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final BwFilterDef fd = new BwFilterDef();
     fd.setName(request.getReqPar("name"));
 

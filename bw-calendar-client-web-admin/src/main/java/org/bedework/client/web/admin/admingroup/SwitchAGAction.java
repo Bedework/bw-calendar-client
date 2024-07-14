@@ -34,8 +34,7 @@ import org.bedework.webcommon.BwRequest;
 public class SwitchAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     /* ============================================================
      *              Selecting a group - any access if no group set
      * ============================================================ */

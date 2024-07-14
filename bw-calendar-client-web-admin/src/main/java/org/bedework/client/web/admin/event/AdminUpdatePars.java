@@ -7,7 +7,6 @@ import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.event.UpdatePars;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
@@ -40,9 +39,8 @@ public class AdminUpdatePars extends UpdatePars {
   Set<BwCategory> categories;
 
   AdminUpdatePars(final BwRequest request,
-                  final RWClient cl,
-                  final BwRWActionForm form) {
-    super(request, cl, form);
+                  final RWClient cl) {
+    super(request, cl);
 
     publishEvent = request.present("publishEvent");
     updateSubmitEvent = request.present("updateSubmitEvent");

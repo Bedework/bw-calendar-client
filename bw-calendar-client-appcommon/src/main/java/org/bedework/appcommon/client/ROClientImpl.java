@@ -359,11 +359,6 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void endTransaction() {
-    svci.endTransaction();
-  }
-
-  @Override
   public String getCurrentChangeToken() {
     var evChg = getIndexer(isDefaultIndexPublic(),
                       docTypeEvent).currentChangeToken();

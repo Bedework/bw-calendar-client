@@ -30,7 +30,6 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
@@ -96,8 +95,9 @@ import static org.bedework.client.web.rw.EventCommon.validateEvent;
 public class AttendeeRespond extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
+    final var form = getRwForm();
+
     if (request.present("initUpdate")) {
 //      ei = sched.initAttendeeUpdate(ei);
       final EventInfo ei = form.getEventInfo();
@@ -160,7 +160,7 @@ public class AttendeeRespond extends RWActionBase {
      // }
 
       /* -------------------------- Location ------------------------------ */
-      if (setEventLocation(request, ei, form, false)) {
+      if (setEventLocation(request, ei, false)) {
         // RFC says maybe for this.
         //incSequence = true;
       }

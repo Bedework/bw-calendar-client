@@ -52,8 +52,7 @@ import org.bedework.webcommon.BwRequest;
 public class ShareReplyAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final var globals = (BwRWWebGlobals)request.getGlobals();
     final NotificationType note = cl.findNotification(request.getReqPar("name"));
 

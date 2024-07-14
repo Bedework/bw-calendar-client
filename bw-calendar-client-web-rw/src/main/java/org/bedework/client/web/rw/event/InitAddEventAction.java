@@ -26,11 +26,10 @@ import org.bedework.calfacade.base.StartEndComponent;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
+import org.bedework.client.web.rw.Attendees;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.client.web.rw.Attendees;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
@@ -59,8 +58,8 @@ import static org.bedework.client.web.rw.EventCommon.initMeeting;
 public class InitAddEventAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
+    final var form = getRwForm();
     request.refresh();
 
     final BwEvent ev = new BwEventObj();
@@ -96,7 +95,7 @@ public class InitAddEventAction extends RWActionBase {
     }
 
     if (sched == ScheduleMethods.methodTypeRequest) {
-      final int res = initMeeting(request, form, true);
+      final int res = initMeeting(request, true);
 
       if (res != forwardSuccess) {
         return res;

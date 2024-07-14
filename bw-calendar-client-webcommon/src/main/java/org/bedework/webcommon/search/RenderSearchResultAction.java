@@ -36,8 +36,7 @@ import org.bedework.webcommon.RenderAction;
  */
 public class RenderSearchResultAction extends RenderAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final Client cl = request.getClient();
 
     request.setRequestAttr(BwRequest.bwSearchListName,

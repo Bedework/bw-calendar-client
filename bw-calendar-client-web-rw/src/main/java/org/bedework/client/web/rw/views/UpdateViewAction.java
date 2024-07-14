@@ -23,7 +23,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -49,8 +48,7 @@ import org.bedework.webcommon.BwRequest;
 public class UpdateViewAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     /* Check access
      */
     if (request.isGuest()) {
@@ -93,7 +91,7 @@ public class UpdateViewAction extends RWActionBase {
       return forwardNotFound;
     }
 
-    form.setView(view);
+    getRwForm().setView(view);
     request.getSess().embedViews(request);
 
     return forwardSuccess;

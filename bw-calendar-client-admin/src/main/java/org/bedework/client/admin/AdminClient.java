@@ -21,6 +21,13 @@ import java.util.List;
  * User: mike Date: 3/7/21 Time: 16:50
  */
 public interface AdminClient extends RWClient {
+  /** End a (possibly long-running) transaction. In the web environment
+   * this should in some way check version numbers to detect concurrent updates
+   * and fail with an exception.
+   *
+   */
+  void endTransaction();
+
   /** Show whether admin group maintenance is available.
    * Some sites may use other mechanisms.
    *

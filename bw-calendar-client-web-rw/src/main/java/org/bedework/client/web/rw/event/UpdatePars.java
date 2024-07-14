@@ -21,7 +21,6 @@ import static org.bedework.client.web.rw.EventCommon.validateEvent;
 public class UpdatePars {
   public final BwRequest request;
   public final RWClient cl;
-  public final BwRWActionForm form;
   public final EventInfo ei;
   public final BwEvent ev;
 
@@ -38,11 +37,11 @@ public class UpdatePars {
   public String unindexLocation;
 
   protected UpdatePars(final BwRequest request,
-                       final RWClient cl,
-                       final BwRWActionForm form) {
+                       final RWClient cl) {
+    final var form = (BwRWActionForm)request.getBwForm();
+
     this.request = request;
     this.cl = cl;
-    this.form = form;
     submitApp = cl.getWebSubmit();
 
     ei = form.getEventInfo();

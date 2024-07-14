@@ -44,8 +44,7 @@ import org.bedework.webcommon.BwRequest;
 public class DeleteFilterAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final String name = request.getReqPar("name");
 
     if (name == null) {

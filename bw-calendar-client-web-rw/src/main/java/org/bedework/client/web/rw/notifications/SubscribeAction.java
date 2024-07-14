@@ -40,8 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SubscribeAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final HttpServletResponse response = request.getResponse();
 
     final boolean add = request.present("add");

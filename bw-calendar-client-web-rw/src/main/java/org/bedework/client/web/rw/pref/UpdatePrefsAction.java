@@ -76,8 +76,7 @@ import java.util.TreeSet;
 public class UpdatePrefsAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final var globals = request.getBwGlobals();
     final BwPreferences prefs;
     boolean tzChanged = false;
@@ -346,7 +345,7 @@ public class UpdatePrefsAction extends RWActionBase {
     if (tzChanged) {
       Timezones.setThreadDefaultTzid(prefs.getDefaultTzid());
     }
-    form.setUserPreferences(prefs);
+    getRwForm().setUserPreferences(prefs);
     request.message(ClientMessage.updatedPrefs);
     return forwardSuccess;
   }

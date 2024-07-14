@@ -68,8 +68,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class WebCalendarAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final Client cl = request.getClient();
     final BwModuleState mstate = request.getModule().getState();
 

@@ -44,8 +44,7 @@ import org.bedework.webcommon.BwSession;
 public class FetchPrefsAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final BwSession sess = request.getSess();
 
     sess.embedCategories(request, false,
@@ -67,10 +66,10 @@ public class FetchPrefsAction extends RWActionBase {
         return forwardNoAccess;
       }
 
-      form.setUserPreferences(prefs);
+      getRwForm().setUserPreferences(prefs);
     } else {
       /* Just set this users prefs */
-      form.setUserPreferences(cl.getPreferences());
+      getRwForm().setUserPreferences(cl.getPreferences());
     }
 
     return forwardSuccess;

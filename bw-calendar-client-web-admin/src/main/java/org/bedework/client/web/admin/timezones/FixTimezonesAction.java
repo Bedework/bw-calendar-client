@@ -37,8 +37,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FixTimezonesAction extends AdminActionBase {
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     final boolean checkOnly = request.present("check") ;
 
     final UpdateFromTimeZonesInfo info = null;

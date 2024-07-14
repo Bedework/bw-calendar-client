@@ -41,8 +41,7 @@ import org.bedework.webcommon.BwRequest;
 public class FetchCalSuiteAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     final String name = request.getReqPar("name");
 
     if (name == null) {
@@ -50,7 +49,7 @@ public class FetchCalSuiteAction extends AdminActionBase {
       return forwardRetry;
     }
 
-    form.setEditCalSuiteName(name);
+    getAdminForm().setEditCalSuiteName(name);
 
     return forwardSuccess;
   }

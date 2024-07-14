@@ -46,14 +46,14 @@ import org.bedework.webcommon.BwRequest;
 public class AddViewAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     /* Check access
      */
     if (request.isGuest()) {
       return forwardNoAccess; // First line of defence
     }
 
+    final var form = getRwForm();
     final String name = request.getReqPar("name");
 
     if (name == null) {

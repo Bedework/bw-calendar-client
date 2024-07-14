@@ -48,8 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 public class AddSubLocationAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
+    final var form = getAdminForm();
     /* Find the location we base the new one on
      */
     final String uid = request.getReqPar("uid");

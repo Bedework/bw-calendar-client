@@ -48,9 +48,9 @@ import org.bedework.webcommon.BwRequest;
 public class UpdateResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     final var globals = request.getBwGlobals();
+    final var form = getAdminForm();
     final String cancel = request.getReqPar("cancel");
     if (cancel != null) {
       return forwardCancelled;

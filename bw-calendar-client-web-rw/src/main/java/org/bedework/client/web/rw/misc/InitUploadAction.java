@@ -31,8 +31,7 @@ import org.bedework.webcommon.BwSession;
 public class InitUploadAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final BwSession sess = request.getSess();
 
     sess.embedAddContentCalendarCollections(request);

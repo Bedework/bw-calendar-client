@@ -24,8 +24,7 @@ package org.bedework.webcommon;
  */
 public class NoopAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     return forwardSuccess;
   }
 }

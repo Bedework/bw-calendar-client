@@ -37,8 +37,8 @@ import org.bedework.webcommon.BwRequest;
 public class EditResourceAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
+    final var form = getAdminForm();
     final String name = request.getReqPar("name");
     final String class_ = request.getReqPar("class");
 

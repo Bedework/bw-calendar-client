@@ -35,8 +35,7 @@ import org.bedework.webcommon.BwSession;
 public class FetchEditableAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     request.getSess().embedLocations(request,
                                      BwSession.editableEntity);
 

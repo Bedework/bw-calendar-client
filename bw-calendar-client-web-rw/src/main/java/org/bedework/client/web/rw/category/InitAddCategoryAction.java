@@ -34,8 +34,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class InitAddCategoryAction extends RWActionBase {
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
+    final var form = getRwForm();
     /* Set the objects to null so we get new ones.
      */
     form.assignAddingCategory(true);

@@ -3,7 +3,6 @@
 */
 package org.bedework.client.web.admin;
 
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderAction;
 
@@ -14,12 +13,11 @@ public class ShowTabAction extends RenderAction {
   private String currentTab;
 
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();
     globals.assignCurrentTab(currentTab);
 
-    return super.doAction(request, form);
+    return super.doAction(request);
   }
 
   public void setCurrentTab(final String val) {

@@ -67,8 +67,7 @@ import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
 public class UpdateCalendarAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
       return forwardNoAccess;
@@ -80,6 +79,7 @@ public class UpdateCalendarAction extends RWActionBase {
       return forwardDelete;
     }
 
+    final var form = getRwForm();
     final boolean add = form.getAddingCalendar();
 
     final BwCalendar cal = form.getCalendar();

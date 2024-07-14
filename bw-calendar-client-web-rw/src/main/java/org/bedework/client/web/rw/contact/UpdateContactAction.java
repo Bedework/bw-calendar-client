@@ -44,9 +44,9 @@ import static org.bedework.client.web.rw.EventProps.validateContact;
 public class UpdateContactAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
-    final String reqpar = request.getReqPar("delete");
+                      final RWClient cl) {
+    final var form = getRwForm();
+    final var reqpar = request.getReqPar("delete");
 
     if (reqpar != null) {
       return forwardDelete;

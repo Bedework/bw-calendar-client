@@ -55,7 +55,6 @@ import org.bedework.util.servlet.HttpServletUtils;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
-import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.Dur;
@@ -271,14 +270,13 @@ public class EventCommon {
   /** Make an event into a valid meeting object
    *
    * @param request bw request
-   * @param form action form
    * @param freebusy - true to do the freebusy thing.
    * @return int
    */
   public static int initMeeting(final BwRequest request,
-                                final BwRWActionForm form,
                                 final boolean freebusy) {
-    final RWClient cl = (RWClient)request.getClient();
+    final var cl = (RWClient)request.getClient();
+    final var form = (BwRWActionForm)request.getBwForm();
     final BwEvent ev = form.getEvent();
 
     if (ev.getScheduleMethod() == ScheduleMethods.methodTypeNone) {
@@ -315,7 +313,6 @@ public class EventCommon {
       final String uri = cl.getCurrentCalendarAddress();
 
       final int res = doAttendee(request,
-                                 form,
                                  false, false, true, true,
                                  true, // Initializing
                                  IcalDefs.partstats[IcalDefs.partstatAccepted],
@@ -336,13 +333,12 @@ public class EventCommon {
       return forwardSuccess;
     }
 
-    return doFreeBusy(request, form, form.getAttendees(),
+    return doFreeBusy(request, form.getAttendees(),
                       null, null, null, 1);
   }
 
   /**
    * @param request     BwRequest for parameters
-   * @param form        action form
    * @param atts Attendees
    * @param st start time
    * @param et end time
@@ -351,14 +347,13 @@ public class EventCommon {
    * @return int
    */
   public static int doFreeBusy(final BwRequest request,
-                               final BwRWActionForm form,
                                final Attendees atts,
                                final String st,
                                final String et,
                                final String intunitStr,
                                final int interval) {
-    final RWClient cl = (RWClient)request.getClient();
-    final BwModuleState mstate = request.getModule().getState();
+    final var cl = (RWClient)request.getClient();
+    final var mstate = request.getModule().getState();
 
     /*  Start of getting date/time - make a common method? */
 
@@ -456,6 +451,7 @@ public class EventCommon {
     }
 
     final FbResponses resps = cl.aggregateFreeBusy(sr, sdt, edt, dur);
+    final var form = (BwRWActionForm)request.getBwForm();
     form.setFbResponses(resps);
 
     final FormattedFreeBusy ffb = new FormattedFreeBusy(
@@ -708,7 +704,6 @@ public class EventCommon {
    * multiple db updates.
    *
    * @param request
-   * @param form
    * @param delete
    * @param update
    * @param recipient
@@ -724,7 +719,6 @@ public class EventCommon {
    * @return int
    */
   public static int doAttendee(final BwRequest request,
-                               final BwRWActionForm form,
                                final boolean delete,
                                final boolean update,
                                final boolean recipient,
@@ -737,7 +731,9 @@ public class EventCommon {
                                final String lang,
                                final String cutype,
                                final String dir) {
-    final RWClient cl = (RWClient)request.getClient();
+    final var cl = (RWClient)request.getClient();
+    final var form = (BwRWActionForm)request.getBwForm();
+
 
     if (uri == null) {
       request.error(ValidationError.invalidUser, "null");
@@ -763,7 +759,7 @@ public class EventCommon {
     if (!initializing &&
             ((ev.getOrganizer() == null) ||
                      (form.getAttendees() == null))) {
-      initMeeting(request, form, false);
+      initMeeting(request, false);
     }
 
     final Attendees atts = form.getAttendees();
@@ -937,7 +933,6 @@ public class EventCommon {
 
   public static boolean setEventLocation(final BwRequest request,
                                          final EventInfo ei,
-                                         final BwRWActionForm form,
                                          final boolean webSubmit) {
     final BwEvent ev = ei.getEvent();
 

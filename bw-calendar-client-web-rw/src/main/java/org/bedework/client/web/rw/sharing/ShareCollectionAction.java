@@ -69,8 +69,7 @@ import org.bedework.webcommon.BwRequest;
 public class ShareCollectionAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final BwCalendar col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;

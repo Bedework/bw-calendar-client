@@ -36,8 +36,7 @@ import org.bedework.webcommon.BwRequest;
 public class InitAddAGAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {
@@ -46,8 +45,8 @@ public class InitAddAGAction extends AdminActionBase {
 
     /* Set the objects to null so we get new ones.
      */
-    form.setUpdAdminGroup(null);
-    form.assignAddingAdmingroup(true);
+    getAdminForm().setUpdAdminGroup(null);
+    getAdminForm().assignAddingAdmingroup(true);
 
     return forwardContinue;
   }

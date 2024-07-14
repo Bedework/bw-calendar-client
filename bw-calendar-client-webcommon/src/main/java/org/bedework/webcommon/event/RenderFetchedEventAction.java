@@ -21,7 +21,6 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.ClientError;
 import org.bedework.util.webaction.Request;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 /** An event has been fetched and we are going to render it in some
@@ -31,9 +30,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class RenderFetchedEventAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
-    if (request.isNewSession() || (form.getEventInfo() == null)) {
+  public int doAction(final BwRequest request) {
+    if (request.isNewSession() || (getBwForm().getEventInfo() == null)) {
       // Assume logged out - could be someone messing around.
       request.refresh();
       request.error(ClientError.loggedOut);

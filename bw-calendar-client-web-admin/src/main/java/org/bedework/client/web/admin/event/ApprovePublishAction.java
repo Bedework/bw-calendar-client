@@ -13,7 +13,6 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.client.web.admin.BwAdminWebGlobals;
 import org.bedework.client.web.rw.event.UpdatePars;
 import org.bedework.sysevents.events.SysEventBase;
@@ -34,15 +33,14 @@ import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 public class ApprovePublishAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
-    if (form.getEventInfo() == null) {
+                      final AdminClient cl) {
+    if (getBwForm().getEventInfo() == null) {
       // Session timed out and lost state?
       return forwardError;
     }
 
     final var globals = (BwAdminWebGlobals)request.getGlobals();
-    final var pars = new AdminUpdatePars(request, cl, form);
+    final var pars = new AdminUpdatePars(request, cl);
     final var adcl = (AdminClient)pars.cl;
 
     final BwEvent ev = pars.ev;

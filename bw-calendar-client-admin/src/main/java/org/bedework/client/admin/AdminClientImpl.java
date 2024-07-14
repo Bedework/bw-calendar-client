@@ -136,6 +136,11 @@ public class AdminClientImpl extends RWClientImpl
     return cl;
   }
 
+  @Override
+  public void endTransaction() {
+    svci.endTransaction();
+  }
+
   /* ------------------------------------------------------------
    *                     Principals
    * ------------------------------------------------------------ */

@@ -31,8 +31,7 @@ import org.bedework.webcommon.BwRequest;
 public class AuthUserListRenderAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     request.setSessionAttr(BwRequest.bwAuthUsersListName,
                            cl.getAllAuthUsers());
 

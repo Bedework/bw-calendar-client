@@ -4,7 +4,6 @@
 package org.bedework.client.web.admin.event;
 
 import org.bedework.client.web.admin.BwAdminWebGlobals;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.search.SearchParamsAction;
 
@@ -15,12 +14,11 @@ public class InitEventTabAction extends SearchParamsAction {
   private String currentTab;
 
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();
     globals.assignCurrentTab(currentTab);
 
-    return super.doAction(request, form);
+    return super.doAction(request);
   }
 
   public void setCurrentTab(final String val) {

@@ -30,8 +30,7 @@ import org.bedework.webcommon.BwRequest;
 public class VpollAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     if (request.isNewSession()) {
       request.refresh();
       return forwardGotomain;

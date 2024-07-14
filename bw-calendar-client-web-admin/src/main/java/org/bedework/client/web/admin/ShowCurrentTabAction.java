@@ -38,8 +38,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
                         forwardSuggestionQTab);
 
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();
 
     //    if (request.isNewSession()) {
@@ -60,7 +59,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
     }
 
     if (eventSearchTab.contains(fwd)) {
-      final var sfwd = super.doAction(request, form);
+      final var sfwd = super.doAction(request);
       if (sfwd != forwardSuccess) {
         return sfwd;
       }

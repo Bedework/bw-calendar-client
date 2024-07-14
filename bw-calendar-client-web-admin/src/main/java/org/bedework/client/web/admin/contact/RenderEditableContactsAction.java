@@ -31,8 +31,7 @@ import org.bedework.webcommon.BwSession;
 public class RenderEditableContactsAction extends AdminActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final AdminClient cl,
-                      final BwAdminActionForm form) {
+                      final AdminClient cl) {
     request.getSess().embedContactCollection(request,
                                              BwSession.editableEntity);
 

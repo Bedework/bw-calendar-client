@@ -44,12 +44,12 @@ import static org.bedework.client.web.rw.EventProps.validateLocation;
 public class UpdateLocationAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     if (request.getReqPar("delete") != null) {
       return forwardDelete;
     }
 
+    final var form = getRwForm();
     /* Updating location previously fetched
      */
     final BwLocation location = form.getLocation();

@@ -20,7 +20,6 @@ package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
@@ -61,8 +60,7 @@ import static org.bedework.client.web.rw.EventCommon.doFreeBusy;
 public class AttendeeAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
-                      final RWClient cl,
-                      final BwRWActionForm form) {
+                      final RWClient cl) {
     final BwModuleState mstate = request.getModule().getState();
 
     final boolean listResponseOnly =
@@ -96,7 +94,6 @@ public class AttendeeAction extends RWActionBase {
             debug(att.toString());
           }
           res = doAttendee(request,
-                           form,
                            request.present("delete"),
                            request.present("update"),
                            false,            // recipient
@@ -124,7 +121,6 @@ public class AttendeeAction extends RWActionBase {
 
       if (uri != null) {
         res = doAttendee(request,
-                         form,
                          request.present("delete"),
                          request.present("update"),
                          request.present("recipient"),
@@ -155,8 +151,7 @@ public class AttendeeAction extends RWActionBase {
     final int interval = request.getIntReqPar("interval", 1);
 
     return doFreeBusy(request,
-                      form,
-                      form.getAttendees(),
+                      getRwForm().getAttendees(),
                       st, et, intunitStr, interval);
   }
 }

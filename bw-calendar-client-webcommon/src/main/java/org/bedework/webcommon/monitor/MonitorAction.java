@@ -58,8 +58,7 @@ public class MonitorAction extends BwAbstractAction {
   public static QName valueTag = new QName("value");
 
   @Override
-  public int doAction(final BwRequest request,
-                      final BwActionFormBase form) {
+  public int doAction(final BwRequest request) {
     final List<MonitorStat> stats = getMonitor().getStats();
 
     request.getResponse().setContentType("text/xml; charset=UTF-8");

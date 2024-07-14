@@ -48,9 +48,8 @@ public interface RWClient extends Client {
 
   /**
    * @param href to be unindexed
-   * @throws CalFacadeException on fatal error
    */
-  void unindex(String href) throws CalFacadeException;
+  void unindex(String href);
 
   /* ------------------------------------------------------------
    *                     Collections
@@ -72,17 +71,15 @@ public interface RWClient extends Client {
    * @param  val     BwCalendar new object
    * @param  parentPath  String path to parent.
    * @return BwCalendar object as added. Parameter val MUST be discarded
-   * @throws CalFacadeException on fatal error
    */
   BwCalendar addCollection(BwCalendar val,
-                           String parentPath) throws CalFacadeException;
+                           String parentPath);
 
   /** Update the given collection
    *
    * @param col the collection
-   * @throws CalFacadeException on fatal error
    */
-  void updateCollection(BwCalendar col) throws CalFacadeException;
+  void updateCollection(BwCalendar col);
 
   /** Delete a collection. Also remove it from the current user preferences (if any).
    *
@@ -93,7 +90,7 @@ public interface RWClient extends Client {
    * @throws CalFacadeException for in use or marked as default calendar
    */
   boolean deleteCollection(BwCalendar val,
-                           boolean emptyIt) throws CalFacadeException;
+                           boolean emptyIt);
 
   /** Move a calendar object from one parent to another
    *
@@ -117,10 +114,9 @@ public interface RWClient extends Client {
    *
    *
    * @return Set   of BwCalendar
-   * @throws CalFacadeException on fatal error
    */
   Collection<BwCalendar> getAddContentCollections()
-          throws CalFacadeException;
+         ;
 
   /* ------------------------------------------------------------
    *                     Categories
@@ -129,7 +125,6 @@ public interface RWClient extends Client {
   /**
    * @param uid of the category
    * @return category entity or null.
-   * @throws CalFacadeException on fatal error
    */
   BwCategory getPersistentCategory(String uid);
 
@@ -143,9 +138,8 @@ public interface RWClient extends Client {
   /** Update a category.
    *
    * @param val   category object to be updated
-   * @throws CalFacadeException on fatal error
    */
-  void updateCategory(BwCategory val) throws CalFacadeException;
+  void updateCategory(BwCategory val);
 
   interface DeleteReffedEntityResult {
     boolean getDeleted();
@@ -174,17 +168,15 @@ public interface RWClient extends Client {
 
   /** Update the contact
    * @param val contact
-   * @throws CalFacadeException on fatal error
    */
-  void updateContact(BwContact val) throws CalFacadeException;
+  void updateContact(BwContact val);
 
   /** Delete a contact
    *
    * @param val      contact to be deleted
    * @return result indicating what happened - null for not there
-   * @throws CalFacadeException on fatal error
    */
-  DeleteReffedEntityResult deleteContact(BwContact val) throws CalFacadeException;
+  DeleteReffedEntityResult deleteContact(BwContact val);
 
   /** Ensure a contact exists. If it already does returns the object.
    * If not creates the entity.
@@ -204,9 +196,8 @@ public interface RWClient extends Client {
    *
    * @param uid of location
    * @return Location object
-   * @throws CalFacadeException on fatal error
    */
-  BwLocation getPersistentLocation(String uid) throws CalFacadeException;
+  BwLocation getPersistentLocation(String uid);
 
   /** Add the location
    * @param val a location
@@ -216,17 +207,15 @@ public interface RWClient extends Client {
 
   /** Update the location
    * @param val a location
-   * @throws CalFacadeException on error
    */
-  void updateLocation(BwLocation val) throws CalFacadeException;
+  void updateLocation(BwLocation val);
 
   /** Delete a location
    *
    * @param val      location to be deleted
    * @return result indicating what happened - null for not there
-   * @throws CalFacadeException on error
    */
-  DeleteReffedEntityResult deleteLocation(BwLocation val) throws CalFacadeException;
+  DeleteReffedEntityResult deleteLocation(BwLocation val);
 
   /** Ensure a location exists. If it already does returns the object.
    * If not creates the entity.
@@ -328,9 +317,8 @@ public interface RWClient extends Client {
    * <p>Otherwise we add an annotation maarking the event as deleted.
    *
    * @param event to delete
-   * @throws CalFacadeException on fatal error
    */
-  void markDeleted(BwEvent event) throws CalFacadeException;
+  void markDeleted(BwEvent event);
 
   /* ------------------------------------------------------------
    *                     Notifications
@@ -341,9 +329,8 @@ public interface RWClient extends Client {
    *
    * @param name - of the notification
    * @return null for no notification or the notification with that name
-   * @throws CalFacadeException on fatal error
    */
-  NotificationType findNotification(String name) throws CalFacadeException;
+  NotificationType findNotification(String name);
 
   /** Remove the given notification from the notification collection for the
    * current calendar user.
@@ -356,22 +343,20 @@ public interface RWClient extends Client {
    * current calendar user.
    *
    * @param val notification to remove
-   * @throws CalFacadeException on fatal error
    */
-  void removeNotification(NotificationType val) throws CalFacadeException;
+  void removeNotification(NotificationType val);
 
   /** Remove all notifications for given principal
    *
    * @param principalHref principal to clean
-   * @throws CalFacadeException on fatal error
    */
-  void removeAllNotifications(String principalHref) throws CalFacadeException;
+  void removeAllNotifications(String principalHref);
 
   void subscribe(String principalHref,
-                 List<String> emails) throws CalFacadeException;
+                 List<String> emails);
 
   void unsubscribe(String principalHref,
-                   List<String> emails) throws CalFacadeException;
+                   List<String> emails);
 
   /* ------------------------------------------------------------
    *                     Resources
@@ -382,52 +367,47 @@ public interface RWClient extends Client {
    * @param  val       resource with attached content
    * @throws CalFacadeException for errors including duplicate name
    */
-  void saveResource(BwResource val) throws CalFacadeException;
+  void saveResource(BwResource val);
 
   /** Get a resource given the path - does not getResource content
    *
    * @param  path     String path to resource
    * @return BwResource null for unknown resource
-   * @throws CalFacadeException on error
    */
-  BwResource getResource(String path) throws CalFacadeException;
+  BwResource getResource(String path);
 
 
   /** Retrieve resource content given the resource. It will be set in the resource
    * object
    *
    * @param  val BwResource
-   * @throws CalFacadeException on error
    * @return false if content missing
    */
-  boolean getResourceContent(BwResource val) throws CalFacadeException;
+  boolean getResourceContent(BwResource val);
 
   /** Get resources to which this user has access - content is not fetched.
    *
    * @param  path           String path to containing collection
    * @return List     of BwResource
-   * @throws CalFacadeException on error
    */
-  List<BwResource> getAllResources(String path) throws CalFacadeException;
+  List<BwResource> getAllResources(String path);
 
   /** Get resources to which this user has access - content is not fetched.
    *
    * @param  path           String path to containing collection
    * @param count this many
    * @return List     of BwResource
-   * @throws CalFacadeException on fatal error
    */
   List<BwResource> getResources(String path,
-                                int count) throws CalFacadeException;
+                                int count);
 
   /** Update a resource.
    *
    * @param  val          resource
    * @param updateContent if true we also update the content
-   * @throws CalFacadeException for errors including duplicate name
    */
   void updateResource(BwResource val,
-                      boolean updateContent) throws CalFacadeException;
+                      boolean updateContent);
 
   /**
    *
@@ -471,16 +451,15 @@ public interface RWClient extends Client {
    * @param uid - uid of requesting component or null for no request
    * @param exceptUid if non-null omit this uid from the freebusy calculation
    * @return BwEvent
-   * @throws CalFacadeException on fatal error
    */
   BwEvent getFreeBusy(Collection<BwCalendar> fbset,
-                      BwPrincipal who,
+                      BwPrincipal<?> who,
                       BwDateTime start,
                       BwDateTime end,
                       BwOrganizer org,
                       String uid,
                       String exceptUid)
-          throws CalFacadeException;
+         ;
 
   /** Get aggregated free busy for a ScheduleResult.
    *
@@ -489,12 +468,11 @@ public interface RWClient extends Client {
    * @param end of period
    * @param granularity of result - eg 1 hour
    * @return FbResponses
-   * @throws CalFacadeException on fatal error
    */
   SchedulingI.FbResponses aggregateFreeBusy(ScheduleResult sr,
                                             BwDateTime start,
                                             BwDateTime end,
-                                            BwDuration granularity) throws CalFacadeException;
+                                            BwDuration granularity);
 
   /** Schedule a meeting or publish an event. The event object must have the organizer
    * and attendees and possibly recipients set according to itip + caldav.
@@ -510,31 +488,28 @@ public interface RWClient extends Client {
    * @param fromAttUri - identifies the attendee
    * @param iSchedule  true if it's an iSchedule request.
    * @return ScheduleResult
-   * @throws CalFacadeException on fatal error
    */
   ScheduleResult schedule(EventInfo ei,
                           String recipient,
                           String fromAttUri,
-                          boolean iSchedule) throws CalFacadeException;
+                          boolean iSchedule);
 
   /** Return the users copy of the active meeting with the
    * same uid as that given.
    *
    * @param ev the event to search for
    * @return possibly null meeting
-   * @throws CalFacadeException on fatal error
    */
-  EventInfo getStoredMeeting(BwEvent ev) throws CalFacadeException;
+  EventInfo getStoredMeeting(BwEvent ev);
 
   /** Attendee wants a refresh
    *
    * @param ei event which is probably in a calendar.
    * @param comment - optional comment
    * @return   ScheduleResult
-   * @throws CalFacadeException on fatal error
    */
   ScheduleResult requestRefresh(EventInfo ei,
-                                String comment) throws CalFacadeException;
+                                String comment);
 
   /* ------------------------------------------------------------
    *                     Sharing
@@ -544,44 +519,39 @@ public interface RWClient extends Client {
    * @param col MUST be a sharable collection
    * @param share the request
    * @return list of ok and !ok sharees
-   * @throws CalFacadeException on fatal error
    */
   ShareResultType share(String principalHref,
                         BwCalendar col,
-                        ShareType share) throws CalFacadeException;
+                        ShareType share);
 
 
   /** Publish the collection - that is make it available for subscriptions.
    *
    * @param col collection object
-   * @throws CalFacadeException on fatal error
    */
-  void publish(BwCalendar col) throws CalFacadeException;
+  void publish(BwCalendar col);
 
   /** Unpublish the collection - that is make it unavailable for subscriptions
    * and remove any existing subscriptions.
    *
    * @param col collection object
-   * @throws CalFacadeException on fatal error
    */
-  void unpublish(BwCalendar col) throws CalFacadeException;
+  void unpublish(BwCalendar col);
 
   /**
    * @param reply the request
    * @return a ReplyResult object.
-   * @throws CalFacadeException on fatal error
    */
-  SharingReplyResult sharingReply(InviteReplyType reply) throws CalFacadeException;
+  SharingReplyResult sharingReply(InviteReplyType reply);
 
   /** Subscribe to the collection - must be a published collection.
    *
    * @param colPath  collection path
    * @param subscribedName name for new alias
    * @return path of new alias and flag
-   * @throws CalFacadeException on fatal error
    */
   SubscribeResult subscribe(String colPath,
-                            String subscribedName) throws CalFacadeException;
+                            String subscribedName);
 
   /** Subscribe to an external url.
    *
@@ -591,13 +561,12 @@ public interface RWClient extends Client {
    * @param remoteId - may be null
    * @param remotePw  - may be null
    * @return path of new alias and flag
-   * @throws CalFacadeException on fatal error
    */
   SubscribeResult subscribeExternal(String extUrl,
                                     String subscribedName,
                                     int refresh,
                                     String remoteId,
-                                    String remotePw) throws CalFacadeException;
+                                    String remotePw);
 
   /* ------------------------------------------------------------
    *                     Synch
@@ -606,9 +575,8 @@ public interface RWClient extends Client {
   /** Returns the synch service information.
    *
    * @return full synch info
-   * @throws CalFacadeException on fatal error
    */
-  BwSynchInfo getSynchInfo() throws CalFacadeException;
+  BwSynchInfo getSynchInfo();
 
   /* ------------------------------------------------------------
    *                     Views
@@ -619,38 +587,34 @@ public interface RWClient extends Client {
    * @param  val           BwView to add
    * @param  makeDefault   boolean true for make this the default.
    * @return boolean false view not added, true - added.
-   * @throws CalFacadeException on fatal error
    */
   boolean addView(BwView val,
-                  boolean makeDefault) throws CalFacadeException;
+                  boolean makeDefault);
 
   /** Add a collection path to the named view.
    *
    * @param  name    String view name - null means default
    * @param  path     collection path to add
    * @return boolean false view not found, true - collection path added.
-   * @throws CalFacadeException on fatal error
    */
   boolean addViewCollection(String name,
-                            String path) throws CalFacadeException;
+                            String path);
 
   /** Remove a collection path from the named view.
    *
    * @param  name    String view name - null means default
    * @param  path    collection path to remove
    * @return boolean false view not found, true - collection path removed.
-   * @throws CalFacadeException on fatal error
    */
   boolean removeViewCollection(String name,
-                               String path) throws CalFacadeException;
+                               String path);
 
   /** Remove the view for the owner of the object.
    *
    * @param  val     BwView
    * @return boolean false - view not found.
-   * @throws CalFacadeException on fatal error
    */
-  boolean removeView(BwView val) throws CalFacadeException;
+  boolean removeView(BwView val);
 
   /* ------------------------------------------------------------
    *                     Misc
@@ -660,16 +624,14 @@ public interface RWClient extends Client {
    *
    * @param cal where from
    * @param newCal where to
-   * @throws CalFacadeException on fatal error
    */
   void moveContents(BwCalendar cal,
-                    BwCalendar newCal) throws CalFacadeException;
+                    BwCalendar newCal);
 
   /**
    * @param val mail message
-   * @throws CalFacadeException on fatal error
    */
-  void postMessage(Message val) throws CalFacadeException;
+  void postMessage(Message val);
 
   /* ------------------------------------------------------------
    *                   Access
@@ -680,11 +642,10 @@ public interface RWClient extends Client {
    * @param ent      BwShareableDbentity
    * @param aces     Collection of ace
    * @param replaceAll true to replace the entire access list.
-   * @throws CalFacadeException on fatal error
    */
   void changeAccess(ShareableEntity ent,
                     Collection<Ace> aces,
-                    boolean replaceAll) throws CalFacadeException;
+                    boolean replaceAll);
 
   /* ------------------------------------------------------------
    *                     Filters
@@ -694,21 +655,19 @@ public interface RWClient extends Client {
   /** Validate a filter definition.
    *
    * @param  val       String xml filter definition
-   * @throws CalFacadeException on fatal error
    */
-  void validateFilter(String val) throws CalFacadeException;
+  void validateFilter(String val);
 
   /** Validate and persist a new filter definition
    *
    * @param  val       filter definition
    * @throws CalFacadeException for errrors including duplicate name
    */
-  void saveFilter(BwFilterDef val) throws CalFacadeException;
+  void saveFilter(BwFilterDef val);
 
   /** Delete a filter given the name
    *
    * @param  name     String name of filter
-   * @throws CalFacadeException on fatal error
    */
-  void deleteFilter(String name) throws CalFacadeException;
+  void deleteFilter(String name);
 }

@@ -216,11 +216,7 @@ public class AdminClientImpl extends RWClientImpl
 
   @Override
   public BwPrincipal<?> getUserAlways(final String val) {
-    try {
-      return svci.getUsersHandler().getAlways(val);
-    } catch (final CalFacadeException cfe) {
-      throw new RuntimeException(cfe);
-    }
+    return svci.getUsersHandler().getAlways(val);
   }
 
   @Override
@@ -397,13 +393,9 @@ public class AdminClientImpl extends RWClientImpl
 
   @Override
   public void removeNotification(final String name) {
-    try {
-      svci.getNotificationsHandler().
-              remove(getCalSuite().getGroup().getOwnerHref(),
-                     name);
-    } catch (final CalFacadeException e) {
-      throw new RuntimeException(e);
-    }
+    svci.getNotificationsHandler().
+        remove(getCalSuite().getGroup().getOwnerHref(),
+               name);
     updated();
   }
 

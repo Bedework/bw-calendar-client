@@ -222,7 +222,7 @@ public class ROClientImpl implements Logged, Client {
     userIndexers.clear();
   }
 
-  protected BwPrincipal<?> getCurrentCalSuiteOwner() throws CalFacadeException {
+  protected BwPrincipal<?> getCurrentCalSuiteOwner() {
     if (calSuiteOwner != null) {
       return calSuiteOwner;
     }
@@ -264,7 +264,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public void requestIn(final int conversationType)
-          throws CalFacadeException {
+          {
     postNotification(new HttpEvent(SysEventBase.SysCode.WEB_IN));
     svci.setState("Request in");
 
@@ -305,7 +305,7 @@ public class ROClientImpl implements Logged, Client {
   public void requestOut(final int conversationType,
                          final int actionType,
                          final long reqTimeMillis)
-          throws CalFacadeException {
+          {
     requestEnd = System.currentTimeMillis();
     postNotification(
             new HttpOutEvent(SysEventBase.SysCode.WEB_OUT,
@@ -339,7 +339,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void close() throws CalFacadeException {
+  public void close() {
     svci.close();
   }
 
@@ -349,7 +349,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void flushAll() throws CalFacadeException {
+  public void flushAll() {
     svci.flushAll();
   }
 
@@ -359,12 +359,12 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public void endTransaction() throws CalFacadeException {
+  public void endTransaction() {
     svci.endTransaction();
   }
 
   @Override
-  public String getCurrentChangeToken() throws CalFacadeException {
+  public String getCurrentChangeToken() {
     var evChg = getIndexer(isDefaultIndexPublic(),
                       docTypeEvent).currentChangeToken();
     if (evChg == null) {
@@ -397,7 +397,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public void writeJson(final HttpServletResponse resp,
-                        final Object val) throws CalFacadeException {
+                        final Object val) {
     try {
       mapper.writeValue(resp.getOutputStream(), val);
     } catch (final Throwable t) {
@@ -572,7 +572,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public BwPrincipal<?> getPrincipal(final String href)
-          throws CalFacadeException {
+          {
     return svci.getDirectories().getPrincipal(href);
   }
 
@@ -587,7 +587,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwGroup<?>> getAdminGroups()
-          throws CalFacadeException {
+          {
     return refreshAdminGroupInfo();
   }
 
@@ -618,13 +618,13 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public void updatePreferences(final BwPreferences val)
-          throws CalFacadeException {
+          {
     throw new CalFacadeException("org.bedework.read.only.client");
   }
 
   @Override
   public String getPreferredCollectionPath(final String compName)
-          throws CalFacadeException {
+          {
     return svci.getCalendarsHandler().getPreferred(compName);
   }
 
@@ -731,7 +731,7 @@ public class ROClientImpl implements Logged, Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwCalendar getHome() throws CalFacadeException {
+  public BwCalendar getHome() {
     return svci.getCalendarsHandler().getHome();
   }
 
@@ -743,7 +743,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public boolean collectionExists(final String path)
-          throws CalFacadeException {
+          {
     checkUpdate();
     return getCollection(path) != null;
   }
@@ -751,7 +751,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public BwCalendar getSpecial(final int calType,
                                final boolean create)
-          throws CalFacadeException {
+          {
     checkUpdate();
 
     return svci.getCalendarsHandler().getSpecial(calType, create);
@@ -761,7 +761,7 @@ public class ROClientImpl implements Logged, Client {
   public BwCalendar resolveAlias(final BwCalendar val,
                                  final boolean resolveSubAlias,
                                  final boolean freeBusy)
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getCalendarsHandler().resolveAliasIdx(val,
                                                       resolveSubAlias,
@@ -770,7 +770,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwCalendar> getChildren(final BwCalendar col)
-          throws CalFacadeException {
+          {
     checkUpdate();
 
     if (!col.getPublick()) {
@@ -829,13 +829,13 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public SynchStatusResponse getSynchStatus(final String path) throws CalFacadeException {
+  public SynchStatusResponse getSynchStatus(final String path) {
     return svci.getCalendarsHandler().getSynchStatus(path);
   }
 
   @Override
   public Collection<BwCalendar> decomposeVirtualPath(final String vpath)
-          throws CalFacadeException {
+          {
     return svci.getCalendarsHandler().decomposeVirtualPath(vpath);
   }
 
@@ -845,7 +845,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwCalendar getPublicCalendars() throws CalFacadeException {
+  public BwCalendar getPublicCalendars() {
     checkUpdate();
 
     final String path = svci.getCalendarsHandler().getPublicCalendarsRootPath();
@@ -880,7 +880,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public BwCalendar getHome(final BwPrincipal<?> principal,
                             final boolean freeBusy)
-          throws CalFacadeException {
+          {
     return svci.getCalendarsHandler().getHome(principal, freeBusy);
   }
 
@@ -913,35 +913,35 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public BwCategory getCategory(final String href)
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getCategoriesHandler().get(href);
   }
 
   @Override
   public Collection<BwCategory> getCategories()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getCategoriesHandler().get();
   }
 
   @Override
   public Collection<BwCategory> getPublicCategories()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getCategoriesHandler().getPublic();
   }
 
   @Override
   public Collection<BwCategory> getEditableCategories()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getCategoriesHandler().getEditable();
   }
 
   @Override
   public Set<String> getDefaultPublicCategoryUids()
-          throws CalFacadeException {
+          {
     final Set<String> catUids = new TreeSet<>();
 
     for (final BwCalSuite suite: svci.getCalSuitesHandler().getAll()) {
@@ -969,7 +969,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwContact> getContacts()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getContactsHandler().get();
   }
@@ -983,14 +983,14 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwContact> getPublicContacts()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getContactsHandler().getPublic();
   }
 
   @Override
   public Collection<BwContact> getEditableContacts()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getContactsHandler().getEditable();
   }
@@ -1016,7 +1016,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwLocation> getLocations()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getLocationsHandler().get();
   }
@@ -1030,14 +1030,14 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwLocation> getPublicLocations()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getLocationsHandler().getPublic();
   }
 
   @Override
   public Collection<BwLocation> getEditableLocations()
-          throws CalFacadeException {
+          {
     checkUpdate();
     return svci.getLocationsHandler().getEditable();
   }
@@ -1108,7 +1108,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public EventInfo getEvent(final String href)
-          throws CalFacadeException {
+          {
     final EventKey key = new EventKey(href, false);
     return svci.getEventsHandler().get(key.getColPath(),
                                        key.getName(),
@@ -1120,7 +1120,7 @@ public class ROClientImpl implements Logged, Client {
                                          final BwDateTime startDate,
                                          final BwDateTime endDate,
                                          final boolean expand)
-          throws CalFacadeException {
+          {
     if (filter == null) {
       return null;
     }
@@ -1176,13 +1176,13 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwView getView(final String val) throws CalFacadeException {
+  public BwView getView(final String val) {
     checkUpdate();
     return svci.getViewsHandler().find(val);
   }
 
   @Override
-  public Collection<BwView> getAllViews() throws CalFacadeException {
+  public Collection<BwView> getAllViews() {
     if (getPublicAuth() && (getCurrentCalSuiteOwner() != null)) {
       return svci.getViewsHandler().getAll(getCurrentCalSuiteOwner());
     }
@@ -1213,7 +1213,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public SearchResult search(final SearchParams params) throws CalFacadeException {
+  public SearchResult search(final SearchParams params) {
     checkUpdate();
     cstate.setSearchParams(params);
 
@@ -1260,7 +1260,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public List<SearchResultEntry> getSearchResult(final Position pos) throws CalFacadeException {
+  public List<SearchResultEntry> getSearchResult(final Position pos) {
     checkUpdate();
     if (lastSearch == null) {
       return null;
@@ -1282,7 +1282,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public List<SearchResultEntry> getSearchResult(final int start,
-                                                 final int num) throws CalFacadeException {
+                                                 final int num) {
     if (lastSearch == null) {
       return new ArrayList<>(0);
     }
@@ -1298,18 +1298,14 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public BwCalSuiteWrapper getCalSuite() {
-    try {
-      return svci.getCalSuitesHandler().get();
-    } catch (final CalFacadeException e) {
-      throw new RuntimeException(e);
-    }
+    return svci.getCalSuitesHandler().get();
   }
 
   private static Collection<BwCalSuite> suites;
 
   @Override
   public Collection<BwCalSuite> getContextCalSuites()
-          throws CalFacadeException {
+          {
     refreshAdminGroupInfo();
 
     return suites;
@@ -1317,7 +1313,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public BwCalSuiteWrapper getCalSuite(final String name)
-          throws CalFacadeException {
+          {
     return svci.getCalSuitesHandler().get(name);
   }
 
@@ -1342,7 +1338,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public Collection<BwFilterDef> getAllFilters()
-          throws CalFacadeException {
+          {
     return svci.getFiltersHandler().getAll();
   }
 
@@ -1437,10 +1433,9 @@ public class ROClientImpl implements Logged, Client {
    *
    * @param val            a principal
    * @return Collection    of BwGroup
-   * @throws CalFacadeException on fatal error
    */
   private Collection<BwGroup<?>> getAllAdminGroups(final BwPrincipal<?> val)
-          throws CalFacadeException {
+          {
     return svci.getAdminDirectories().getAllGroups(val);
   }
 
@@ -1478,7 +1473,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   protected String getCSResourcesPath(final BwCalSuite suite,
-                                      final String rc) throws CalFacadeException {
+                                      final String rc) {
     final ResourceClass csRc = ResourceClass.valueOf(rc);
 
     return svci.getCalSuitesHandler().getResourcesPath(suite, csRc);
@@ -1525,7 +1520,7 @@ public class ROClientImpl implements Logged, Client {
   }
 
   /*
-  protected BasicSystemProperties getBasicSyspars() throws CalFacadeException {
+  protected BasicSystemProperties getBasicSyspars() {
     return svci.getBasicSystemProperties();
   }
   */
@@ -1617,7 +1612,7 @@ public class ROClientImpl implements Logged, Client {
   private final static FlushMap<String, FilterBase> defaultFilters =
           new FlushMap<>();
 
-  protected FilterBase getDefaultFilterContext() throws CalFacadeException {
+  protected FilterBase getDefaultFilterContext() {
     final var pr = getCurrentPrincipal();
     final String phref;
     if (pr == null) {
@@ -1661,7 +1656,7 @@ public class ROClientImpl implements Logged, Client {
    *                   private methods
    * ------------------------------------------------------------ */
 
-  private FilterBase makeDefaultView() throws CalFacadeException {
+  private FilterBase makeDefaultView() {
     final Collection<BwCalendar> cols = new ArrayList<>();
 
     findCollections(getHome(), cols);
@@ -1679,7 +1674,7 @@ public class ROClientImpl implements Logged, Client {
 
   private void findCollections(final BwCalendar root,
                                final Collection<BwCalendar> cols)
-          throws CalFacadeException {
+          {
     if (root.getCalendarCollection()) {
       cols.add(root);
       return;

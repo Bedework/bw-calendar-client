@@ -30,7 +30,6 @@ import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.json.JsonUtil;
 import org.bedework.webcommon.BwRequest;
@@ -123,10 +122,7 @@ public class RequestFreeBusy extends RWActionBase {
       final ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
                                             null, null, false);
 
-      request.setContentName("freebusy.js");
-      resp.setHeader("Content-Disposition",
-                     "Attachment; Filename=\"freebusy.js\"");
-      resp.setContentType("text/json; charset=UTF-8");
+      request.prepareWrite("freebusy.js", "text/json");
 
       outputJson(resp, sr);
     } catch (final Throwable t) {

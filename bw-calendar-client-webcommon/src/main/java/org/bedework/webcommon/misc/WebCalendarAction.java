@@ -30,7 +30,6 @@ import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
@@ -160,11 +159,8 @@ public class WebCalendarAction extends BwAbstractAction {
       if (!name.endsWith(".ics")) {
         name += ".ics";
       }
-      request.setContentName(name);
-      request.getResponse().setHeader("Content-Disposition",
-                                      "Attachment; Filename=\"" +
-                                      name + "\"");
-      request.getResponse().setContentType("text/calendar; charset=UTF-8");
+
+      request.prepareWrite(name, "text/calendar");
 
       IcalendarUtil.writeCalendar(c, request.getWriter());
     } catch (final CalFacadeAccessException cfae) {

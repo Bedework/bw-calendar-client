@@ -28,7 +28,6 @@ import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.Icalendar;
 import org.bedework.convert.ical.VFreeUtil;
@@ -153,17 +152,12 @@ public class FreeBusyPublishAction extends RWActionBase {
                                         null);
 
       final VFreeBusy vfreeBusy = VFreeUtil.toVFreeBusy(fb);
-      net.fortuna.ical4j.model.Calendar ical = null;
-      if (vfreeBusy != null) {
-        ical = IcalendarUtil.newIcal(Icalendar.methodTypePublish,
-                                     BwVersion.prodId);
-        ical.getComponents().add(vfreeBusy);
-      }
+      final net.fortuna.ical4j.model.Calendar ical =
+              IcalendarUtil.newIcal(Icalendar.methodTypePublish,
+                                    BwVersion.prodId);
+      ical.getComponents().add(vfreeBusy);
 
-      request.setContentName("freebusy.ics");
-      request.getResponse().setHeader("Content-Disposition",
-                                      "Attachment; Filename=\"freebusy.ics\"");
-      request.getResponse().setContentType("text/calendar; charset=UTF-8");
+      request.prepareWrite("freebusy.ics", "text/calendar");
 
       IcalendarUtil.writeCalendar(ical, request.getWriter());
     } catch (final CalFacadeAccessException cfae) {

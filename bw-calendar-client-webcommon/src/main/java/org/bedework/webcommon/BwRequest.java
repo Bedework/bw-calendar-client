@@ -354,6 +354,15 @@ public class BwRequest extends Request {
     }
   }
 
+  public void prepareWrite(final String contentName,
+                           final String contentType) {
+    getResponse().setHeader("Content-Disposition",
+                            "Attachment; Filename=\"" +
+                                    contentName +
+                                    "\"");
+    getResponse().setContentType(contentType + "; charset=UTF-8");
+  }
+
   public Writer getWriter() {
     try {
       return getResponse().getWriter();

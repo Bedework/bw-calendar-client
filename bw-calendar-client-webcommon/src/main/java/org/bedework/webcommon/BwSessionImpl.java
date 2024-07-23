@@ -99,6 +99,8 @@ public class BwSessionImpl implements Logged, BwSession {
   private static final String[] publicCollectionsChangeToken = {null, null};
   private static final BwCalendar[] clonedPublicCollections = {null, null};
   private static Collection<BwView> publicViews;
+  private static long lastViewsRefresh;
+  private static long viewsRefreshInterval = 1000 * 60 * 5;
 
   private AuthProperties authpars;
 
@@ -568,9 +570,9 @@ public class BwSessionImpl implements Logged, BwSession {
     return cloned;
   }
 
-  /* ====================================================================
+  /* ==============================================================
    *                   Categories
-   * ==================================================================== */
+   * ============================================================== */
 
   @Override
   public Collection<BwCategory> embedCategories(
@@ -677,9 +679,9 @@ public class BwSessionImpl implements Logged, BwSession {
     return getCategoryCollator().getCollatedCollection(vals);
   }
 
-  /* ====================================================================
+  /* ==============================================================
    *                   Contacts
-   * ==================================================================== */
+   * ============================================================== */
 
   @Override
   public Collection<BwContact> getContacts(final BwRequest request,
@@ -760,9 +762,9 @@ public class BwSessionImpl implements Logged, BwSession {
                            getContactCollator().getCollatedCollection(vals));
   }
 
-  /* ====================================================================
+  /* ==============================================================
    *                   Locations
-   * ==================================================================== */
+   * ============================================================== */
 
   @Override
   public void embedLocations(final BwRequest request,
@@ -792,7 +794,9 @@ public class BwSessionImpl implements Logged, BwSession {
   @Override
   public void embedViews(final BwRequest request) {
     final var cl = request.getClient();
-    if (cl.isGuest() && publicViews != null) {
+    if (cl.isGuest() && (publicViews != null) &&
+            (System.currentTimeMillis() <
+                     (lastViewsRefresh + viewsRefreshInterval))) {
       request.setSessionAttr(BwRequest.bwViewsListName,
                              publicViews);
       return;
@@ -820,6 +824,7 @@ public class BwSessionImpl implements Logged, BwSession {
         }
       }
 
+      lastViewsRefresh = System.currentTimeMillis();
       publicViews = views;
     }
 

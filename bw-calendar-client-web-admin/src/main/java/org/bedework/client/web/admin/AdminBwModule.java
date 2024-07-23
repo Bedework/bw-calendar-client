@@ -188,8 +188,6 @@ public class AdminBwModule extends RwBwModule {
         mstate.setRefresh(true);
         sess.reset(request);
       }
-
-      request.getBwGlobals().reset(client);
     } catch (final CalFacadeException cfe) {
       throw cfe;
     } catch (final Throwable t) {

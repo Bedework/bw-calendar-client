@@ -990,6 +990,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
             checkClient(request, s, adminUserId, false, conf);
 
     final Client cl = request.getClient();
+    request.getBwGlobals().reset(cl);
     s.finishInit(cl.getAuthProperties().cloneIt());
 
     return s;

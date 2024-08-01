@@ -21,7 +21,7 @@ package org.bedework.webcommon.taglib.test;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.webcommon.tagcommon.BwTagUtils;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,15 +29,15 @@ import java.util.List;
 
 import static org.bedework.calfacade.BwXproperty.bedeworkCalsuite;
 import static org.bedework.calfacade.BwXproperty.makeBwAlias;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /** Test the access classes
  *
  * @author Mike Douglass       douglm@bedework.edu
    @version 1.0
  */
-public class TagsTest extends TestCase {
-  boolean debug = true;
-
+public class TagsTest {
+  @Test
   public void testOutXprops() {
     final MockJspWriter wtr = new MockJspWriter();
 

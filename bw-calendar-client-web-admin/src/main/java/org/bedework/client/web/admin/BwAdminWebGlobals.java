@@ -160,5 +160,6 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
     adminGroupName = adcl.getAdminGroupName();
 
     userMaintOK = adcl.getUserMaintOK();
+    adminGroupMaintOK = adcl.getAdminGroupMaintOK();
   }
 }

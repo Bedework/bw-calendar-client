@@ -23,43 +23,20 @@ import org.bedework.appcommon.CalendarInfo;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.ConfigCommon;
-import org.bedework.appcommon.EventKey;
-import org.bedework.appcommon.MyCalendarVO;
-import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.SearchParams;
-import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
-import org.bedework.calfacade.base.BwTimeRange;
-import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.exc.CalFacadeClosed;
 import org.bedework.calfacade.exc.CalFacadeException;
-import org.bedework.calfacade.exc.ValidationError;
-import org.bedework.calfacade.filter.BwCreatorFilter;
-import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
-import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.svc.BwPreferences;
-import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.util.calendar.XcalUtil;
 import org.bedework.util.misc.Util;
-import org.bedework.util.misc.response.Response;
 import org.bedework.util.struts.UtilAbstractAction;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.webaction.ErrorEmitSvlt;
 import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -68,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static org.bedework.appcommon.BedeworkDefs.appTypeWebsubmit;
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
 /** This abstract action performs common setup actions before the real
  * action method is called.
@@ -95,16 +73,10 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   @Override
   public String performAction(final Request request)  {
-    final BwRequest bwreq = (BwRequest)request;
-    final BwActionFormBase form = bwreq.getBwForm();
-    String adminUserId = null;
-
-    final BwCallback cb = BwCallback.getCb(request);
-
     final int status;
 
     try {
-      status = cb.in(request);
+      status = BwCallback.getCb(request).in(request);
     } catch (final Throwable t) {
       error(t);
       invalidateSession(request);
@@ -120,12 +92,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[forwardError];
     }
 
+    final BwRequest bwreq = (BwRequest)request;
+    final BwActionFormBase form = bwreq.getBwForm();
     final ConfigCommon conf = bwreq.getConfig();
+    final var globals = bwreq.getBwGlobals();
+    String adminUserId = null;
 
     if (conf.getGuestMode()) {
       request.clearCurrentUser();
     } else {
-      adminUserId = bwreq.getBwGlobals().getCurrentAdminUser();
+      adminUserId = globals.getAdminUserId();
       if (adminUserId == null) {
         adminUserId = request.getCurrentUser();
       }
@@ -137,6 +113,9 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     final BwSession bsess = getState(bwreq,
                                      adminUserId, conf);
+
+    final Client cl = bwreq.getClient();
+    globals.changeAdminUser(cl.getCurrentPrincipal());
 
     if (debug()) {
       debug("Obtained state");
@@ -150,12 +129,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     checkMvarReq(bwreq);
 
-    final Client cl = bwreq.getClient();
     final BwModuleState mstate = bwreq.getModule().getState();
-    final var globals = bwreq.getBwGlobals();
-
-    globals.changeAdminUserId(
-            cl.getCurrentPrincipal());
 
     // We need to have set the current locale before we do this.
     mstate.setCalInfo(CalendarInfo.getInstance());
@@ -212,13 +186,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         }
       }
     }
-
-    /*if (debug()) {
-      BwFilter filter = bwreq.getFilter(debug);
-      if (filter != null) {
-        debug(filter.toString());
-      }
-    }*/
 
     if (debug()) {
       debug("About to prepare render");
@@ -285,21 +252,13 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       return forwards[temp];
     }
 
+    // May have changed (again)
+    globals.changeAdminUser(cl.getCurrentPrincipal());
     mdl.checkMessaging(bwreq);
 
     String forward;
 
     try {
-      /*
-      if (bwreq.present("viewType")) {
-        mstate.setViewType(bwreq.getReqPar("viewType"));
-
-        gotoDateView(bwreq,
-                     mstate.getDate(),
-                     mstate.getCurViewPeriod());
-      }
-      */
-
       forward = forwards[doAction(bwreq)];
 
 //      bsess.prepareRender(bwreq);
@@ -345,601 +304,20 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return new BwRequest(request, response, params, actionPath, err, msg, form);
   }
 
-  protected int setSearchParams(final BwRequest request,
-                                final SearchParams params,
-                                final boolean gridMode) {
-    final BwModuleState mstate = request.getModule().getState();
-    final Client cl = request.getClient();
-
-    params.setPublicIndexRequested(request.present("public"));
-
-    String icalStart = XcalUtil.getIcalFormatDateTime(request.getReqPar("start"));
-    String endStr = request.getReqPar("end");
-
-    filterAndQuery(request, params);
-
-    if (gridMode) {
-      TimeView tv = mstate.getCurTimeView();
-      if (tv == null) {
-        // Pretty much broken here
-        params.setFromDate(todaysDateTime());
-        return forwardSuccess;
-      }
-
-      // Ignore any end date
-      if (icalStart == null) {
-        params.setFromDate(tv.getViewStart());
-        params.setToDate(tv.getViewEnd());
-        return forwardSuccess;
-      }
-
-      // Set current timeview to given date - rounded approopriately
-
-      final BwDateTime bdt = BwDateTimeUtil.getDateTime(
-              icalStart,
-              true,
-              false, null);
-      gotoDateView(request,
-                   bdt.getDtval(),
-                   mstate.getViewType());
-      tv = mstate.getCurTimeView();
-
-      params.setFromDate(tv.getViewStart());
-      params.setToDate(tv.getViewEnd());
-
-      return forwardSuccess;
-    }
-
-    if (icalStart == null) {
-      final String lim = mstate.getSearchLimits();
-      if ((lim != null) && (!"none".equals(lim))) {  // there are limits
-        if ("beforeToday".equals(lim)) {
-          endStr = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
-        } else if ("fromToday".equals(lim)) {
-          icalStart = DateTimeUtil.isoDate(new java.util.Date());
-        }
-      }
-    }
-
-    final AuthProperties authp = cl.getAuthProperties();
-
-    if (params.getFromDate() == null) {
-      int days = request.getIntReqPar("days", -32767);
-//    if (days < 0) {
-      //    days = authp.getDefaultWebCalPeriod();
-      //}
-
-      if ((icalStart == null) && (endStr == null)) {
-        if (!cl.getWebSubmit() && !cl.getPublicAdmin()) {
-          if (!request.getBooleanReqPar("listAllEvents", false)) {
-            params.setFromDate(todaysDateTime());
-
-            final int max = authp.getMaxWebCalPeriod();
-            if (days < 0) {
-              days = max;
-            } else if ((days > max) && !cl.isSuperUser()) {
-              days = max;
-            }
-
-            params.setToDate(
-                    params.getFromDate().addDur("P" + days + "D"));
-          }
-        }
-      } else if ((endStr != null) || (days > 0)) {
-        int max = 0;
-
-        if (!cl.isSuperUser()) {
-          max = authp.getMaxWebCalPeriod();
-        }
-
-        final BwTimeRange tr =
-                BwDateTimeUtil.getPeriod(icalStart,
-                                         endStr,
-                                         java.util.Calendar.DATE,
-                                         days,
-                                         java.util.Calendar.DATE,
-                                         max);
-
-        if (tr == null) {
-          request.error(ClientError.badRequest, "dates");
-          return forwardNoAction;
-        }
-
-        params.setFromDate(tr.getStart());
-        params.setToDate(tr.getEnd());
-      } else {
-        params.setFromDate(BwDateTimeUtil.getDateTime(
-                icalStart,
-                true,
-                false, null));
-        params.setToDate(params.getFromDate()
-                               .addDur("P" + authp.getMaxWebCalPeriod()
-                                               + "D"));
-      }
-    }
-
-    if (params.getFromDate() != null) {
-      gotoDateView(request,
-                   params.getFromDate().getDtval(),
-                   mstate.getViewType());
-    }
-
-    final int offset = request.getIntReqPar("offset", -1);
-
-    if (offset > 0) {
-      params.setCurOffset(offset);
-    }
-
-    int count = request.getIntReqPar("count", -1);
-
-    if (count < 0) {
-      count = cl.getPreferences().getPageSize();
-    }
-
-    if (count < 0) {
-      count = 20;
-    }
-
-    if (count > 250) {
-      count = 250;
-    }
-
-    params.setPageSize(count);
-
-    params.setFormat(request.getReqPar("format"));
-
-    if (request.getBooleanReqPar("master", false)) {
-      params.setRecurMode(RecurringRetrievalMode.entityOnly);
-    }
-
-    return forwardSuccess;
-  }
-
-  private boolean filterAndQuery(final BwRequest request,
-                                 final SearchParams params) {
-    final Client cl = request.getClient();
-
-    params.setQuery(request.getReqPar("query"));
-    params.setRelevance(request.getBooleanReqPar("relevance", false));
-
-    final GetFilterDefResponse gfdr = request.getFilterDef();
-
-    if (gfdr.getStatus() != Response.Status.ok) {
-      params.setStatus(gfdr.getStatus());
-      params.setMessage(gfdr.getMessage());
-      return false;
-    }
-
-    FilterBase filter = null;
-    if (gfdr.getFilterDef() != null) {
-      filter = gfdr.getFilterDef().getFilters();
-    }
-    
-    if (cl.getWebSubmit() || cl.getPublicAdmin()) {
-      boolean ignoreCreator = false; //cl.getWebSubmit();
-
-      if (request.getBooleanReqPar("sg", false) ||
-          request.getBooleanReqPar("ignoreCreator", false)) {
-        ignoreCreator = true;
-      }
-
-      if (!ignoreCreator) {
-        final BwCreatorFilter crefilter = new BwCreatorFilter(null);
-        crefilter.setEntity(cl.getCurrentPrincipalHref());
-
-        filter = FilterBase.addAndChild(filter, crefilter);
-      }
-    }
-
-    if (filter == null) {
-      filter = request.getModule().defaultSearchFilter(request);
-    }
-
-    params.setFilter(filter);
-
-    String sort = request.getReqPar("sort");
-    if (sort == null) {
-      // TODO - this shouldn't be a fixed string
-      sort = "dtstart.utc:asc";
-    }
-
-    final ParseResult pr = cl.parseSort(sort);
-    if (!pr.ok) {
-      request.error(pr.message);
-      params.setStatus(Response.Status.failed);
-      params.setMessage(pr.message);
-      return false;
-    }
-    
-    params.setSort(pr.sortTerms);
-    
-    return true;
-  }
-
-  protected BwDateTime todaysDateTime() {
-    return BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
-                                      true,
-                                      false,   // floating
-                                      null);   // tzid
-  }
-  protected EventInfo findEvent(final BwRequest request,
-                                final EventKey ekey) {
-    final Client cl = request.getClient();
-    EventInfo ev = null;
-
-    if (ekey.getColPath() == null) {
-      // bogus request
-      request.error(ValidationError.missingCalendarPath);
-      return null;
-    }
-
-    String key = null;
-
-    if (ekey.getGuid() != null) {
-      key = ekey.getGuid();
-      String rid = ekey.getRecurrenceId();
-      // DORECUR is this right?
-      final RecurringRetrievalMode rrm;
-      if (ekey.getForExport()) {
-        rrm = RecurringRetrievalMode.overrides;
-        rid = null;
-      } else {
-        rrm = RecurringRetrievalMode.expanded;
-      }
-
-      if (debug()) {
-        debug("Get event by guid with rid " + rid + " and rrm " + rrm);
-      }
-
-      final Collection<EventInfo> evs =
-              cl.getEventByUid(ekey.getColPath(),
-                               ekey.getGuid(),
-                               rid, rrm).getEntities();
-      if (debug()) {
-        debug("Get event by guid found " + evs.size());
-      }
-
-      if (evs.size() == 1) {
-        ev = evs.iterator().next();
-      } else {
-        // XXX this needs dealing with
-      }
-    } else if (ekey.getName() != null) {
-      if (debug()) {
-        debug("Get event by name");
-      }
-      key = ekey.getName();
-
-      ev = cl.getEvent(ekey.getColPath(),
-                       ekey.getName(),
-                       ekey.getRecurrenceId());
-    }
-
-    if (ev == null) {
-      request.error(ClientError.unknownEvent, key);
-      return null;
-    } else if (debug()) {
-      debug("Get event found " + ev.getEvent());
-    }
-
-    return ev;
-  }
-
-  /** Method to retrieve an event. An event is identified by the calendar +
-   * guid + recurrence id. We also take the subscription id as a parameter so
-   * we can pass it along in the result for display purposes.
-   *
-   * <p>We cannot just take the calendar from the subscription, because the
-   * calendar has to be the actual collection containing the event. A
-   * subscription may be to higher up the tree (i.e. a folder).
-   *
-   * <p>It may be more appropriate to simply encode a url to the event.
-   *
-   * <p>Request parameters<ul>
-   *      <li>"subid"    subscription id for event. < 0 if there is none
-   *                     e.g. displayed directly from calendar.</li>
-   *      <li>"calPath"  Path of calendar to search.</li>
-   *      <li>"guid" | "eventName"    guid or name of event.</li>
-   *      <li>"recurrenceId"   recurrence-id of event instance - possibly null.</li>
-   * </ul>
-   * <p>If the recurrenceId is null and the event is a recurring event we
-   * should return the master event only,
-   *
-   * @param request   BwRequest for parameters
-   * @param mode recurrence mode
-   * @return EventInfo or null if not found
-   */
-  protected EventInfo findEvent(final BwRequest request,
-                                final Rmode mode) {
-    final Client cl = request.getClient();
-    EventInfo ev = null;
-
-    final String href = request.getReqPar("href");
-
-    if (href != null) {
-      final EventKey ekey = new EventKey(href, false);
-
-      ev = cl.getEvent(ekey.getColPath(),
-                       ekey.getName(),
-                       ekey.getRecurrenceId());
-
-      if (ev == null) {
-        request.error(ClientError.unknownEvent,
-                /*eid*/ekey.getName());
-        return null;
-      } else if (debug()) {
-        debug("Get event found " + ev.getEvent());
-      }
-
-      return ev;
-    }
-
-    final BwCalendar cal = request.getCalendar(true);
-
-    if (cal == null) {
-      return null;
-    }
-
-    final String guid = request.getReqPar("guid");
-    String eventName = request.getReqPar("eventName");
-    
-    if (eventName == null) {
-      eventName = request.getReqPar("contentName");
-    }
-    
-    if (guid != null) {
-      if (debug()) {
-        debug("Get event by guid");
-      }
-      String rid = request.getReqPar("recurrenceId");
-      // DORECUR is this right?
-      final RecurringRetrievalMode rrm;
-      if (mode == Rmode.overrides) {
-        rrm = RecurringRetrievalMode.overrides;
-        rid = null;
-      } else if (mode == Rmode.expanded) {
-        rrm = RecurringRetrievalMode.expanded;
-      } else {
-        rrm = new RecurringRetrievalMode(mode);
-      }
-
-      final var evs = cl.getEventByUid(cal.getPath(),
-                                        guid, rid, rrm).getEntities();
-      if (debug()) {
-        debug("Get event by guid found " + evs.size());
-      }
-      if (evs.size() == 1) {
-        ev = evs.iterator().next();
-      } else if (evs.size() > 1) {
-        // XXX this needs dealing with
-        warn("Multiple result from getEvent");
-      }
-    } else if (eventName != null) {
-      if (debug()) {
-        debug("Get event by name");
-      }
-
-      ev = cl.getEvent(cal.getPath(), eventName,
-                       null);
-    }
-
-    if (ev == null) {
-      request.error(ClientError.unknownEvent, /*eid*/
-                            guid);
-      return null;
-    } else if (debug()) {
-      debug("Get event found " + ev.getEvent());
-    }
-
-    return ev;
-  }
-
-  /** An image processed to produce a thumbnail and storeable resources
-   *
-   * @author douglm
-   */
-  public static class ProcessedImage {
-    /** true for OK -otherwise an error has been emitted */
-    public boolean OK;
-
-    /** true for a possibly recoverable error - otherwise we rolled back and
-     * should restart */
-    public boolean retry;
-
-    /** The file as uploaded */
-    public BwResource image;
-
-    /** Reduced to a thumbnail */
-    public BwResource thumbnail;
-  }
+  /* **************************************************************
+                             private methods
+     ************************************************************** */
 
   /** Invalidate session.
    *
    * @param request    HttpServletRequest
    */
-  protected void invalidateSession(final Request request) {
+  private void invalidateSession(final Request request) {
     final HttpSession sess = request.getRequest().getSession(false);
 
     if (sess != null) {
       sess.invalidate();
     }
-  }
-
-  /* ********************************************************************
-                             view methods
-     ******************************************************************** */
-
-  /** Set the current date and/or view. The date may be null indicating we
-   * should switch to a new view based on the current date.
-   *
-   * <p>newViewTypeI may be less than 0 indicating we stay with the current
-   * view but switch to a new date.
-   *
-   * @param request       action form
-   * @param date         String yyyymmdd date or null
-   * @param newViewType  requested new view or null
-   */
-  protected void gotoDateView(final BwRequest request,
-                              final String date,
-                              String newViewType) {
-    final BwModuleState mstate = request.getModule().getState();
-
-    //BwActionFormBase form = request.getBwForm();
-    /* We get a new view if either the date changed or the view changed.
-     */
-    boolean newView = false;
-
-    if (debug()) {
-      debug("ViewType=" + newViewType);
-    }
-
-    MyCalendarVO dt;
-
-    if (BedeworkDefs.vtToday.equals(newViewType)) {
-      final Date jdt = new Date(System.currentTimeMillis());
-      dt = new MyCalendarVO(jdt);
-      newView = true;
-      newViewType = BedeworkDefs.vtDay;
-    } else if (date == null) {
-      if (BedeworkDefs.vtDay.equals(newViewType)) {
-        // selected specific day to display from personal event entry screen.
-
-        final Date jdt = BwDateTimeUtil.getDate(mstate.getViewStartDate().getDateTime());
-        dt = new MyCalendarVO(jdt);
-        newView = true;
-      } else {
-        if (debug()) {
-          debug("No date supplied: go with current date");
-        }
-
-        // Just stay here
-        dt = mstate.getViewMcDate();
-        if (dt == null) {
-          // Just in case
-          dt = new MyCalendarVO(new Date(System.currentTimeMillis()));
-        }
-      }
-    } else {
-      if (debug()) {
-        debug("Date=" + date + ": go with that");
-      }
-
-      Date jdt = DateTimeUtil.fromISODate(date);
-      dt = new MyCalendarVO(jdt);
-      if (!checkDateInRange(request, dt.getYear())) {
-        // Set it to today
-        jdt = new Date(System.currentTimeMillis());
-        dt = new MyCalendarVO(jdt);
-      }
-      newView = true;
-    }
-
-    if (!newView) {
-      if (mstate.getCurTimeView() == null) {
-        newView = true;
-      } else if ((newViewType != null) &&
-              !newViewType.equals(mstate.getCurTimeView()
-                                        .getViewType())) {
-        // Change of view
-        newView = true;
-      }
-    }
-
-    // Need to set default view?
-    if (newView && (newViewType == null)) {
-      newViewType = mstate.getViewType();
-      if (newViewType == null) {
-        newViewType = BedeworkDefs.viewPeriodNames[BedeworkDefs.defaultView];
-      }
-    }
-
-    final TimeDateComponents viewStart = mstate.getViewStartDate();
-
-    if (!newView) {
-      /* See if we were given an explicit date as view start date components.
-         If so we'll set a new view of the same period as the current.
-       */
-      final int year = viewStart.getYear();
-
-      if (checkDateInRange(request, year)) {
-        final String vsdate = viewStart.getDateTime().getDtval().substring(0, 8);
-        if (debug()) {
-          debug("vsdate=" + vsdate);
-        }
-
-        if (!(vsdate.equals(request.getSess().getCurTimeView(request).getFirstDayFmt().getDateDigits()))) {
-          newView = true;
-          newViewType = mstate.getViewType();
-          final Date jdt = DateTimeUtil.fromISODate(vsdate);
-          dt = new MyCalendarVO(jdt);
-        }
-      }
-    }
-
-    if (newView) {
-      mstate.setViewType(newViewType);
-      mstate.setViewMcDate(dt);
-      mstate.setRefresh(true);
-      request.getClient().clearSearchEntries();
-      request.getClient().clearSearch();
-    }
-
-    final TimeView tv = request.getSess().getCurTimeView(request);
-
-    /* Set first day, month and year
-     */
-
-    final Calendar firstDay = tv.getFirstDay();
-
-    viewStart.setDay(firstDay.get(Calendar.DATE));
-    viewStart.setMonth(firstDay.get(Calendar.MONTH) + 1);
-    viewStart.setYear(firstDay.get(Calendar.YEAR));
-
-    //form.getEventStartDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
-    //form.getEventEndDate().setDateTime(tv.getCurDayFmt().getDateTimeString());
-  }
-
-  /** Set the current date for view.
-   *
-   * @param request BwRequest
-   * @param date         String yyyymmdd date
-   */
-  protected void setViewDate(final BwRequest request,
-                             final String date) {
-    final BwModuleState mstate = request.getModule().getState();
-    Date jdt = DateTimeUtil.fromISODate(date);
-    MyCalendarVO dt = new MyCalendarVO(jdt);
-
-    if (debug()) {
-      debug("calvo dt = " + dt);
-    }
-
-    if (!checkDateInRange(request, dt.getYear())) {
-      // Set it to today
-      jdt = new Date(System.currentTimeMillis());
-      dt = new MyCalendarVO(jdt);
-    }
-    mstate.setViewMcDate(dt);
-    mstate.setRefresh(true);
-  }
-
-  /* **************************************************************
-                             private methods
-     ************************************************************** */
-
-  private boolean checkDateInRange(final BwRequest req,
-                                   final int year) {
-    final BwWebGlobals globals = req.getBwGlobals();
-
-    // XXX make system parameters for allowable start/end year
-    final int thisYear = globals.getToday().getFormatted().getYear();
-
-    if ((year < (thisYear - 50)) || (year > (thisYear + 50))) {
-      req.error(ValidationError.invalidDate, year);
-      return false;
-    }
-
-    return true;
   }
 
   /** Get the session state object for a web session. If we've already been
@@ -1059,18 +437,6 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   private String suffixRoot(final BwRequest req,
                             final String val) {
     final StringBuilder sb = new StringBuilder(val);
-
-    /* If we're running as a portlet change the app root to point to a
-     * portlet specific directory.
-     *
-     * DISABLED - probably not working
-    final String portalPlatform = form.getConfig().getPortalPlatform();
-
-    if (isPortlet && (portalPlatform != null)) {
-      sb.append(".");
-      sb.append(portalPlatform);
-    }
-     */
 
     if (!appTypeWebsubmit.equals(req.getConfig().getAppType())) {
       /* If calendar suite is non-null append that. */

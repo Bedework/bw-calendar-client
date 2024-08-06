@@ -43,6 +43,8 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
+
 /**
  * Action to publish free busy information as rfc formatted information.
  *

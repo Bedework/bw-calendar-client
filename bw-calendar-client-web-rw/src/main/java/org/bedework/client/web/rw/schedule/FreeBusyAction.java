@@ -30,6 +30,7 @@ import org.bedework.webcommon.BwRequest;
 import net.fortuna.ical4j.model.parameter.Role;
 
 import static org.bedework.client.web.rw.EventCommon.doFreeBusy;
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
 /**
  * Action to fetch free busy information for web use.

@@ -38,12 +38,7 @@ public class BwWebGlobals extends WebGlobals {
    */
   private boolean guest;
 
-  private BwPrincipal<?> adminUserId;
-
-  /**
-   * The current administrative user.
-   */
-  protected String currentAdminUser;
+  private BwPrincipal<?> adminUser;
 
   /** The groups of which our user is a member
    */
@@ -145,17 +140,20 @@ public class BwWebGlobals extends WebGlobals {
    * of a calendar suite. We need this to hold that cvalue as we may
    * not have a client embedded on entry.
    *
-   * @return admin user id
+   * @return admin user
    */
-  public String getCurrentAdminUser() {
-    return currentAdminUser;
+  public BwPrincipal<?> getAdminUser() {
+    return adminUser;
   }
 
   /**
    * @return admin userid
    */
   public String getAdminUserId() {
-    return adminUserId.getAccount();
+    if (getAdminUser() == null) {
+      return null;
+    }
+    return getAdminUser().getAccount();
   }
 
   /** The groups of which our user is a member
@@ -210,11 +208,15 @@ public class BwWebGlobals extends WebGlobals {
     }
 
     guest = cl.isGuest();
-    currentAdminUser = cl.getCurrentPrincipal().getAccount();
+    adminUser = cl.getCurrentPrincipal();
   }
 
-  public void changeAdminUserId(final BwPrincipal<?> val) {
-    adminUserId = val;
+  public void changeAdminUser(final BwPrincipal<?> val) {
+    if (debug()) {
+      debug("New principal: {} adminUser: {}",
+            val, getAdminUser());
+    }
+    adminUser = val;
   }
 
   /**

@@ -42,6 +42,8 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
+
 /**
  * Action to publish a calendar as rfc formatted information
  * <p>Request parameters - all optional:<ul>

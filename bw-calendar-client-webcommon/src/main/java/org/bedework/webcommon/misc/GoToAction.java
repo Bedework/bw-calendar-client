@@ -23,6 +23,8 @@ import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
+
 /**
  * Action to go to a given date and/or set a day/week/month/year view.
  * <p>Request parameter<br>

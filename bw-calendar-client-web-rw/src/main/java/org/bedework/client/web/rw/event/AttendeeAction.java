@@ -30,6 +30,7 @@ import java.util.Collection;
 
 import static org.bedework.client.web.rw.EventCommon.doAttendee;
 import static org.bedework.client.web.rw.EventCommon.doFreeBusy;
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
 /**
  * Action to handle recipients and attendees for an event. This action

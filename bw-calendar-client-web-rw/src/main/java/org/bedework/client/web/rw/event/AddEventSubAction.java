@@ -25,11 +25,13 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.EventListEntry;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.SortedSet;
+
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
+import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /** Action to add an event to an event list collection.
  * <p>Request parameters<ul>
@@ -76,7 +78,7 @@ public class AddEventSubAction extends RWActionBase {
       return forwardNoAction;
     }
 
-    final EventInfo ei = findEvent(request, ekey);
+    final EventInfo ei = findEvent(request, ekey, getLogger());
 
     if (ei == null) {
       // Do nothing

@@ -55,7 +55,7 @@ public class RwBwModule extends BwModule {
   }
 
   @Override
-  protected FilterBase defaultSearchFilter(final BwRequest req) {
+  public FilterBase defaultSearchFilter(final BwRequest req) {
     final RWClient cl = (RWClient)req.getClient();
     final var globals = (BwRWWebGlobals)req.getGlobals();
 

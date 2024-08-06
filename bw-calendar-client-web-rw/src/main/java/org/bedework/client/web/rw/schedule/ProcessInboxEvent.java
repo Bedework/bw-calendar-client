@@ -25,7 +25,6 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
@@ -39,6 +38,8 @@ import java.util.Date;
 
 import static org.bedework.client.web.rw.EventCommon.copyEvent;
 import static org.bedework.util.misc.response.Response.Status.notFound;
+import static org.bedework.webcommon.DateViewUtil.setViewDate;
+import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /**
  * Fetches the inbox copy:
@@ -90,7 +91,7 @@ public class ProcessInboxEvent extends RWActionBase {
     } else {
       mode = Rmode.expanded;
     }
-    final EventInfo einf = findEvent(request, mode);
+    final EventInfo einf = findEvent(request, mode, getLogger());
     if (einf == null) {
       // Disappeared while we sat there I guess.
       return forwardNoAction;

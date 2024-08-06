@@ -255,7 +255,7 @@ public class BwModule implements Logged, Serializable {
    * It it overridden by the admin version.
    *
    * @param request       for pars
-   * @param user          String user we want to be
+   * @param requestedUser user we want to be
    * @param canSwitch     true if we should definitely allow user to switch
    *                      this allows a user to switch between and into
    *                      groups of which they are a member
@@ -263,7 +263,7 @@ public class BwModule implements Logged, Serializable {
    */
   public boolean checkClient(final BwRequest request,
                              final BwSession sess,
-                             final String user,
+                             final String requestedUser,
                              final boolean canSwitch,
                              final ConfigCommon conf) {
     if (conf.getPublicAdmin()) {
@@ -286,7 +286,7 @@ public class BwModule implements Logged, Serializable {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
       calSuiteName = conf.getCalSuite();
-    } else if (!user.equals(request.getCurrentUser())) {
+    } else if (!requestedUser.equals(request.getCurrentUser())) {
       /* !publicAdmin: We're never allowed to switch identity as a user client.
        */
       return false;
@@ -305,20 +305,20 @@ public class BwModule implements Logged, Serializable {
     }
 
     if (debug()) {
-      debug("Client-- getResource new object for user " + user);
+      debug("Client-- getResource new object for user " + requestedUser);
     }
 
     if (readWrite) {
       client = new RWClientImpl(conf,
                                 getModuleName(),
                                 request.getCurrentUser(),
-                                user,
+                                requestedUser,
                                 request.getConfig().getAppType());
     } else {
       client = new ROClientImpl(conf,
                                 getModuleName(),
                                 request.getCurrentUser(),
-                                user,
+                                requestedUser,
                                 calSuiteName,
                                 request.getConfig().getAppType(),
                                 true);
@@ -395,7 +395,7 @@ public class BwModule implements Logged, Serializable {
    * @param req current request
    * @return filter or null
    */
-  protected FilterBase defaultSearchFilter(final BwRequest req) {
+  public FilterBase defaultSearchFilter(final BwRequest req) {
     return null;
   }
 

@@ -26,7 +26,6 @@ import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
@@ -36,6 +35,7 @@ import org.bedework.webcommon.BwRequest;
 import java.util.List;
 
 import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
+import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /**
  * Action to delete an event
@@ -67,7 +67,8 @@ public class DeleteEventAction extends RWActionBase {
 
     String submitterEmail = null;
 
-    final EventInfo ei = findEvent(request, Rmode.entityOnly);
+    final EventInfo ei = findEvent(request, Rmode.entityOnly,
+                                   getLogger());
 
     if (ei == null) {
       // Do nothing

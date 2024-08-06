@@ -32,6 +32,9 @@ import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.webcommon.BwRequest;
 
+import static org.bedework.webcommon.DateViewUtil.gotoDateView;
+import static org.bedework.webcommon.event.EventUtil.findEvent;
+
 /** Action to add an event alias to a personal calendar.
  * <p>Request parameters<ul>
  *      <li>"subid"    subscription id for event.</li>
@@ -82,7 +85,7 @@ public class AddEventRefAction extends RWActionBase {
       return forwardNoAction;
     }
 
-    final EventInfo ei = findEvent(request, ekey);
+    final EventInfo ei = findEvent(request, ekey, getLogger());
 
     if (ei == null) {
       // Do nothing

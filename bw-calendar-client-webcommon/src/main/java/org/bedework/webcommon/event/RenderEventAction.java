@@ -37,6 +37,8 @@ import org.bedework.webcommon.BwRequest;
 import java.util.Date;
 
 import static org.bedework.util.misc.response.Response.Status.notFound;
+import static org.bedework.webcommon.DateViewUtil.setViewDate;
+import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /** Fetch an event for rendering. We previously set the key fields.
  *
@@ -61,7 +63,8 @@ public class RenderEventAction extends BwAbstractAction {
       return forwardNoAction;
     }
 
-    final EventInfo ei = findEvent(request, ekey);
+    final EventInfo ei = findEvent(request, ekey,
+                                   getLogger());
 
     if (ei == null) {
       return forwardNoAction;

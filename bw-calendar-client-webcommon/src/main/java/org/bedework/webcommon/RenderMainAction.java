@@ -23,6 +23,8 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.SearchParams;
 import org.bedework.calfacade.exc.CalFacadeException;
 
+import static org.bedework.webcommon.search.SearchUtil.setSearchParams;
+
 /** Ensure the time view data is refreshed
  *
  * @author Mike Douglass  douglm - rpi.edu

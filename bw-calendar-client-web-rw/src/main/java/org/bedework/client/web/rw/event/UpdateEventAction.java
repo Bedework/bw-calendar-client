@@ -924,6 +924,25 @@ public class UpdateEventAction extends RWActionBase {
     return forwardNoAction;
   }
 
+  /** An image processed to produce a thumbnail and storeable resources
+   *
+   * @author douglm
+   */
+  public static class ProcessedImage {
+    /** true for OK -otherwise an error has been emitted */
+    public boolean OK;
+
+    /** true for a possibly recoverable error - otherwise we rolled back and
+     * should restart */
+    public boolean retry;
+
+    /** The file as uploaded */
+    public BwResource image;
+
+    /** Reduced to a thumbnail */
+    public BwResource thumbnail;
+  }
+
   /** Create resource entities based on the uploaded file.
    *
    * @param request BwRequest object
@@ -1108,7 +1127,7 @@ public class UpdateEventAction extends RWActionBase {
     final int dotPos = imageName.lastIndexOf('.');
     final Filenames fns = new Filenames();
 
-    final String dt = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+    final String dt = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 
     if (dotPos < 0) {
       fns.fn = imageName + "-" + dt;

@@ -37,22 +37,10 @@ public class AdminBwModule extends RwBwModule {
     super(moduleName);
   }
 
-  /** Overridden for the admin client.
-   *
-   * <p>For an admin client with a super user we may switch to a different
-   * user to administer their events.
-   *
-   * @param request       for pars
-   * @param user          String user we want to be
-   * @param canSwitch     true if we should definitely allow user to switch
-   *                      this allows a user to switch between and into
-   *                      groups of which they are a member
-   * @return boolean      false for problems.
-   */
   @Override
   public boolean checkClient(final BwRequest request,
                              final BwSession sess,
-                             final String user,
+                             final String requestedUser,
                              boolean canSwitch,
                              final ConfigCommon conf) {
     if (!conf.getPublicAdmin()) {
@@ -123,23 +111,28 @@ public class AdminBwModule extends RwBwModule {
          * already have the authorised user's rights set in the form.
          */
 
-        final var pr = client.getCurrentPrincipal();
-        if (pr == null) {
+        final var currentPrincipal = client.getCurrentPrincipal();
+        if (currentPrincipal == null) {
           throw new CalFacadeException("Null user for public admin.");
         }
 
-        canSwitch = canSwitch || globals.getCurUserContentAdminUser() ||
+        canSwitch = canSwitch ||
+                globals.getCurUserContentAdminUser() ||
                 client.isSuperUser();
 
-        final String curUser = pr.getAccount();
-
-        if (!user.equals(curUser)) {
+        if (!requestedUser.equals(currentPrincipal.getAccount())) {
           if (!canSwitch) {
             /* Trying to switch but not allowed */
             return false;
           }
 
           /* Switching user */
+          if (debug()) {
+            debug("Client: switch user from {} to {}",
+                  currentPrincipal.getPrincipalRef(),
+                  requestedUser);
+          }
+
           client.endTransaction();
           client.close();
           reinitClient = true;
@@ -149,20 +142,20 @@ public class AdminBwModule extends RwBwModule {
 
         /* Already there and already opened */
         if (debug()) {
-          debug("Client interface -- Obtained from session for user " +
-                        client.getCurrentPrincipalHref());
+          debug("Client interface -- Found in session for {}",
+                currentPrincipal.getPrincipalRef());
         }
 
         if (reinitClient) {
           // We did a module close will need to reclaim - always public admin
           if (debug()) {
-            debug("Client-- reinit for user " + user);
+            debug("Client-- reinit for user " + requestedUser);
           }
 
           request.getModules().flushModules(request.getModuleName());
 
           ((AdminClientImpl)client).reinit(request.getCurrentUser(),
-                                           user,
+                                           requestedUser,
                                            calSuiteName);
 
           cb.in(request);
@@ -171,13 +164,13 @@ public class AdminBwModule extends RwBwModule {
         }
       } else {
         if (debug()) {
-          debug("Client-- getResource new object for user " + user);
+          debug("Client-- getResource new object for user " + requestedUser);
         }
 
         client = new AdminClientImpl(conf,
                                      getModuleName(),
                                      request.getCurrentUser(),
-                                     user,
+                                     requestedUser,
                                      calSuiteName);
 
         setClient(client);

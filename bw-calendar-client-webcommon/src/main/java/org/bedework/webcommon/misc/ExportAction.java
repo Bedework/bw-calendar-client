@@ -48,6 +48,8 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static org.bedework.webcommon.event.EventUtil.findEvent;
+
 /**
  * Action to export an icalendar file. This might be better done as a custom tag which
  * could write directly to the response. We could be generating something big here.
@@ -83,7 +85,7 @@ public class ExportAction extends BwAbstractAction {
         debug("Export event by guid, href or name");
       }
 
-      ev = findEvent(request, Rmode.overrides);
+      ev = findEvent(request, Rmode.overrides, getLogger());
 
       if (ev == null) {
         return forwardNoAction;

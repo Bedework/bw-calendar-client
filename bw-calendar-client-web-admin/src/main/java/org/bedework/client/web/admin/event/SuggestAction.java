@@ -29,7 +29,6 @@ import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.calfacade.util.ChangeTableEntry;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.client.web.admin.BwAdminWebGlobals;
 import org.bedework.sysevents.events.SysEventBase;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedResponseEvent;
@@ -41,6 +40,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
+
+import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /**Action to update suggest status for an event
  * ADMIN ONLY
@@ -70,7 +71,7 @@ public class SuggestAction extends AdminActionBase {
       return forwardNull;
     }
 
-    final EventInfo ei = findEvent(request, Rmode.overrides);
+    final EventInfo ei = findEvent(request, Rmode.overrides, getLogger());
 
     if (ei == null) {
       // Do nothing

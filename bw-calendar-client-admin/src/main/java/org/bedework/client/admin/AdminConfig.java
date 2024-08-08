@@ -100,8 +100,12 @@ public interface AdminConfig extends ConfigCommon {
    */
   boolean getNoGroupAllowed();
 
-  /**
-   *  @param val true if all in admin group are approvers
+  /** this allows us to avoid setting many users as approvers.
+   * If true, being a member of the top-level admin group directly associated with the calendar suite also implies approver status.
+   *
+   * Being a member of a sub-group does not give that access.
+   *
+   *  @param val true if all in calendar suite admin group are approvers
    */
   void setAdminGroupApprovers(boolean val);
 

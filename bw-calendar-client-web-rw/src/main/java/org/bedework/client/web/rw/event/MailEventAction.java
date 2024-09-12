@@ -25,7 +25,6 @@ import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.mail.ObjectAttachment;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;

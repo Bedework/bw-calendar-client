@@ -468,8 +468,16 @@ public class EventCommon {
   public static void emitScheduleStatus(final BwRequest request,
                                          final ScheduleResult sr,
                                          final boolean errorsOnly) {
-    if (sr.errorCode != null) {
-      request.error(sr.errorCode, sr.extraInfo);
+    if (!sr.isOk()) {
+      final var exc = sr.getException();
+      if (exc != null) {
+        if (exc instanceof final CalFacadeException cfe) {
+          request.error(cfe.getMessage(), cfe.getExtra());
+        } else {
+          request.error(exc.getMessage());
+        }
+      }
+      request.error(sr.getMessage());
     }
 
     if (sr.ignored) {

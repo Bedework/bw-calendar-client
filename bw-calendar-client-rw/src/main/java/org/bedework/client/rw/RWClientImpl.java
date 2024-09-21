@@ -29,6 +29,7 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
+import org.bedework.calfacade.Attendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -141,7 +142,7 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public BwPrincipal getOwner() {
+  public BwPrincipal<?> getOwner() {
     if (publicAdmin) {
       return svci.getUsersHandler().getPublicUser();
     }
@@ -677,6 +678,11 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
+  public Attendee findUserAttendee(final EventInfo ei) {
+    return svci.getScheduler().findUserAttendee(ei);
+  }
+
+  @Override
   public BwEvent getFreeBusy(final Collection<BwCalendar> fbset,
                              final BwPrincipal<?> who,
                              final BwDateTime start,
@@ -704,7 +710,8 @@ public class RWClientImpl extends ROClientImpl
     return update(svci.getScheduler().schedule(ei,
                                                recipient,
                                                fromAttUri,
-                                               iSchedule));
+                                               iSchedule,
+                                               null));
   }
 
   @Override

@@ -6,6 +6,7 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
+import org.bedework.calfacade.Attendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -437,6 +438,13 @@ public interface RWClient extends Client {
   /* ------------------------------------------------------------
    *                     Scheduling
    * ------------------------------------------------------------ */
+
+  /** Find the attendee in this event which corresponds to the current user
+   *
+   * @param ei to search
+   * @return attendee or null.
+   */
+  Attendee findUserAttendee(EventInfo ei);
 
   /** Get the free busy for the given principal as a list of busy periods.
    *

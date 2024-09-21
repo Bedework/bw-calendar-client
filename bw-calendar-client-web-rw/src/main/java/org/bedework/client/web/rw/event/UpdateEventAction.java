@@ -637,7 +637,6 @@ public class UpdateEventAction extends RWActionBase {
   }
 
   protected int doUpdate(final UpdatePars pars) {
-
     if (debug()) {
       debug(pars.changes.toString());
     }
@@ -659,8 +658,8 @@ public class UpdateEventAction extends RWActionBase {
         return forwardError;
       }
 
-      if (ur.schedulingResult != null) {
-        emitScheduleStatus(pars.request, ur.schedulingResult, false);
+      if (ur.wasScheduled) {
+        emitScheduleStatus(pars.request, ur, false);
       }
 
       ((BwRWActionForm)pars.request.getBwForm()).assignAddingEvent(false);
@@ -1158,12 +1157,14 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     final StringBuilder sb = new StringBuilder();
-    sb.append("BEGIN:VCALENDAR\n" +
-                      "VERSION:2.0\n" +
-                      "PRODID:-//xyz.com//EN\n" +
-                      "BEGIN:VEVENT\n" +
-                      "UID:123456\n" +
-                      "DTSTART;VALUE=DATE:20080212\n");
+    sb.append("""
+                BEGIN:VCALENDAR
+                VERSION:2.0
+                PRODID:-//xyz.com//EN
+                BEGIN:VEVENT
+                UID:123456
+                DTSTART;VALUE=DATE:20080212
+                """);
 
     for (final String unparsedxp: unparsedxps) {
       /* Probably not the most efficient way */
@@ -1175,8 +1176,10 @@ public class UpdateEventAction extends RWActionBase {
       sb.append("\n");
     }
 
-    sb.append("END:VEVENT\n" +
-                      "END:VCALENDAR\n");
+    sb.append("""
+                END:VCALENDAR
+                END:VEVENT
+                """);
 
     final Client cl = pars.request.getClient();
     final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(cl));

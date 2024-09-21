@@ -472,12 +472,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public String getCalendarAddress(final String user) {
-    final BwPrincipal<?> u = svci.getUsersHandler().getUser(user);
-    if (u == null) {
-      return null;
-    }
-
-    return svci.getDirectories().principalToCaladdr(u);
+    return svci.getDirectories().userToCaladdr(user);
   }
 
   @Override

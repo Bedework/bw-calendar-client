@@ -20,7 +20,7 @@ package org.bedework.client.web.rw.schedule;
 
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwAttendee;
+import org.bedework.calfacade.Attendee;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.ScheduleResult;
@@ -56,11 +56,11 @@ import static org.bedework.client.web.rw.EventCommon.validateEvent;
  * <p>For CANCEL we, as an attendee will update or delete a copy of the event.
  *
  * <p>The incoming event is currently set in the form event property.
- *
+ * <br/>
  * The allowable request parameters and actions taken depend upon the
  * scheduling METHOD value sent in the request "method" parameter or on the
  * method set in the event.
- *
+ * <p>
  * The values or the "method" request parameter are:<br/>
  *  <ul>
  *    <li><em>REFRESH</em>          User want organizer to refresh the event.</li>
@@ -221,7 +221,7 @@ public class AttendeeRespond extends RWActionBase {
       return forwardError;
     }
 
-    emitScheduleStatus(request, ur.schedulingResult, false);
+    emitScheduleStatus(request, ur, false);
 
     initSession(request);
 
@@ -260,7 +260,7 @@ public class AttendeeRespond extends RWActionBase {
     /* Check that the current user is actually an attendee
      */
     final String uri = cl.getCurrentCalendarAddress();
-    BwAttendee att = ev.findAttendee(uri);
+    final Attendee att = ((RWClient)cl).findUserAttendee(ei);
 
     if (att == null) {
       return CalFacadeException.schedulingNotAttendee;
@@ -313,13 +313,13 @@ public class AttendeeRespond extends RWActionBase {
         return ValidationError.invalidUser;
       }
 
-      att.setPartstat(IcalDefs.partstatValDelegated);
+      att.setParticipationStatus(IcalDefs.partstatValDelegated);
       att.setDelegatedTo(calAddr);
 
       /* The attendee may indicate they wish to continue to receive
        * notification by setting rsvp = true
        */
-      att.setRsvp(rsvp);
+      att.setExpectReply(rsvp);
     } else if (method == ScheduleMethods.methodTypeReply) {
       // Expect a valid partstat for the attendee corresponding to the inbox
       // the event came from.
@@ -331,16 +331,16 @@ public class AttendeeRespond extends RWActionBase {
         return CalFacadeException.schedulingInvalidPartStatus;
       }
 
-      // Update the status - will affect incoming event object.
       if (proxy != null) {
-        att = (BwAttendee)att.clone();
-        ev.removeAttendee(att);
-        ev.addAttendee(att);
+        final var parts = ev.getParticipants();
+        parts.removeAttendee(att);
+        parts.copyAttendee(att);
       }
 
-      att.setPartstat(partStat);
+      // Update the status - will affect incoming event object.
+      att.setParticipationStatus(partStat);
     } else if (method != ScheduleMethods.methodTypeCounter) {
-      throw new RuntimeException("Never get here");
+      throw new CalFacadeException("Never get here");
     }
 
     return null;

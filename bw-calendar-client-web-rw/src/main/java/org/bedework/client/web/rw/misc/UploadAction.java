@@ -24,7 +24,6 @@ import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
@@ -272,17 +271,17 @@ public class UploadAction extends RWActionBase {
        */
       // RECUR - don't think cloning works for recurrences
       final BwEvent ev = (BwEvent)ei.getEvent().clone();
+      final var si = ev.getSchedulingInfo();
+      final var so = si.getSchedulingOwner();
 
-      final BwOrganizer org = ev.getOrganizer();
-
-      if (org == null) {
+      if (so.noOwner()) {
         request.error(ValidationError.missingOrganizer);
         return forwardRetry;
       }
 
       final String userUri = cl.getCurrentCalendarAddress();
 
-      final boolean isOrganizer = userUri.equals(org.getOrganizerUri());
+      final boolean isOrganizer = userUri.equals(so.getCalendarAddress());
       ev.setOrganizerSchedulingObject(isOrganizer);
       ev.setAttendeeSchedulingObject(!isOrganizer);
 

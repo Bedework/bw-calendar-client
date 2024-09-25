@@ -20,7 +20,7 @@ package org.bedework.client.web.rw.schedule;
 
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.Attendee;
+import org.bedework.calfacade.Participant;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.ScheduleResult;
@@ -260,7 +260,7 @@ public class AttendeeRespond extends RWActionBase {
     /* Check that the current user is actually an attendee
      */
     final String uri = cl.getCurrentCalendarAddress();
-    final Attendee att = ((RWClient)cl).findUserAttendee(ei);
+    final Participant att = ((RWClient)cl).findUserAttendee(ei);
 
     if (att == null) {
       return CalFacadeException.schedulingNotAttendee;
@@ -333,8 +333,8 @@ public class AttendeeRespond extends RWActionBase {
 
       if (proxy != null) {
         final var parts = ev.getSchedulingInfo();
-        parts.removeAttendee(att);
-        parts.copyAttendee(att);
+        parts.removeParticipant(att);
+        parts.copyParticipant(att);
       }
 
       // Update the status - will affect incoming event object.

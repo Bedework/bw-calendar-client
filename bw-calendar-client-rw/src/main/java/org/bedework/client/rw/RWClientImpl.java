@@ -29,7 +29,7 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
-import org.bedework.calfacade.Attendee;
+import org.bedework.calfacade.Participant;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -678,7 +678,7 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public Attendee findUserAttendee(final EventInfo ei) {
+  public Participant findUserAttendee(final EventInfo ei) {
     return svci.getScheduler().findUserAttendee(ei);
   }
 

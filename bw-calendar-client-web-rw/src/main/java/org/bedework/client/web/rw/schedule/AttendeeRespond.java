@@ -333,7 +333,7 @@ public class AttendeeRespond extends RWActionBase {
 
       if (proxy != null) {
         final var parts = ev.getSchedulingInfo();
-        parts.removeParticipant(att);
+        parts.removeRecipientParticipant(att);
         parts.copyParticipant(att);
       }
 

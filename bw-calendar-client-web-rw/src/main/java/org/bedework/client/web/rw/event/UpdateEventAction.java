@@ -1177,8 +1177,8 @@ public class UpdateEventAction extends RWActionBase {
     }
 
     sb.append("""
-                END:VCALENDAR
                 END:VEVENT
+                END:VCALENDAR
                 """);
 
     final Client cl = pars.request.getClient();

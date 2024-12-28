@@ -24,7 +24,6 @@ import org.bedework.webcommon.BwRequest;
 import java.util.List;
 
 import static org.bedework.client.web.rw.EventCommon.addError;
-import static org.bedework.client.web.rw.EventCommon.notifyEventReg;
 import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 
 /**
@@ -161,8 +160,8 @@ public class ApprovePublishAction extends AdminActionBase {
             ev.findXproperty(BwXproperty.bedeworkEventRegStart);
 
     if (evregprop != null) {
-      // Registerable event
-      notifyEventReg(pars.request, pars.ei);
+      // Registrable event
+      EventregNotifier.notify(pars.request, pars.ei);
     }
 
     pars.ev.setPublick(true);

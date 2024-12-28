@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static org.bedework.client.web.rw.EventCommon.adminEventLocation;
-import static org.bedework.client.web.rw.EventCommon.notifyEventReg;
 import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 import static org.bedework.client.web.rw.EventCommon.resetEvent;
 import static org.bedework.util.misc.response.Response.Status.ok;
@@ -226,8 +225,8 @@ public class AdminUpdateEventAction extends UpdateEventAction {
             ev.findXproperty(BwXproperty.bedeworkEventRegStart);
 
     if (evregprop != null) {
-      // Registerable event
-      notifyEventReg(pars.request, pars.ei);
+      // Registrable event
+      EventregNotifier.notify(pars.request, pars.ei);
     }
 
     resetEvent(pars.request, clearForm);

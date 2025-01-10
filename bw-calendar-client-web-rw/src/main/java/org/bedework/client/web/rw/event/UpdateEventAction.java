@@ -28,6 +28,7 @@ import org.bedework.appcommon.Images;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.calfacade.BwAttachment;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -66,10 +67,13 @@ import org.bedework.webcommon.DurationBean;
 import org.bedework.webcommon.TimeDateComponents;
 
 import net.fortuna.ical4j.model.Recur;
+import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -262,10 +266,30 @@ public class UpdateEventAction extends RWActionBase {
 
     setEventText(request, ev, pars.adding, pars.changes);
 
-    /* ---------------------- Uploaded image ----------------------------- */
-
+    /* ---------------------- Attachment ----------------------------- */
     boolean retry = false;
     boolean validationError = false;
+
+    final UploadFileInfo attachInfo = form.getUploadFileInfo();
+    if (attachInfo != null) {
+      final var attach = new BwAttachment();
+
+      try {
+        final var bytes = IOUtils.toByteArray(
+                attachInfo.getContentStream());
+
+        attach.setValue(Base64.getEncoder()
+                              .encodeToString(bytes));
+
+        ev.addAttachment(attach);
+      } catch (final IOException e) {
+        cl.rollback();
+        validationError = true;
+        error(e);
+      }
+    }
+
+    /* ---------------------- Uploaded image ----------------------------- */
 
     final List<BwXproperty> extras = new ArrayList<>();
     final UploadFileInfo ff = form.getImageUploadInfo();

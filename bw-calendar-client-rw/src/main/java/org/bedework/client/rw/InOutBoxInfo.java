@@ -23,7 +23,6 @@ import org.bedework.appcommon.FormattedEvents;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 
 import java.io.Serializable;
@@ -58,10 +57,9 @@ public class InOutBoxInfo implements Serializable {
    *
    * @param cl client
    * @param inbox  boolean
-   * @throws CalFacadeException
-   */
+) {   */
   public InOutBoxInfo(final Client cl,
-                      final boolean inbox) throws CalFacadeException {
+                      final boolean inbox) {
     this.inbox = inbox;
 
     refresh(cl, true);
@@ -71,10 +69,9 @@ public class InOutBoxInfo implements Serializable {
    *
    * @param cl client
    * @param all true to fetch all events.
-   * @throws CalFacadeException
-   */
+) {   */
   public void refresh(final Client cl,
-                      final boolean all) throws CalFacadeException {
+                      final boolean all) {
     final int calType;
     if (inbox) {
       calType = BwCalendar.calTypeInbox;

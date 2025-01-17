@@ -35,6 +35,7 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
@@ -497,7 +498,7 @@ public class AdminClientImpl extends RWClientImpl
 
       return r;
     } catch (final CalFacadeException cfe) {
-      if (CalFacadeException.collectionNotFound.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.collectionNotFound.equals(cfe.getMessage())) {
         // Collection does not exist (yet)
 
         return null;
@@ -536,7 +537,7 @@ public class AdminClientImpl extends RWClientImpl
 
     if (path == null) {
       throw new CalFacadeException(
-              CalFacadeException.noCalsuiteResCol);
+              CalFacadeErrorCode.noCalsuiteResCol);
     }
 
     if (path.endsWith("/")) {

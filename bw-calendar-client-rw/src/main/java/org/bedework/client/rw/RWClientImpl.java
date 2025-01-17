@@ -29,7 +29,6 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
-import org.bedework.calfacade.Participant;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -43,9 +42,11 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.EventPropertiesReference;
+import org.bedework.calfacade.Participant;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.ShareableEntity;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.calfacade.mail.Message;
@@ -586,7 +587,7 @@ public class RWClientImpl extends ROClientImpl
     try {
       svci.getResourcesHandler().getContent(val);
     } catch (final CalFacadeException cfe) {
-      if (CalFacadeException.missingResourceContent.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.missingResourceContent.equals(cfe.getMessage())) {
         return false;
       }
 

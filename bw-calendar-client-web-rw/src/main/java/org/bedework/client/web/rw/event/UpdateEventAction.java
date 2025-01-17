@@ -38,6 +38,7 @@ import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.base.StartEndComponent;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
@@ -700,13 +701,13 @@ public class UpdateEventAction extends RWActionBase {
     } catch (final CalFacadeException cfe) {
       pars.cl.rollback();
 
-      if (CalFacadeException.noRecurrenceInstances.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.noRecurrenceInstances.equals(cfe.getMessage())) {
         pars.request.error(ClientError.noRecurrenceInstances,
                            pars.ev.getUid());
         return forwardValidationError;
       }
 
-      if (CalFacadeException.duplicateGuid.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.duplicateGuid.equals(cfe.getMessage())) {
         pars.request.error(ClientError.duplicateUid);
         return forwardDuplicate;
       }

@@ -210,7 +210,7 @@ public class UploadAction extends RWActionBase {
 
           /*TODO Used to catch exception here and watch for this:
           } catch (CalFacadeException cfe) {
-            if (!cfe.getMessage().equals(CalFacadeException.noRecurrenceInstances)) {
+            if (!cfe.getMessage().equals(CalFacadeErrorCode.noRecurrenceInstances)) {
               throw cfe;
             }
             request.error(cfe.getMessage(), cfe.getExtra());

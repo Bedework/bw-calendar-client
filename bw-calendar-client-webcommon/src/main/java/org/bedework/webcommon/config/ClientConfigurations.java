@@ -44,9 +44,8 @@ public final class ClientConfigurations extends ConfBase {
 
   /**
    * @return a configs object
-   * @throws CalFacadeException
-   */
-  public static ClientConfigurations getConfigs() throws CalFacadeException {
+) {   */
+  public static ClientConfigurations getConfigs() {
     if (configs != null) {
       return configs;
     }
@@ -63,17 +62,15 @@ public final class ClientConfigurations extends ConfBase {
 
   /** Start up (load) the config mbeans.
    *
-   * @throws CalFacadeException
-   */
-  public static void startConfigs() throws CalFacadeException {
+) {   */
+  public static void startConfigs() {
     getConfigs();
   }
 
   /** Shut down the config jmx bean(s)
    *
-   * @throws CalFacadeException
-   */
-  public static void stopConfigs() throws CalFacadeException {
+) {   */
+  public static void stopConfigs() {
     synchronized (lock) {
       if (configs == null) {
         return;
@@ -93,7 +90,7 @@ public final class ClientConfigurations extends ConfBase {
   /**
    * @throws CalFacadeException on fatal lload error
    */
-  private ClientConfigurations() throws CalFacadeException {
+  private ClientConfigurations() {
     super("org.bedework.clients:service=System",
           confDirName,
           null); // No overall config
@@ -109,7 +106,7 @@ public final class ClientConfigurations extends ConfBase {
     return clientConfigs.get(name);
   }
 
-  private void loadClientConfigs() throws CalFacadeException {
+  private void loadClientConfigs() {
     try {
       final List<String> names = getStore().getConfigs();
 

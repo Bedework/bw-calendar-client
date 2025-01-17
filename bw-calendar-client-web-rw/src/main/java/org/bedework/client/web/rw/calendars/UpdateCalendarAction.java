@@ -24,12 +24,12 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.CalFacadeDefs;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
 import org.bedework.util.misc.response.Response;
@@ -199,8 +199,8 @@ public class UpdateCalendarAction extends RWActionBase {
       try {
         form.setCalendar(cl.addCollection(cal, parentPath));
       } catch (final CalFacadeException cfe) {
-        if (cfe.getMessage().equals(CalFacadeException.duplicateCalendar)) {
-          request.error(CalFacadeException.duplicateCalendar,
+        if (cfe.getMessage().equals(CalFacadeErrorCode.duplicateCalendar)) {
+          request.error(CalFacadeErrorCode.duplicateCalendar,
                         cal.getName());
           return forwardRetry;
         }
@@ -223,10 +223,10 @@ public class UpdateCalendarAction extends RWActionBase {
         if (axu.getErrorTag() != null) {
           if (axu.getErrorTag()
                  .equals(WebdavTags.recognizedPrincipal)) {
-            request.error(CalFacadeException.principalNotFound,
+            request.error(CalFacadeErrorCode.principalNotFound,
                           axu.getErrorMsg());
           } else {
-            request.error(CalFacadeException.badRequest,
+            request.error(CalFacadeErrorCode.badRequest,
                           axu.getErrorTag());
           }
           return forwardRetry;

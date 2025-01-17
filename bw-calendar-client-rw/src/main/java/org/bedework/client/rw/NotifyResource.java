@@ -121,10 +121,9 @@ public class NotifyResource implements Serializable {
   /**
    * @param cl the client
    * @param res the resource entity
-   * @throws CalFacadeException
-   */
+) {   */
   public NotifyResource(final Client cl,
-                        final BwResource res) throws CalFacadeException {
+                        final BwResource res) {
     name = res.getName();
     tag = makeTag(res);
 
@@ -190,7 +189,7 @@ public class NotifyResource implements Serializable {
     return resourcesInfo;
   }
 
-  private void initEventInfo(final Client cl) throws CalFacadeException {
+  private void initEventInfo(final Client cl) {
     resourcesInfo = new ArrayList<>();
 
     final BaseNotificationType bnt = getNotification();

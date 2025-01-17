@@ -21,11 +21,11 @@ package org.bedework.client.web.rw.calendars;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -117,7 +117,7 @@ public class MoveCalendarAction extends RWActionBase {
     try {
       cl.moveCollection(cal, newCal);
     } catch (final CalFacadeException cfe) {
-      if (CalFacadeException.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
         request.error(ClientError.referencedCalendar, "default calendar");
         return forwardInUse;
       }

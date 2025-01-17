@@ -19,10 +19,10 @@
 package org.bedework.client.web.rw.filter;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -55,7 +55,7 @@ public class DeleteFilterAction extends RWActionBase {
     try {
       cl.deleteFilter(name);
     } catch (final CalFacadeException cfe) {
-      if (cfe.getMessage().equals(CalFacadeException.unknownFilter)) {
+      if (cfe.getMessage().equals(CalFacadeErrorCode.unknownFilter)) {
         request.error(ClientError.unknownFilter, name);
         return forwardNotFound;
       }

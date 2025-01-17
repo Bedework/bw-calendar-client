@@ -21,6 +21,7 @@ package org.bedework.client.web.rw.calendars;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
@@ -99,12 +100,12 @@ public class DeleteCalendarAction extends RWActionBase {
         return forwardNotFound;
       }
     } catch (final CalFacadeException cfe) {
-      if (CalFacadeException.collectionNotEmpty.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.collectionNotEmpty.equals(cfe.getMessage())) {
         request.error(ClientError.referencedCalendar, calPath);
         return forwardInUse;
       }
 
-      if (CalFacadeException.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.cannotDeleteDefaultCalendar.equals(cfe.getMessage())) {
         request.error(ClientError.referencedCalendar, "default calendar");
         return forwardInUse;
       }

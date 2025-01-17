@@ -20,10 +20,11 @@ package org.bedework.client.web.rw.schedule;
 
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.Participant;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
+import org.bedework.calfacade.Participant;
 import org.bedework.calfacade.ScheduleResult;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
@@ -254,7 +255,7 @@ public class AttendeeRespond extends RWActionBase {
     }
 
     if (!ev.getAttendeeSchedulingObject()) {
-      return CalFacadeException.schedulingBadMethod;
+      return CalFacadeErrorCode.schedulingBadMethod;
     }
 
     /* Check that the current user is actually an attendee
@@ -263,11 +264,11 @@ public class AttendeeRespond extends RWActionBase {
     final Participant att = ((RWClient)cl).findUserAttendee(ei);
 
     if (att == null) {
-      return CalFacadeException.schedulingNotAttendee;
+      return CalFacadeErrorCode.schedulingNotAttendee;
     }
 
     if (ev.getOriginator() == null) {
-      return CalFacadeException.schedulingNoOriginator;
+      return CalFacadeErrorCode.schedulingNoOriginator;
     }
 
     int method = ScheduleMethods.methodTypeNone;
@@ -276,7 +277,7 @@ public class AttendeeRespond extends RWActionBase {
       method = Icalendar.findMethodType(meth);
 
       if (!Icalendar.itipReplyMethodType(method)) {
-        return CalFacadeException.schedulingBadResponseMethod;
+        return CalFacadeErrorCode.schedulingBadResponseMethod;
       }
     }
 
@@ -328,7 +329,7 @@ public class AttendeeRespond extends RWActionBase {
       if ((pStat != IcalDefs.partstatAccepted) &&
           (pStat != IcalDefs.partstatDeclined) &&
           (pStat != IcalDefs.partstatTentative)) {
-        return CalFacadeException.schedulingInvalidPartStatus;
+        return CalFacadeErrorCode.schedulingInvalidPartStatus;
       }
 
       if (proxy != null) {

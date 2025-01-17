@@ -20,7 +20,6 @@ package org.bedework.client.rw;
 
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
@@ -47,19 +46,17 @@ public class NotificationInfo implements Logged, Serializable {
 
   /** Constructor
    *
-   * @throws CalFacadeException
-   */
-  public NotificationInfo() throws CalFacadeException {
+) {   */
+  public NotificationInfo() {
   }
 
   /** Refresh the information
    *
    * @param cl the client
    * @param force - get it whatever the tag says
-   * @throws CalFacadeException
-   */
+) {   */
   public void refresh(final RWClient cl,
-                      final boolean force) throws CalFacadeException {
+                      final boolean force) {
     if ((lastRefresh != 0) &&
         ((System.currentTimeMillis() - lastRefresh) < minRefresh)) {
       // Too soon, too soon.

@@ -23,7 +23,6 @@ import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.indexing.IndexKeys;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
@@ -678,10 +677,9 @@ public class TimeView implements Logged, Serializable {
    *
    * @param cl - the client
    * @param refresh if true will get a new set.
-   * @throws CalFacadeException
-   */
+) {   */
   public void getEvents(final Client cl,
-                        final boolean refresh) throws CalFacadeException {
+                        final boolean refresh) {
     if (!refresh && (events != null)) {
       return;
     }
@@ -712,10 +710,9 @@ public class TimeView implements Logged, Serializable {
    *
    * @param cl
    * @param ei
-   * @throws CalFacadeException
-   */
+) {   */
   public void putEvent(final Client cl,
-                       final EventInfo ei) throws CalFacadeException {
+                       final EventInfo ei) {
     final EventFormatter ef =
             new EventFormatter(cl,
                                new IcalTranslator(new IcalCallbackcb(cl)),

@@ -24,7 +24,7 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.EventKey;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
@@ -128,12 +128,12 @@ public class AddEventRefAction extends RWActionBase {
       cl.addEvent(eref, true, false);
       request.message(ClientMessage.addedEventrefs, 1);
     } catch (final RuntimeException rte) {
-      if (CalFacadeException.duplicateGuid.equals(rte.getMessage())) {
+      if (CalFacadeErrorCode.duplicateGuid.equals(rte.getMessage())) {
         request.error(ClientError.duplicateUid);
         return forwardDuplicate;
       }
 
-      if (CalFacadeException.collectionNotFound.equals(rte.getMessage())) {
+      if (CalFacadeErrorCode.collectionNotFound.equals(rte.getMessage())) {
         request.error(ValidationError.missingCalendar);
         return forwardDuplicate;
       }

@@ -22,6 +22,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.DirectoryInfo;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwAdminGroup;
@@ -29,7 +30,6 @@ import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 import static org.bedework.util.misc.Util.checkNull;
@@ -186,11 +186,11 @@ public class UpdateAGAction extends AdminActionBase {
       final String msg = cfe.getMessage();
 
       switch (msg) {
-        case CalFacadeException.duplicateAdminGroup:
+        case CalFacadeErrorCode.duplicateAdminGroup:
           request.error(ClientError.duplicateGroup,
                         updgrp.getAccount());
           return forwardRetry;
-        case CalFacadeException.alreadyOnGroupPath:
+        case CalFacadeErrorCode.alreadyOnGroupPath:
           request.error(ClientError.onGroupPath,
                         updgrp.getAccount());
           return forwardRetry;

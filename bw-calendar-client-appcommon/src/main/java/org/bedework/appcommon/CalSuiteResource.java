@@ -19,7 +19,6 @@
 package org.bedework.appcommon;
 
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.ContentType;
 import org.bedework.util.servlet.ContentType.Param;
@@ -115,9 +114,8 @@ public class CalSuiteResource implements Serializable {
 
   /**
    * @return content
-   * @throws CalFacadeException
-   */
-  public String getContent() throws CalFacadeException {
+) {   */
+  public String getContent() {
     return resource.getContent().getStringContent();
   }
 }

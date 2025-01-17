@@ -20,6 +20,7 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.CalendarInfo;
 import org.bedework.calfacade.BwDateTime;
+import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.timezones.DateTimeUtil;
@@ -306,7 +307,7 @@ public class TimeDateComponents implements Serializable {
       } else if (DateTimeUtil.isISODate(val)) {
         setDateOnly(true);
       } else {
-        throw new CalFacadeException(CalFacadeException.badDate +
+        throw new CalFacadeException(CalFacadeErrorCode.badDate +
                                            ": " + val);
       }
 

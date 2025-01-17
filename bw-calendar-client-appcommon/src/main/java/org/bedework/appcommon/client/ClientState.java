@@ -19,7 +19,6 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 
@@ -67,9 +66,8 @@ public class ClientState implements Logged, Serializable {
 
   /**
    * @return BwCalendar
-   * @throws CalFacadeException
-   */
-  public BwCalendar getCurrentCollection() throws CalFacadeException {
+) {   */
+  public BwCalendar getCurrentCollection() {
     return null; //cc currentCollection;
   }
 

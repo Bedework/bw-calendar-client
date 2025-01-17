@@ -20,10 +20,10 @@ package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.base.exc.BedeworkAccessException;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
-import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
@@ -127,7 +127,7 @@ public class DeleteEventAction extends RWActionBase {
         try {
         /* Can't really delete it - try annotating it */
           cl.markDeleted(ev);
-        } catch (final CalFacadeAccessException cfe1) {
+        } catch (final BedeworkAccessException ignored) {
           request.error(ClientError.noAccess);
           return forwardNoAction;
         }

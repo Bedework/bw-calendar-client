@@ -21,10 +21,10 @@ package org.bedework.client.web.rw.misc;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
@@ -209,11 +209,11 @@ public class UploadAction extends RWActionBase {
           numEventsAdded++;
 
           /*TODO Used to catch exception here and watch for this:
-          } catch (CalFacadeException cfe) {
-            if (!cfe.getMessage().equals(CalFacadeErrorCode.noRecurrenceInstances)) {
-              throw cfe;
+          } catch (BedeworkException be) {
+            if (!be.getMessage().equals(CalFacadeErrorCode.noRecurrenceInstances)) {
+              
             }
-            request.error(cfe.getMessage(), cfe.getExtra());
+            request.error(be.getMessage(), be.getExtra());
           }*/
         } else {
           final var ueres =
@@ -225,14 +225,14 @@ public class UploadAction extends RWActionBase {
           numEventsUpdated++;
         }
       }
-    } catch (final CalFacadeException cfe) {
+    } catch (final BedeworkException be) {
       if (debug()) {
-        cfe.printStackTrace();
+        be.printStackTrace();
       }
-      request.error(cfe.getMessage(), cfe.getExtra());
+      request.error(be.getMessage(), be.getExtra());
       return forwardBadData;
     } catch (final Throwable t) {
-      t.printStackTrace();
+      error(t);
       throw t;
     }
 

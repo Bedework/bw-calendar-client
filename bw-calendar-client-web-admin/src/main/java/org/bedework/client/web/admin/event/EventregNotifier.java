@@ -1,6 +1,6 @@
 package org.bedework.client.web.admin.event;
 
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
 import org.bedework.util.http.PooledHttpClient;
@@ -49,7 +49,7 @@ public class EventregNotifier {
 
       return resp.status == HttpServletResponse.SC_OK;
     } catch (final Throwable t) {
-      throw new CalFacadeException(t);
+      throw new BedeworkException(t);
     }
   }
 }

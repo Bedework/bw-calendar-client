@@ -18,13 +18,12 @@
 */
 package org.bedework.webcommon.monitor;
 
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.MonitorStat;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwSysMonitorMBean;
 import org.bedework.util.jmx.MBeanUtil;
 import org.bedework.util.xml.XmlEmit;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
 import java.io.IOException;
@@ -81,7 +80,7 @@ public class MonitorAction extends BwAbstractAction {
 
       xml.closeTag(monitorTag);
     } catch (final IOException e) {
-      throw new CalFacadeException(e);
+      throw new BedeworkException(e);
     }
 
     return forwardNull;
@@ -94,7 +93,7 @@ public class MonitorAction extends BwAbstractAction {
                 BwSysMonitorMBean.class,
                 "org.bedework:service=BwSysMonitor");
       } catch (final Throwable e) {
-        throw new CalFacadeException(e);
+        throw new BedeworkException(e);
       }
     }
 

@@ -20,13 +20,12 @@ package org.bedework.client.web.rw.pref;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwCalendar;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwPreferences.CategoryMappings;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.response.GetEntityResponse;
 import org.bedework.util.timezones.Timezones;
@@ -177,7 +176,7 @@ public class UpdatePrefsAction extends RWActionBase {
           tzChanged = true;
         }
       } catch (final TimezonesException e) {
-        throw new CalFacadeException(e);
+        throw new BedeworkException(e);
       }
     }
 

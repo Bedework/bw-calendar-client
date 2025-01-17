@@ -22,7 +22,7 @@ import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.svc.EventInfo;
@@ -38,7 +38,6 @@ import org.bedework.util.xml.XmlEmit;
 import org.bedework.util.xml.XmlEmit.NameSpace;
 import org.bedework.util.xml.tagdefs.XcalTags;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
@@ -228,7 +227,7 @@ public class SearchParamsAction extends BwAbstractAction {
                               wtr);
         }
       } catch (final IOException e) {
-        throw new CalFacadeException(e);
+        throw new BedeworkException(e);
       }
 
       return forwardNull;

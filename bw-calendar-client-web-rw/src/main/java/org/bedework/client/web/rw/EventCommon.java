@@ -9,6 +9,7 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.SelectId;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -30,7 +31,6 @@ import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.base.StartEndComponent;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.EventInfo;
@@ -46,9 +46,6 @@ import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.calendar.ScheduleStates;
-import org.bedework.util.http.PooledHttpClient;
-import org.bedework.util.http.PooledHttpClient.ResponseHolder;
-import org.bedework.util.http.RequestBuilder;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpServletUtils;
@@ -63,15 +60,12 @@ import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Duration;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletResponse;
 
 import static org.bedework.client.web.rw.EventProps.validateContact;
 import static org.bedework.client.web.rw.EventProps.validateLocation;
@@ -374,7 +368,7 @@ public class EventCommon {
                 Timezones.getDefaultTz(),
                 DateTimeUtil.fromISODate(st));
       } catch (final TimezonesException e) {
-        throw new CalFacadeException(e);
+        throw new BedeworkException(e);
       }
 
       // Set end to 1 week on.
@@ -471,8 +465,8 @@ public class EventCommon {
     if (!sr.isOk()) {
       final var exc = sr.getException();
       if (exc != null) {
-        if (exc instanceof final CalFacadeException cfe) {
-          request.error(cfe.getMessage(), cfe.getExtra());
+        if (exc instanceof final BedeworkException be) {
+          request.error(be.getMessage(), be.getExtra());
         } else {
           request.error(exc.getMessage());
         }

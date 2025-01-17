@@ -23,11 +23,11 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
@@ -233,7 +233,7 @@ public class BwRequest extends Request {
       config = ClientConfigurations.getConfigs()
                                    .getClientConfig(appname);
       if (config == null) {
-        throw new CalFacadeException(
+        throw new BedeworkException(
                 "No config available for app " + appname);
       }
 
@@ -350,7 +350,7 @@ public class BwRequest extends Request {
     try {
       getResponse().sendError(status, text);
     } catch (final IOException e) {
-      throw new CalFacadeException(e);
+      throw new BedeworkException(e);
     }
   }
 
@@ -367,7 +367,7 @@ public class BwRequest extends Request {
     try {
       return getResponse().getWriter();
     } catch (final IOException e) {
-      throw new CalFacadeException(e);
+      throw new BedeworkException(e);
     }
   }
 

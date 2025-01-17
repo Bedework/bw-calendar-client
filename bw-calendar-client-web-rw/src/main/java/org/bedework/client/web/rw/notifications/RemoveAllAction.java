@@ -18,10 +18,9 @@
 */
 package org.bedework.client.web.rw.notifications;
 
-import org.bedework.calfacade.exc.CalFacadeAccessException;
-import org.bedework.calfacade.exc.CalFacadeForbidden;
+import org.bedework.base.exc.BedeworkAccessException;
+import org.bedework.base.exc.BedeworkForbidden;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
@@ -66,11 +65,11 @@ public class RemoveAllAction extends RWActionBase {
     try {
       cl.removeAllNotifications(principalHref);
       status = HttpServletResponse.SC_OK;
-    } catch (final CalFacadeAccessException ca) {
-      request.error(ca.getMessage());
+    } catch (final BedeworkAccessException ba) {
+      request.error(ba.getMessage());
       status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-    } catch (final CalFacadeForbidden cf) {
-      request.error(cf.getMessage());
+    } catch (final BedeworkForbidden bf) {
+      request.error(bf.getMessage());
       status = HttpServletResponse.SC_FORBIDDEN;
     }
 

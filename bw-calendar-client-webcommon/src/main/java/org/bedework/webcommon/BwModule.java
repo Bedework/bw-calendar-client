@@ -23,8 +23,8 @@ import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ROClientImpl;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.client.rw.RWClientImpl;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
@@ -267,7 +267,7 @@ public class BwModule implements Logged, Serializable {
                              final boolean canSwitch,
                              final ConfigCommon conf) {
     if (conf.getPublicAdmin()) {
-      throw new CalFacadeException("Non-admin client called for admin app");
+      throw new BedeworkException("Non-admin client called for admin app");
     }
 
     final boolean readWrite = conf.getReadWrite();
@@ -435,7 +435,7 @@ public class BwModule implements Logged, Serializable {
     }
 
     if (t != null) {
-      throw new CalFacadeException(t);
+      throw new BedeworkException(t);
     }
   }
 

@@ -24,6 +24,7 @@ import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -39,7 +40,6 @@ import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.configs.SystemProperties;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.BwCollectionFilter;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.indexing.BwIndexer;
@@ -396,7 +396,7 @@ public class ROClientImpl implements Logged, Client {
     try {
       mapper.writeValue(resp.getOutputStream(), val);
     } catch (final Throwable t) {
-      throw new CalFacadeException(t);
+      throw new BedeworkException(t);
     }
   }
 
@@ -421,7 +421,7 @@ public class ROClientImpl implements Logged, Client {
     try {
       resp.getOutputStream().close();
     } catch (final IOException ioe) {
-      throw new CalFacadeException(ioe);
+      throw new BedeworkException(ioe);
     }
   }
 
@@ -482,7 +482,7 @@ public class ROClientImpl implements Logged, Client {
         final var primaryCal = svci.getCalendarsHandler()
                                    .getPrimaryPublicPath();
         if (primaryCal == null) {
-          throw new CalFacadeException("No primary calendar set");
+          throw new BedeworkException("No primary calendar set");
         }
 
         primaryPublicPath = primaryCal.getPath();
@@ -609,7 +609,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public void updatePreferences(final BwPreferences val)
           {
-    throw new CalFacadeException("org.bedework.read.only.client");
+    throw new BedeworkException("org.bedework.read.only.client");
   }
 
   @Override
@@ -1587,7 +1587,7 @@ public class ROClientImpl implements Logged, Client {
       try {
         Thread.sleep(toWait);
       } catch (final InterruptedException ignored) {
-        //throw new CalFacadeException(ie);
+        //throw new BedeworkException(ie);
         // Assume we're shutting down.
       }
 

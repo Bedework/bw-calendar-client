@@ -3,10 +3,9 @@
 */
 package org.bedework.client.web.admin;
 
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.client.admin.AdminClient;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.RenderMainAction;
 
@@ -54,7 +53,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
 
     final var fwd = forwardsTab.get(globals.getCurrentTab());
     if (fwd == null) {
-      throw new CalFacadeException("No forward - tab not defined: " +
+      throw new BedeworkException("No forward - tab not defined: " +
                                            globals.getCurrentTab());
     }
 

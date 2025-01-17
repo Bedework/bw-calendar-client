@@ -21,7 +21,6 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.EventPropertiesReference;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.ShareableEntity;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EnsureEntityExistsResult;
@@ -88,7 +87,6 @@ public interface RWClient extends Client {
    * @param emptyIt  true to delete contents
    * @return boolean  true if it was deleted.
    *                  false if it didn't exist
-   * @throws CalFacadeException for in use or marked as default calendar
    */
   boolean deleteCollection(BwCalendar val,
                            boolean emptyIt);
@@ -366,7 +364,6 @@ public interface RWClient extends Client {
   /** Save a resource at the given collection path. The collection MUST exist.
    *
    * @param  val       resource with attached content
-   * @throws CalFacadeException for errors including duplicate name
    */
   void saveResource(BwResource val);
 
@@ -669,7 +666,6 @@ public interface RWClient extends Client {
   /** Validate and persist a new filter definition
    *
    * @param  val       filter definition
-   * @throws CalFacadeException for errrors including duplicate name
    */
   void saveFilter(BwFilterDef val);
 

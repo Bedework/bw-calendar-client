@@ -20,7 +20,6 @@ package org.bedework.client.web.admin.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.client.admin.AdminClient;
 
@@ -35,8 +34,7 @@ import java.util.List;
 public class RenderGlobalResourcesAction extends RenderResourcesAction {
   @Override
   protected List<CalSuiteResource> getResources(final AdminClient cl,
-                                                final BwCalSuite currentCalSuite)
-      throws CalFacadeException {
+                                                final BwCalSuite currentCalSuite) {
     final List<CalSuiteResource> resources = new ArrayList<>();
     final List<BwResource> bres = cl.getCSResources(null,
                                                     CalSuiteResource.resourceClassGlobal);

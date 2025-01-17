@@ -20,11 +20,9 @@ package org.bedework.client.web.admin.resources;
 
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.ArrayList;
@@ -60,11 +58,9 @@ public class RenderResourcesAction extends AdminActionBase {
    * Gets the resources to be displayed in the UI.
    * @param cl the client
    * @param currentCalSuite calendar suite
-   * @throws CalFacadeException on errors
    */
   protected List<CalSuiteResource> getResources(final AdminClient cl,
-                                                final BwCalSuite currentCalSuite)
-      throws CalFacadeException {
+                                                final BwCalSuite currentCalSuite) {
     final List<CalSuiteResource> resources = new ArrayList<>();
     List<BwResource> bres = cl.getCSResources(currentCalSuite,
                                               CalSuiteResource.resourceClassCalSuite);

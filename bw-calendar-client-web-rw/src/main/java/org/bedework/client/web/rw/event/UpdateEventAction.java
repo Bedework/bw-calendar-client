@@ -28,6 +28,7 @@ import org.bedework.appcommon.Images;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwAttachment;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
@@ -39,7 +40,6 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.base.StartEndComponent;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
@@ -698,24 +698,24 @@ public class UpdateEventAction extends RWActionBase {
 
         pars.cl.changeAccess(pars.ev, acl.getAces(), true);
       }
-    } catch (final CalFacadeException cfe) {
+    } catch (final BedeworkException be) {
       pars.cl.rollback();
 
-      if (CalFacadeErrorCode.noRecurrenceInstances.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.noRecurrenceInstances.equals(be.getMessage())) {
         pars.request.error(ClientError.noRecurrenceInstances,
                            pars.ev.getUid());
         return forwardValidationError;
       }
 
-      if (CalFacadeErrorCode.duplicateGuid.equals(cfe.getMessage())) {
+      if (CalFacadeErrorCode.duplicateGuid.equals(be.getMessage())) {
         pars.request.error(ClientError.duplicateUid);
         return forwardDuplicate;
       }
 
-      throw cfe;
+      throw be;
     } catch (final AccessException e) {
       pars.cl.rollback();
-      throw new CalFacadeException(e);
+      throw new BedeworkException(e);
     }
 
     return forwardSuccess;
@@ -1349,7 +1349,7 @@ public class UpdateEventAction extends RWActionBase {
         try {
           until = Timezones.getUtc(until, start.getTzid());
         } catch (final TimezonesException e) {
-          throw new CalFacadeException(e);
+          throw new BedeworkException(e);
         }
       } else if (!DateTimeUtil.isISODateTimeUTC(until)) {
         request.error(ValidationError.invalidRecurUntil, "until");

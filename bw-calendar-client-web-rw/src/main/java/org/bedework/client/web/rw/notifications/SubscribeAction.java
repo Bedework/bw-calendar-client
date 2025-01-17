@@ -19,9 +19,8 @@
 package org.bedework.client.web.rw.notifications;
 
 import org.bedework.appcommon.ClientError;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
@@ -69,10 +68,10 @@ public class SubscribeAction extends RWActionBase {
 
         cl.subscribe(href, emails);
       }
-    } catch (final CalFacadeException cfe) {
+    } catch (final BedeworkException be) {
       cl.rollback();
       if (debug()) {
-        error(cfe);
+        error(be);
       }
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return forwardNull;

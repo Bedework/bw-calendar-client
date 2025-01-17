@@ -19,8 +19,8 @@
 package org.bedework.client.web.admin;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.base.exc.BedeworkAccessException;
 import org.bedework.calfacade.BwGroup;
-import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
@@ -131,7 +131,7 @@ public class AdminUtil implements ForwardDefs {
           return cs;
         }
       }
-    } catch (final CalFacadeAccessException cfe) {
+    } catch (final BedeworkAccessException ignored) {
       // Access is set incorrectly
       request.error(ClientError.noCalsuiteAccess, adg.getPrincipalRef());
     }

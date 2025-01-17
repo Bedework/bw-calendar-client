@@ -21,11 +21,10 @@ package org.bedework.client.web.admin.calsuite;
 import org.bedework.access.AccessException;
 import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** Update a calendar suite for a user.
@@ -80,7 +79,7 @@ public class UpdateCalSuiteAction extends AdminActionBase {
 
         cl.changeAccess(csw, acl.getAces(), true);
       } catch (final AccessException ae) {
-        throw new CalFacadeException(ae);
+        throw new BedeworkException(ae);
       }
     }
 

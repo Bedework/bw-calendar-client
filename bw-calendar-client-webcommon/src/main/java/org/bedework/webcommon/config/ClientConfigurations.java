@@ -19,7 +19,7 @@
 package org.bedework.webcommon.config;
 
 import org.bedework.appcommon.ConfigCommon;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.util.jmx.ConfBase;
 
 import java.util.HashMap;
@@ -88,7 +88,6 @@ public final class ClientConfigurations extends ConfBase {
   }
 
   /**
-   * @throws CalFacadeException on fatal lload error
    */
   private ClientConfigurations() {
     super("org.bedework.clients:service=System",
@@ -141,7 +140,7 @@ public final class ClientConfigurations extends ConfBase {
                         cn);
 
         if (cc == null) {
-          throw new CalFacadeException(
+          throw new BedeworkException(
                   "Unable to create mbean class: " + mbeanClassName);
         }
 
@@ -151,10 +150,10 @@ public final class ClientConfigurations extends ConfBase {
 
         register(new ObjectName(cc.getServiceName()), cc);
       }
-    } catch (final CalFacadeException cfe) {
-      throw cfe;
+    } catch (final BedeworkException be) {
+      throw be;
     } catch (final Throwable t) {
-      throw new CalFacadeException(t);
+      throw new BedeworkException(t);
     }
   }
 
@@ -163,7 +162,7 @@ public final class ClientConfigurations extends ConfBase {
     try {
       getManagementContext().stop();
     } catch (final Throwable t){
-      t.printStackTrace();
+      error(t);
     }
   }
 }

@@ -24,6 +24,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ROClientImpl;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
@@ -47,7 +48,6 @@ import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.ShareableEntity;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.indexing.BwIndexer;
 import org.bedework.calfacade.mail.Message;
 import org.bedework.calfacade.svc.BwPreferences;
@@ -263,7 +263,7 @@ public class RWClientImpl extends ROClientImpl
             svci.getCategoriesHandler().getPersistent(val.getUid());
 
     if (pval == null) {
-      throw new CalFacadeException("No such category");
+      throw new BedeworkException("No such category");
     }
 
     if (pval.updateFrom(val)) {
@@ -341,7 +341,7 @@ public class RWClientImpl extends ROClientImpl
             svci.getContactsHandler().getPersistent(val.getUid());
 
     if (pval == null) {
-      throw new CalFacadeException("No such contact");
+      throw new BedeworkException("No such contact");
     }
 
     if (pval.updateFrom(val)) {
@@ -405,7 +405,7 @@ public class RWClientImpl extends ROClientImpl
             svci.getLocationsHandler().getPersistent(val.getUid());
 
     if (pval == null) {
-      throw new CalFacadeException("No such location");
+      throw new BedeworkException("No such location");
     }
 
     if (pval.updateFrom(val)) {
@@ -504,8 +504,8 @@ public class RWClientImpl extends ROClientImpl
       if (!cmnResp.isOk()) {
         return Response.fromResponse(resp, cmnResp);
       }
-    } catch (final CalFacadeException cfe) {
-      return Response.error(resp, cfe);
+    } catch (final BedeworkException be) {
+      return Response.error(resp, be);
     }
 
     return resp;
@@ -537,13 +537,9 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public void removeNotification(final String name) {
-    try {
-      svci.getNotificationsHandler().
-              remove(getCurrentPrincipal().getPrincipalRef(),
-                     name);
-    } catch (final CalFacadeException e) {
-      throw new RuntimeException(e);
-    }
+    svci.getNotificationsHandler().
+        remove(getCurrentPrincipal().getPrincipalRef(),
+               name);
     updated();
   }
 
@@ -586,12 +582,12 @@ public class RWClientImpl extends ROClientImpl
     checkUpdate();
     try {
       svci.getResourcesHandler().getContent(val);
-    } catch (final CalFacadeException cfe) {
-      if (CalFacadeErrorCode.missingResourceContent.equals(cfe.getMessage())) {
+    } catch (final BedeworkException be) {
+      if (CalFacadeErrorCode.missingResourceContent.equals(be.getMessage())) {
         return false;
       }
 
-      throw cfe;
+      throw be;
     }
 
     return true;

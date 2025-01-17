@@ -20,10 +20,10 @@ package org.bedework.client.web.admin.admingroup;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.DirectoryInfo;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
@@ -182,21 +182,20 @@ public class UpdateAGAction extends AdminActionBase {
       }
 
       cl.refreshAdminGroups();
-    } catch (final CalFacadeException cfe) {
-      final String msg = cfe.getMessage();
-
-      switch (msg) {
-        case CalFacadeErrorCode.duplicateAdminGroup:
+    } catch (final BedeworkException be) {
+      return switch (be.getMessage()) {
+        case CalFacadeErrorCode.duplicateAdminGroup -> {
           request.error(ClientError.duplicateGroup,
                         updgrp.getAccount());
-          return forwardRetry;
-        case CalFacadeErrorCode.alreadyOnGroupPath:
+          yield forwardRetry;
+        }
+        case CalFacadeErrorCode.alreadyOnGroupPath -> {
           request.error(ClientError.onGroupPath,
                         updgrp.getAccount());
-          return forwardRetry;
-        default:
-          throw cfe;
-      }
+          yield forwardRetry;
+        }
+        default -> throw be;
+      };
     }
 
     /* Refetch the group

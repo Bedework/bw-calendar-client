@@ -20,12 +20,12 @@ package org.bedework.client.web.rw.schedule;
 
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.Participant;
 import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
@@ -341,7 +341,7 @@ public class AttendeeRespond extends RWActionBase {
       // Update the status - will affect incoming event object.
       att.setParticipationStatus(partStat);
     } else if (method != ScheduleMethods.methodTypeCounter) {
-      throw new CalFacadeException("Never get here");
+      throw new BedeworkException("Never get here");
     }
 
     return null;

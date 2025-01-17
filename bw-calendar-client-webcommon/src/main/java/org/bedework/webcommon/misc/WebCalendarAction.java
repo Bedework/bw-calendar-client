@@ -20,8 +20,8 @@ package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.exc.BedeworkAccessException;
 import org.bedework.calfacade.BwDateTime;
-import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
@@ -165,7 +165,7 @@ public class WebCalendarAction extends BwAbstractAction {
       request.prepareWrite(name, "text/calendar");
 
       IcalendarUtil.writeCalendar(c, request.getWriter());
-    } catch (final CalFacadeAccessException cfae) {
+    } catch (final BedeworkAccessException ignored) {
       request.sendError(HttpServletResponse.SC_FORBIDDEN, null);
     }
 

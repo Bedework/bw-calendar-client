@@ -19,10 +19,10 @@
 package org.bedework.client.web.rw.sharing;
 
 import org.bedework.appcommon.ClientError;
+import org.bedework.base.exc.BedeworkForbidden;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteNotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
-import org.bedework.calfacade.exc.CalFacadeForbidden;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.BwRWWebGlobals;
@@ -95,8 +95,8 @@ public class ShareReplyAction extends RWActionBase {
 
     try {
       cl.sharingReply(reply);
-    } catch (final CalFacadeForbidden cf) {
-      request.error(cf.getMessage());
+    } catch (final BedeworkForbidden bf) {
+      request.error(bf.getMessage());
       error = true;
     }
 

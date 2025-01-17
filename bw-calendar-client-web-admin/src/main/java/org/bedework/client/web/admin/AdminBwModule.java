@@ -4,8 +4,8 @@
 package org.bedework.client.web.admin;
 
 import org.bedework.appcommon.ConfigCommon;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwGroup;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.prefs.BwAuthUserPrefs;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
@@ -44,7 +44,7 @@ public class AdminBwModule extends RwBwModule {
                              boolean canSwitch,
                              final ConfigCommon conf) {
     if (!conf.getPublicAdmin()) {
-      throw new CalFacadeException("Admin client called for non admin app");
+      throw new BedeworkException("Admin client called for non admin app");
     }
 
     final var globals = (BwAdminWebGlobals)request.getGlobals();
@@ -113,7 +113,7 @@ public class AdminBwModule extends RwBwModule {
 
         final var currentPrincipal = client.getCurrentPrincipal();
         if (currentPrincipal == null) {
-          throw new CalFacadeException("Null user for public admin.");
+          throw new BedeworkException("Null user for public admin.");
         }
 
         canSwitch = canSwitch ||
@@ -181,10 +181,10 @@ public class AdminBwModule extends RwBwModule {
         mstate.setRefresh(true);
         sess.reset(request);
       }
-    } catch (final CalFacadeException cfe) {
-      throw cfe;
+    } catch (final BedeworkException be) {
+      throw be;
     } catch (final Throwable t) {
-      throw new CalFacadeException(t);
+      throw new BedeworkException(t);
     }
 
     return true;

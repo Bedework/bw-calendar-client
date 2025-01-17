@@ -22,10 +22,10 @@ import org.bedework.access.Acl;
 import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calsvci.EventsI;
@@ -198,13 +198,13 @@ public class UpdateCalendarAction extends RWActionBase {
 
       try {
         form.setCalendar(cl.addCollection(cal, parentPath));
-      } catch (final CalFacadeException cfe) {
-        if (cfe.getMessage().equals(CalFacadeErrorCode.duplicateCalendar)) {
+      } catch (final BedeworkException be) {
+        if (be.getMessage().equals(CalFacadeErrorCode.duplicateCalendar)) {
           request.error(CalFacadeErrorCode.duplicateCalendar,
                         cal.getName());
           return forwardRetry;
         }
-        throw cfe;
+        throw be;
       }
       form.assignAddingCalendar(false);
     } else {
@@ -234,7 +234,7 @@ public class UpdateCalendarAction extends RWActionBase {
 
         cl.changeAccess(cal, acl.getAces(), true);
       } catch (final Throwable t) {
-        throw new CalFacadeException(t);
+        throw new BedeworkException(t);
       }
     }
 

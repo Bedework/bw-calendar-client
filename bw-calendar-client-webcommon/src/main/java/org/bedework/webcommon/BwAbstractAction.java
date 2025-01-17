@@ -24,9 +24,9 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.exc.CalFacadeAccessException;
-import org.bedework.calfacade.exc.CalFacadeClosed;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkAccessException;
+import org.bedework.base.exc.BedeworkClosed;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.util.misc.Util;
 import org.bedework.util.struts.UtilAbstractAction;
@@ -262,22 +262,22 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       forward = forwards[doAction(bwreq)];
 
 //      bsess.prepareRender(bwreq);
-    } catch (final CalFacadeAccessException cfae) {
+    } catch (final BedeworkAccessException bae) {
       request.error(ClientError.noAccess);
       if (debug()) {
-        error(cfae);
+        error(bae);
       }
       forward = forwards[forwardNoAccess];
       cl.rollback();
-    } catch (final CalFacadeClosed cfc) {
+    } catch (final BedeworkClosed ignored) {
       request.warn(ClientError.closed);
       warn("Interface closed");
       forward = forwards[forwardGotomain];
-    } catch (final CalFacadeException cfe) {
-      request.error(cfe.getMessage(), cfe.getExtra());
-      request.error(cfe);
+    } catch (final BedeworkException be) {
+      request.error(be.getMessage(), be.getExtra());
+      request.error(be);
       if (debug()) {
-        error(cfe);
+        error(be);
       }
 
       forward = forwards[forwardError];

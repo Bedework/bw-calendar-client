@@ -19,13 +19,12 @@
 package org.bedework.webcommon.calendars;
 
 import org.bedework.appcommon.client.Client;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -87,7 +86,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
 
         writeCols(cl, col, pw);
       } catch (final IOException ioe) {
-        throw new CalFacadeException(ioe);
+        throw new BedeworkException(ioe);
       }
     }
     
@@ -179,8 +178,8 @@ public class FetchCollectionsAction extends BwAbstractAction {
           filterExpr.append(cat.getHref());
           filterExpr.append("\"");
         }
-      } catch (final CalFacadeException cfe) {
-        pw.print(" category-error=\"" + cfe.getDetailMessage() + "\"");
+      } catch (final BedeworkException be) {
+        pw.print(" category-error=\"" + be.getDetailMessage() + "\"");
       }
     }
 

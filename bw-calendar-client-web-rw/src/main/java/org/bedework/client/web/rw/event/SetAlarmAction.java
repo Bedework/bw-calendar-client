@@ -20,13 +20,12 @@ package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
+import org.bedework.base.exc.BedeworkUnimplementedException;
 import org.bedework.calfacade.BwAlarm;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwEvent;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
@@ -67,7 +66,7 @@ public class SetAlarmAction extends RWActionBase {
 
     if (evstate.getAlarmTriggerByDate()) {
       /*XXX this needs changing */
-      throw new CalFacadeException("Unimplemented");
+      throw new BedeworkUnimplementedException();
 //      tr = new Trigger(form.getTriggerDateTime().getDateTime());
     } else {
       //trDuration = true;

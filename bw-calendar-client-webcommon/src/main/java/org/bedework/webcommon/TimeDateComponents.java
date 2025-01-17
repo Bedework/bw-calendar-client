@@ -19,9 +19,9 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.CalendarInfo;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.TimeZoneName;
@@ -90,7 +90,7 @@ public class TimeDateComponents implements Serializable {
 
   /**  An exception used by this class
    */
-  public static class TimeDateException extends CalFacadeException {
+  public static class TimeDateException extends BedeworkException {
     /**
      * @param msg
      */
@@ -307,7 +307,7 @@ public class TimeDateComponents implements Serializable {
       } else if (DateTimeUtil.isISODate(val)) {
         setDateOnly(true);
       } else {
-        throw new CalFacadeException(CalFacadeErrorCode.badDate +
+        throw new BedeworkException(CalFacadeErrorCode.badDate +
                                            ": " + val);
       }
 

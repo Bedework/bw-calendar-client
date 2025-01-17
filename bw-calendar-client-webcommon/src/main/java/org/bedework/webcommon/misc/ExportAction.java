@@ -20,13 +20,13 @@ package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.convert.IcalTranslator;
@@ -192,7 +192,7 @@ public class ExportAction extends BwAbstractAction {
         IcalendarUtil.writeCalendar(ical, wtr);
       }
     } catch (final IOException e) {
-      throw new CalFacadeException(e);
+      throw new BedeworkException(e);
     }
 
     return forwardNull;

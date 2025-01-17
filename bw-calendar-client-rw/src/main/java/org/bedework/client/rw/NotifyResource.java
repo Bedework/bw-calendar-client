@@ -20,6 +20,7 @@ package org.bedework.client.rw;
 
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.client.Client;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.notifications.BaseNotificationType;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.notifications.ResourceChangeType;
@@ -31,7 +32,6 @@ import org.bedework.caldav.util.notifications.suggest.SuggestBaseNotificationTyp
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwResource;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.util.misc.Util;
 
@@ -138,7 +138,7 @@ public class NotifyResource implements Serializable {
 
       initEventInfo(cl);
     } catch (final Throwable t) {
-      throw new CalFacadeException(t);
+      throw new BedeworkException(t);
     }
   }
 

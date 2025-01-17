@@ -30,6 +30,8 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.WeekView;
 import org.bedework.appcommon.YearView;
 import org.bedework.appcommon.client.Client;
+import org.bedework.base.exc.BedeworkClosed;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -40,8 +42,6 @@ import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.exc.CalFacadeClosed;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.filter.SimpleFilterParser.ParseResult;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
@@ -275,9 +275,9 @@ public class BwSessionImpl implements Logged, BwSession {
         refreshView(req);
 //        mstate.setRefresh(false);
       }
-    } catch (final CalFacadeClosed cfc) {
+    } catch (final BedeworkClosed bc) {
       // Pass it up
-      throw cfc;
+      throw bc;
     } catch (final Throwable t) {
       // Not much we can do here
       req.error(t);
@@ -415,8 +415,8 @@ public class BwSessionImpl implements Logged, BwSession {
       }
       
       return cloned;
-    } catch (final CalFacadeException cfe) {
-      request.error(cfe);
+    } catch (final BedeworkException be) {
+      request.error(be);
       return null;
     }
   }
@@ -469,8 +469,8 @@ public class BwSessionImpl implements Logged, BwSession {
       publicCollectionsChangeToken[accessIndex] = changeToken;
 
       return clonedPublicCollections[accessIndex];
-    } catch (final CalFacadeException cfe) {
-      request.error(cfe);
+    } catch (final BedeworkException be) {
+      request.error(be);
       return null;
     }
   }
@@ -723,8 +723,8 @@ public class BwSessionImpl implements Logged, BwSession {
       }
 
       return getContactCollator().getCollatedCollection(vals);
-    } catch (final CalFacadeException cfe) {
-      request.error(cfe);
+    } catch (final BedeworkException be) {
+      request.error(be);
       return new ArrayList<>();
     }
   }
@@ -784,7 +784,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       vals = curAuthUserPrefs.getLocationPrefs().getPreferred();
     } else {
-      throw new CalFacadeException("Software error - bad kind " + kind);
+      throw new BedeworkException("Software error - bad kind " + kind);
     }
 
     request.setSessionAttr(attrName,

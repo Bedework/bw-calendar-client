@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.SearchParams;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 
 import static org.bedework.webcommon.search.SearchUtil.setSearchParams;
 
@@ -72,8 +72,8 @@ public class RenderMainAction extends RenderAction {
         mstate.setSearchResult(cl.search(params));
         request.setRequestAttr(BwRequest.bwSearchResultName,
                                mstate.getSearchResult());
-      } catch (final CalFacadeException cfe) {
-        request.error(cfe);
+      } catch (final BedeworkException be) {
+        request.error(be);
       }
     }
 

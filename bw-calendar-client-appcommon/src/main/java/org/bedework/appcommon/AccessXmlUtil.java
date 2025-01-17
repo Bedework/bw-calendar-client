@@ -23,7 +23,7 @@ import org.bedework.access.AccessPrincipal;
 import org.bedework.access.Acl;
 import org.bedework.access.PrivilegeSet;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.exc.CalFacadeException;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.util.xml.XmlEmit;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -62,8 +62,8 @@ public class AccessXmlUtil extends org.bedework.access.AccessXmlUtil {
     public AccessPrincipal getPrincipal(final String href) throws AccessException {
       try {
         return cl.getPrincipal(href);
-      } catch (final CalFacadeException cfe) {
-        throw new AccessException(cfe);
+      } catch (final BedeworkException be) {
+        throw new AccessException(be);
       }
     }
 

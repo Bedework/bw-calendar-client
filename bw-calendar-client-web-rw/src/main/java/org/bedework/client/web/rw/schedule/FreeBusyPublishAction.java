@@ -18,6 +18,7 @@
 */
 package org.bedework.client.web.rw.schedule;
 
+import org.bedework.base.exc.BedeworkAccessException;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwOrganizer;
@@ -25,7 +26,6 @@ import org.bedework.calfacade.BwPrincipal;
 import org.bedework.calfacade.BwVersion;
 import org.bedework.calfacade.base.BwTimeRange;
 import org.bedework.calfacade.configs.AuthProperties;
-import org.bedework.calfacade.exc.CalFacadeAccessException;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
@@ -162,7 +162,7 @@ public class FreeBusyPublishAction extends RWActionBase {
       request.prepareWrite("freebusy.ics", "text/calendar");
 
       IcalendarUtil.writeCalendar(ical, request.getWriter());
-    } catch (final CalFacadeAccessException cfae) {
+    } catch (final BedeworkAccessException ignored) {
       request.sendError(HttpServletResponse.SC_FORBIDDEN, null);
     }
 

@@ -26,6 +26,7 @@ import org.bedework.access.Privilege;
 import org.bedework.appcommon.CalSuiteResource;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.calfacade.BwCalendar;
@@ -36,7 +37,6 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.base.BwShareableDbentity;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.exc.CalFacadeException;
 import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.calfacade.svc.BwCalSuite;
@@ -497,14 +497,13 @@ public class AdminClientImpl extends RWClientImpl
       }
 
       return r;
-    } catch (final CalFacadeException cfe) {
-      if (CalFacadeErrorCode.collectionNotFound.equals(cfe.getMessage())) {
+    } catch (final BedeworkException be) {
+      if (CalFacadeErrorCode.collectionNotFound.equals(be.getMessage())) {
         // Collection does not exist (yet)
-
         return null;
       }
 
-      throw cfe;
+      throw be;
     }
   }
 
@@ -536,7 +535,7 @@ public class AdminClientImpl extends RWClientImpl
     String path = getCSResourcesPath(suite, rc);
 
     if (path == null) {
-      throw new CalFacadeException(
+      throw new BedeworkException(
               CalFacadeErrorCode.noCalsuiteResCol);
     }
 
@@ -592,7 +591,7 @@ public class AdminClientImpl extends RWClientImpl
 
       changeAccess(resCol, aces, true);
     } catch (final AccessException ae) {
-      throw new CalFacadeException(ae);
+      throw new BedeworkException(ae);
     }
 
     updated();

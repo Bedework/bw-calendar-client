@@ -32,7 +32,7 @@ import org.bedework.convert.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
-import org.bedework.util.misc.ToString;
+import org.bedework.base.ToString;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;

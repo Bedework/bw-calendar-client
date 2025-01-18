@@ -33,7 +33,7 @@ import org.bedework.convert.xcal.XmlTranslator;
 import org.bedework.jsforj.model.JSGroup;
 import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.util.xml.XmlEmit;
 import org.bedework.util.xml.XmlEmit.NameSpace;
 import org.bedework.util.xml.tagdefs.XcalTags;

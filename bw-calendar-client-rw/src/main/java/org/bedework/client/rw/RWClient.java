@@ -30,7 +30,7 @@ import org.bedework.calfacade.svc.SharingReplyResult;
 import org.bedework.calfacade.svc.SubscribeResult;
 import org.bedework.calfacade.synch.BwSynchInfo;
 import org.bedework.calsvci.SchedulingI;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 
 import java.io.InputStream;
 import java.util.Collection;

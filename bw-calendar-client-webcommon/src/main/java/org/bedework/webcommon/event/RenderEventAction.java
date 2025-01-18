@@ -28,7 +28,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.util.misc.response.GetEntitiesResponse;
+import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwAbstractAction;
@@ -36,7 +36,7 @@ import org.bedework.webcommon.BwRequest;
 
 import java.util.Date;
 
-import static org.bedework.util.misc.response.Response.Status.notFound;
+import static org.bedework.base.response.Response.Status.notFound;
 import static org.bedework.webcommon.DateViewUtil.setViewDate;
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 

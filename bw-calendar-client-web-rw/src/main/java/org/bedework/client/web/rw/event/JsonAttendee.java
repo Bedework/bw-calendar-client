@@ -18,7 +18,7 @@
 */
 package org.bedework.client.web.rw.event;
 
-import org.bedework.util.misc.ToString;
+import org.bedework.base.ToString;
 
 /**
  * Represent attendees passed in request as json.

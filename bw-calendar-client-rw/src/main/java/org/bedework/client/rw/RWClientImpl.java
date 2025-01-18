@@ -65,7 +65,7 @@ import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.Contacts;
 import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SchedulingI;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 
 import java.io.IOException;
 import java.io.InputStream;

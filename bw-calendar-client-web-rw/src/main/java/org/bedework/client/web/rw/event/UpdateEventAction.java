@@ -56,8 +56,8 @@ import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
-import org.bedework.util.misc.response.GetEntityResponse;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.GetEntityResponse;
+import org.bedework.base.response.Response;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
@@ -90,7 +90,7 @@ import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
 import static org.bedework.client.web.rw.EventCommon.validateEventDates;
-import static org.bedework.util.misc.response.Response.Status.ok;
+import static org.bedework.base.response.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
  * distinguish.

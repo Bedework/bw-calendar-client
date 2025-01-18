@@ -36,7 +36,7 @@ import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.util.misc.response.GetEntitiesResponse;
+import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -45,7 +45,7 @@ import java.util.TreeSet;
 
 import static org.bedework.client.web.rw.EventCommon.copyEvent;
 import static org.bedework.client.web.rw.EventCommon.resetEvent;
-import static org.bedework.util.misc.response.Response.Status.notFound;
+import static org.bedework.base.response.Response.Status.notFound;
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /** This action fetches events for editing

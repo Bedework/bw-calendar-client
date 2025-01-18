@@ -39,6 +39,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-base</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
     </dependency>

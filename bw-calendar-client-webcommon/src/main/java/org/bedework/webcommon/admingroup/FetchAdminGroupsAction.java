@@ -21,7 +21,7 @@ package org.bedework.webcommon.admingroup;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.responses.AdminGroupsResponse;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 

@@ -21,6 +21,11 @@
     <!-- Bedework -->
     <dependency>
       <groupId>org.bedework</groupId>
+      <artifactId>bw-base</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bedework</groupId>
       <artifactId>bw-util-config</artifactId>
     </dependency>
 

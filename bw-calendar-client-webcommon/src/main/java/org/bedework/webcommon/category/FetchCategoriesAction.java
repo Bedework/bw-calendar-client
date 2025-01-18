@@ -21,7 +21,7 @@ package org.bedework.webcommon.category;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.responses.CategoriesResponse;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;

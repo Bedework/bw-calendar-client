@@ -22,7 +22,7 @@ import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwRequest;
 
 /** Set the current filter.

@@ -22,8 +22,8 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.responses.EventPropertiesResponse;
-import org.bedework.util.misc.response.GetEntitiesResponse;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.GetEntitiesResponse;
+import org.bedework.base.response.Response;
 
 import java.util.ArrayList;
 import java.util.Collection;

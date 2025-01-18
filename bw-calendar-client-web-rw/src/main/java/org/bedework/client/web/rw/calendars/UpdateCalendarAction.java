@@ -32,7 +32,7 @@ import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.util.xml.tagdefs.WebdavTags;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;

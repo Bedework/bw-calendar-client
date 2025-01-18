@@ -27,7 +27,7 @@ import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwPreferences.CategoryMappings;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
-import org.bedework.util.misc.response.GetEntityResponse;
+import org.bedework.base.response.GetEntityResponse;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
 import org.bedework.webcommon.BwRequest;

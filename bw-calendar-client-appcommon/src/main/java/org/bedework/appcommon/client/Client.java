@@ -44,8 +44,8 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.sysevents.events.SysEventBase;
-import org.bedework.util.misc.response.GetEntitiesResponse;
-import org.bedework.util.misc.response.GetEntityResponse;
+import org.bedework.base.response.GetEntitiesResponse;
+import org.bedework.base.response.GetEntityResponse;
 
 import java.io.Serializable;
 import java.util.Collection;

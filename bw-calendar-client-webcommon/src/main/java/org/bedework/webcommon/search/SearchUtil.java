@@ -17,7 +17,7 @@ import org.bedework.calfacade.filter.SimpleFilterParser;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.calendar.XcalUtil;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;

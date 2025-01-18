@@ -53,7 +53,7 @@ import org.bedework.client.rw.RWClient;
 import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.util.webaction.Request;
 
 import java.util.ArrayList;

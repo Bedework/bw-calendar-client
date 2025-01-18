@@ -29,7 +29,7 @@ import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.List;

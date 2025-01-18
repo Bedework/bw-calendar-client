@@ -22,8 +22,8 @@ import org.bedework.sysevents.events.publicAdmin.EntityApprovalNeededEvent;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
-import org.bedework.util.misc.response.GetEntityResponse;
-import org.bedework.util.misc.response.Response;
+import org.bedework.base.response.GetEntityResponse;
+import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import java.util.TreeSet;
 import static org.bedework.client.web.rw.EventCommon.adminEventLocation;
 import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 import static org.bedework.client.web.rw.EventCommon.resetEvent;
-import static org.bedework.util.misc.response.Response.Status.ok;
+import static org.bedework.base.response.Response.Status.ok;
 
 /**
  * User: mike Date: 3/10/21 Time: 21:26

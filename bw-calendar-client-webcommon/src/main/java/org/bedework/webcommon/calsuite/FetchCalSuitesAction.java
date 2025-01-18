@@ -29,7 +29,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static org.bedework.util.misc.response.Response.Status.ok;
+import static org.bedework.base.response.Response.Status.ok;
 
 /** This action fetches all calendar suites.
  * READONLY + ADMIN

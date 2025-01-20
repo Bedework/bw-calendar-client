@@ -749,15 +749,6 @@ public class EventCommon {
       return forwardNoAction;
     }
 
-    /*
-    BwEventAnnotation ann = null;
-    if (ev instanceof BwEventProxy) {
-      ann = ((BwEventProxy)ev).getRef();
-      svc.reAttach(ann);
-    } else {
-      svc.reAttach(ev);
-    }*/
-
     if (!initializing &&
             ((ev.getOrganizer() == null) ||
                      (form.getAttendees() == null))) {

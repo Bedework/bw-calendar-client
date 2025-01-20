@@ -186,19 +186,6 @@ public class UpdateEventAction extends RWActionBase {
         return forwardError;
       }
     }
-    /*
-    BwEventAnnotation ann = null;
-    if (ev instanceof BwEventProxy) {
-      ann = ((BwEventProxy)ev).getRef();
-      svci.reAttach(ann);
-    } else {
-      svci.reAttach(ev);
-    }
-    if (ev instanceof BwEventProxy) {
-      final BwEventAnnotation ann = ((BwEventProxy)ev).getRef();
-      cl.reAttach(ann.getTarget());
-    }
-    */
 
     if (request.hasCopy()) {
       request.error("copy no longer supported - use fetch action");

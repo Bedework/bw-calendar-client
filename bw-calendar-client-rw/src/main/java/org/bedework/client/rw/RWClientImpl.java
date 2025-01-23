@@ -25,6 +25,7 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ROClientImpl;
 import org.bedework.base.exc.BedeworkException;
+import org.bedework.base.response.Response;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
@@ -65,12 +66,10 @@ import org.bedework.calsvci.Categories;
 import org.bedework.calsvci.Contacts;
 import org.bedework.calsvci.Locations;
 import org.bedework.calsvci.SchedulingI;
-import org.bedework.base.response.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.Blob;
 import java.util.Collection;
 import java.util.List;
 
@@ -638,8 +637,7 @@ public class RWClientImpl extends ROClientImpl
       val.setContent(resContent);
     }
 
-    final Blob blob = svci.getBlob(content);
-    resContent.setValue(blob);
+    resContent.setByteValue(content);
     val.setContentLength(content.length);
   }
 
@@ -652,6 +650,7 @@ public class RWClientImpl extends ROClientImpl
       resContent = new BwResourceContent();
       val.setContent(resContent);
     }
+    val.setContentLength(length);
 
     /* It turns out there are bugs in handling InputStreams:
        https://hibernate.atlassian.net/browse/HHH-14725
@@ -659,12 +658,7 @@ public class RWClientImpl extends ROClientImpl
      */
 
     try {
-      final byte[] byteContent = content.readAllBytes();
-
-      //final Blob blob = svci.getBlob(content, length);
-      final Blob blob = svci.getBlob(byteContent);
-      resContent.setValue(blob);
-      val.setContentLength(length);
+      resContent.setByteValue(content.readAllBytes());
     } catch (final IOException ioe) {
       throw new RuntimeException(ioe);
     }

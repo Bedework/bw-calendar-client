@@ -22,7 +22,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -71,7 +70,7 @@ public class AddFilterAction extends RWActionBase {
 
     try {
       cl.validateFilter(fd.getDefinition());
-      cl.saveFilter(fd);
+      cl.addFilter(fd);
     } catch (final Throwable t) {
       request.error(ClientError.badFilter, t.getMessage());
       return forwardNotAdded;

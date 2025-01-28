@@ -667,7 +667,7 @@ public interface RWClient extends Client {
    *
    * @param  val       filter definition
    */
-  void saveFilter(BwFilterDef val);
+  void addFilter(BwFilterDef val);
 
   /** Delete a filter given the name
    *

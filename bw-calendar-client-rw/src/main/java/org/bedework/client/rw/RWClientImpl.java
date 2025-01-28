@@ -867,8 +867,8 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public void saveFilter(final BwFilterDef val) {
-    svci.getFiltersHandler().save(val);
+  public void addFilter(final BwFilterDef val) {
+    svci.getFiltersHandler().add(val);
     updated();
   }
 

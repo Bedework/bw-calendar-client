@@ -27,11 +27,11 @@ import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
-import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.config.entities.Parameterizable;
-import org.apache.struts2.interceptor.ServletRequestAware;
-import org.apache.struts2.interceptor.ServletResponseAware;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.ActionSupport;
+import org.apache.struts2.action.ServletRequestAware;
+import org.apache.struts2.action.ServletResponseAware;
+import org.apache.struts2.action.SessionAware;
 
 import java.util.Map;
 
@@ -143,7 +143,7 @@ public abstract class UtilAbstractAction extends ActionSupport
   protected UtilActionForm form;
 
   @Override
-  public void setServletResponse(final HttpServletResponse val) {
+  public void withServletResponse(final HttpServletResponse val) {
     response = val;
   }
 
@@ -154,7 +154,7 @@ public abstract class UtilAbstractAction extends ActionSupport
   //protected boolean isPortlet;
 
   @Override
-  public void setServletRequest(final HttpServletRequest val) {
+  public void withServletRequest(final HttpServletRequest val) {
     request = val;
   }
 
@@ -162,7 +162,8 @@ public abstract class UtilAbstractAction extends ActionSupport
     return request;
   }
 
-  public void setSession(final Map<String, Object> val) {
+  @Override
+  public void withSession(final Map<String, Object> val) {
     session = val;
     form = (UtilActionForm)session.get("calForm");
     if (form == null) {

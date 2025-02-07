@@ -49,7 +49,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.search.SearchUtil.setSearchParams;
 

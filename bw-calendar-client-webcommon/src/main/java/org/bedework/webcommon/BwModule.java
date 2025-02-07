@@ -33,7 +33,7 @@ import org.bedework.util.webaction.Request;
 
 import java.io.Serializable;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import static org.bedework.webcommon.ForwardDefs.forwardNoAction;
 

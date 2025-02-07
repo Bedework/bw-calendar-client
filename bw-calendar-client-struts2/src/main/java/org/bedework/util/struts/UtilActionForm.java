@@ -18,13 +18,12 @@
 */
 package org.bedework.util.struts;
 
-import org.bedework.util.misc.Util;
 import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.util.webaction.WebActionForm;
 
 import java.io.File;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This class provides some convenience methods for use by Action objects.

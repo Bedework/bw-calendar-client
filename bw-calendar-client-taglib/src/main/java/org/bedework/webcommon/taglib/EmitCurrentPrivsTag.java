@@ -22,8 +22,8 @@ package org.bedework.webcommon.taglib;
 import org.bedework.access.CurrentAccess;
 import org.bedework.appcommon.AccessXmlUtil;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspWriter;
 
 /** A simple Tag to emit a tagged text object. This tag has the
  * attributes, <ul>

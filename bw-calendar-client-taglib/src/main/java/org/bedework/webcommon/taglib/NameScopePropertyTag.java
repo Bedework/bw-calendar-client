@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon.taglib;
 
-import javax.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspTagException;
 
 /** Base for simple Tags which have a name and scope attribute.
  * The getXXX methods here are for those attributes which can be identified

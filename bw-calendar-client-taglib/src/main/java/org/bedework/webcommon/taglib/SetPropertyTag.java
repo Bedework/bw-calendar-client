@@ -23,8 +23,8 @@ import org.bedework.calfacade.BwProperty;
 import org.bedework.calfacade.base.PropertiesEntity;
 import org.bedework.util.logging.BwLogger;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspTagException;
 
 /** Tag to set a named property for a PropertiesEntity object. <ul>
  * <li><b>name<b> (Required) defines the name of an object embedded somewhere

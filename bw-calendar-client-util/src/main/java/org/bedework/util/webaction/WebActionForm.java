@@ -1,6 +1,6 @@
 package org.bedework.util.webaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * User: mike Date: 3/31/22 Time: 14:18

@@ -5,7 +5,7 @@ package org.bedework.webcommon.tagcommon;
 
 import java.io.IOException;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 
 /**
  * User: mike Date: 4/8/22 Time: 14:39

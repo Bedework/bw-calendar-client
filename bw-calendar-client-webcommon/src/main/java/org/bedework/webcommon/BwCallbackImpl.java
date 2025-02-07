@@ -23,8 +23,8 @@ import org.bedework.util.logging.BwLogger;
 import org.bedework.util.servlet.HttpAppLogger;
 import org.bedework.util.webaction.Request;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** Class an instance of which is used to signal open and close
  * events to the web application.

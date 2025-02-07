@@ -41,7 +41,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Action to fetch free busy information for web use. Modeled on CalDAV iSchedule

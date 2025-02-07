@@ -20,8 +20,8 @@ package org.bedework.webcommon;
 
 import org.bedework.util.logging.BwLogger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /** Useful shared web utility routines
  *

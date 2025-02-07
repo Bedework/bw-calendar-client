@@ -14,7 +14,7 @@ import org.bedework.client.web.rw.BwRWActionForm;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * User: mike Date: 3/9/21 Time: 22:25

@@ -40,7 +40,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 

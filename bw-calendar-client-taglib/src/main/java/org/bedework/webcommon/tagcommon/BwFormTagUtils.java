@@ -12,7 +12,7 @@ import org.bedework.webcommon.TimeDateComponents;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 
 /**
  * User: mike Date: 4/8/22 Time: 14:38

@@ -25,7 +25,6 @@ import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** This action fetches locations and writes them as a json object.
  *

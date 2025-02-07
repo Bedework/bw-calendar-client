@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.PageContext;
 
 /** Tag to define a bean which is a Collection of accessible children of the
  * named calendar object. <ul>

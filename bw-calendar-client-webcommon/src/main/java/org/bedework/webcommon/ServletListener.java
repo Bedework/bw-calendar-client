@@ -21,8 +21,8 @@ package org.bedework.webcommon;
 
 import org.bedework.webcommon.config.ClientConfigurations;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /** A listener to load and unload the jmx configs.
  *

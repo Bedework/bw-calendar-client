@@ -27,7 +27,7 @@ import org.bedework.webcommon.BwRequest;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Ajax action to subscribe for email notifications

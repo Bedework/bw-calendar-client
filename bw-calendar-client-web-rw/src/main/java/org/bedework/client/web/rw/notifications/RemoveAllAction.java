@@ -25,7 +25,7 @@ import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** This action removes a notification identified by the name.
  *

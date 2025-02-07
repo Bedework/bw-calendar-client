@@ -23,8 +23,8 @@ import org.bedework.webcommon.tagcommon.BwTagUtilCommon.Attribute;
 
 import java.util.Collection;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspWriter;
 
 import static org.bedework.webcommon.tagcommon.BwFormTagUtils.outCheckbox;
 

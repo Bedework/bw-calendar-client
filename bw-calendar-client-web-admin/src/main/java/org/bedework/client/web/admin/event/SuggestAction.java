@@ -39,7 +39,7 @@ import org.bedework.webcommon.BwRequest;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 

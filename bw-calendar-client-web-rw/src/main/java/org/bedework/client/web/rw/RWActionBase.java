@@ -11,7 +11,7 @@ import org.bedework.webcommon.BwRequest;
 
 import java.io.File;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * User: mike Date: 3/9/21 Time: 22:37

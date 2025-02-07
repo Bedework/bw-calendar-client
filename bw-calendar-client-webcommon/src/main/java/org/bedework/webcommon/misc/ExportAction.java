@@ -46,7 +46,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 

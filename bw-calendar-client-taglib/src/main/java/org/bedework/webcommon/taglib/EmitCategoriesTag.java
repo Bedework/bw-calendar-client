@@ -24,8 +24,8 @@ import org.bedework.webcommon.tagcommon.BwTagUtils;
 
 import java.util.Collection;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspWriter;
 
 /** Emit categories collection.
  *

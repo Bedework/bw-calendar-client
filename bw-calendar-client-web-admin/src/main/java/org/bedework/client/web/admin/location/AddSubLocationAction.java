@@ -23,11 +23,10 @@ import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.BwString;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.util.misc.Uid;
 import org.bedework.webcommon.BwRequest;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** This action creates a new location from the one referenced by the uid
  * by appending a new segment to the address.

@@ -9,7 +9,7 @@ import org.bedework.webcommon.BwRequest;
 
 import java.net.URI;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class EventregNotifier {
   // TODO - this needs to be somewhere it gets shut down properly

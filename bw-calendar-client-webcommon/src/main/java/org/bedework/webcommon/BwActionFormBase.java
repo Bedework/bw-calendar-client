@@ -35,7 +35,7 @@ import org.bedework.util.struts.UtilActionForm;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /** Base for action form used by bedework web applications
  *

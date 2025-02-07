@@ -23,13 +23,12 @@ import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.responses.CategoriesResponse;
 import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** This action fetches all categories and embeds them in the session.
  *

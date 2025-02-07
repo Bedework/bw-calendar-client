@@ -31,7 +31,7 @@ import org.bedework.webcommon.BwSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.util.misc.Util.escapeJava;
 

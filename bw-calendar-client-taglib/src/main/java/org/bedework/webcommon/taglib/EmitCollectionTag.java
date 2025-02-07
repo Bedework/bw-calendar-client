@@ -25,8 +25,8 @@ import org.bedework.util.xml.tagdefs.NamespaceAbbrevs;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspWriter;
 
 /** Emit information about the given collection object. Parameters, <ul>
  * <li><b>name<b> (Required) defines the name of object embedded somewhere

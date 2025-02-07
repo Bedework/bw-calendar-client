@@ -22,8 +22,8 @@ import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.base.BwShareableContainedDbentity;
 import org.bedework.util.logging.BwLogger;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspWriter;
 
 /** Emit information about the container for the named object. Parameters, <ul>
  * <li><b>name<b> (Required) defines the name of object embedded somewhere

@@ -23,8 +23,8 @@ import org.bedework.calfacade.BwDateTime;
 
 import java.util.Collection;
 
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspTagException;
+import jakarta.servlet.jsp.JspWriter;
 
 /** A simple Tag to emit rdates or exdates. This tag has the attributes, <ul>
  * <li><b>name<b> (Required) defines the name of object embedded somewhere

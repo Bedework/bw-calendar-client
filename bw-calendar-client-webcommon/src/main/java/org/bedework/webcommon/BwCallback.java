@@ -22,8 +22,8 @@ import org.bedework.util.webaction.Request;
 
 import java.io.Serializable;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** Abstract class an instance of which is used to signal open and close
  * events to the web application.

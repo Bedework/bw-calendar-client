@@ -14,7 +14,7 @@ import org.bedework.webcommon.BwModuleState;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 
 /**
  * User: mike Date: 4/2/22 Time: 11:52

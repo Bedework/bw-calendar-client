@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 

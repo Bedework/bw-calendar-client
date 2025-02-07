@@ -3,7 +3,7 @@
 */
 package org.bedework.webcommon.taglib.test;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 
 /**
  * User: mike Date: 4/2/22 Time: 13:28

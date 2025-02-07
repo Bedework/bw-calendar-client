@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 
 import org.bedework.util.servlet.filters.ConfiguredXSLTFilter;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /** This is an XSLT filter which overrides the global fetch/update to
  * obtain them from the request.

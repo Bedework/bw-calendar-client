@@ -11,10 +11,11 @@ import org.bedework.calfacade.svc.UserAuth;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.web.rw.BwRWActionForm;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
 import java.util.Collection;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * User: mike Date: 3/9/21 Time: 22:25
@@ -144,6 +145,7 @@ public class BwAdminActionForm extends BwRWActionForm {
   /**
    * @param val Admin group group owner
    */
+  @StrutsParameter
   public void setAdminGroupGroupOwner(final String val) {
     adminGroupGroupOwner = val;
   }
@@ -158,6 +160,7 @@ public class BwAdminActionForm extends BwRWActionForm {
   /**
    * @param val event owner
    */
+  @StrutsParameter
   public void setAdminGroupEventOwner(final String val) {
     adminGroupEventOwner = val;
   }
@@ -259,6 +262,7 @@ public class BwAdminActionForm extends BwRWActionForm {
    *
    * @param val
    */
+  @StrutsParameter
   public void setEditCalSuiteName(final String val) {
     editCalSuiteName = val;
   }
@@ -333,6 +337,7 @@ public class BwAdminActionForm extends BwRWActionForm {
    * Sets the resource name.
    * @param name
    */
+  @StrutsParameter
   public void setResourceName(final String name) {
     this.resourceName = name;
   }
@@ -348,6 +353,7 @@ public class BwAdminActionForm extends BwRWActionForm {
    * Sets the resource class.
    * @param resourceClass
    */
+  @StrutsParameter
   public void setResourceClass(final String resourceClass) {
     this.resourceClass = resourceClass;
   }
@@ -371,6 +377,7 @@ public class BwAdminActionForm extends BwRWActionForm {
    *
    * @param val
    */
+  @StrutsParameter
   public void setCalSuiteResources(final List<CalSuiteResource> val) {
     calSuiteResources = val;
   }

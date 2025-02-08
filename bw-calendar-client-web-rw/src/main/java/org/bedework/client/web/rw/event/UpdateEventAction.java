@@ -29,6 +29,8 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.base.exc.BedeworkException;
+import org.bedework.base.response.GetEntityResponse;
+import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwAttachment;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
@@ -56,8 +58,6 @@ import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
-import org.bedework.base.response.GetEntityResponse;
-import org.bedework.base.response.Response;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
@@ -69,6 +69,7 @@ import org.bedework.webcommon.TimeDateComponents;
 
 import net.fortuna.ical4j.model.Recur;
 import org.apache.commons.io.IOUtils;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -83,6 +84,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.bedework.base.response.Response.Status.ok;
 import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
 import static org.bedework.client.web.rw.EventCommon.initMeeting;
 import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
@@ -90,7 +92,6 @@ import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
 import static org.bedework.client.web.rw.EventCommon.validateEventDates;
-import static org.bedework.base.response.Response.Status.ok;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
  * distinguish.
@@ -1406,6 +1407,7 @@ public class UpdateEventAction extends RWActionBase {
 
   // ============== event form elements ==============
 
+  @StrutsParameter
   public void setDescription(final String val) {
     getRwForm().setDescription(val);
   }
@@ -1414,6 +1416,7 @@ public class UpdateEventAction extends RWActionBase {
     return getRwForm().getDescription();
   }
 
+  @StrutsParameter
   public void setSummary(final String val) {
     getRwForm().setSummary(val);
   }
@@ -1432,6 +1435,7 @@ public class UpdateEventAction extends RWActionBase {
     return getRwForm().getEventEndDate();
   }
 
+  @StrutsParameter
   public void setEventEndType(final String val) {
     getRwForm().setEventEndType(val);
   }
@@ -1446,6 +1450,7 @@ public class UpdateEventAction extends RWActionBase {
 
   // ============ contact form elements ==============
 
+  @StrutsParameter
   public void setAllContactId(final String val) {
     getRwForm().setAllContactId(val);
   }
@@ -1454,6 +1459,7 @@ public class UpdateEventAction extends RWActionBase {
     return getRwForm().getAllContactId();
   }
 
+  @StrutsParameter
   public void setPrefContactId(final String val) {
     getRwForm().setPrefContactId(val);
   }
@@ -1464,6 +1470,7 @@ public class UpdateEventAction extends RWActionBase {
 
   // ===================== location form elements ====================
 
+  @StrutsParameter
   public void setAllLocationId(final String val) {
     getRwForm().setAllLocationId(val);
   }
@@ -1472,6 +1479,7 @@ public class UpdateEventAction extends RWActionBase {
     return getRwForm().getAllLocationId();
   }
 
+  @StrutsParameter
   public void setPrefLocationId(final String val) {
     getRwForm().setPrefLocationId(val);
   }

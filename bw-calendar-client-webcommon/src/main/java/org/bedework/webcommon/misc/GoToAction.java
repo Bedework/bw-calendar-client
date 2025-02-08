@@ -20,8 +20,9 @@ package org.bedework.webcommon.misc;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
+
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
@@ -49,6 +50,7 @@ public class GoToAction extends BwAbstractAction {
     return forwardSuccess;
   }
 
+  @StrutsParameter
   public void setDate(final String val) {
     date = val;
   }

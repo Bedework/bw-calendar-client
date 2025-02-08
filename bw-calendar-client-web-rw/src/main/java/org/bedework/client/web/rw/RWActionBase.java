@@ -9,9 +9,10 @@ import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 
-import java.io.File;
-
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
+import java.io.File;
 
 /**
  * User: mike Date: 3/9/21 Time: 22:37
@@ -60,6 +61,7 @@ public abstract class RWActionBase extends BwAbstractAction {
    * @param val FormFile
    */
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setImageUpload(final File val) {
     getForm().setImageUpload(val);
   }
@@ -73,6 +75,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   }
 
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setImageUploadFileName(final String val) {
     getForm().setImageUploadFileName(val);
   }
@@ -83,6 +86,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   }
 
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setImageUploadContentType(final String val) {
     getForm().setImageUploadContentType(val);
   }
@@ -93,6 +97,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   }
 
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setUploadFileFileName(final String val) {
     getForm().setUploadFileFileName(val);
   }
@@ -103,6 +108,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   }
 
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setUploadFile(final File val) {
     getForm().setUploadFile(val);
   }
@@ -113,6 +119,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   }
 
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setUploadFileContentType(final String val) {
     getForm().setUploadFileContentType(val);
   }
@@ -125,6 +132,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   // ================== contact form elements ===================
 
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setContactUid(final String val) {
     getRwForm().setContactUid(val);
   }
@@ -157,6 +165,7 @@ public abstract class RWActionBase extends BwAbstractAction {
   }
 
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setLocationUid(final String val) {
     getRwForm().setLocationUid(val);
   }

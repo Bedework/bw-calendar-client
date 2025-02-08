@@ -27,18 +27,18 @@ import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
-import com.opensymphony.xwork2.config.entities.Parameterizable;
-import org.apache.struts2.ActionSupport;
-import org.apache.struts2.action.ServletRequestAware;
-import org.apache.struts2.action.ServletResponseAware;
-import org.apache.struts2.action.SessionAware;
-
-import java.util.Map;
-
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.struts2.ActionSupport;
+import org.apache.struts2.action.ServletRequestAware;
+import org.apache.struts2.action.ServletResponseAware;
+import org.apache.struts2.action.SessionAware;
+import org.apache.struts2.config.entities.Parameterizable;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -389,10 +389,12 @@ public abstract class UtilAbstractAction extends ActionSupport
    *                 Request parameters
    * ============================================================ */
 
+  @StrutsParameter
   public void setSetappvar(final String val) {
     // Handled elsewhere.
   }
 
+  @StrutsParameter
   public void setSkinNameSticky(final String val) {
     // Handled elsewhere.
   }
@@ -401,18 +403,22 @@ public abstract class UtilAbstractAction extends ActionSupport
    *                 Params that show up as method calls
    * ============================================================ */
 
+  @StrutsParameter
   public void setActionType(final String val) {
     // Handled by Request class.
   }
 
+  @StrutsParameter
   public void setConversation(final String val) {
     // Handled by Request class.
   }
 
+  @StrutsParameter
   public void setMdl(final String val) {
     // Handled by Request class.
   }
 
+  @StrutsParameter
   public void setRefaction(final String val) {
     // Handled by Request class.
   }

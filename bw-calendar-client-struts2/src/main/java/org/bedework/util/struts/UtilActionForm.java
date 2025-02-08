@@ -21,9 +21,10 @@ package org.bedework.util.struts;
 import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.util.webaction.WebActionForm;
 
-import java.io.File;
-
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
+import java.io.File;
 
 /**
  * This class provides some convenience methods for use by Action objects.
@@ -65,6 +66,7 @@ public class UtilActionForm implements WebActionForm {
   /**
    * @param val FormFile
    */
+  @StrutsParameter
   public void setImageUpload(final File val) {
     imageUpload = val;
   }
@@ -76,6 +78,7 @@ public class UtilActionForm implements WebActionForm {
     return imageUpload;
   }
 
+  @StrutsParameter
   public void setImageUploadFileName(final String val) {
     imageUploadFileName = val;
   }
@@ -84,6 +87,7 @@ public class UtilActionForm implements WebActionForm {
     return imageUploadFileName;
   }
 
+  @StrutsParameter
   public void setImageUploadContentType(final String val) {
     imageUploadContentType = val;
   }
@@ -103,6 +107,7 @@ public class UtilActionForm implements WebActionForm {
                                   imageUploadContentType);
   }
 
+  @StrutsParameter
   public void setUploadFileFileName(final String val) {
     uploadFileFileName = val;
   }
@@ -114,6 +119,7 @@ public class UtilActionForm implements WebActionForm {
   /**
    * @param val the form file
    */
+  @StrutsParameter
   public void setUploadFile(final File val) {
     uploadFile = val;
   }
@@ -125,6 +131,7 @@ public class UtilActionForm implements WebActionForm {
     return uploadFile;
   }
 
+  @StrutsParameter
   public void setUploadFileContentType(final String val) {
     uploadFileContentType = val;
   }

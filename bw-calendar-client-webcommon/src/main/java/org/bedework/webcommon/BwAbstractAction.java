@@ -36,13 +36,14 @@ import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
-import java.util.Collection;
-import java.util.Map;
-
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
+import java.util.Collection;
+import java.util.Map;
 
 import static org.bedework.appcommon.BedeworkDefs.appTypeWebsubmit;
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
@@ -474,6 +475,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     return (BwActionFormBase)getForm();
   }
 
+  @StrutsParameter
   public void setCalPath(final String val) {
     getBwForm().setCalPath(val);
   }
@@ -489,22 +491,27 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    *                 Request parameters
    * ============================================================ */
 
+  @StrutsParameter
   public void setCount(final String val) {
     // Handled elsewhere.
   }
 
+  @StrutsParameter
   public void setFexpr(final String val) {
     // Handled elsewhere.
   }
 
+  @StrutsParameter
   public void setSort(final String val) {
     // Handled elsewhere.
   }
 
+  @StrutsParameter
   public void setStart(final String val) {
     // Handled elsewhere.
   }
 
+  @StrutsParameter
   public void setViewType(final String val) {
     viewType = val;
   }

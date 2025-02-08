@@ -32,6 +32,8 @@ import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.webcommon.BwRequest;
 
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
 import static org.bedework.util.misc.Util.checkNull;
 
 /** This action updates an admin group
@@ -216,6 +218,7 @@ public class UpdateAGAction extends AdminActionBase {
    * @param val Admin group group owner
    */
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setAdminGroupGroupOwner(final String val) {
     getAdminForm().setAdminGroupGroupOwner(val);
   }
@@ -232,6 +235,7 @@ public class UpdateAGAction extends AdminActionBase {
    * @param val event owner
    */
   @SuppressWarnings("UnusedDeclaration")
+  @StrutsParameter
   public void setAdminGroupEventOwner(final String val) {
     getAdminForm().setAdminGroupEventOwner(val);
   }

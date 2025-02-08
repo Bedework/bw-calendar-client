@@ -16,6 +16,8 @@ import org.bedework.calsvci.SchedulingI.FbResponses;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwActionFormBase;
 
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
 import java.util.Collection;
 
 /**
@@ -162,6 +164,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setAddEventResults(final Collection<AddEventResult> val) {
     addEventResults = val;
   }
@@ -176,6 +179,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setSummary(final String val) {
     summary = val;
   }
@@ -190,6 +194,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setDescription(final String val) {
     description = val;
   }
@@ -204,6 +209,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setEventLink(final String val) {
     eventLink = val;
   }
@@ -218,6 +224,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setEventCost(final String val) {
     eventCost = val;
   }
@@ -232,6 +239,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setTransparency(final String val) {
     transparency = val;
   }
@@ -289,6 +297,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val Collection of formatted rdates
    */
+  @StrutsParameter
   public void setFormattedRdates(final Collection<DateTimeFormatter> val) {
     formattedRdates = val;
   }
@@ -305,6 +314,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val Collection of formatted exdates
    */
+  @StrutsParameter
   public void setFormattedExdates(final Collection<DateTimeFormatter> val) {
     formattedExdates = val;
   }
@@ -325,6 +335,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val    String name
    */
+  @StrutsParameter
   public void setViewName(final String val) {
     viewName = val;
   }
@@ -395,6 +406,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val - path
    */
+  @StrutsParameter
   public void setParentCalendarPath(final String val) {
     parentCalendarPath = val;
   }
@@ -419,6 +431,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setCalendarId(final String val) {
     if (Util.checkNull(val) != null) {
       calendarId.setA(val);
@@ -446,6 +459,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setPrefCalendarId(final String val) {
     if (Util.checkNull(val) != null) {
       calendarId.setB(val);
@@ -466,6 +480,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /** Only implemented in admin
    * @param val Property references
    */
+  @StrutsParameter
   public void setPropRefs(final Collection<EventPropertiesReference> val) {
     propRefs = val;
   }
@@ -594,6 +609,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val status
    */
+  @StrutsParameter
   public void setContactStatus(final String val) {
     contactStatus = val;
   }
@@ -617,6 +633,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val uid
    */
+  @StrutsParameter
   public void setAllContactId(final String val) {
     if (Util.checkNull(val) != null) {
       ctctId.setA(val);
@@ -647,6 +664,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val uid
    */
+  @StrutsParameter
   public void setPrefContactId(final String val) {
     if (Util.checkNull(val) != null) {
       ctctId.setB(val);
@@ -666,6 +684,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val uid
    */
+  @StrutsParameter
   public void setContactUid(final String val) {
     contactUid = val;
   }
@@ -728,6 +747,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val
    */
+  @StrutsParameter
   public void setAllLocationId(final String val) {
     if (Util.checkNull(val) != null) {
       locId.setA(val);
@@ -755,6 +775,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setPrefLocationId(final String val) {
     if (Util.checkNull(val) != null) {
       locId.setB(val);
@@ -804,6 +825,7 @@ public class BwRWActionForm extends BwActionFormBase {
   /**
    * @param val
    */
+  @StrutsParameter
   public void setLocationStatus(final String val) {
     locationStatus = val;
   }
@@ -837,6 +859,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val id
    */
+  @StrutsParameter
   public void setLocationUid(final String val) {
     locationUid = val;
   }
@@ -856,6 +879,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val
    */
+  @StrutsParameter
   public void setSnfrom(final String val) {
     snfrom = val;
   }
@@ -872,6 +896,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val
    */
+  @StrutsParameter
   public void setSntext(final String val) {
     sntext = val;
   }
@@ -888,6 +913,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *
    * @param val
    */
+  @StrutsParameter
   public void setSnsubject(final String val) {
     snsubject = val;
   }

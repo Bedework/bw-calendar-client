@@ -23,6 +23,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.appcommon.client.SearchParams;
 import org.bedework.base.exc.BedeworkException;
+import org.bedework.base.response.Response;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.svc.EventInfo;
@@ -33,7 +34,6 @@ import org.bedework.convert.xcal.XmlTranslator;
 import org.bedework.jsforj.model.JSGroup;
 import org.bedework.util.calendar.IcalendarUtil;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.base.response.Response;
 import org.bedework.util.xml.XmlEmit;
 import org.bedework.util.xml.XmlEmit.NameSpace;
 import org.bedework.util.xml.tagdefs.XcalTags;
@@ -42,14 +42,14 @@ import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
+import jakarta.servlet.http.HttpServletResponse;
 import net.fortuna.ical4j.model.Calendar;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.search.SearchUtil.setSearchParams;
 
@@ -274,6 +274,7 @@ public class SearchParamsAction extends BwAbstractAction {
    *                 Request parameters
    * ============================================================ */
 
+  @StrutsParameter
   public void setListMode(final String val) {
     listMode = Boolean.parseBoolean(val);
   }

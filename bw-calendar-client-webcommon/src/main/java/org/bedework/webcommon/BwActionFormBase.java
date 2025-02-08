@@ -32,10 +32,11 @@ import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.UtilActionForm;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
 import java.util.Collection;
 import java.util.Set;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 /** Base for action form used by bedework web applications
  *
@@ -141,6 +142,7 @@ public class BwActionFormBase extends UtilActionForm
    *
    * @param val
    */
+  @StrutsParameter
   public void setRequestedUid(final String val) {
     requestedUid = val;
   }
@@ -189,6 +191,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val token for event registration
    */
+  @StrutsParameter
   public void setEventRegAdminToken(final String val) {
     eventRegAdminToken = val;
   }
@@ -246,6 +249,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val Set of String
    */
+  @StrutsParameter
   public void setCalendarsOpenState(final Set<String> val) {
     calendarsOpenState = val;
   }
@@ -261,6 +265,7 @@ public class BwActionFormBase extends UtilActionForm
    *
    * @param val the Path of a calendar
    */
+  @StrutsParameter
   public void setCalPath(final String val) {
     calPath = val;
   }
@@ -276,6 +281,7 @@ public class BwActionFormBase extends UtilActionForm
    *
    * @param val the Path of a calendar
    */
+  @StrutsParameter
   public void setCalendarPath(final String val) {
     calendarPath = val;
   }
@@ -449,6 +455,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val
    */
+  @StrutsParameter
   public void setEventStatus(final String val) {
     eventStatus = val;
   }
@@ -471,6 +478,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val Collection of RecurRuleComponents
    */
+  @StrutsParameter
   public void setRruleComponents(final Collection<RecurRuleComponents> val) {
     rruleComponents = val;
   }
@@ -515,6 +523,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val event end type
    */
+  @StrutsParameter
   public void setEventEndType(final String val) {
     getEventDates().setEndType(val);
   }

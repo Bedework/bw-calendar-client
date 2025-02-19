@@ -100,7 +100,7 @@ public class BwSessionImpl implements Logged, BwSession {
   private static final BwCalendar[] clonedPublicCollections = {null, null};
   private static Collection<BwView> publicViews;
   private static long lastViewsRefresh;
-  private static long viewsRefreshInterval = 1000 * 60 * 5;
+  private static final long viewsRefreshInterval = 1000 * 60 * 5;
 
   private AuthProperties authpars;
 
@@ -802,7 +802,7 @@ public class BwSessionImpl implements Logged, BwSession {
       return;
     }
 
-    final var views = request.getClient().getAllViews();
+    final var views = cl.getAllViews();
 
     if (cl.isGuest() && (views != null)) {
       final var publicRoot = getPublicCollections(request);

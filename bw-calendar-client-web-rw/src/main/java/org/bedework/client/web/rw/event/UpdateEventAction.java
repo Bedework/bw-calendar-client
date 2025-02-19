@@ -1427,10 +1427,12 @@ public class UpdateEventAction extends RWActionBase {
 
   // ========= time and date form elements ===========
 
+  @StrutsParameter(depth = 1)
   public TimeDateComponents getEventStartDate() {
     return getRwForm().getEventStartDate();
   }
 
+  @StrutsParameter(depth = 1)
   public TimeDateComponents getEventEndDate() {
     return getRwForm().getEventEndDate();
   }
@@ -1444,6 +1446,7 @@ public class UpdateEventAction extends RWActionBase {
     return getRwForm().getEventEndType();
   }
 
+  @StrutsParameter(depth = 1)
   public DurationBean getEventDuration() {
     return getRwForm().getEventDates().getDuration();
   }

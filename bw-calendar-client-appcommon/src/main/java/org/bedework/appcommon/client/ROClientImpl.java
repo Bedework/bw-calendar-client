@@ -25,6 +25,9 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.base.exc.BedeworkException;
+import org.bedework.base.response.GetEntitiesResponse;
+import org.bedework.base.response.GetEntityResponse;
+import org.bedework.base.response.Response;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
@@ -66,14 +69,12 @@ import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
-import org.bedework.base.response.GetEntitiesResponse;
-import org.bedework.base.response.GetEntityResponse;
-import org.bedework.base.response.Response;
 import org.bedework.util.webaction.Request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -86,8 +87,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.includeDeleted;
 import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.noDeleted;
@@ -124,7 +123,7 @@ public class ROClientImpl implements Logged, Client {
 
   private Collection<Locale>supportedLocales;
 
-  private final ClientState cstate;
+  private SearchParams searchParams;
 
   private transient CollectionCollator<BwCalendar> calendarCollator;
   protected String appType;
@@ -185,7 +184,6 @@ public class ROClientImpl implements Logged, Client {
                          final String id) {
     this.id = id;
     this.conf = conf;
-    cstate = new ClientState(this);
 
     if (debug()) {
       mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
@@ -1086,7 +1084,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public SearchParams getSearchParams() {
-    return cstate.getSearchParams();
+    return searchParams;
   }
 
   @Override
@@ -1193,7 +1191,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public void clearSearch() {
-    cstate.setSearchParams(null);
+    searchParams = null;
     lastSearch = null;
   }
 
@@ -1205,7 +1203,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public SearchResult search(final SearchParams params) {
     checkUpdate();
-    cstate.setSearchParams(params);
+    searchParams = params;
 
     lastSearchEntries = null;
 
@@ -1263,8 +1261,8 @@ public class ROClientImpl implements Logged, Client {
     lastSearchEntries = formatSearchResult(lastSearch.getIndexer().
             getSearchResult(lastSearch, pos, PrivilegeDefs.privAny));
 
-    if ((lastSearch != null) && (cstate.getSearchParams() != null)) {
-      cstate.getSearchParams().setCurOffset(lastSearch.getLastPageStart());
+    if ((lastSearch != null) && (searchParams != null)) {
+      searchParams.setCurOffset(lastSearch.getLastPageStart());
     }
 
     return lastSearchEntries;

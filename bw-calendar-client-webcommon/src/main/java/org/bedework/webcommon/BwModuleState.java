@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CalendarInfo;
-import org.bedework.appcommon.MyCalendarVO;
+import org.bedework.appcommon.CalendarFormatter;
 import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.indexing.SearchResult;
 import org.bedework.calfacade.indexing.SearchResultEntry;
@@ -74,7 +74,7 @@ public class BwModuleState implements Serializable {
 
   /** MyCalendarVO version of the start date
    */
-  private MyCalendarVO viewMcDate;
+  private CalendarFormatter viewMcDate;
 
   /** The current view with user selected date (day, week, month etc)
    */
@@ -204,7 +204,7 @@ public class BwModuleState implements Serializable {
    *
    * @param val the calendar
    */
-  public void setViewMcDate(final MyCalendarVO val) {
+  public void setViewMcDate(final CalendarFormatter val) {
     viewMcDate = val;
   }
 
@@ -212,7 +212,7 @@ public class BwModuleState implements Serializable {
    *
    * @return MyCalendarVO date last set
    */
-  public MyCalendarVO getViewMcDate() {
+  public CalendarFormatter getViewMcDate() {
     return viewMcDate;
   }
 

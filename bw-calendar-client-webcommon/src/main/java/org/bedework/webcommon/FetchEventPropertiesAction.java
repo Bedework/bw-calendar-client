@@ -20,16 +20,16 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwEventProperty;
-import org.bedework.calfacade.responses.EventPropertiesResponse;
 import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.base.response.Response;
+import org.bedework.calfacade.BwEventProperty;
+import org.bedework.calfacade.responses.EventPropertiesResponse;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 /** This action fetches event properties and writes them as a json object.
  *
@@ -82,7 +82,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
       return forwardNull;
     }
 
-    final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
     request.setNocache(false);
@@ -109,7 +108,7 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
 
     final EventPropertiesResponse epresp = makeResponse(vals);
 
-    if (cl.getPublicAdmin()) {
+    if (request.getClient().getPublicAdmin()) {
       // Add the preferred locations
       final Collection<T> prefs =
               getEProps(request, BwSession.preferredEntity);
@@ -125,16 +124,15 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
 
     Response.ok(epresp);
 
-    cl.outputJson(resp,
-                  cl.getCurrentChangeToken(),
-                  null, epresp);
+    outputJson(resp,
+               cl.getCurrentChangeToken(),
+               null, epresp);
 
     return forwardNull;
   }
 
   private void doSearch(final BwRequest request,
                         final String fexpr) {
-    final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
     request.setNocache(true);
@@ -153,6 +151,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
       epresp.setMessage(ges.getMessage());
     }
 
-    cl.outputJson(resp, null, null, epresp);
+    outputJson(resp, null, null, epresp);
   }
 }

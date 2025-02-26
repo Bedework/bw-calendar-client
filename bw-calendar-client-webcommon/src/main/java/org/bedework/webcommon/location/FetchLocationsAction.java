@@ -20,19 +20,19 @@
 package org.bedework.webcommon.location;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwLocation;
-import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.base.response.Response;
+import org.bedework.calfacade.BwLocation;
+import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 /** This action fetches locations and writes them as a json object.
  *
@@ -115,9 +115,9 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     Response.ok(locs);
 
-    cl.outputJson(resp,
-                  cl.getCurrentChangeToken(),
-                  null, locs);
+    outputJson(resp,
+               cl.getCurrentChangeToken(),
+               null, locs);
 
     return forwardNull;
   }
@@ -144,6 +144,6 @@ public class FetchLocationsAction extends BwAbstractAction {
       locs.setMessage(ges.getMessage());
     }
 
-    cl.outputJson(resp, null, null, locs);
+    outputJson(resp, null, null, locs);
   }
 }

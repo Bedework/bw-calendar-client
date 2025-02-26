@@ -19,6 +19,7 @@
 
 package org.bedework.appcommon;
 
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
@@ -32,7 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /** Representation of the MyCalendar uwcal class.
- *
+ *<br/>
  * This object is intended to allow applications to interact with the
  * calendar back end. It does not represent the internal stored structure of a
  * MyCalendar object.
@@ -40,38 +41,38 @@ import java.util.Date;
  *   @author Mike Douglass douglm rpi.edu
  *  @version 1.0
  */
-public class MyCalendarVO implements Serializable {
+public class CalendarFormatter implements Serializable {
   /** LOCALE - we should be looking for locale changing?
    * Time and date as a Calendar object.
    */
-  private Calendar calendar;
+  private final Calendar calendar;
 
-  private static DateFormat isoformat = new SimpleDateFormat("yyyyMMdd");
+  private static final DateFormat isoformat = new SimpleDateFormat("yyyyMMdd");
 
-  /** Create a MyCalendarVO object representing a particular date and time
+  /** Create a CalendarFormatter object representing a particular date and time
    * in the current locale.
    *
    * @param date   Non-null Date object.
    */
-  public MyCalendarVO(final Date date) {
+  public CalendarFormatter(final Date date) {
     //calendar = Calendar.getInstance(BwLocale.getLocale());
 
     try {
       calendar = Calendar.getInstance(Timezones.getDefaultTz(),
                                       BwLocale.getLocale());
-    } catch (TimezonesException tze) {
-      throw new RuntimeException(tze);
+    } catch (final TimezonesException tze) {
+      throw new BedeworkException(tze);
     }
 
     calendar.setTime(date);
   }
 
-  /** Create a MyCalendarVO object representing a particular date and time.
+  /** Create a CalendarFormatter object representing a particular date and time.
    * The calendar object must have the same locale.
    *
    * @param calendar     Calendar object representing the date and time.
    */
-  private MyCalendarVO(final Calendar calendar) {
+  private CalendarFormatter(final Calendar calendar) {
     this.calendar = calendar;
   }
 
@@ -99,9 +100,9 @@ public class MyCalendarVO implements Serializable {
     return calendar.getTimeInMillis();
   }
 
-  /** ===================================================================
+  /* =======================================================
    *                Components of the date
-   *  =================================================================== */
+   * ======================================================= */
 
   /** Get the year for this object.
    *
@@ -275,8 +276,8 @@ public class MyCalendarVO implements Serializable {
       try {
         df.setTimeZone(Timezones.getDefaultTz());
         return df.format(getTime());
-      } catch (TimezonesException tze) {
-        throw new RuntimeException(tze);
+      } catch (final TimezonesException tze) {
+        throw new BedeworkException(tze);
       }
     }
   }
@@ -345,8 +346,8 @@ public class MyCalendarVO implements Serializable {
       try {
         df.setTimeZone(Timezones.getDefaultTz());
         return df.format(getTime());
-      } catch (TimezonesException tze) {
-        throw new RuntimeException(tze);
+      } catch (final TimezonesException tze) {
+        throw new BedeworkException(tze);
       }
     }
   }
@@ -362,8 +363,8 @@ public class MyCalendarVO implements Serializable {
       try {
         df.setTimeZone(Timezones.getDefaultTz());
         return df.format(date.getTime());
-      } catch (TimezonesException tze) {
-        throw new RuntimeException(tze);
+      } catch (final TimezonesException tze) {
+        throw new BedeworkException(tze);
       }
     }
   }
@@ -378,9 +379,9 @@ public class MyCalendarVO implements Serializable {
     }
   }
 
-  /** ===================================================================
+  /* =======================================================
    *                Adding and subtracting time
-   *  =================================================================== */
+   * ======================================================= */
 
   /** Get a calendar some time later or earlier than this one
    *
@@ -388,74 +389,74 @@ public class MyCalendarVO implements Serializable {
    *          <code>Calendar.DATE</code> to add days
    * @param amount Number of units to add or subtract.  Use negative
    *            numbers to subtract
-   * @return MyCalendarVO    new object corresponding to this
+   * @return CalendarFormatter    new object corresponding to this
    *                  object +/- the appropriate number of units
    */
-  private MyCalendarVO addTime(final int unit, final int amount) {
-    return new MyCalendarVO(add(calendar, unit, amount));
+  private CalendarFormatter addTime(final int unit, final int amount) {
+    return new CalendarFormatter(add(calendar, unit, amount));
   }
 
-  /**  Get a MyCalendarVO object one day earlier.
+  /**  Get a CalendarFormatter object one day earlier.
    *
-   * @return MyCalendarVO    equivalent to this object one day earlier.
+   * @return CalendarFormatter    equivalent to this object one day earlier.
    */
-  public MyCalendarVO getYesterday() {
+  public CalendarFormatter getYesterday() {
     return addTime(Calendar.DATE, -1);
   }
 
-  /**  Get a MyCalendarVO object one day later.
+  /**  Get a CalendarFormatter object one day later.
    *
-   * @return MyCalendarVO    equivalent to this object one day later.
+   * @return CalendarFormatter    equivalent to this object one day later.
    */
-  public MyCalendarVO getTomorrow() {
+  public CalendarFormatter getTomorrow() {
     return addTime(Calendar.DATE, 1);
   }
 
-  /**  Get a MyCalendarVO object one week earlier.
+  /**  Get a CalendarFormatter object one week earlier.
    *
-   * @return MyCalendarVO    equivalent to this object one week earlier.
+   * @return CalendarFormatter    equivalent to this object one week earlier.
    */
-  public MyCalendarVO getPrevWeek() {
+  public CalendarFormatter getPrevWeek() {
     return addTime(Calendar.WEEK_OF_YEAR, -1);
   }
 
-  /**  Get a MyCalendarVO object one week later.
+  /**  Get a CalendarFormatter object one week later.
    *
-   * @return MyCalendarVO    equivalent to this object one week later.
+   * @return CalendarFormatter    equivalent to this object one week later.
    */
-  public MyCalendarVO getNextWeek() {
+  public CalendarFormatter getNextWeek() {
     return addTime(Calendar.WEEK_OF_YEAR, 1);
   }
 
-  /**  Get a MyCalendarVO object one month earlier.
+  /**  Get a CalendarFormatter object one month earlier.
    *
-   * @return MyCalendarVO    equivalent to this object one month earlier.
+   * @return CalendarFormatter    equivalent to this object one month earlier.
    */
-  public MyCalendarVO getPrevMonth() {
+  public CalendarFormatter getPrevMonth() {
     return addTime(Calendar.MONTH, -1);
   }
 
-  /**  Get a MyCalendarVO object one month later.
+  /**  Get a CalendarFormatter object one month later.
    *
-   * @return MyCalendarVO    equivalent to this object one month later.
+   * @return CalendarFormatter    equivalent to this object one month later.
    */
-  public MyCalendarVO getNextMonth() {
+  public CalendarFormatter getNextMonth() {
     return addTime(Calendar.MONTH, 1);
   }
 
-  /**  Get a MyCalendarVO object one year earlier.
+  /**  Get a CalendarFormatter object one year earlier.
    *
-   * @return MyCalendarVO    equivalent to this object one year earlier.
+   * @return CalendarFormatter    equivalent to this object one year earlier.
    */
-  public MyCalendarVO getPrevYear() {
+  public CalendarFormatter getPrevYear() {
     return addTime(Calendar.YEAR, -1);
   }
 
-  /**  Get a MyCalendarVO object one year later.
+  /**  Get a CalendarFormatter object one year later.
    *
-   * @return MyCalendarVO    equivalent to this object one year later.
+   * @return CalendarFormatter    equivalent to this object one year later.
    */
-  public MyCalendarVO getNextYear() {
+  public CalendarFormatter getNextYear() {
     return addTime(Calendar.YEAR, 1);
   }
 
@@ -479,11 +480,9 @@ public class MyCalendarVO implements Serializable {
 
   @Override
   public boolean equals(final Object val) {
-    if (!(val instanceof MyCalendarVO)) {
+    if (!(val instanceof final CalendarFormatter that)) {
       return false;
     }
-
-    MyCalendarVO that = (MyCalendarVO)val;
 
     return calendar.equals(that.calendar);
   }
@@ -494,7 +493,7 @@ public class MyCalendarVO implements Serializable {
   }
 
 //  public Object clone() {
-//    return new MyCalendarVO(this.getCalendar(), getLocale());
+//    return new CalendarFormatter(this.getCalendar(), getLocale());
 //  }
 
   /* ====================================================================
@@ -524,8 +523,10 @@ public class MyCalendarVO implements Serializable {
    *              value means to add, a negative value to subtract
    * @return Calendar    equivalent to c some time later or earlier
    */
-  private static Calendar add(final Calendar c, final int unit, final int amount) {
-    Calendar newc = (Calendar)c.clone();
+  private static Calendar add(final Calendar c,
+                              final int unit,
+                              final int amount) {
+    final Calendar newc = (Calendar)c.clone();
     newc.add(unit, amount);
     return newc;
   }
@@ -544,15 +545,16 @@ public class MyCalendarVO implements Serializable {
    */
   private String getComponent(final int field, final int dateFormat) {
     try {
-      FieldPosition f = new FieldPosition(field);
-      DateFormat df = DateFormat.
+      final FieldPosition f = new FieldPosition(field);
+      final DateFormat df = DateFormat.
           getDateTimeInstance(dateFormat, dateFormat, BwLocale.getLocale());
 
       df.setTimeZone(Timezones.getDefaultTz());
-      StringBuffer s = df.format(getTime(), new StringBuffer(), f);
+      final StringBuffer s = df.format(getTime(),
+                                       new StringBuffer(), f);
       return s.substring(f.getBeginIndex(), f.getEndIndex());
-    } catch (TimezonesException tze) {
-      throw new RuntimeException(tze);
+    } catch (final TimezonesException tze) {
+      throw new BedeworkException(tze);
     }
   }
 }

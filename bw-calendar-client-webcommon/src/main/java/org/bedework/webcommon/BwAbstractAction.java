@@ -36,16 +36,20 @@ import org.bedework.util.webaction.MessageEmitSvlt;
 import org.bedework.util.webaction.Request;
 import org.bedework.util.webaction.WebActionForm;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.bedework.appcommon.BedeworkDefs.appTypeWebsubmit;
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
 /** This abstract action performs common setup actions before the real
@@ -59,6 +63,16 @@ public abstract class BwAbstractAction extends UtilAbstractAction
   private static final String appNameInitParameter = "bwappname";
 
   private String viewType;
+
+  private static final ObjectMapper mapper = new ObjectMapper(); // create once, reuse
+
+  static {
+    final DateFormat df = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'");
+
+    mapper.setDateFormat(df);
+
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+  }
 
   @Override
   public String getId() {
@@ -153,7 +167,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
       globals.setHour24(conf.getHour24());
       if (!cl.getPublicAdmin() &&
-              !bwreq.getSubmitApp() &&
+              !cl.getWebSubmit() &&
               !cl.isGuest()) {
         globals.setHour24(prefs.getHour24());
       }
@@ -439,7 +453,8 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                             final String val) {
     final StringBuilder sb = new StringBuilder(val);
 
-    if (!appTypeWebsubmit.equals(req.getConfig().getAppType())) {
+    if (Client.ClientType.submission != req.getClient()
+                                           .getClientType()) {
       /* If calendar suite is non-null append that. */
       final String calSuite = req.getConfig().getCalSuite();
       if (calSuite != null) {
@@ -518,5 +533,53 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
   public String getViewType() {
     return viewType;
+  }
+
+  /** Write the value as json to the response stream.
+   *
+   * @param resp to write to
+   * @param val to output
+   */
+  public void writeJson(final HttpServletResponse resp,
+                        final Object val) {
+    try {
+      mapper.writeValue(resp.getOutputStream(), val);
+    } catch (final Throwable t) {
+      throw new BedeworkException(t);
+    }
+  }
+
+  /** Write the value as json to the response stream.
+   * Sets status ok, dds header, writes data and closes stream.
+   *
+   * <p>Adds content type header and possible additional.
+   *
+   * @param resp to write to
+   * @param etag added if non-null
+   * @param header if not null adds header with name and value.
+   * @param val to output
+   */
+  public void outputJson(final HttpServletResponse resp,
+                         final String etag,
+                         final String[] header,
+                         final Object val) {
+    resp.setStatus(HttpServletResponse.SC_OK);
+
+    if (etag != null) {
+      resp.setHeader("etag", etag);
+    }
+
+    if (header != null) {
+      resp.setHeader(header[0], header[1]);
+    }
+
+    resp.setContentType("application/json; charset=UTF-8");
+
+    writeJson(resp, val);
+    try {
+      resp.getOutputStream().close();
+    } catch (final IOException ioe) {
+      throw new BedeworkException(ioe);
+    }
   }
 }

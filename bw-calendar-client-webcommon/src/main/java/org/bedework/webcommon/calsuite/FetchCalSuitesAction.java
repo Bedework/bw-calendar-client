@@ -18,15 +18,14 @@
 */
 package org.bedework.webcommon.calsuite;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.responses.CalSuitesResponse;
 import org.bedework.calfacade.svc.BwCalSuite;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 
-import java.util.Collection;
-
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Collection;
 
 import static org.bedework.base.response.Response.Status.ok;
 
@@ -42,10 +41,9 @@ import static org.bedework.base.response.Response.Status.ok;
 public class FetchCalSuitesAction extends BwAbstractAction {
   @Override
   public int doAction(final BwRequest request) {
-    final Client cl = request.getClient();
-
     // Return as json list for widgets
-    final Collection<BwCalSuite> vals = cl.getContextCalSuites();
+    final Collection<BwCalSuite> vals =
+            request.getClient().getContextCalSuites();
 
     // Do this if ws get a filename?
     //resp.setHeader("Content-Disposition",
@@ -56,7 +54,7 @@ public class FetchCalSuitesAction extends BwAbstractAction {
     csr.setStatus(ok);
 
     final HttpServletResponse resp = request.getResponse();
-    cl.outputJson(resp, null, null, csr);
+    outputJson(resp, null, null, csr);
 
     return forwardNull;
   }

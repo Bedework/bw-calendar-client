@@ -19,7 +19,6 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.access.PrivilegeDefs;
-import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventFormatter;
@@ -69,16 +68,7 @@ import org.bedework.util.caching.FlushMap;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
-import org.bedework.util.webaction.Request;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,6 +83,11 @@ import static org.bedework.calfacade.indexing.BwIndexer.DeletedState.noDeleted;
 import static org.bedework.calfacade.indexing.BwIndexer.docTypeCollection;
 import static org.bedework.calfacade.indexing.BwIndexer.docTypeEvent;
 import static org.bedework.calsvci.CalSuitesI.ResourceClass;
+import static org.bedework.util.servlet.ActionTypes.actionTypeAction;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypeEnd;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypeOnly;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypeProcessAndOnly;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypeUnknown;
 
 /**
  * User: douglm Date: 6/27/13 Time: 2:03
@@ -105,8 +100,6 @@ public class ROClientImpl implements Logged, Client {
   protected CalSvcIPars pars;
 
   protected CalSvcI svci;
-
-  protected ObjectMapper mapper = new ObjectMapper(); // create once, reuse
 
   protected boolean publicView;
 
@@ -126,7 +119,7 @@ public class ROClientImpl implements Logged, Client {
   private SearchParams searchParams;
 
   private transient CollectionCollator<BwCalendar> calendarCollator;
-  protected String appType;
+  protected ClientType clientType;
 
   private final Map<String, BwIndexer> publicIndexers = new HashMap<>();
   private final Map<String, BwIndexer> userIndexers = new HashMap<>();
@@ -165,7 +158,7 @@ public class ROClientImpl implements Logged, Client {
    * @param authUser account
    * @param runAsUser account
    * @param calSuiteName the calendar suite
-   * @param appType type of application: submit, admin etc
+   * @param clientType type of application: submit, admin etc
    * @param publicView true for the public RO client
    */
   public ROClientImpl(final ConfigCommon conf,
@@ -173,36 +166,26 @@ public class ROClientImpl implements Logged, Client {
                       final String authUser,
                       final String runAsUser,
                       final String calSuiteName,
-                      final String appType,
+                      final ClientType clientType,
                       final boolean publicView) {
     this(conf, id);
 
-    reinit(authUser, runAsUser, calSuiteName, appType, publicView);
+    reinit(authUser, runAsUser, calSuiteName, clientType, publicView);
   }
 
   protected ROClientImpl(final ConfigCommon conf,
                          final String id) {
     this.id = id;
     this.conf = conf;
-
-    if (debug()) {
-      mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-    }
-
-    final DateFormat df = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'");
-
-    mapper.setDateFormat(df);
-
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }
 
   public void reinit(final String authUser,
                      final String runAsUser,
                      final String calSuiteName,
-                     final String appType,
+                     final ClientType clientType,
                      final boolean publicView) {
     currentPrincipal = null;
-    this.appType = appType;
+    this.clientType = clientType;
 
     pars = CalSvcIPars.getRoClientPars(id,
                                        authUser,
@@ -256,17 +239,16 @@ public class ROClientImpl implements Logged, Client {
     cl.pars.setLogId(id);
 
     cl.svci = new CalSvcFactoryDefault().getSvc(cl.pars);
-    cl.appType = appType;
+    cl.clientType = clientType;
     cl.calSuiteName = calSuiteName;
   }
 
   @Override
-  public void requestIn(final int conversationType)
-          {
+  public void requestIn(final int conversationType) {
     postNotification(new HttpEvent(SysEventBase.SysCode.WEB_IN));
     svci.setState("Request in");
 
-    if (conversationType == Request.conversationTypeUnknown) {
+    if (conversationType == conversationTypeUnknown) {
       svci.open();
       svci.beginTransaction();
       return;
@@ -276,7 +258,7 @@ public class ROClientImpl implements Logged, Client {
       svci.close();
     }
 
-    if (conversationType == Request.conversationTypeOnly) {
+    if (conversationType == conversationTypeOnly) {
               /* if a conversation is already started on entry, end it
                   with no processing of changes. */
       if (svci.isOpen()) {
@@ -285,7 +267,7 @@ public class ROClientImpl implements Logged, Client {
       }
     }
 
-    if (conversationType == Request.conversationTypeProcessAndOnly) {
+    if (conversationType == conversationTypeProcessAndOnly) {
       if (svci.isOpen()) {
         svci.setState("Request in - flush");
         svci.flushAll();
@@ -316,13 +298,13 @@ public class ROClientImpl implements Logged, Client {
       return;
     }
 
-    if (conversationType == Request.conversationTypeUnknown) {
-      if (actionType != Request.actionTypeAction) {
+    if (conversationType == conversationTypeUnknown) {
+      if (actionType != actionTypeAction) {
         flushAll();
       }
     } else {
-      if ((conversationType == Request.conversationTypeEnd) ||
-              (conversationType == Request.conversationTypeOnly)) {
+      if ((conversationType == conversationTypeEnd) ||
+              (conversationType == conversationTypeOnly)) {
         flushAll();
       }
     }
@@ -375,52 +357,17 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public boolean getWebSubmit() {
-    return BedeworkDefs.appTypeWebsubmit.equals(appType);
+    return ClientType.submission == clientType;
   }
 
   @Override
   public boolean getPublicAuth() {
-    return BedeworkDefs.appTypeWebpublicauth.equals(appType);
+    return ClientType.publicAuth == clientType;
   }
 
   @Override
-  public String getAppType() {
-    return appType;
-  }
-
-  @Override
-  public void writeJson(final HttpServletResponse resp,
-                        final Object val) {
-    try {
-      mapper.writeValue(resp.getOutputStream(), val);
-    } catch (final Throwable t) {
-      throw new BedeworkException(t);
-    }
-  }
-
-  @Override
-  public void outputJson(final HttpServletResponse resp,
-                         final String etag,
-                         final String[] header,
-                         final Object val) {
-    resp.setStatus(HttpServletResponse.SC_OK);
-
-    if (etag != null) {
-      resp.setHeader("etag", etag);
-    }
-
-    if (header != null) {
-      resp.setHeader(header[0], header[1]);
-    }
-
-    resp.setContentType("application/json; charset=UTF-8");
-
-    writeJson(resp, val);
-    try {
-      resp.getOutputStream().close();
-    } catch (final IOException ioe) {
-      throw new BedeworkException(ioe);
-    }
+  public ClientType getClientType() {
+    return clientType;
   }
 
   @Override
@@ -1276,8 +1223,11 @@ public class ROClientImpl implements Logged, Client {
     }
     checkUpdate();
 
-    return formatSearchResult(lastSearch.getIndexer().
-            getSearchResult(lastSearch, start, num, PrivilegeDefs.privRead));
+    return formatSearchResult(
+            lastSearch.getIndexer()
+                      .getSearchResult(lastSearch,
+                                       start, num,
+                                       PrivilegeDefs.privRead));
   }
 
   /* ------------------------------------------------------------
@@ -1675,7 +1625,8 @@ public class ROClientImpl implements Logged, Client {
 
   private List<SearchResultEntry> formatSearchResult(
           final List<SearchResultEntry> entries) {
-    final IcalTranslator trans = new IcalTranslator(new IcalCallbackcb(this));
+    final IcalTranslator trans = new IcalTranslator(
+            new IcalCallbackcb(this));
 
     for (final SearchResultEntry sre: entries) {
       final Object o = sre.getEntity();

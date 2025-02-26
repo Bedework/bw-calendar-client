@@ -69,7 +69,7 @@ public class EventFormatter extends EventTimeZonesRegistry
     this.eventInfo = eventInfo;
 
     try {
-      CurrentAccess ca = eventInfo.getCurrentAccess();
+      final CurrentAccess ca = eventInfo.getCurrentAccess();
 
       if (ca == null) {
         warn("No current access for " + eventInfo.getEvent().getUid());
@@ -77,14 +77,14 @@ public class EventFormatter extends EventTimeZonesRegistry
         xmlAccess = AccessXmlUtil.getXmlAclString(ca.getAcl(),
                                                   cl);
       }
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error(t);
     }
   }
 
-  /* =====================================================================
+  /* =========================================================
    *                     Property methods
-   * ===================================================================== */
+   * ========================================================= */
 
   /**
    * @return EventInfo
@@ -100,9 +100,9 @@ public class EventFormatter extends EventTimeZonesRegistry
     return eventInfo.getEvent();
   }
 
-  /* ===================================================================
+  /* =======================================================
                       Convenience methods
-     =================================================================== */
+     ======================================================= */
 
   /** Get the event's starting day and time
    *
@@ -115,7 +115,7 @@ public class EventFormatter extends EventTimeZonesRegistry
         if (start == null) {
           start = new DateTimeFormatter(getEvent().getDtstart(), this);
         }
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         error(t);
       }
     }
@@ -143,7 +143,7 @@ public class EventFormatter extends EventTimeZonesRegistry
           }
           end = new DateTimeFormatter(dt, this);
         }
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         error(t);
       }
     }
@@ -158,7 +158,9 @@ public class EventFormatter extends EventTimeZonesRegistry
   @SuppressWarnings("unused")
   public DateTimeFormatter getDtstamp() {
     if (dtstamp == null) {
-      BwDateTime dt = BwDateTimeUtil.getDateTimeUTC(getEvent().getDtstamp());
+      final BwDateTime dt =
+              BwDateTimeUtil.getDateTimeUTC(
+                      getEvent().getDtstamp());
       dtstamp = new DateTimeFormatter(dt);
     }
 
@@ -174,11 +176,11 @@ public class EventFormatter extends EventTimeZonesRegistry
     return xmlAccess;
   }
 
-  /* ====================================================================
+  /* ========================================================
    *                   Logged methods
-   * ==================================================================== */
+   * ======================================================== */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

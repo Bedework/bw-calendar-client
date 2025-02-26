@@ -69,18 +69,5 @@ public interface BedeworkDefs extends Serializable {
 
   /* Display using a 'filter' */
   //public static final String selectionTypeFiltered = "filtered";
-
-  /** */
-  public static final String appTypeWebadmin = "webadmin";
-  /** */
-  public static final String appTypeWebsubmit = "websubmit";
-  /** */
-  public static final String appTypeWebpublic = "webpublic";
-  /** */
-  public static final String appTypeWebpublicauth = "webpublicauth";
-  /** */
-  public static final String appTypeFeeder = "feeder";
-  /** */
-  public static final String appTypeWebuser = "webuser";
 }
 

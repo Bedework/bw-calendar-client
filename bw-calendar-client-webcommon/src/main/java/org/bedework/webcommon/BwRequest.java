@@ -24,6 +24,7 @@ import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
 import org.bedework.base.exc.BedeworkException;
+import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
@@ -37,7 +38,6 @@ import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.Util;
-import org.bedework.base.response.Response;
 import org.bedework.util.servlet.filters.ConfiguredXSLTFilter;
 import org.bedework.util.servlet.filters.PresentationState;
 import org.bedework.util.timezones.Timezones;
@@ -48,17 +48,17 @@ import org.bedework.util.webaction.WebActionForm;
 import org.bedework.util.webaction.WebGlobals;
 import org.bedework.webcommon.config.ClientConfigurations;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 /**
  * @author douglm
@@ -247,22 +247,6 @@ public class BwRequest extends Request {
 
   public ConfigCommon getConfig() {
     return config;
-  }
-
-  /**
-   *
-   * @return string application type from configuration
-   */
-  public String getAppType() {
-    return config.getAppType();
-  }
-
-  /** True for submitApp
-   *
-   * @return boolean
-   */
-  public boolean getSubmitApp() {
-    return BedeworkDefs.appTypeWebsubmit.equals(getAppType());
   }
 
   public WebGlobals getGlobals() {

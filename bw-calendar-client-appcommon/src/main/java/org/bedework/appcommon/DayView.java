@@ -35,7 +35,7 @@ public class DayView extends TimeView {
    * @param  filter    non-null to filter the results.
 ) {   */
   public DayView(final MessageEmit err,
-                 final MyCalendarVO curDay,
+                 final CalendarFormatter curDay,
                  final FilterBase filter) {
     super(err,
           curDay.getCalendar(), "Day",

@@ -4,7 +4,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.BedeworkDefs;
-import org.bedework.appcommon.MyCalendarVO;
+import org.bedework.appcommon.CalendarFormatter;
 import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.util.BwDateTimeUtil;
@@ -36,11 +36,11 @@ public class DateViewUtil {
      */
     boolean newView = false;
 
-    MyCalendarVO dt;
+    CalendarFormatter dt;
 
     if (BedeworkDefs.vtToday.equals(newViewType)) {
       final Date jdt = new Date(System.currentTimeMillis());
-      dt = new MyCalendarVO(jdt);
+      dt = new CalendarFormatter(jdt);
       newView = true;
       newViewType = BedeworkDefs.vtDay;
     } else if (date == null) {
@@ -48,23 +48,23 @@ public class DateViewUtil {
         // selected specific day to display from personal event entry screen.
 
         final Date jdt = BwDateTimeUtil.getDate(mstate.getViewStartDate().getDateTime());
-        dt = new MyCalendarVO(jdt);
+        dt = new CalendarFormatter(jdt);
         newView = true;
       } else {
         // Just stay here
         dt = mstate.getViewMcDate();
         if (dt == null) {
           // Just in case
-          dt = new MyCalendarVO(new Date(System.currentTimeMillis()));
+          dt = new CalendarFormatter(new Date(System.currentTimeMillis()));
         }
       }
     } else {
       Date jdt = DateTimeUtil.fromISODate(date);
-      dt = new MyCalendarVO(jdt);
+      dt = new CalendarFormatter(jdt);
       if (!checkDateInRange(request, dt.getYear())) {
         // Set it to today
         jdt = new Date(System.currentTimeMillis());
-        dt = new MyCalendarVO(jdt);
+        dt = new CalendarFormatter(jdt);
       }
       newView = true;
     }
@@ -103,7 +103,7 @@ public class DateViewUtil {
           newView = true;
           newViewType = mstate.getViewType();
           final Date jdt = DateTimeUtil.fromISODate(vsdate);
-          dt = new MyCalendarVO(jdt);
+          dt = new CalendarFormatter(jdt);
         }
       }
     }
@@ -140,12 +140,12 @@ public class DateViewUtil {
                              final String date) {
     final BwModuleState mstate = request.getModule().getState();
     Date jdt = DateTimeUtil.fromISODate(date);
-    MyCalendarVO dt = new MyCalendarVO(jdt);
+    CalendarFormatter dt = new CalendarFormatter(jdt);
 
     if (!checkDateInRange(request, dt.getYear())) {
       // Set it to today
       jdt = new Date(System.currentTimeMillis());
-      dt = new MyCalendarVO(jdt);
+      dt = new CalendarFormatter(jdt);
     }
     mstate.setViewMcDate(dt);
     mstate.setRefresh(true);

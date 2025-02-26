@@ -35,7 +35,7 @@ public class WeekView extends TimeView {
    * @param  filter    non-null to filter the results.
    */
   public WeekView(final MessageEmit err,
-                  final MyCalendarVO curDay,
+                  final CalendarFormatter curDay,
                   final FilterBase filter) {
     super(err,
           curDay.getCalendar(), "Week",

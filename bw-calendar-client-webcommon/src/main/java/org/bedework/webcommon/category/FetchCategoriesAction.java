@@ -18,17 +18,16 @@
 */
 package org.bedework.webcommon.category;
 
-import org.bedework.appcommon.client.Client;
+import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.responses.CategoriesResponse;
-import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
-import java.util.Collection;
-
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Collection;
 
 /** This action fetches all categories and embeds them in the session.
  *
@@ -63,13 +62,12 @@ public class FetchCategoriesAction extends BwAbstractAction {
 
     final HttpServletResponse resp = request.getResponse();
 
-    final Client cl = request.getClient();
     final CategoriesResponse cats = new CategoriesResponse();
     cats.setCategories(vals);
 
     Response.ok(cats);
 
-    cl.outputJson(resp, null, header, cats);
+    outputJson(resp, null, header, cats);
 
     return forwardNull;
   }

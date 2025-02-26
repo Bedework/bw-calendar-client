@@ -19,7 +19,6 @@
 
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.ROClientImpl;
@@ -31,10 +30,15 @@ import org.bedework.util.logging.Logged;
 import org.bedework.util.misc.Util;
 import org.bedework.util.webaction.Request;
 
-import java.io.Serializable;
-
 import jakarta.servlet.http.HttpSession;
 
+import java.io.Serializable;
+
+import static org.bedework.appcommon.client.Client.ClientType;
+import static org.bedework.util.servlet.ActionTypes.actionTypeAction;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypeEnd;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypeOnly;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypeUnknown;
 import static org.bedework.webcommon.ForwardDefs.forwardNoAction;
 
 /** A module represents a client and its associated state. A module
@@ -222,13 +226,13 @@ public class BwModule implements Logged, Serializable {
     try {
       if (cleanUp) {
         closeNow();
-      } else if (convType == Request.conversationTypeUnknown) {
-        if (currentReq.getActionType() != Request.actionTypeAction) {
+      } else if (convType == conversationTypeUnknown) {
+        if (currentReq.getActionType() != actionTypeAction) {
           closeNow();
         }
       } else {
-        if ((convType == Request.conversationTypeEnd) ||
-                (convType == Request.conversationTypeOnly)) {
+        if ((convType == conversationTypeEnd) ||
+                (convType == conversationTypeOnly)) {
           closeNow();
         }
       }
@@ -240,7 +244,7 @@ public class BwModule implements Logged, Serializable {
     }
 
     // Kill the session if it's the feeder
-    if ((getClient() == null) || BedeworkDefs.appTypeFeeder.equals(getClient().getAppType())) {
+    if ((getClient() == null) || ClientType.feeder == getClient().getClientType()) {
       final HttpSession sess = currentReq.getRequest().getSession(false);
       if (sess != null) {
         sess.invalidate();
@@ -279,10 +283,13 @@ public class BwModule implements Logged, Serializable {
 //    Client client = BwWebUtil.getClient(request.getRequest());
     Client client = getClient();
 
-    if (BedeworkDefs.appTypeFeeder.equals(conf.getAppType())) {
+    final var clientType = ClientType.valueOf(
+            request.getConfig().getAppType());
+
+    if (ClientType.feeder == clientType) {
       calSuiteName = request.getReqPar("cs", conf.getCalSuite());
     } else if (guestMode ||
-            BedeworkDefs.appTypeWebpublicauth.equals(conf.getAppType())) {
+            (ClientType.publicAuth == clientType)) {
       // A guest user using the public clients. Get the calendar suite from the
       // configuration
       calSuiteName = conf.getCalSuite();
@@ -313,14 +320,14 @@ public class BwModule implements Logged, Serializable {
                                 getModuleName(),
                                 request.getCurrentUser(),
                                 requestedUser,
-                                request.getConfig().getAppType());
+                                clientType);
     } else {
       client = new ROClientImpl(conf,
                                 getModuleName(),
                                 request.getCurrentUser(),
                                 requestedUser,
                                 calSuiteName,
-                                request.getConfig().getAppType(),
+                                clientType,
                                 true);
     }
 

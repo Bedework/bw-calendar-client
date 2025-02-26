@@ -39,7 +39,7 @@ public class YearView extends TimeView {
    * @param  filter    non-null to filter the results.
    */
   public YearView(final MessageEmit err,
-                  final MyCalendarVO curDay,
+                  final CalendarFormatter curDay,
                   final boolean showData,
                   final FilterBase filter) {
     super(err,

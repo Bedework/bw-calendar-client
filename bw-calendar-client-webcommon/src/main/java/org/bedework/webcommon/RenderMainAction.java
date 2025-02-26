@@ -77,8 +77,8 @@ public class RenderMainAction extends RenderAction {
       }
     }
 
-    if (tv != null) {
-      tv.getEvents(cl, fetch);
+    if ((tv != null) && (fetch || !tv.hasEvents())) {
+      tv.putEvents(cl.getSearchResult(0, -1));
     }
 
     mstate.setRefresh(false);

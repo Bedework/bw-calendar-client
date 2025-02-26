@@ -73,7 +73,8 @@ import java.util.TimeZone;
  *  @version 1.0
  */
 public class DateTimeFormatter
-        implements Comparable<DateTimeFormatter>, Comparator, Serializable {
+        implements Comparable<DateTimeFormatter>,
+        Comparator<DateTimeFormatter>, Serializable {
   /** The date/time we are handling.
    */
   private BwDateTime date;
@@ -115,8 +116,8 @@ public class DateTimeFormatter
    * @author douglm
    */
   public static class FormattedDate implements Serializable {
-    private static volatile HashMap<Locale, Formatters> formattersTbl =
-      new HashMap<Locale, Formatters>();
+    private static final HashMap<Locale, Formatters> formattersTbl =
+            new HashMap<>();
 
     //private CalendarInfo calInfo;
 
@@ -133,7 +134,7 @@ public class DateTimeFormatter
 
     /** Constructor
      *
-     * @param error
+     * @param error true indicates an error object
      */
     public FormattedDate(final boolean error) {
       this.error = error;
@@ -141,12 +142,14 @@ public class DateTimeFormatter
 
     /** Constructor
      *
-     * @param dt
-     * @param isoDateTime
+     * @param dt date object
+     * @param isoDateTime yyyyMMdd
      * @param dateOnly   true if date was a date-only value.
-     * @param tz
+     * @param tz timezone
      */
-    public FormattedDate(final Date dt, final String isoDateTime, final boolean dateOnly,
+    public FormattedDate(final Date dt,
+                         final String isoDateTime,
+                         final boolean dateOnly,
                          final TimeZone tz) {
       this.isoDateTime = isoDateTime;
       this.dateOnly = dateOnly;
@@ -183,7 +186,7 @@ public class DateTimeFormatter
 
       try {
         return Integer.parseInt(isoDateTime.substring(0, 4));
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return -1;
       }
     }
@@ -199,7 +202,7 @@ public class DateTimeFormatter
 
       try {
         return isoDateTime.substring(0, 4);
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return "XXXX";
       }
     }
@@ -215,7 +218,7 @@ public class DateTimeFormatter
 
       try {
         return Integer.parseInt(isoDateTime.substring(4, 6));
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return -1;
       }
     }
@@ -232,7 +235,7 @@ public class DateTimeFormatter
 
       try {
         return isoDateTime.substring(4, 6);
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return "XX";
       }
     }
@@ -246,11 +249,13 @@ public class DateTimeFormatter
         return "error";
       }
 
-      Formatters fmt = getFormatters();
-      FieldPosition f = new FieldPosition(DateFormat.MONTH_FIELD);
+      final Formatters fmt = getFormatters();
+      final FieldPosition f =
+              new FieldPosition(DateFormat.MONTH_FIELD);
       synchronized (fmt) {
-        StringBuffer s = fmt.longDateFormatter.format(cal.getTime(),
-                                                      new StringBuffer(), f);
+        final StringBuffer s = fmt.longDateFormatter
+                .format(cal.getTime(),
+                        new StringBuffer(), f);
         return s.substring(f.getBeginIndex(), f.getEndIndex());
       }
     }
@@ -266,7 +271,7 @@ public class DateTimeFormatter
 
       try {
         return Integer.parseInt(isoDateTime.substring(6, 8));
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return -1;
       }
     }
@@ -307,7 +312,7 @@ public class DateTimeFormatter
 
       try {
         return isoDateTime.substring(6, 8);
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return "XX";
       }
     }
@@ -327,7 +332,7 @@ public class DateTimeFormatter
 
       try {
         return Integer.parseInt(isoDateTime.substring(9, 11));
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return -1;
       }
     }
@@ -347,7 +352,7 @@ public class DateTimeFormatter
 
       try {
         return isoDateTime.substring(9, 11);
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return "XX";
       }
     }
@@ -361,7 +366,7 @@ public class DateTimeFormatter
         return -1;
       }
 
-      int hr = getHour24();
+      final int hr = getHour24();
 
       if (hr == 0) {
         return 12; // midnight+
@@ -383,7 +388,7 @@ public class DateTimeFormatter
         return "XX";
       }
 
-      String hr = String.valueOf(getHour());
+      final String hr = String.valueOf(getHour());
 
       if (hr.length() == 2) {
         return hr;
@@ -407,7 +412,7 @@ public class DateTimeFormatter
 
       try {
         return Integer.parseInt(isoDateTime.substring(11, 13));
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return -1;
       }
     }
@@ -427,7 +432,7 @@ public class DateTimeFormatter
 
       try {
         return isoDateTime.substring(11, 13);
-      } catch (Throwable t) {
+      } catch (final Throwable t) {
         return "XX";
       }
     }
@@ -454,10 +459,10 @@ public class DateTimeFormatter
         return "error";
       }
 
-      Formatters fmt = getFormatters();
+      final Formatters fmt = getFormatters();
 
       synchronized (fmt) {
-        DateFormat df = fmt.shortDateFormatter;
+        final DateFormat df = fmt.shortDateFormatter;
         df.setTimeZone(tz);
         return df.format(cal.getTime());
       }
@@ -473,10 +478,10 @@ public class DateTimeFormatter
         return "error";
       }
 
-      Formatters fmt = getFormatters();
+      final Formatters fmt = getFormatters();
 
       synchronized (fmt) {
-        DateFormat df = fmt.longDateFormatter;
+        final DateFormat df = fmt.longDateFormatter;
         df.setTimeZone(tz);
         return df.format(cal.getTime());
       }
@@ -493,10 +498,10 @@ public class DateTimeFormatter
         return "error";
       }
 
-      Formatters fmt = getFormatters();
+      final Formatters fmt = getFormatters();
 
       synchronized (fmt) {
-        DateFormat df = fmt.shortTimeFormatter;
+        final DateFormat df = fmt.shortTimeFormatter;
         df.setTimeZone(tz);
         return df.format(cal.getTime());
       }
@@ -522,7 +527,7 @@ public class DateTimeFormatter
 
   /** Constructor
    *
-   * @param date
+   * @param date BwDateTime object to be formatted
    */
   public DateTimeFormatter(final BwDateTime date) {
     this(date, Timezones.getTzRegistry());
@@ -530,8 +535,8 @@ public class DateTimeFormatter
 
   /** Constructor
    *
-   * @param date
-   * @param tzreg
+   * @param date BwDateTime object to be formatted
+   * @param tzreg registry
    */
   public DateTimeFormatter(final BwDateTime date,
                            final TimeZoneRegistry tzreg) {
@@ -545,7 +550,7 @@ public class DateTimeFormatter
         tzIsLocal = Timezones.getThreadDefaultTzid().equals(date.getTzid());
       }
 
-      TimeZone tz = null;
+      final TimeZone tz;
       if (isUtc) {
         tz = TimeZone.getTimeZone("GMT");
       } else if (date.getTzid() != null) {
@@ -555,7 +560,7 @@ public class DateTimeFormatter
         tz = Timezones.getDefaultTz();
       }
 
-      Date dt = BwDateTimeUtil.getDate(date, tzreg);
+      final Date dt = BwDateTimeUtil.getDate(date, tzreg);
 
       tzFormatted = new FormattedDate(dt, date.getDtval(), date.getDateType(),
                                       tz);
@@ -572,7 +577,7 @@ public class DateTimeFormatter
         formatted = new FormattedDate(dt, localIso, date.getDateType(),
                                       Timezones.getDefaultTz());
       }
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error = true;
       tzFormatted = new FormattedDate(error);
       formatted = new FormattedDate(error);
@@ -656,21 +661,11 @@ public class DateTimeFormatter
    *                        Object methods
    * ==================================================================== */
 
-  public int compare(final Object o1, final Object o2) {
-    if (o1 == o2) {
+  public int compare(final DateTimeFormatter dt1,
+                     final DateTimeFormatter dt2) {
+    if (dt1 == dt2) {
       return 0;
     }
-
-    if (!(o1 instanceof DateTimeFormatter)) {
-      return -1;
-    }
-
-    if (!(o2 instanceof DateTimeFormatter)) {
-      return 1;
-    }
-
-    DateTimeFormatter dt1 = (DateTimeFormatter)o1;
-    DateTimeFormatter dt2 = (DateTimeFormatter)o2;
 
     return dt1.date.compareTo(dt2.date);
   }
@@ -686,6 +681,9 @@ public class DateTimeFormatter
 
   @Override
   public boolean equals(final Object obj) {
-    return compareTo((DateTimeFormatter)obj) == 0;
+    if (!(obj instanceof final DateTimeFormatter dtf)) {
+      return false;
+    }
+    return compareTo(dtf) == 0;
   }
 }

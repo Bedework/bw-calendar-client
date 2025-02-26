@@ -19,6 +19,8 @@
 package org.bedework.appcommon.client;
 
 import org.bedework.appcommon.ConfigCommon;
+import org.bedework.base.response.GetEntitiesResponse;
+import org.bedework.base.response.GetEntityResponse;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
@@ -44,16 +46,12 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.sysevents.events.SysEventBase;
-import org.bedework.base.response.GetEntitiesResponse;
-import org.bedework.base.response.GetEntityResponse;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This interface defines the interactions with the back end system
@@ -62,6 +60,29 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author  Mike Douglass douglm  rpi.edu
  */
 public interface Client extends Serializable {
+  enum ClientType {
+    // Unauthenticated
+    guest,
+
+    // Pretty much same as guest but it's the public client view
+    publick,
+
+    // Again much the same but a public feeder
+    feeder,
+
+    // public client requiring authentication. Acts like guest mostly
+    publicAuth,
+
+    // Submission client
+    submission,
+
+    // Personal/group scheduling
+    personal,
+
+    // Admin client
+    admin
+  }
+
   /**
    * @param id   provide an id for logging and tracing.
    * @return a copy of this client which can be used for an asynchronous
@@ -148,32 +169,9 @@ public interface Client extends Serializable {
 
   /** apptype
    *
-   * @return boolean
+   * @return the client type
    */
-  String getAppType();
-
-  /** Write the value as json to the response stream.
-   *
-   * @param resp to write to
-   * @param val to output
-   */
-  void writeJson(HttpServletResponse resp,
-                 Object val);
-
-  /** Write the value as json to the response stream.
-   * Sets status ok, dds header, writes data and closes stream.
-   *
-   * <p>Adds content type header and possible additional.
-   *
-   * @param resp to write to
-   * @param etag added if non-null
-   * @param header if not null adds header with name and value.
-   * @param val to output
-   */
-  void outputJson(HttpServletResponse resp,
-                  String etag,
-                  String[] header,
-                  Object val);
+  ClientType getClientType();
 
   /** Return authentication relevant properties.
    *
@@ -873,9 +871,9 @@ public interface Client extends Serializable {
   List<SearchResultEntry> getSearchResult(int start,
                                           int num);
 
-  /* ------------------------------------------------------------
+  /* ------------------------------------------------------
    *                   Calendar Suites
-   * ------------------------------------------------------------ */
+   * ------------------------------------------------------ */
 
   /** Get the current calendar suite.
    *

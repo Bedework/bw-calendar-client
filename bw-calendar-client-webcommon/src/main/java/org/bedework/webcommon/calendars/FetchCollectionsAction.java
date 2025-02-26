@@ -28,10 +28,10 @@ import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.util.misc.Util.escapeJava;
 
@@ -48,7 +48,6 @@ public class FetchCollectionsAction extends BwAbstractAction {
   public int doAction(final BwRequest request) {
     final BwSession sess = request.getSess();
     final CollectionsResponse cols = sess.getCollections(request);
-    final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
     final String format = request.getReqPar("format");
@@ -56,7 +55,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
     if (format == null) {
       //resp.setHeader("Content-Disposition",
       //               "Attachment; Filename=\"categoryList.json\"");
-      cl.outputJson(resp, null, null, cols);
+      outputJson(resp, null, null, cols);
 
       return forwardNull;
     }
@@ -83,8 +82,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
       }
 
       try (final PrintWriter pw = resp.getWriter()) {
-
-        writeCols(cl, col, pw);
+        writeCols(request.getClient(), col, pw);
       } catch (final IOException ioe) {
         throw new BedeworkException(ioe);
       }

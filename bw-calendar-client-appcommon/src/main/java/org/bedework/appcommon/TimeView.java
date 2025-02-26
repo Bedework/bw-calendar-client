@@ -18,8 +18,7 @@
 */
 package org.bedework.appcommon;
 
-import org.bedework.appcommon.client.Client;
-import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.ToString;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
@@ -28,11 +27,9 @@ import org.bedework.calfacade.indexing.SearchResultEntry;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.convert.IcalTranslator;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
-import org.bedework.base.ToString;
 import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
@@ -47,6 +44,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.bedework.util.timezones.DateTimeUtil.isoDate;
 
 /** This class represents a view of the calendar from a startDate to an
  * endDate. The getTimePeriodInfo method always returns a tree structure
@@ -66,7 +65,6 @@ import java.util.Map;
 public class TimeView implements Logged, Serializable {
   private final MessageEmit err;
 
-  protected IcalTranslator trans;
   protected String periodName;
   protected int viewPeriod;
   protected Calendar firstDay;
@@ -124,7 +122,7 @@ public class TimeView implements Logged, Serializable {
      * @return String
      */
     public String getDateDigits() {
-      return DateTimeUtil.isoDate(getTime());
+      return isoDate(getTime());
     }
 
     /**  Get full date
@@ -174,7 +172,8 @@ public class TimeView implements Logged, Serializable {
         throw new RuntimeException(t);
       }
 
-      StringBuffer s = df.format(getTime(), new StringBuffer(), f);
+      final StringBuffer s = df.format(getTime(),
+                                       new StringBuffer(), f);
 
       return s.substring(f.getBeginIndex(), f.getEndIndex());
     }
@@ -245,18 +244,6 @@ public class TimeView implements Logged, Serializable {
    */
   public CalendarInfo getCalInfo() {
     return CalendarInfo.getInstance();
-  }
-
-  /**
-   * @param cl
-   * @return translator for ical
-   */
-  public IcalTranslator getTrans(final Client cl) {
-    if (trans == null) {
-      trans = new IcalTranslator(new IcalCallbackcb(cl));
-    }
-
-    return trans;
   }
 
   public BwDateTime getViewStart() {
@@ -375,11 +362,12 @@ public class TimeView implements Logged, Serializable {
 
   /** Return the events for the given day as an array of value objects
    *
-   * @param   date    MyCalendar object defining day
+   * @param   date    Calendar object defining day
    * @return  Collection of EventFormatter being one days events or empty for no events.
    */
-  public Collection<EventFormatter> getDaysEvents(final MyCalendarVO date) {
+  public Collection<EventFormatter> getDaysEvents(final Calendar date) {
     final ArrayList<EventFormatter> al = new ArrayList<>();
+    final var dtAsString = isoDate(date.getTime());
 
     //BwDateTime startDt = getBwDate(date.getDateDigits());
     //BwDateTime endDt = startDt.getNextDay();
@@ -390,7 +378,7 @@ public class TimeView implements Logged, Serializable {
       throw new RuntimeException(tze);
     }
     final BwDateTime startDt =
-            BwDateTimeUtil.getDateTime(date.getDateDigits() + "T000000",
+            BwDateTimeUtil.getDateTime(dtAsString + "T000000",
                                        false,
                                        false,
                                        tzid);
@@ -412,7 +400,7 @@ public class TimeView implements Logged, Serializable {
      * of todos with no start date. These should only appear in the current day,
      * i.e today
      */
-    final boolean today = date.isToday();
+    final boolean today = dtAsString.equals(isoDate());
 
     for (final EventFormatter ef: events.values()) {
       final EventInfo ei = ef.getEventInfo();
@@ -540,7 +528,7 @@ public class TimeView implements Logged, Serializable {
      */
     boolean newMonth = true;
 
-    MyCalendarVO currentDay;
+    CalendarFormatter currentDay;
 
     //MyCalendarVO first;
     Calendar last;
@@ -592,11 +580,11 @@ public class TimeView implements Logged, Serializable {
       //gtpi.first = getFirstDay();
       gtpi.last = getLastDay();
       gtpi.multi = !gtpi.last.equals(getFirstDay());
-      gtpi.currentDay = new MyCalendarVO(getFirstDay().getTime());
+      gtpi.currentDay = new CalendarFormatter(getFirstDay().getTime());
       gtpi.year = String.valueOf(gtpi.currentDay.getYear());
 
-      gtpi.todaysMonth = new MyCalendarVO(   // XXX Expensive??
-                   new Date(System.currentTimeMillis())).getTwoDigitMonth();
+      gtpi.todaysMonth = new CalendarFormatter(   // XXX Expensive??
+                                                  new Date(System.currentTimeMillis())).getTwoDigitMonth();
 
       if (debug()) {
         debug("getFirstDayOfWeek() = " + getFirstDayOfWeek());
@@ -612,7 +600,7 @@ public class TimeView implements Logged, Serializable {
 
       /* Create a year entry */
       final TimeViewDailyInfo yearTvdi = new TimeViewDailyInfo(err);
-      yearTvdi.setCal(gtpi.currentDay);
+      yearTvdi.setCal(gtpi.currentDay.getCalendar());
       yearTvdi.setYear(gtpi.year);
       yearTvdi.setDate(gtpi.currentDay.getDateDigits());
       yearTvdi.setDateShort(gtpi.currentDay.getDateString());
@@ -639,8 +627,7 @@ public class TimeView implements Logged, Serializable {
           }
 
           monthTvdi.setEntries(
-             weeks.toArray(new TimeViewDailyInfo[
-                  weeks.size()]));
+             weeks.toArray(new TimeViewDailyInfo[0]));
           months.add(monthTvdi);
 
           if (gtpi.isLast) {
@@ -654,18 +641,18 @@ public class TimeView implements Logged, Serializable {
 
           monthTvdi = new TimeViewDailyInfo(err);
           initTvdi(monthTvdi, gtpi);
-          weeks = new ArrayList<TimeViewDailyInfo>();
+          weeks = new ArrayList<>();
         }
       }
 
       yearTvdi.setEntries(
-              months.toArray(new TimeViewDailyInfo[months.size()]));
+              months.toArray(new TimeViewDailyInfo[0]));
 
       tvdis = new TimeViewDailyInfo[1];
       tvdis[0] = yearTvdi;
 
       return tvdis;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       error("getTimePeriodInfo", t);
       //XXX We need an error object
 
@@ -673,52 +660,18 @@ public class TimeView implements Logged, Serializable {
     }
   }
 
-  /** Ensure we have the current set of events.
-   *
-   * @param cl - the client
-   * @param refresh if true will get a new set.
-) {   */
-  public void getEvents(final Client cl,
-                        final boolean refresh) {
-    if (!refresh && (events != null)) {
-      return;
-    }
+  public boolean hasEvents() {
+    return events != null;
+  }
 
-    /*
-    long curTime = System.currentTimeMillis();
-
-    Calendar lastP1 = (Calendar)lastDay.clone();
-    lastP1.add(Calendar.DATE, 1);
-
-    BwDateTime start = getBwDate(firstDayFmt.getDateDigits());
-    BwDateTime end = getBwDate(DateTimeUtil.isoDate(lastP1.getTime()));
-    */
-
-    final Collection<SearchResultEntry> sres = cl.getSearchResult(0, -1);
+  public void putEvents(final Collection<SearchResultEntry> sres) {
     events = new HashMap<>(sres.size());
 
     for (final SearchResultEntry sre: sres) {
-      if (sre.getEntity() instanceof EventFormatter) {
-        final EventFormatter ef = (EventFormatter)sre.getEntity();
-
+      if (sre.getEntity() instanceof final EventFormatter ef) {
         events.put(makeKey(ef.getEvent()), ef);
       }
     }
-  }
-
-  /** Update an event in our cache so it appears in the users display
-   *
-   * @param cl
-   * @param ei
-) {   */
-  public void putEvent(final Client cl,
-                       final EventInfo ei) {
-    final EventFormatter ef =
-            new EventFormatter(cl,
-                               new IcalTranslator(new IcalCallbackcb(cl)),
-                               ei);
-
-    events.put(makeKey(ef.getEvent()), ef);
   }
 
   private String makeKey(final BwEvent ev) {
@@ -728,7 +681,7 @@ public class TimeView implements Logged, Serializable {
   }
 
   private BwDateTime getBwDate(final Calendar date) {
-    final String dateStr = new MyCalendarVO(date.getTime()).getDateDigits();
+    final String dateStr = new CalendarFormatter(date.getTime()).getDateDigits();
 
     return getBwDate(dateStr);
   }
@@ -747,9 +700,10 @@ public class TimeView implements Logged, Serializable {
     gtpi.inThisMonth = gtpi.todaysMonth.equals(gtpi.currentDay.getTwoDigitMonth());
   }
 
-  private void initTvdi(final TimeViewDailyInfo tvdi, final GtpiData gtpi) {
+  private void initTvdi(final TimeViewDailyInfo tvdi,
+                        final GtpiData gtpi) {
     tvdi.setView(this);
-    tvdi.setCal(gtpi.currentDay);
+    tvdi.setCal(gtpi.currentDay.getCalendar());
     tvdi.setMultiDay(gtpi.multi);
     tvdi.setMonth(gtpi.currentDay.getTwoDigitMonth());
     tvdi.setShortMonthName(gtpi.shortMonthName);
@@ -860,8 +814,7 @@ public class TimeView implements Logged, Serializable {
       days.add(tvdi);
     }
 
-    return days.toArray(new TimeViewDailyInfo[
-                    days.size()]);
+    return days.toArray(new TimeViewDailyInfo[0]);
   }
 
   @Override
@@ -875,9 +828,9 @@ public class TimeView implements Logged, Serializable {
     return ts.toString();
   }
 
-  /* ====================================================================
+  /* =============================================================
    *                   Logged methods
-   * ==================================================================== */
+   * ============================================================= */
 
   private final BwLogger logger = new BwLogger();
 

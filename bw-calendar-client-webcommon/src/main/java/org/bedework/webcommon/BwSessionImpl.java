@@ -25,7 +25,7 @@ import org.bedework.appcommon.CollectionCollator;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.DayView;
 import org.bedework.appcommon.MonthView;
-import org.bedework.appcommon.MyCalendarVO;
+import org.bedework.appcommon.CalendarFormatter;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.WeekView;
 import org.bedework.appcommon.YearView;
@@ -222,7 +222,7 @@ public class BwSessionImpl implements Logged, BwSession {
 //              (lastRefresh == null) || (now - lastRefresh > refreshRate)) {
         // Implant various objects for the pages.
 
-        if (!BedeworkDefs.appTypeFeeder.equals(cl.getAppType())) {
+        if (Client.ClientType.feeder != cl.getClientType()) {
           embedFilters(req);
 
           if (cl.getPublicAdmin() || cl.getWebSubmit()) {
@@ -305,7 +305,7 @@ public class BwSessionImpl implements Logged, BwSession {
     }
 
     /* TODO what's this
-    if (!BedeworkDefs.appTypeWebpublic.equals(cl.getAppType())) {
+    if (ClientType.publick != cl.getClientType())) {
       cols.setCollections(getAppCollections(req));
     }
     */
@@ -646,10 +646,10 @@ public class BwSessionImpl implements Logged, BwSession {
     Collection<BwCategory> vals = null;
 
     if (kind == ownersEntity) {
-      final String appType = cl.getAppType();
+      final var clientType = cl.getClientType();
       if (cl.getWebSubmit() || cl.getPublicAuth() ||
-              BedeworkDefs.appTypeWebpublic.equals(appType) ||
-              BedeworkDefs.appTypeFeeder.equals(appType)) {
+              (Client.ClientType.publick == clientType) ||
+              (Client.ClientType.feeder == clientType)) {
         // Use public
         vals = cl.getPublicCategories();
       } else {
@@ -991,14 +991,14 @@ public class BwSessionImpl implements Logged, BwSession {
                     BedeworkDefs.viewPeriodNames[BedeworkDefs.defaultView]);
           }
 
-          mstate.setViewMcDate(new MyCalendarVO(new Date(System.currentTimeMillis())));
+          mstate.setViewMcDate(new CalendarFormatter(new Date(System.currentTimeMillis())));
         }
       }
 
       /* Now get a view object */
 
       if (mstate.getViewMcDate() == null) {
-        mstate.setViewMcDate(new MyCalendarVO(new Date(
+        mstate.setViewMcDate(new CalendarFormatter(new Date(
                 System.currentTimeMillis())));
       }
 
@@ -1031,7 +1031,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       mstate.setCurTimeView(tv);
 
-      if (BedeworkDefs.appTypeWebuser.equals(cl.getAppType())) {
+      if (Client.ClientType.personal == cl.getClientType()) {
         cl.clearSearchEntries();
       }
     } catch (final Throwable t) {

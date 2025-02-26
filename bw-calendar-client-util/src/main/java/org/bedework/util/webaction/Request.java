@@ -26,6 +26,11 @@ import org.bedework.util.servlet.MessageEmit;
 import org.bedework.util.servlet.ReqUtil;
 import org.bedework.util.servlet.filters.PresentationState;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -33,10 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import static org.bedework.util.servlet.ActionTypes.actionTypes;
+import static org.bedework.util.servlet.ConversationTypes.conversationTypes;
 
 /** Class to handle the incoming request.
  *
@@ -52,21 +55,6 @@ public class Request extends ReqUtil implements Logged {
 
   public final static String urlPrefixAttrName =
           "org.bedework.client.urlprefix";
-
-  /** */
-  public final static int actionTypeUnknown = 0;
-  /** */
-  public final static int actionTypeRender = 1;
-  /** */
-  public final static int actionTypeAction = 2;
-  /** */
-  public final static int actionTypeResource = 3;
-
-  /** */
-  public final static String[] actionTypes = {"unknown",
-                                              "render",
-                                              "action",
-                                              "resource"};
 
   protected int actionType;
 
@@ -87,43 +75,6 @@ public class Request extends ReqUtil implements Logged {
   public static final String refreshActionKey = "refaction";
     /** */
     public static final String moduleNameKey = "mdl";
-
-  /** In the absence of a conversation parameter we assume that a
-   * conversation starts with actionType=action and ends with
-   * actionType=render.
-   * <p>
-   * Conversations are related to the persistence framework and
-   * allow us to keep a persistence engine session running until
-   * the sequence of actions is completed.
-   */
-  public final static int conversationTypeUnknown = 0;
-
-  /** start of a multi-request conversation */
-  public final static int conversationTypeStart = 1;
-
-  /** part-way through a multi-request conversation */
-  public final static int conversationTypeContinue = 2;
-
-  /** end of a multi-request conversation */
-  public final static int conversationTypeEnd = 3;
-
-  /** if a conversation is started, end it on entry with no
-   * processing of changes. Start a new conversation which we will end on exit.
-   */
-  public final static int conversationTypeOnly = 4;
-
-  /** If a conversation is already started on entry, process changes and end it.
-   * Start a new conversation which we will end on exit.
-   */
-  public final static int conversationTypeProcessAndOnly = 5;
-
-  /** */
-  public final static String[] conversationTypes = {"unknown",
-                                                    "start",
-                                                    "continue",
-                                                    "end",
-                                                    "only",
-                                                    "processAndOnly"};
 
   protected int conversationType;
 
@@ -170,7 +121,7 @@ public class Request extends ReqUtil implements Logged {
     final String at = params.get(actionTypeKey);
     if (at != null) {
       for (int ati = 0; ati < actionTypes.length; ati++) {
-        if (Request.actionTypes[ati].equals(at)) {
+        if (actionTypes[ati].equals(at)) {
           actionType = ati;
           break;
         }
@@ -179,8 +130,8 @@ public class Request extends ReqUtil implements Logged {
 
     final String convType = params.get(conversationKey);
     if (convType != null) {
-      for (int ati = 0; ati < Request.conversationTypes.length; ati++) {
-        if (Request.conversationTypes[ati].equals(convType)) {
+      for (int ati = 0; ati < conversationTypes.length; ati++) {
+        if (conversationTypes[ati].equals(convType)) {
           conversationType = ati;
           break;
         }

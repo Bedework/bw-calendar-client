@@ -10,14 +10,7 @@
   <artifactId>bw-calendar-client-appcommon</artifactId>
   <name>Bedework web client: application common methods</name>
 
-  <packaging>jar</packaging>
   <dependencies>
-    <dependency>
-      <groupId>org.bedework.bwwebcl</groupId>
-      <artifactId>bw-calendar-client-util</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
     <!-- Bedework -->
     <dependency>
       <groupId>org.bedework</groupId>

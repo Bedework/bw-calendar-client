@@ -19,7 +19,6 @@
 package org.bedework.client.rw;
 
 import org.bedework.access.Ace;
-import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.appcommon.client.Client;
@@ -87,10 +86,10 @@ public class RWClientImpl extends ROClientImpl
                       final String id,
                       final String authUser,
                       final String runAsUser,
-                      final String appType) {
+                      final ClientType clientType) {
     this(conf, id);
 
-    reinit(authUser, runAsUser, appType);
+    reinit(authUser, runAsUser, clientType);
   }
 
   protected RWClientImpl(final ConfigCommon conf,
@@ -100,9 +99,9 @@ public class RWClientImpl extends ROClientImpl
 
   public void reinit(final String authUser,
                      final String runAsUser,
-                     final String appType) {
+                     final ClientType clientType) {
     currentPrincipal = null;
-    this.appType = appType;
+    this.clientType = clientType;
 
     pars = CalSvcIPars.getRwClientPars(id,
                                        authUser,
@@ -123,7 +122,7 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public boolean getWebUser() {
-    return BedeworkDefs.appTypeWebuser.equals(appType);
+    return ClientType.personal == clientType;
   }
 
   @Override

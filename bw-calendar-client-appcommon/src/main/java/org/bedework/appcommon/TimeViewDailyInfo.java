@@ -24,6 +24,7 @@ import org.bedework.util.servlet.MessageEmit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 
 /** This class allows a TimeView class to provide information about each day
@@ -39,11 +40,11 @@ public class TimeViewDailyInfo implements Logged, Serializable {
    */
   private TimeView view;
 
-  private MessageEmit err;
+  private final MessageEmit err;
 
-  /** Date as MyCalendarVO object
+  /** Date as Calendar object
    */
-  private MyCalendarVO cal;
+  private Calendar cal;
 
   /** true if this is just a filler - we insert filler into weeks so that they
    always havea  weekful of entries even as we cross month boundaries
@@ -149,7 +150,7 @@ public class TimeViewDailyInfo implements Logged, Serializable {
 
   /** The view that created this.
    *
-   * @param val
+   * @param val a time view
    */
   public void setView(final TimeView val) {
     view = val;
@@ -164,17 +165,10 @@ public class TimeViewDailyInfo implements Logged, Serializable {
   }
 
   /**
-   * @param val
+   * @param val Calendar representing date
    */
-  public void setCal(final MyCalendarVO val) {
+  public void setCal(final Calendar val) {
     cal = val;
-  }
-
-  /**
-   * @return MyCalendarVO
-   */
-  public MyCalendarVO getCal() {
-    return cal;
   }
 
   /**
@@ -487,9 +481,8 @@ public class TimeViewDailyInfo implements Logged, Serializable {
 
   /**
    * @return Collection
-   * @throws Throwable
    */
-  public Collection<EventFormatter> getEvents() throws Throwable {
+  public Collection<EventFormatter> getEvents() {
     if (events == null) {
       events = getDaysEvents(cal);
     }
@@ -499,12 +492,10 @@ public class TimeViewDailyInfo implements Logged, Serializable {
 
   /** Return the events for the day as an array of value objects
    *
-   * @param   date    MyCalendarVO object defining day
+   * @param   date    Calendar object defining day
    * @return  Collection  one days events,  never null, length 0 for no events.
-   * @exception Throwable if this is not a day object
    */
-  private Collection<EventFormatter> getDaysEvents(final MyCalendarVO date)
-          throws Throwable {
+  private Collection<EventFormatter> getDaysEvents(final Calendar date) {
     if (!getDayEntry()) {
       error("*******Not a day entry*****");
       throw new IllegalStateException("Not a day entry");
@@ -512,17 +503,17 @@ public class TimeViewDailyInfo implements Logged, Serializable {
 
     try {
       return view.getDaysEvents(date);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       err.emit(t);
       return new ArrayList<>();
     }
   }
 
-  /* ====================================================================
+  /* =============================================================
    *                   Logged methods
-   * ==================================================================== */
+   * ============================================================= */
 
-  private BwLogger logger = new BwLogger();
+  private final BwLogger logger = new BwLogger();
 
   @Override
   public BwLogger getLogger() {

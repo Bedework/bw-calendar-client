@@ -19,7 +19,6 @@
 
 package org.bedework.webcommon;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwEventProperty;
@@ -107,8 +106,9 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
     }
 
     final EventPropertiesResponse epresp = makeResponse(vals);
+    final var cl = request.getClient();
 
-    if (request.getClient().getPublicAdmin()) {
+    if (cl.getPublicAdmin()) {
       // Add the preferred locations
       final Collection<T> prefs =
               getEProps(request, BwSession.preferredEntity);

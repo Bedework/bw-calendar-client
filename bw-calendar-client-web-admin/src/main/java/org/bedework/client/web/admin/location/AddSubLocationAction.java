@@ -128,8 +128,8 @@ public class AddSubLocationAction extends AdminActionBase {
     form.setLocation(newloc);
 
     /* Return the new location */
-    cl.outputJson(resp, cl.getCurrentChangeToken(),
-                  null, newloc);
+    outputJson(resp, cl.getCurrentChangeToken(),
+               null, newloc);
 
     return forwardNull;
   }

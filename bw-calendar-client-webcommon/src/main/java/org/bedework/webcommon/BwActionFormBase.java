@@ -93,6 +93,7 @@ public class BwActionFormBase extends UtilActionForm
    * .............................................................. */
 
   private String eventRegAdminToken;
+  private String eventRegWsUrl;
 
   /* ....................................................................
    *                       Calendars
@@ -191,8 +192,7 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val token for event registration
    */
-  @StrutsParameter
-  public void setEventRegAdminToken(final String val) {
+  public void assignEventRegAdminToken(final String val) {
     eventRegAdminToken = val;
   }
 
@@ -201,6 +201,14 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getEventRegAdminToken() {
     return eventRegAdminToken;
+  }
+
+  public void assignEventRegWsUrl(final String val) {
+    eventRegWsUrl = val;
+  }
+
+  public String getEventRegWsUrl() {
+    return eventRegWsUrl;
   }
 
   public void assignMarkDeleted(final boolean val) {

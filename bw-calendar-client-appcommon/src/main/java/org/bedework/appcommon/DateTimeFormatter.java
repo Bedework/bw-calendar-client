@@ -24,18 +24,18 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 
+import com.ibm.icu.text.DateFormat;
+import com.ibm.icu.util.GregorianCalendar;
+import com.ibm.icu.util.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.TimeZone;
 
 /** Class to format and provide segments of dates and times.
  *
@@ -550,24 +550,28 @@ public class DateTimeFormatter
         tzIsLocal = Timezones.getThreadDefaultTzid().equals(date.getTzid());
       }
 
-      final TimeZone tz;
-      if (isUtc) {
-        tz = TimeZone.getTimeZone("GMT");
-      } else if (date.getTzid() != null) {
-        tz = tzreg.getTimeZone(date.getTzid());
-      } else {
-        // date only or floating.
-        tz = Timezones.getDefaultTz();
-      }
-
-      final Date dt = BwDateTimeUtil.getDate(date, tzreg);
-
-      tzFormatted = new FormattedDate(dt, date.getDtval(), date.getDateType(),
-                                      tz);
-
       if (date.getDateType()) {
         tzIsLocal = true;
       }
+
+      final java.util.TimeZone jtz;
+      if (tzIsLocal) {
+        jtz = Timezones.getDefaultTz();
+      } else if (isUtc) {
+        jtz = java.util.TimeZone.getTimeZone("GMT");
+      } else if (date.getTzid() != null) {
+        jtz = tzreg.getTimeZone(date.getTzid());
+      } else {
+        // date only or floating.
+        jtz = Timezones.getDefaultTz();
+      }
+
+      final TimeZone tz = TimeZone.getTimeZone(jtz.getID());
+
+      final Date dt = BwDateTimeUtil.getDate(date, tzreg);
+
+      tzFormatted = new FormattedDate(dt, date.getDtval(),
+                                      date.getDateType(), tz);
 
       if (tzIsLocal) {
         formatted = tzFormatted;
@@ -575,7 +579,7 @@ public class DateTimeFormatter
         final String localIso =
                 DateTimeUtil.isoDateTime(dt, Timezones.getDefaultTz());
         formatted = new FormattedDate(dt, localIso, date.getDateType(),
-                                      Timezones.getDefaultTz());
+                                      tz);
       }
     } catch (final Throwable t) {
       error = true;

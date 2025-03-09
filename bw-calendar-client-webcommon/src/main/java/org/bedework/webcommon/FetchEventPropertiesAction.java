@@ -131,8 +131,8 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
     return forwardNull;
   }
 
-  private void doSearch(final BwRequest request,
-                        final String fexpr) {
+  private boolean doSearch(final BwRequest request,
+                           final String fexpr) {
     final HttpServletResponse resp = request.getResponse();
 
     request.setNocache(true);
@@ -151,6 +151,6 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
       epresp.setMessage(ges.getMessage());
     }
 
-    outputJson(resp, null, null, epresp);
+    return outputJson(resp, null, null, epresp);
   }
 }

@@ -122,8 +122,8 @@ public class FetchLocationsAction extends BwAbstractAction {
     return forwardNull;
   }
 
-  private void doSearch(final BwRequest request,
-                        final String fexpr) {
+  private boolean doSearch(final BwRequest request,
+                           final String fexpr) {
     final Client cl = request.getClient();
     final HttpServletResponse resp = request.getResponse();
 
@@ -144,6 +144,6 @@ public class FetchLocationsAction extends BwAbstractAction {
       locs.setMessage(ges.getMessage());
     }
 
-    outputJson(resp, null, null, locs);
+    return outputJson(resp, null, null, locs);
   }
 }

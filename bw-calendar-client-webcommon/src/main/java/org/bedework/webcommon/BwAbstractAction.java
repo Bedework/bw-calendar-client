@@ -540,13 +540,21 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param resp to write to
    * @param val to output
    */
-  public void writeJson(final HttpServletResponse resp,
-                        final Object val) {
+  public boolean writeJson(final HttpServletResponse resp,
+                           final Object val) {
     try {
       mapper.writeValue(resp.getOutputStream(), val);
+    } catch (final IOException ioe) {
+      if (ioe.getMessage().contains("Broken pipe")) {
+        return false; // socket closed by other end?
+      }
+
+      throw new BedeworkException(ioe);
     } catch (final Throwable t) {
       throw new BedeworkException(t);
     }
+
+    return true;
   }
 
   /** Write the value as json to the response stream.
@@ -558,11 +566,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param etag added if non-null
    * @param header if not null adds header with name and value.
    * @param val to output
+   * @return false for "Broken pipe"
    */
-  public void outputJson(final HttpServletResponse resp,
-                         final String etag,
-                         final String[] header,
-                         final Object val) {
+  public boolean outputJson(final HttpServletResponse resp,
+                            final String etag,
+                            final String[] header,
+                            final Object val) {
     resp.setStatus(HttpServletResponse.SC_OK);
 
     if (etag != null) {
@@ -575,11 +584,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
 
     resp.setContentType("application/json; charset=UTF-8");
 
-    writeJson(resp, val);
-    try {
-      resp.getOutputStream().close();
+    try (final var os = resp.getOutputStream()){
+      return writeJson(resp, val);
     } catch (final IOException ioe) {
-      throw new BedeworkException(ioe);
+      if (ioe.getMessage().contains("Broken pipe")) {
+          return false; // socket closed by other end?
+      } else {
+        throw new BedeworkException(ioe);
+      }
     }
   }
 }

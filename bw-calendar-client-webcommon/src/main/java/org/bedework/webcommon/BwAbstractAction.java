@@ -544,14 +544,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
                            final Object val) {
     try {
       mapper.writeValue(resp.getOutputStream(), val);
-    } catch (final IOException ioe) {
-      if (ioe.getMessage().contains("Broken pipe")) {
+    } catch (final Throwable t) {
+      final var eof = BedeworkException.excOrFail(t);
+      if (eof.message() != null) {
         return false; // socket closed by other end?
       }
-
-      throw new BedeworkException(ioe);
-    } catch (final Throwable t) {
-      throw new BedeworkException(t);
+      throw eof.exc();
     }
 
     return true;

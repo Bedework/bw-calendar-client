@@ -19,11 +19,9 @@
 
 package org.bedework.webcommon;
 
+import org.bedework.base.exc.BedeworkException;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
-import org.bedework.util.misc.Util;
-
-import java.io.IOException;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -82,11 +80,10 @@ public class BwSvciFilter implements Filter, Logged {
       try {
         chain.doFilter(req, resp);
       } catch (final Throwable dft) {
-        final Throwable cause = Util.getRootCause(dft);
-        if ((cause instanceof IOException) &&
-                (cause.getMessage().startsWith("Connection reset by peer"))) {
+        final var eof = BedeworkException.excOrFail(dft);
+        if (eof.message() != null) {
           // Just warn
-          warn("Connection reset by peer");
+          warn(eof.message());
         } else {
           error("Exception in filter: ", dft);
           thr = dft;
@@ -119,9 +116,6 @@ public class BwSvciFilter implements Filter, Logged {
       }
       throw new ServletException(thr);
     }
-  }
-
-  public void destroy() {
   }
 
   private BwCallback getCb(final HttpSession sess,

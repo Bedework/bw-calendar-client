@@ -20,10 +20,10 @@ package org.bedework.webcommon;
 
 import org.bedework.util.webaction.Request;
 
-import java.io.Serializable;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.Serializable;
 
 /** Abstract class an instance of which is used to signal open and close
  * events to the web application.
@@ -70,17 +70,22 @@ public abstract class BwCallback implements Serializable {
   public static BwCallback getCb(final Request request) {
     BwCallbackImpl cb =
             (BwCallbackImpl)request.getSessionAttr(BwCallback.cbAttrName);
+    final String state;
     if (cb == null) {
       /* create a call back object for the filter */
 
       cb = new BwCallbackImpl(request);
       request.setSessionAttr(BwCallback.cbAttrName, cb);
+      state = "created";
+    } else {
+      state = "from session";
     }
 
     if (cb.debug()) {
-      cb.debug("checkSvci-- set req in cb - form action path = " +
-                         request.getActionPath() +
-                         " conv-type = " + request.getConversationType());
+      cb.debug("getCb(): " + state +
+                       "-- set req in cb - form action path = " +
+                       request.getActionPath() +
+                       " conv-type = " + request.getConversationType());
     }
 
     return cb;

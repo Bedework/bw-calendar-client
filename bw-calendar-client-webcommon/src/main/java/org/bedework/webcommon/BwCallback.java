@@ -74,7 +74,7 @@ public abstract class BwCallback implements Serializable {
     if (cb == null) {
       /* create a call back object for the filter */
 
-      cb = new BwCallbackImpl(request);
+      cb = new BwCallbackImpl(request.getErrorForward());
       request.setSessionAttr(BwCallback.cbAttrName, cb);
       state = "created";
     } else {

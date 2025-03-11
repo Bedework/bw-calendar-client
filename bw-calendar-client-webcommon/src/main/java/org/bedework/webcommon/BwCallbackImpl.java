@@ -31,21 +31,20 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Mike Douglass douglm
  */
-public class BwCallbackImpl extends BwCallback implements
-        HttpAppLogger {
-  BwRequest request;
+public class BwCallbackImpl extends BwCallback
+        implements HttpAppLogger {
+  BwRequest request; // request at entry
   final String errorForward;
 
-  BwCallbackImpl(final Request request) {
-    final var ef = request.getErrorForward();
-    if (ef == null) {
+  BwCallbackImpl(final String errorForward) {
+    if (errorForward == null) {
       throw new BedeworkException("\"errorForward\" must be defined for servlet context");
     }
 
-    if (!ef.startsWith("/")) {
-      errorForward = "/" + ef;
+    if (!errorForward.startsWith("/")) {
+      this.errorForward = "/" + errorForward;
     } else {
-      errorForward = ef;
+      this.errorForward = errorForward;
     }
   }
 

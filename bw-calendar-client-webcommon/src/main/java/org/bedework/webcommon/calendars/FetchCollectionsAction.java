@@ -167,7 +167,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
 
           pw.print(" category=\"" + cat.getHref() + "\"");
 
-          if (filterExpr.length() == 0) {
+          if (filterExpr.isEmpty()) {
             filterExpr.append("(");
           } else {
             filterExpr.append(" | ");
@@ -181,7 +181,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
       }
     }
 
-    if (filterExpr.length() != 0) {
+    if (!filterExpr.isEmpty()) {
       filterExpr.append(")");
       pw.print(" filter=\"");
       pw.print(escapeJava(filterExpr.toString()));

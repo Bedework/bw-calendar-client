@@ -18,8 +18,6 @@
 */
 package org.bedework.webcommon.calendars;
 
-import org.bedework.appcommon.ClientError;
-import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwCalendar;
 import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
 import org.bedework.webcommon.BwAbstractAction;
@@ -46,44 +44,31 @@ public class RenderCalendarAction extends BwAbstractAction {
      */
 
     final var form = request.getBwForm();
-    final String calPath = form.getCalPath();
-
-    if (calPath == null) {
-      // bogus request
-      request.error(ClientError.missingCalendarPath);
+    form.assignAddingCalendar(false);
+    final BwCalendar cal = request.getCalendar(true);
+    form.setCalendar(cal);
+    if (cal == null) {
       return forwardNotFound;
     }
 
-    final Client cl = request.getClient();
-    final BwCalendar calendar = cl.getCollection(calPath);
-
     if (debug()) {
-      if (calendar == null) {
-        info("No calendar with path " + calPath);
-      } else {
-        info("Retrieved calendar " + calendar.getId());
-
-        final Set<String> cos = form.getCalendarsOpenState();
-
-        if (cos != null) {
-          calendar.setOpen(cos.contains(calendar.getPath()));
-        }
-      }
+      debug("Retrieved calendar " + cal.getPath());
     }
 
-    form.assignAddingCalendar(false);
+    final var calPath = cal.getPath();
+    final Set<String> cos = form.getCalendarsOpenState();
+
+    if (cos != null) {
+      cal.setOpen(cos.contains(calPath));
+    }
+
     form.setCalendarPath(calPath);
-    form.setCalendar(calendar);
     //request.getSess().getChildren(cl, calendar);
     request.getSess().embedCategories(request, false,
                                       BwSession.ownersEntity);
 
-    if (calendar == null) {
-      request.error(ClientError.unknownCalendar, calPath);
-      return forwardNotFound;
-    }
-
-    final SynchStatusResponse ssr = cl.getSynchStatus(calPath);
+    final SynchStatusResponse ssr =
+            request.getClient().getSynchStatus(calPath);
     request.setSessionAttr(BwRequest.bwSubscriptionStatus, ssr);
 
     return forwardSuccess;

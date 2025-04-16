@@ -764,8 +764,8 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public SynchStatusResponse getSynchStatus(final String path) {
-    return svci.getCalendarsHandler().getSynchStatus(path);
+  public SynchStatusResponse getSynchStatus(final BwCalendar val) {
+    return svci.getCalendarsHandler().getSynchStatus(val);
   }
 
   @Override

@@ -457,10 +457,10 @@ public interface Client extends Serializable {
 
   /**
    *
-   * @param path to collection
+   * @param val collection
    * @return never null - requestStatus set for not an external subscription.
    */
-  SynchStatusResponse getSynchStatus(String path);
+  SynchStatusResponse getSynchStatus(BwCalendar val);
 
   /** A virtual path might be for example "/user/adgrp_Eng/Lectures/Lectures"
    * which has two two components<ul>

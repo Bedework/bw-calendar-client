@@ -68,7 +68,7 @@ public class RenderCalendarAction extends BwAbstractAction {
                                       BwSession.ownersEntity);
 
     final SynchStatusResponse ssr =
-            request.getClient().getSynchStatus(calPath);
+            request.getClient().getSynchStatus(cal);
     request.setSessionAttr(BwRequest.bwSubscriptionStatus, ssr);
 
     return forwardSuccess;

@@ -25,8 +25,8 @@ import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.BwFreeBusyComponent;
+import org.bedework.calfacade.ScheduleRecipientResult;
 import org.bedework.calfacade.ScheduleResult;
-import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
 import org.bedework.calfacade.configs.AuthProperties;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
@@ -34,14 +34,14 @@ import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.json.JsonUtil;
 import org.bedework.webcommon.BwRequest;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Action to fetch free busy information for web use. Modeled on CalDAV iSchedule
@@ -119,8 +119,8 @@ public class RequestFreeBusy extends RWActionBase {
         return forwardBadRequest;
       }
 
-      final ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
-                                            null, null, false);
+      final var sr = cl.schedule(new EventInfo(fbreq),
+                                 null, null, false);
 
       request.prepareWrite("freebusy.js", "text/json");
 
@@ -144,7 +144,7 @@ public class RequestFreeBusy extends RWActionBase {
   private final static int indentSize = 2;
 
   private void outputJson(final HttpServletResponse resp,
-                          final ScheduleResult sr) throws Throwable {
+                          final ScheduleResult<?> sr) throws Throwable {
     final Writer wtr = resp.getWriter();
 
     int indent = 0;
@@ -158,11 +158,10 @@ public class RequestFreeBusy extends RWActionBase {
 
     indent += indentSize;
 
-    final Collection<ScheduleRecipientResult> srrs =
-            sr.recipientResults.values();
+    final var srrs = sr.recipientResults.values();
     int ct = srrs.size();
 
-    for (final ScheduleRecipientResult srr: srrs) {
+    for (final var srr: srrs) {
       outputJson(wtr, indent + indentSize, srr, ct > 1);
       ct--;
     }

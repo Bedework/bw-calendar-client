@@ -3,6 +3,7 @@
 */
 package org.bedework.client.web.admin.event;
 
+import org.bedework.base.response.GetEntityResponse;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwEvent.SuggestedTo;
 import org.bedework.calfacade.BwXproperty;
@@ -22,8 +23,6 @@ import org.bedework.sysevents.events.publicAdmin.EntityApprovalNeededEvent;
 import org.bedework.sysevents.events.publicAdmin.EntitySuggestedEvent;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
-import org.bedework.base.response.GetEntityResponse;
-import org.bedework.base.response.Response;
 import org.bedework.webcommon.BwRequest;
 
 import java.util.ArrayList;
@@ -33,10 +32,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.bedework.base.response.Response.Status.ok;
 import static org.bedework.client.web.rw.EventCommon.adminEventLocation;
 import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
 import static org.bedework.client.web.rw.EventCommon.resetEvent;
-import static org.bedework.base.response.Response.Status.ok;
 
 /**
  * User: mike Date: 3/10/21 Time: 21:26
@@ -92,7 +91,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       }
       pars.cl.rollback();
       pars.request.error(ValidationError.missingTopic);
-      return Response.error(ger, ValidationError.missingTopic);
+      return ger.error(ValidationError.missingTopic);
     }
 
     adPars.categories = resp.getCats(); // For validation later
@@ -127,7 +126,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
               adPars.ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
 
       if (!Util.isEmpty(xps)) {
-        adPars.submitterEmail = xps.get(0).getValue();
+        adPars.submitterEmail = xps.getFirst().getValue();
       }
     }
 

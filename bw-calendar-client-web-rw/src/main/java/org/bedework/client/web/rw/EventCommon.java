@@ -27,7 +27,7 @@ import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.ScheduleResult;
-import org.bedework.calfacade.ScheduleResult.ScheduleRecipientResult;
+import org.bedework.calfacade.ScheduleRecipientResult;
 import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.base.StartEndComponent;
@@ -401,8 +401,8 @@ public class EventCommon {
       return forwardBadRequest;
     }
 
-    final ScheduleResult sr = cl.schedule(new EventInfo(fbreq),
-                                          null, null, false);
+    final var sr = cl.schedule(new EventInfo(fbreq),
+                               null, null, false);
     if (logger.debug()) {
       logger.debug(sr.toString());
     }
@@ -460,7 +460,7 @@ public class EventCommon {
   }
 
   public static void emitScheduleStatus(final BwRequest request,
-                                         final ScheduleResult sr,
+                                         final ScheduleResult<?> sr,
                                          final boolean errorsOnly) {
     if (!sr.isOk()) {
       final var exc = sr.getException();

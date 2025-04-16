@@ -103,7 +103,7 @@ public interface RWClient extends Client {
    *
    * @param  val         BwCalendar object
    */
-  Response refreshSubscription(BwCalendar val);
+  Response<?> refreshSubscription(BwCalendar val);
 
   /** Return a list of calendars in which calendar objects can be
    * placed by the current user.
@@ -299,8 +299,8 @@ public interface RWClient extends Client {
    * @param newPath      Destination collection.
    * @return UpdateResult status.
    */
-  Response moveEvent(EventInfo ei,
-                     String newPath);
+  Response<?> moveEvent(EventInfo ei,
+                        String newPath);
 
   /** Delete an event.
    *
@@ -308,8 +308,8 @@ public interface RWClient extends Client {
    * @param sendSchedulingMessage   Send a declined or cancel scheduling message
    * @return Response with status ok  if event deleted
    */
-  Response deleteEvent(EventInfo ei,
-                       boolean sendSchedulingMessage);
+  Response<?> deleteEvent(EventInfo ei,
+                          boolean sendSchedulingMessage);
 
   /** For an event to which we have write access we simply mark it deleted.
    *
@@ -474,7 +474,7 @@ public interface RWClient extends Client {
    * @param granularity of result - eg 1 hour
    * @return FbResponses
    */
-  SchedulingI.FbResponses aggregateFreeBusy(ScheduleResult sr,
+  SchedulingI.FbResponses aggregateFreeBusy(ScheduleResult<?> sr,
                                             BwDateTime start,
                                             BwDateTime end,
                                             BwDuration granularity);
@@ -494,10 +494,10 @@ public interface RWClient extends Client {
    * @param iSchedule  true if it's an iSchedule request.
    * @return ScheduleResult
    */
-  ScheduleResult schedule(EventInfo ei,
-                          String recipient,
-                          String fromAttUri,
-                          boolean iSchedule);
+  ScheduleResult<?> schedule(EventInfo ei,
+                             String recipient,
+                             String fromAttUri,
+                             boolean iSchedule);
 
   /** Return the users copy of the active meeting with the
    * same uid as that given.
@@ -513,8 +513,8 @@ public interface RWClient extends Client {
    * @param comment - optional comment
    * @return   ScheduleResult
    */
-  ScheduleResult requestRefresh(EventInfo ei,
-                                String comment);
+  ScheduleResult<?> requestRefresh(EventInfo ei,
+                                   String comment);
 
   /* ------------------------------------------------------------
    *                     Sharing

@@ -219,7 +219,7 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public Response refreshSubscription(final BwCalendar val) {
+  public Response<?> refreshSubscription(final BwCalendar val) {
     final var resp = svci.getCalendarsHandler()
                          .refreshSubscription(val);
     updated();
@@ -250,7 +250,7 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public boolean addCategory(final BwCategory val) {
-    final Response resp = svci.getCategoriesHandler().add(val);
+    final var resp = svci.getCategoriesHandler().add(val);
     checkResponse(resp);
     return update(resp.isOk());
   }
@@ -482,9 +482,9 @@ public class RWClientImpl extends ROClientImpl
                                                  false)); // autocreate
   }
 
-  public Response moveEvent(final EventInfo ei,
-                            final String newPath) {
-    final var resp = new Response();
+  public Response<?> moveEvent(final EventInfo ei,
+                               final String newPath) {
+    final var resp = new Response<>();
 
     try {
       final var toCol = getCollection(newPath);
@@ -500,17 +500,17 @@ public class RWClientImpl extends ROClientImpl
                                                ei.getEvent().getName(),
                                                false, false, false);
       if (!cmnResp.isOk()) {
-        return Response.fromResponse(resp, cmnResp);
+        return resp.fromResponse(cmnResp);
       }
     } catch (final BedeworkException be) {
-      return Response.error(resp, be);
+      return resp.error(be);
     }
 
     return resp;
   }
 
   @Override
-  public Response deleteEvent(final EventInfo ei,
+  public Response<?> deleteEvent(final EventInfo ei,
                              final boolean sendSchedulingMessage) {
     return update(svci.getEventsHandler().delete(ei,
                                                  sendSchedulingMessage));
@@ -685,7 +685,7 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public SchedulingI.FbResponses aggregateFreeBusy(final ScheduleResult sr,
+  public SchedulingI.FbResponses aggregateFreeBusy(final ScheduleResult<?> sr,
                                                    final BwDateTime start,
                                                    final BwDateTime end,
                                                    final BwDuration granularity) {
@@ -693,7 +693,7 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public ScheduleResult schedule(final EventInfo ei,
+  public ScheduleResult<?> schedule(final EventInfo ei,
                                  final String recipient,
                                  final String fromAttUri,
                                  final boolean iSchedule) {
@@ -711,8 +711,8 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public ScheduleResult requestRefresh(final EventInfo ei,
-                                       final String comment) {
+  public ScheduleResult<?> requestRefresh(final EventInfo ei,
+                                          final String comment) {
     return svci.getScheduler().requestRefresh(ei, comment);
   }
 

@@ -19,7 +19,6 @@
 
 package org.bedework.webcommon.admingroup;
 
-import org.bedework.base.response.Response;
 import org.bedework.calfacade.responses.AdminGroupsResponse;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
@@ -45,10 +44,8 @@ public class FetchAdminGroupsAction extends BwAbstractAction {
     final var cl = request.getClient();
     final var vals = cl.getAdminGroups();
 
-    final AdminGroupsResponse adgs = new AdminGroupsResponse();
-    adgs.setGroups(vals);
-
-    Response.ok(adgs);
+    final var adgs = new AdminGroupsResponse()
+            .setGroups(vals).ok();
 
     outputJson(request.getResponse(),
                cl.getCurrentChangeToken(),

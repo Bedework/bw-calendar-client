@@ -42,7 +42,8 @@ public class ColCloner implements Logged {
   private int numSearches;
   private int numAliasResolve;
 
-  public static class CloneResult extends Response {
+  public static class CloneResult
+          extends Response<CloneResult> {
     /* true if we found it in the map */
     boolean alreadyCloned;
 
@@ -261,7 +262,7 @@ public class ColCloner implements Logged {
         if (debug()) {
           error(t);
         }
-        return Response.error(new CloneResult(), t.getMessage());
+        return new CloneResult().error(t.getMessage());
       }
       
       size = children.size();

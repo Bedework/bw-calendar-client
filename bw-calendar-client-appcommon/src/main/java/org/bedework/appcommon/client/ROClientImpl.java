@@ -1025,7 +1025,7 @@ public class ROClientImpl implements Logged, Client {
       return resp;
     } catch (final Throwable t) {
       checkResponse(resp); // Will force an error
-      return Response.error(resp, t); // fake return
+      return resp.error(t);
     }
   }
 
@@ -1678,7 +1678,7 @@ public class ROClientImpl implements Logged, Client {
     return supportedLocales;
   }
 
-  protected void checkResponse(final Response resp) {
+  protected void checkResponse(final Response<?> resp) {
     if (!resp.isError()) {
       return;
     }

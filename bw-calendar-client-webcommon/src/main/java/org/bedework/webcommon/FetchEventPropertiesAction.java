@@ -20,7 +20,6 @@
 package org.bedework.webcommon;
 
 import org.bedework.base.response.GetEntitiesResponse;
-import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.responses.EventPropertiesResponse;
 
@@ -122,7 +121,7 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
       epresp.setPreferred(preferred);
     }
 
-    Response.ok(epresp);
+    epresp.ok();
 
     outputJson(resp,
                cl.getCurrentChangeToken(),
@@ -139,16 +138,14 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
 
     resp.setContentType("text/json; charset=UTF-8");
 
-    final GetEntitiesResponse<T> ges = search(request,
-                                              fexpr);
-
-    final EventPropertiesResponse epresp = makeResponse(ges.getEntities());
+    final var ges = search(request, fexpr);
+    final var epresp = makeResponse(ges.getEntities());
 
     if (ges.isOk()) {
-      Response.ok(epresp);
+      epresp.ok();
     } else {
-      epresp.setStatus(ges.getStatus());
-      epresp.setMessage(ges.getMessage());
+      epresp.setStatus(ges.getStatus())
+            .setMessage(ges.getMessage());
     }
 
     return outputJson(resp, null, null, epresp);

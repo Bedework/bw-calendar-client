@@ -30,7 +30,6 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.base.response.GetEntityResponse;
-import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwAttachment;
 import org.bedework.calfacade.BwAttendee;
 import org.bedework.calfacade.BwCalendar;
@@ -627,7 +626,7 @@ public class UpdateEventAction extends RWActionBase {
       }
       pars.cl.rollback();
       pars.request.error(ValidationError.missingTopic);
-      return Response.error(ger, ValidationError.missingTopic);
+      return ger.error(ValidationError.missingTopic);
     }
 
     ger.setEntity(resp.getCats());

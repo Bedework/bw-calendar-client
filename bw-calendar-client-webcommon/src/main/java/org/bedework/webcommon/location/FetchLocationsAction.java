@@ -20,8 +20,6 @@
 package org.bedework.webcommon.location;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.base.response.GetEntitiesResponse;
-import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.calfacade.responses.LocationsResponse;
 import org.bedework.webcommon.BwAbstractAction;
@@ -94,26 +92,24 @@ public class FetchLocationsAction extends BwAbstractAction {
         return forwardNull;
     }
 
-    final LocationsResponse locs = new LocationsResponse();
-    locs.setLocations(vals);
+    final var locs = new LocationsResponse()
+            .setLocations(vals).ok();
 
     if (cl.getPublicAdmin()) {
       // Add the preferred locations
-      final Collection<BwLocation> prefs =
+      final var prefs =
               sess.getLocations(request,
                                 BwSession.preferredEntity,
                                 false);
 
       final List<String> preferred = new ArrayList<>();
 
-      for (final BwLocation prefLoc: prefs) {
+      for (final var prefLoc: prefs) {
         preferred.add(prefLoc.getHref());
       }
 
       locs.setPreferred(preferred);
     }
-
-    Response.ok(locs);
 
     outputJson(resp,
                cl.getCurrentChangeToken(),
@@ -129,19 +125,18 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     request.setNocache(true);
 
-    final LocationsResponse locs = new LocationsResponse();
+    final var locs = new LocationsResponse();
 
-    final GetEntitiesResponse<BwLocation> ges =
+    final var ges =
             cl.getLocations(fexpr,
                             request.getIntReqPar("from", 0),
                             request.getIntReqPar("size", 10));
 
     if (ges.isOk()) {
-      Response.ok(locs);
-      locs.setLocations(ges.getEntities());
+      locs.setLocations(ges.getEntities()).ok();
     } else {
-      locs.setStatus(ges.getStatus());
-      locs.setMessage(ges.getMessage());
+      locs.setStatus(ges.getStatus())
+          .setMessage(ges.getMessage());
     }
 
     return outputJson(resp, null, null, locs);

@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.category;
 
-import org.bedework.base.response.Response;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.responses.CategoriesResponse;
 import org.bedework.webcommon.BwAbstractAction;
@@ -62,10 +61,7 @@ public class FetchCategoriesAction extends BwAbstractAction {
 
     final HttpServletResponse resp = request.getResponse();
 
-    final CategoriesResponse cats = new CategoriesResponse();
-    cats.setCategories(vals);
-
-    Response.ok(cats);
+    final var cats = new CategoriesResponse().setCategories(vals).ok();
 
     outputJson(resp, null, header, cats);
 

@@ -18,13 +18,10 @@
 */
 package org.bedework.webcommon.calendars;
 
-import org.bedework.calfacade.BwCalendar;
-import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
+import org.bedework.appcommon.ClientError;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
-
-import java.util.Set;
 
 /** This action fetches a calendar.
  *
@@ -44,31 +41,40 @@ public class RenderCalendarAction extends BwAbstractAction {
      */
 
     final var form = request.getBwForm();
-    form.assignAddingCalendar(false);
-    final BwCalendar cal = request.getCalendar(true);
-    form.setCalendar(cal);
-    if (cal == null) {
+    final var calPath = form.getCalPath();
+
+    if (calPath == null) {
+      // bogus request
+      request.error(ClientError.missingCalendarPath);
       return forwardNotFound;
     }
 
+    final var cl = request.getClient();
+    final var calendar = cl.getCollection(calPath);
+
     if (debug()) {
-      debug("Retrieved calendar " + cal.getPath());
+      debug("Retrieved calendar " + calPath);
     }
 
-    final var calPath = cal.getPath();
-    final Set<String> cos = form.getCalendarsOpenState();
-
-    if (cos != null) {
-      cal.setOpen(cos.contains(calPath));
-    }
-
+    form.assignAddingCalendar(false);
     form.setCalendarPath(calPath);
+    form.setCalendar(calendar);
     //request.getSess().getChildren(cl, calendar);
     request.getSess().embedCategories(request, false,
                                       BwSession.ownersEntity);
 
-    final SynchStatusResponse ssr =
-            request.getClient().getSynchStatus(cal);
+    if (calendar == null) {
+      request.error(ClientError.unknownCalendar, calPath);
+      return forwardNotFound;
+    }
+
+    final var cos = form.getCalendarsOpenState();
+
+    if (cos != null) {
+      calendar.setOpen(cos.contains(calPath));
+    }
+
+    final var ssr = request.getClient().getSynchStatus(calendar);
     request.setSessionAttr(BwRequest.bwSubscriptionStatus, ssr);
 
     return forwardSuccess;

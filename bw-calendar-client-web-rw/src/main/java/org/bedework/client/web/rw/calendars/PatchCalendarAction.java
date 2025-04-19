@@ -18,9 +18,8 @@
 */
 package org.bedework.client.web.rw.calendars;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -54,7 +53,7 @@ public class PatchCalendarAction extends RWActionBase {
 
     boolean changed = false;
 
-    final BwCalendar cal = request.getCalendar(false);
+    final BwCollection cal = request.getCalendar(false);
     if (cal == null) {
       return forwardNotFound;
     }

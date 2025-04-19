@@ -19,7 +19,7 @@
 package org.bedework.client.web.rw.event;
 
 import org.bedework.appcommon.TimeView;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
 import org.bedework.calfacade.base.StartEndComponent;
@@ -137,7 +137,7 @@ public class InitAddEventAction extends RWActionBase {
     /* We may have been supplied with a cal path - e.g. user client
        and we allow them to add an event with the calendar selection.
      */
-    final BwCalendar cal = request.getNewCal(false);
+    final BwCollection cal = request.getNewCal(false);
 
     if (cal != null) {
       changes.changed(PropertyInfoIndex.COLLECTION,

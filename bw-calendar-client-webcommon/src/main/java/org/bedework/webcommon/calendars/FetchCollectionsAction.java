@@ -20,7 +20,7 @@ package org.bedework.webcommon.calendars;
 
 import org.bedework.appcommon.client.Client;
 import org.bedework.base.exc.BedeworkException;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.responses.CollectionsResponse;
 import org.bedework.util.misc.Util;
@@ -63,7 +63,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
     if (format.equals("cmds")) {
       // Create a bunch of commands
       
-      final BwCalendar col;
+      final BwCollection col;
       
       if (cols.getCollections() != null) {
         col = cols.getCollections();
@@ -92,7 +92,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
   }
   
   private void writeCols(final Client cl,
-                         final BwCalendar col, 
+                         final BwCollection col,
                          final PrintWriter pw) {
     writeCol(cl, col, pw);
     
@@ -100,13 +100,13 @@ public class FetchCollectionsAction extends BwAbstractAction {
       return;
     }
 
-    for (final BwCalendar child: col.getChildren()) {
+    for (final BwCollection child: col.getChildren()) {
       writeCols(cl, child, pw);
     }
   }
 
   private void writeCol(final Client cl,
-                        final BwCalendar col,
+                        final BwCollection col,
                         final PrintWriter pw) {
     if (col.getColPath() == null) {
       // Skip root collections
@@ -115,11 +115,11 @@ public class FetchCollectionsAction extends BwAbstractAction {
 
     pw.print("create collection ");
 
-    if (col.getCalType() == BwCalendar.calTypeFolder) {
+    if (col.getCalType() == BwCollection.calTypeFolder) {
       pw.print(" folder ");
-    } else if (col.getCalType() == BwCalendar.calTypeCalendarCollection) {
+    } else if (col.getCalType() == BwCollection.calTypeCalendarCollection) {
       pw.print(" calendar ");
-    } else if (col.getCalType() == BwCalendar.calTypeAlias) {
+    } else if (col.getCalType() == BwCollection.calTypeAlias) {
       if (col.getIsTopicalArea()) {
         pw.print(" topic ");
       } else {
@@ -133,7 +133,7 @@ public class FetchCollectionsAction extends BwAbstractAction {
     pw.print("\"" + col.getName() + "\" ");
     pw.print("\"" + escapeJava(col.getSummary()) + "\" ");
 
-    if (col.getCalType() == BwCalendar.calTypeAlias) {
+    if (col.getCalType() == BwCollection.calTypeAlias) {
       final String uri = col.getAliasUri();
 
       if (!uri.startsWith("bwcal://")) {

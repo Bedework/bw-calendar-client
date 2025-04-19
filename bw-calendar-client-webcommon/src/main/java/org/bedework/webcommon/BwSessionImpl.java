@@ -33,7 +33,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.base.exc.BedeworkClosed;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwEvent;
@@ -97,7 +97,7 @@ public class BwSessionImpl implements Logged, BwSession {
   
   // Both indexed by isSuper
   private static final String[] publicCollectionsChangeToken = {null, null};
-  private static final BwCalendar[] clonedPublicCollections = {null, null};
+  private static final BwCollection[] clonedPublicCollections = {null, null};
   private static Collection<BwView> publicViews;
   private static long lastViewsRefresh;
   private static final long viewsRefreshInterval = 1000 * 60 * 5;
@@ -347,7 +347,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
   @Override
   public void embedCollections(final BwRequest request) {
-    final BwCalendar cloned = getAppCollections(request);
+    final BwCollection cloned = getAppCollections(request);
 
     if (cloned != null) {
       request.setSessionAttr(BwRequest.bwCollectionListName, cloned);
@@ -356,7 +356,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
   @SuppressWarnings("WeakerAccess")
   protected void embedPublicCollections(final BwRequest request) {
-    final BwCalendar cloned = getPublicCollections(request);
+    final BwCollection cloned = getPublicCollections(request);
 
     if (cloned != null) {
       request.setSessionAttr(BwRequest.bwPublicCollectionListName,
@@ -366,15 +366,15 @@ public class BwSessionImpl implements Logged, BwSession {
 
   @Override
   public void embedUserCollections(final BwRequest request) {
-    final BwCalendar cloned = getUserCollections(request);
+    final BwCollection cloned = getUserCollections(request);
 
     if (cloned != null) {
       request.setSessionAttr(BwRequest.bwUserCollectionListName, cloned);
     } // TODO - if null should it be deleted?
   }
 
-  public BwCalendar getAppCollections(final BwRequest request) {
-    final BwCalendar col;
+  public BwCollection getAppCollections(final BwRequest request) {
+    final BwCollection col;
     final Client cl = request.getClient();
 
     try {
@@ -402,7 +402,7 @@ public class BwSessionImpl implements Logged, BwSession {
         debug("About to clone: " + col.getPath());
       }
 
-      final BwCalendar cloned = 
+      final BwCollection cloned =
               getClonedCollection(request, col,
                                     false);
 
@@ -423,7 +423,7 @@ public class BwSessionImpl implements Logged, BwSession {
     }
   }
   
-  protected BwCalendar getPublicCollections(final BwRequest request) {
+  protected BwCollection getPublicCollections(final BwRequest request) {
     try {
       final Client cl = request.getClient();
       final String changeToken = cl.getCurrentChangeToken();
@@ -440,7 +440,7 @@ public class BwSessionImpl implements Logged, BwSession {
               (publicCollectionsChangeToken[accessIndex] != null) &&
               publicCollectionsChangeToken[accessIndex].equals(changeToken);
 
-      final BwCalendar root;
+      final BwCollection root;
       if (!fromCopy) {
         debug("Discarding cached public and rebuilding");
         root = cl.getPublicCalendars();
@@ -479,11 +479,11 @@ public class BwSessionImpl implements Logged, BwSession {
 
   /* Key is colpath of root.
    */
-  private final static FlushMap<String, BwCalendar> publicUserCollections =
+  private final static FlushMap<String, BwCollection> publicUserCollections =
           new FlushMap<>();
 
-  public BwCalendar getUserCollections(final BwRequest request) {
-    final BwCalendar col;
+  public BwCollection getUserCollections(final BwRequest request) {
+    final BwCollection col;
     final var globals = request.getBwGlobals();
     final var cl = request.getClient();
     final boolean publicAdmin = cl.getPublicAdmin(); //form.getConfig().getPublicAdmin();
@@ -542,7 +542,7 @@ public class BwSessionImpl implements Logged, BwSession {
     }
 
     if (cl.isGuest() || cl.getPublicAuth()) {
-      final BwCalendar cloned = publicUserCollections.get(
+      final BwCollection cloned = publicUserCollections.get(
               col.getPath());
 
       if (cloned != null) {
@@ -554,8 +554,8 @@ public class BwSessionImpl implements Logged, BwSession {
       }
     }
 
-    final BwCalendar cloned = getClonedCollection(request, col,
-                                                  false);
+    final BwCollection cloned = getClonedCollection(request, col,
+                                                    false);
 
     if (cloned == null) {
       warn("Unable to clone " + col);
@@ -811,7 +811,7 @@ public class BwSessionImpl implements Logged, BwSession {
       if (publicRoot != null) {
         for (final var view: views) {
           final var collectionPaths = view.getCollectionPaths();
-          final var collections = new ArrayList<BwCalendar>();
+          final var collections = new ArrayList<BwCollection>();
 
           if (collectionPaths != null) {
             for (final var path: collectionPaths) {
@@ -834,8 +834,8 @@ public class BwSessionImpl implements Logged, BwSession {
                            views);
   }
 
-  private BwCalendar findCollection(final BwCalendar root,
-                                    final String path) {
+  private BwCollection findCollection(final BwCollection root,
+                                      final String path) {
     if (path.equals(root.getPath())) {
       return root;
     }
@@ -919,9 +919,9 @@ public class BwSessionImpl implements Logged, BwSession {
    *                   Private methods
    * ==================================================================== */
 
-  private BwCalendar getClonedCollection(
+  private BwCollection getClonedCollection(
           final BwRequest request,
-          final BwCalendar col,
+          final BwCollection col,
           final boolean fromCopy)  {
     final ColCloner cc = new ColCloner(request.getClient(),
                                        request.getBwForm().getCalendarsOpenState());
@@ -937,11 +937,11 @@ public class BwSessionImpl implements Logged, BwSession {
 
   /*
   private void resetOpenState(final BwRequest request,
-                              final BwCalendar col) {
+                              final BwCollection col) {
     resetOpenStates(col, request.getBwForm().getCalendarsOpenState()); 
   }
 
-  private void resetOpenStates(final BwCalendar col,
+  private void resetOpenStates(final BwCollection col,
                                final Set<String> openStates) {
     if (openStates == null) {
       return;
@@ -950,7 +950,7 @@ public class BwSessionImpl implements Logged, BwSession {
     
     if (col.getCollectionInfo().childrenAllowed &&
             !Util.isEmpty(col.getChildren())) {
-      for (final BwCalendar chCol: col.getChildren()) {
+      for (final BwCollection chCol: col.getChildren()) {
         resetOpenStates(chCol, openStates);
       }
     }

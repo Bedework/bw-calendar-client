@@ -6,7 +6,7 @@ package org.bedework.webcommon.event;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.RecurringRetrievalMode;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
@@ -69,7 +69,7 @@ public class EventUtil {
       return ev;
     }
 
-    final BwCalendar cal = request.getCalendar(true);
+    final BwCollection cal = request.getCalendar(true);
 
     if (cal == null) {
       return null;

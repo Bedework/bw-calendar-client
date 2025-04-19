@@ -21,7 +21,7 @@ package org.bedework.appcommon.client;
 import org.bedework.appcommon.ConfigCommon;
 import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.base.response.GetEntityResponse;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
@@ -44,7 +44,7 @@ import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
-import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
+import org.bedework.calsvci.CollectionsI.SynchStatusResponse;
 import org.bedework.sysevents.events.SysEventBase;
 
 import java.io.Serializable;
@@ -408,13 +408,13 @@ public interface Client extends Serializable {
   /**
    * @return home for current principal
    */
-  BwCalendar getHome();
+  BwCollection getHome();
 
   /**
    * @param path for collection
    * @return collection object or null.
    */
-  BwCalendar getCollection(String path);
+  BwCollection getCollection(String path);
 
   /**
    * @param path for collection
@@ -427,10 +427,10 @@ public interface Client extends Serializable {
    *
    * @param  calType   int special calendar type.
    * @param  create    true if we should create it if non-existent.
-   * @return BwCalendar null for unknown calendar
+   * @return BwCollection null for unknown calendar
    */
-  BwCalendar getSpecial(int calType,
-                        boolean create);
+  BwCollection getSpecial(int calType,
+                          boolean create);
 
   /** Attempt to getResource collection referenced by the alias. For an internal alias
    * the result will also be set in the aliasTarget property of the parameter.
@@ -439,20 +439,20 @@ public interface Client extends Serializable {
    * @param resolveSubAlias - if true and the alias points to an alias, resolve
    *                  down to a non-alias.
    * @param freeBusy true for a freebusy request
-   * @return BwCalendar
+   * @return BwCollection
    */
-  BwCalendar resolveAlias(BwCalendar val,
-                          boolean resolveSubAlias,
-                          boolean freeBusy);
+  BwCollection resolveAlias(BwCollection val,
+                            boolean resolveSubAlias,
+                            boolean freeBusy);
 
   /** Returns children of the given collection to which the current user has
    * some access. Both the col value and the returned children may be
    * cloned non-persistent objects
    *
    * @param  col          parent collection
-   * @return Collection   of BwCalendar
+   * @return Collection   of BwCollection
    */
-  Collection<BwCalendar> getChildren(BwCalendar col)
+  Collection<BwCollection> getChildren(BwCollection col)
          ;
 
   /**
@@ -460,7 +460,7 @@ public interface Client extends Serializable {
    * @param val collection
    * @return never null - requestStatus set for not an external subscription.
    */
-  SynchStatusResponse getSynchStatus(BwCalendar val);
+  SynchStatusResponse getSynchStatus(BwCollection val);
 
   /** A virtual path might be for example "/user/adgrp_Eng/Lectures/Lectures"
    * which has two two components<ul>
@@ -475,7 +475,7 @@ public interface Client extends Serializable {
    * @param vpath A virtual path
    * @return collection of collection objects - null for bad vpath
    */
-  Collection<BwCalendar> decomposeVirtualPath(String vpath);
+  Collection<BwCollection> decomposeVirtualPath(String vpath);
 
   /** Returns the href of the root of the public calendars tree.
    *
@@ -485,9 +485,9 @@ public interface Client extends Serializable {
 
   /** Returns the cloned root of the tree of public calendars.
    *
-   * @return BwCalendar   root
+   * @return BwCollection   root
    */
-  BwCalendar getPublicCalendars();
+  BwCollection getPublicCalendars();
 
   /** Returns root of calendars owned by the given principal.
    *
@@ -499,10 +499,10 @@ public interface Client extends Serializable {
    *
    * @param  principal whose home we want
    * @param freeBusy      true if this is for freebusy access
-   * @return BwCalendar   user home.
+   * @return BwCollection   user home.
    */
-  BwCalendar getHome(BwPrincipal<?> principal,
-                     boolean freeBusy);
+  BwCollection getHome(BwPrincipal<?> principal,
+                       boolean freeBusy);
 
   /**
    * Flush any cached (public) copies of collections.

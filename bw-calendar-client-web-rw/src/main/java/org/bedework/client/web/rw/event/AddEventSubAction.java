@@ -21,7 +21,7 @@ package org.bedework.client.web.rw.event;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.EventKey;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.EventListEntry;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.client.rw.RWClient;
@@ -86,7 +86,7 @@ public class AddEventSubAction extends RWActionBase {
     }
 
     final String subColPath = request.getReqPar("subColPath");
-    final BwCalendar col;
+    final BwCollection col;
 
     if (subColPath != null) {
       /* See if the collection exists and is an event list collection */
@@ -99,13 +99,13 @@ public class AddEventSubAction extends RWActionBase {
         return forwardNoAction;
       }
 
-      if (col.getCalType() != BwCalendar.calTypeEventList) {
+      if (col.getCalType() != BwCollection.calTypeEventList) {
         request.error(ClientError.badRequest);
         return forwardNoAction;
       }
     } else {
       /* See if we have a default "referenced" collection in the calendar home */
-      col = cl.getSpecial(BwCalendar.calTypeEventList, true);
+      col = cl.getSpecial(BwCollection.calTypeEventList, true);
     }
 
     /* add the href to the collection */

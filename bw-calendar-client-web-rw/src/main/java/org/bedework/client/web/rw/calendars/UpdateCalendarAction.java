@@ -23,7 +23,7 @@ import org.bedework.appcommon.AccessXmlUtil;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.base.exc.BedeworkException;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.ValidationError;
@@ -82,12 +82,12 @@ public class UpdateCalendarAction extends RWActionBase {
     final var form = getRwForm();
     final boolean add = form.getAddingCalendar();
 
-    final BwCalendar cal = form.getCalendar();
+    final BwCollection cal = form.getCalendar();
 
     if (!add) {
       // See if we're moving
 
-      final BwCalendar newCal = request.getNewCal(false);
+      final BwCollection newCal = request.getNewCal(false);
       if (newCal != null) {
         if (newCal.getPath().equals(cal.getColPath())) {
           // Null move
@@ -199,8 +199,8 @@ public class UpdateCalendarAction extends RWActionBase {
       try {
         form.setCalendar(cl.addCollection(cal, parentPath));
       } catch (final BedeworkException be) {
-        if (be.getMessage().equals(CalFacadeErrorCode.duplicateCalendar)) {
-          request.error(CalFacadeErrorCode.duplicateCalendar,
+        if (be.getMessage().equals(CalFacadeErrorCode.duplicateCollection)) {
+          request.error(CalFacadeErrorCode.duplicateCollection,
                         cal.getName());
           return forwardRetry;
         }
@@ -268,7 +268,7 @@ public class UpdateCalendarAction extends RWActionBase {
                             final boolean add) {
     final BwActionFormBase form = request.getBwForm();
 
-    final BwCalendar cal = form.getCalendar();
+    final BwCollection cal = form.getCalendar();
     boolean extSub = false;
 
     final String aliasUri = request.getReqPar("aliasUri");
@@ -281,15 +281,15 @@ public class UpdateCalendarAction extends RWActionBase {
       if (aliasUri != null) {
         final boolean internal = aliasUri.startsWith(CalFacadeDefs.bwUriPrefix);
         if (internal) {
-          calType = BwCalendar.calTypeAlias;
+          calType = BwCollection.calTypeAlias;
         } else {
-          calType = BwCalendar.calTypeExtSub;
+          calType = BwCollection.calTypeExtSub;
           extSub = true;
         }
       } else if (cc) {
-        calType = BwCalendar.calTypeCalendarCollection;
+        calType = BwCollection.calTypeCalendarCollection;
       } else {
-        calType = BwCalendar.calTypeFolder;
+        calType = BwCollection.calTypeFolder;
       }
 
       cal.setName(Util.checkNull(cal.getName()));
@@ -365,7 +365,7 @@ public class UpdateCalendarAction extends RWActionBase {
     final BwActionFormBase form = request.getBwForm();
     boolean ok = true;
 
-    final BwCalendar cal = form.getCalendar();
+    final BwCollection cal = form.getCalendar();
 
     if (cal.getName() == null) {
       request.error(ValidationError.missingName);

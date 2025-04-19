@@ -4,7 +4,7 @@
 package org.bedework.client.web.rw;
 
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.filter.BwCollectionFilter;
 import org.bedework.client.rw.InOutBoxInfo;
@@ -68,7 +68,7 @@ public class RwBwModule extends BwModule {
         filter.setNot(true);
       }
 
-      final BwCalendar home = cl.getHome();
+      final BwCollection home = cl.getHome();
 
       final BwFilterDef fd = new BwFilterDef();
       fd.setDefinition("vpath='" + home.getPath() + "')");

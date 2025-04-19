@@ -3,7 +3,7 @@
 */
 package org.bedework.client.web.rw;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwString;
 import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
@@ -176,15 +176,15 @@ public abstract class RWActionBase extends BwAbstractAction {
   }
 
   // =================== collection form elements ===================
-  public void setCalendar(final BwCalendar val) {
+  public void setCalendar(final BwCollection val) {
     getBwForm().setCalendar(val);
   }
 
   /** If a calendar object exists, return that otherwise create an empty one.
    *
-   * @return BwCalendar  populated calendar value object
+   * @return BwCollection  populated calendar value object
    */
-  public BwCalendar getCalendar() {
+  public BwCollection getCalendar() {
     return getBwForm().getCalendar();
   }
 }

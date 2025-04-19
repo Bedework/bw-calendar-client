@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon.taglib;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.base.BwShareableContainedDbentity;
 import org.bedework.util.logging.BwLogger;
 
@@ -51,7 +51,7 @@ public class EmitContainerTag extends EmitCollectionTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the object */
-      BwCalendar col = null;
+      BwCollection col = null;
       BwShareableContainedDbentity entity = (BwShareableContainedDbentity)getObject(false);
       if (entity != null) {
         col = getClient().getCollection(entity.getColPath());

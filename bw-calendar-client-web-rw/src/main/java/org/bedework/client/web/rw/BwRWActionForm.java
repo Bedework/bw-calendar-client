@@ -5,7 +5,7 @@ package org.bedework.client.web.rw;
 
 import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.SelectId;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwLocation;
@@ -66,7 +66,7 @@ public class BwRWActionForm extends BwActionFormBase {
    *                       Collections
    * .............................................................. */
 
-  private BwCalendar meetingCal;
+  private BwCollection meetingCal;
 
   private String parentCalendarPath;
 
@@ -390,15 +390,15 @@ public class BwRWActionForm extends BwActionFormBase {
   /** Calendar containing copy of current in/outbox event.
    * @param val
    */
-  public void setMeetingCal(final BwCalendar val) {
+  public void setMeetingCal(final BwCollection val) {
     meetingCal = val;
   }
 
   /** Calendar containing copy of current in/outbox event.
    *
-   * @return BwCalendar
+   * @return BwCollection
    */
-  public BwCalendar getMeetingCal() {
+  public BwCollection getMeetingCal() {
     return meetingCal;
   }
 

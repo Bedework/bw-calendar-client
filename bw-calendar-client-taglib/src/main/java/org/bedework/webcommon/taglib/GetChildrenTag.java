@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.util.logging.BwLogger;
 
 import java.util.ArrayList;
@@ -86,16 +86,16 @@ public class GetChildrenTag extends NameScopePropertyTag {
     try {
       /* Try to retrieve the value */
       final Object o = getObject(false);
-      Collection<BwCalendar> cs;
+      Collection<BwCollection> cs;
 
       if (o == null) {
         cs = new ArrayList<>();
       } else {
-        if (!(o instanceof BwCalendar)) {
-          throw new JspException("Property is not instance of BwCalendar");
+        if (!(o instanceof BwCollection)) {
+          throw new JspException("Property is not instance of BwCollection");
         }
 
-        final BwCalendar col = (BwCalendar)o;
+        final BwCollection col = (BwCollection)o;
 
         cs = col.getChildren();
       }
@@ -106,7 +106,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
       } else {
         if (getForm() == null) {
           // Assume always open
-          for (final BwCalendar c: cs) {
+          for (final BwCollection c: cs) {
             c.setOpen(true);
           }
         } else {
@@ -117,7 +117,7 @@ public class GetChildrenTag extends NameScopePropertyTag {
                                          false);
 
           if (cos != null) {
-            for (final BwCalendar c: cs) {
+            for (final BwCollection c: cs) {
               c.setOpen(cos.contains(c.getPath()));
             }
           }

@@ -18,9 +18,8 @@
 */
 package org.bedework.client.web.rw.sharing;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -49,7 +48,7 @@ public class PublishCollectionAction extends RWActionBase {
   @Override
   public int doAction(final BwRequest request,
                       final RWClient cl) {
-    final BwCalendar col = request.getCollection(false);
+    final BwCollection col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;
     }

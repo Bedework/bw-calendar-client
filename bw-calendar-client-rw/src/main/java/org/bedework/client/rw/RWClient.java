@@ -7,7 +7,7 @@ import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
 import org.bedework.calfacade.Participant;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
@@ -68,42 +68,42 @@ public interface RWClient extends Client {
    *
    * <p>Name must be unique at this level, i.e. all paths must be unique
    *
-   * @param  val     BwCalendar new object
+   * @param  val     BwCollection new object
    * @param  parentPath  String path to parent.
-   * @return BwCalendar object as added. Parameter val MUST be discarded
+   * @return BwCollection object as added. Parameter val MUST be discarded
    */
-  BwCalendar addCollection(BwCalendar val,
-                           String parentPath);
+  BwCollection addCollection(BwCollection val,
+                             String parentPath);
 
   /** Update the given collection
    *
    * @param col the collection
    */
-  void updateCollection(BwCalendar col);
+  void updateCollection(BwCollection col);
 
   /** Delete a collection. Also remove it from the current user preferences (if any).
    *
-   * @param val      BwCalendar collection
+   * @param val      BwCollection collection
    * @param emptyIt  true to delete contents
    * @return boolean  true if it was deleted.
    *                  false if it didn't exist
    */
-  boolean deleteCollection(BwCalendar val,
+  boolean deleteCollection(BwCollection val,
                            boolean emptyIt);
 
   /** Move a calendar object from one parent to another
    *
-   * @param  val         BwCalendar object
-   * @param  newParent   BwCalendar potential parent
+   * @param  val         BwCollection object
+   * @param  newParent   BwCollection potential parent
    */
-  void moveCollection(BwCalendar val,
-                      BwCalendar newParent);
+  void moveCollection(BwCollection val,
+                      BwCollection newParent);
 
   /** Refresh a subscription represented by this calendar object
    *
-   * @param  val         BwCalendar object
+   * @param  val         BwCollection object
    */
-  Response<?> refreshSubscription(BwCalendar val);
+  Response<?> refreshSubscription(BwCollection val);
 
   /** Return a list of calendars in which calendar objects can be
    * placed by the current user.
@@ -112,9 +112,9 @@ public interface RWClient extends Client {
    * calendar collections are the leaf nodes only.
    *
    *
-   * @return Set   of BwCalendar
+   * @return Set   of BwCollection
    */
-  Collection<BwCalendar> getAddContentCollections()
+  Collection<BwCollection> getAddContentCollections()
          ;
 
   /* ------------------------------------------------------------
@@ -457,7 +457,7 @@ public interface RWClient extends Client {
    * @param exceptUid if non-null omit this uid from the freebusy calculation
    * @return BwEvent
    */
-  BwEvent getFreeBusy(Collection<BwCalendar> fbset,
+  BwEvent getFreeBusy(Collection<BwCollection> fbset,
                       BwPrincipal<?> who,
                       BwDateTime start,
                       BwDateTime end,
@@ -526,7 +526,7 @@ public interface RWClient extends Client {
    * @return list of ok and !ok sharees
    */
   ShareResultType share(String principalHref,
-                        BwCalendar col,
+                        BwCollection col,
                         ShareType share);
 
 
@@ -534,14 +534,14 @@ public interface RWClient extends Client {
    *
    * @param col collection object
    */
-  void publish(BwCalendar col);
+  void publish(BwCollection col);
 
   /** Unpublish the collection - that is make it unavailable for subscriptions
    * and remove any existing subscriptions.
    *
    * @param col collection object
    */
-  void unpublish(BwCalendar col);
+  void unpublish(BwCollection col);
 
   /**
    * @param reply the request
@@ -630,8 +630,8 @@ public interface RWClient extends Client {
    * @param cal where from
    * @param newCal where to
    */
-  void moveContents(BwCalendar cal,
-                    BwCalendar newCal);
+  void moveContents(BwCollection cal,
+                    BwCollection newCal);
 
   /**
    * @param val mail message

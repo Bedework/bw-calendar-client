@@ -25,7 +25,7 @@ import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.base.response.Response;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
@@ -629,7 +629,7 @@ public class BwRequest extends Request {
    * @param required boolean true if we require a calendar.
    * @return calendar or null for invalid path.
    */
-  public BwCalendar getNewCal(final boolean required) {
+  public BwCollection getNewCal(final boolean required) {
     final String newCalPath = getReqPar("newCalPath");
 
     if (newCalPath == null) {
@@ -639,7 +639,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    final BwCalendar newCal = getClient().getCollection(newCalPath);
+    final BwCollection newCal = getClient().getCollection(newCalPath);
     if (newCal == null) {
       getErr().emit(ClientError.unknownCalendar, newCalPath);
       return null;
@@ -665,7 +665,7 @@ public class BwRequest extends Request {
   public boolean setEventCalendar(final EventInfo ei,
                                   final ChangeTable changes) {
     final BwEvent ev = ei.getEvent();
-    final BwCalendar cal = getNewCal(false);
+    final BwCollection cal = getNewCal(false);
 
     if (getErrorsEmitted()) {
       return false;
@@ -688,18 +688,18 @@ public class BwRequest extends Request {
 
   /** Get calendars identified by multivalued parameter calPath.
    *
-   * @return Collection<BwCalendar> (possibly empty).
+   * @return Collection<BwCollection> (possibly empty).
    */
-  public Collection<BwCalendar> getCalendars() {
+  public Collection<BwCollection> getCalendars() {
     final Collection<String> calPaths = getReqPars("calPath");
-    final Collection<BwCalendar> cals = new ArrayList<>();
+    final Collection<BwCollection> cals = new ArrayList<>();
 
     if (calPaths == null) {
       return cals;
     }
 
     for (final String calPath: calPaths) {
-      final BwCalendar cal = getClient().getCollection(calPath);
+      final BwCollection cal = getClient().getCollection(calPath);
 
       if (cal != null) {
         cals.add(cal);
@@ -712,9 +712,9 @@ public class BwRequest extends Request {
   /** Get collection identified by single-valued parameter colHref.
    *
    * @param required true => emit error if not present
-   * @return BwCalendar or null.
+   * @return BwCollection or null.
    */
-  public BwCalendar getCollection(final boolean required) {
+  public BwCollection getCollection(final boolean required) {
     return getCalendar("colHref", required);
   }
 
@@ -736,9 +736,9 @@ public class BwRequest extends Request {
   /** Get calendar identified by single-valued parameter calPath.
    *
    * @param required true => emit error if not present
-   * @return BwCalendar or null.
+   * @return BwCollection or null.
    */
-  public BwCalendar getCalendar(final boolean required) {
+  public BwCollection getCalendar(final boolean required) {
     if (present("calPath")) {               // TODO - drop this
       return getCalendar("calPath", required);
     }
@@ -749,10 +749,10 @@ public class BwRequest extends Request {
    *
    * @param reqParName name of request parameter
    * @param required true => emit error if not present
-   * @return BwCalendar or null.
+   * @return BwCollection or null.
    */
-  public BwCalendar getCalendar(final String reqParName,
-                                final boolean required) {
+  public BwCollection getCalendar(final String reqParName,
+                                  final boolean required) {
     final String calPath = getReqPar(reqParName);
 
     if (calPath == null) {
@@ -763,7 +763,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    final BwCalendar cal = getClient().getCollection(calPath);
+    final BwCollection cal = getClient().getCollection(calPath);
 
     if (cal == null) {
       getErr().emit(ClientError.unknownCalendar, calPath);
@@ -829,7 +829,7 @@ public class BwRequest extends Request {
       return null;
     }
 
-    final BwCalendar cal = getClient().getCollection(calPath);
+    final BwCollection cal = getClient().getCollection(calPath);
 
     if (cal == null) {
       // Assume no access

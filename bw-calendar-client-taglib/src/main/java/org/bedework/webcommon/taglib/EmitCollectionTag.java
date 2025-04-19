@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon.taglib;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.util.xml.tagdefs.AppleServerTags;
 import org.bedework.util.xml.tagdefs.NamespaceAbbrevs;
 
@@ -58,7 +58,7 @@ public class EmitCollectionTag extends EmitTextTag {
   public int doEndTag() throws JspTagException {
     try {
       /* Try to retrieve the object */
-      final BwCalendar col = (BwCalendar)getObject(false);
+      final BwCollection col = (BwCollection)getObject(false);
 
       String outerTag = null;
 
@@ -117,14 +117,14 @@ public class EmitCollectionTag extends EmitTextTag {
     out.println('>');
   }
 
-  protected void emitCollection(final BwCalendar colPar,
+  protected void emitCollection(final BwCollection colPar,
                                 final JspWriter out,
                                 final String indent) throws Throwable {
-    final BwCalendar col;
+    final BwCollection col;
     if (colPar != null) {
       col = colPar;
     } else {
-      col = new BwCalendar();
+      col = new BwCollection();
     }
 
     emitElement(out, indent, "name", col.getName());
@@ -144,11 +144,11 @@ public class EmitCollectionTag extends EmitTextTag {
                 String.valueOf(col.getCalType()));
 
     int calType = col.getCalType();
-    if (calType == BwCalendar.calTypeAlias) {
-      final BwCalendar target = col.getAliasedEntity();
+    if (calType == BwCollection.calTypeAlias) {
+      final BwCollection target = col.getAliasedEntity();
 
       if (target == null) {
-        calType = BwCalendar.calTypeUnknown;
+        calType = BwCollection.calTypeUnknown;
       } else {
         calType = target.getCalType();
       }
@@ -196,11 +196,11 @@ public class EmitCollectionTag extends EmitTextTag {
     if ((prefPath != null) && prefPath.equals(col.getPath())) {
       emitElement(out, indent, "default-scheduling-collection", null);
       emitElement(out, indent, "can-be-shared", null);
-    } else if (col.getCalType() == BwCalendar.calTypeCalendarCollection) {
+    } else if (col.getCalType() == BwCollection.calTypeCalendarCollection) {
       emitElement(out, indent, "can-be-shared", null);
       emitElement(out, indent, "can-be-published", null);
-    } else if (col.getCalType() == BwCalendar.calTypeAlias ||
-               col.getCalType() == BwCalendar.calTypeExtSub) {
+    } else if (col.getCalType() == BwCollection.calTypeAlias ||
+               col.getCalType() == BwCollection.calTypeExtSub) {
       emitElement(out, indent, "can-be-shared", null);
     }
 

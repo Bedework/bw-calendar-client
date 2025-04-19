@@ -18,7 +18,7 @@
 */
 package org.bedework.webcommon.calendars;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
@@ -48,14 +48,14 @@ public class OpenCloseAction extends BwAbstractAction {
       return forwardNoAccess; // First line of defense
     }
 
-    final BwCalendar cal = request.getCalendar(true);
+    final BwCollection cal = request.getCalendar(true);
     if (cal == null) {
       return forwardNotFound;
     }
 
     final String path = cal.getPath();
 
-    if ((cal.getCalType() != BwCalendar.calTypeAlias) &&
+    if ((cal.getCalType() != BwCollection.calTypeAlias) &&
         !cal.getCollectionInfo().childrenAllowed) {
       // Ignore - we have no open close state for these
       return forwardSuccess;

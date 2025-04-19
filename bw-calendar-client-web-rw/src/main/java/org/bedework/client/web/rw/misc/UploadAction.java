@@ -23,7 +23,7 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwAlarm;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
@@ -103,7 +103,7 @@ public class UploadAction extends RWActionBase {
     int numEventsUpdated = 0;
     int numFailedOverrides = 0;
 
-    BwCalendar col = null;
+    BwCollection col = null;
 
     try {
       // To catch some of the parser errors
@@ -248,7 +248,7 @@ public class UploadAction extends RWActionBase {
 
   private int importScheduleMessage(final BwRequest request,
                                     final Icalendar ic,
-                                    final BwCalendar cal,
+                                    final BwCollection cal,
                                     final boolean stripAlarms) {
     final RWClient cl = (RWClient)request.getClient();
 

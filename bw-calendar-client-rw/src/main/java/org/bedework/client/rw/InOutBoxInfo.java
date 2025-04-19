@@ -21,7 +21,7 @@ package org.bedework.client.rw;
 import org.bedework.access.CurrentAccess;
 import org.bedework.appcommon.FormattedEvents;
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
 
@@ -74,12 +74,12 @@ public class InOutBoxInfo implements Serializable {
                       final boolean all) {
     final int calType;
     if (inbox) {
-      calType = BwCalendar.calTypeInbox;
+      calType = BwCollection.calTypeInbox;
     } else {
-      calType = BwCalendar.calTypeOutbox;
+      calType = BwCollection.calTypeOutbox;
     }
 
-    final BwCalendar col = cl.getSpecial(calType, false);
+    final BwCollection col = cl.getSpecial(calType, false);
 
     if (col == null) {
       // Cannot go away - never existed - no change.

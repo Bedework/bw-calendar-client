@@ -18,7 +18,7 @@
 */
 package org.bedework.client.rw;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwResource;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
@@ -66,9 +66,9 @@ public class NotificationInfo implements Logged, Serializable {
 
     lastRefresh = System.currentTimeMillis();
 
-    final int calType = BwCalendar.calTypeNotifications;
+    final int calType = BwCollection.calTypeNotifications;
 
-    final BwCalendar col = cl.getSpecial(calType, false);
+    final BwCollection col = cl.getSpecial(calType, false);
 
     if (col == null) {
       // Cannot go away - never existed - no change.

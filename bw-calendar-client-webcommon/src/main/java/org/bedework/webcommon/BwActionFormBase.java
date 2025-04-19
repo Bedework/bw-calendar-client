@@ -21,7 +21,7 @@ package org.bedework.webcommon;
 import org.bedework.appcommon.BedeworkDefs;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
@@ -99,7 +99,7 @@ public class BwActionFormBase extends UtilActionForm
    *                       Calendars
    * .................................................................... */
 
-  private BwCalendar calendar;
+  private BwCollection calendar;
 
   private Set<String> calendarsOpenState;
 
@@ -319,17 +319,17 @@ public class BwActionFormBase extends UtilActionForm
   /**
    * @param val
    */
-  public void setCalendar(final BwCalendar val) {
+  public void setCalendar(final BwCollection val) {
     calendar = val;
   }
 
   /** If a calendar object exists, return that otherwise create an empty one.
    *
-   * @return BwCalendar  populated calendar value object
+   * @return BwCollection  populated calendar value object
    */
-  public BwCalendar getCalendar() {
+  public BwCollection getCalendar() {
     if (calendar == null) {
-      calendar = new BwCalendar();
+      calendar = new BwCollection();
     }
 
     return calendar;

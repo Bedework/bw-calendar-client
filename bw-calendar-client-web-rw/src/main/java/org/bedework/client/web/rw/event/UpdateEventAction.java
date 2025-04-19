@@ -32,7 +32,7 @@ import org.bedework.base.exc.BedeworkException;
 import org.bedework.base.response.GetEntityResponse;
 import org.bedework.calfacade.BwAttachment;
 import org.bedework.calfacade.BwAttendee;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
@@ -979,18 +979,18 @@ public class UpdateEventAction extends RWActionBase {
        * try to create a folder called "Images"
        */
 
-      BwCalendar imageCol;
+      BwCollection imageCol;
 
       String imagecolPath = cl.getPreferences().getDefaultImageDirectory();
       if (imagecolPath == null) {
-        final BwCalendar home = cl.getHome();
+        final BwCollection home = cl.getHome();
 
         final String imageColName = "Images";
 
         imagecolPath = Util.buildPath(false, home.getPath(), "/",
                                       imageColName);
 
-//        for (BwCalendar col: cl.getChildren(home)) {
+//        for (BwCollection col: cl.getChildren(home)) {
 //          if (col.getName().equals(imageColName)) {
 //            imageCol = col;
 //            break;
@@ -1000,7 +1000,7 @@ public class UpdateEventAction extends RWActionBase {
         imageCol = cl.getCollection(imagecolPath);
 
         if (imageCol == null) {
-          imageCol = new BwCalendar();
+          imageCol = new BwCollection();
 
           imageCol.setSummary(imageColName);
           imageCol.setName(imageColName);

@@ -11,7 +11,7 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwAttendee;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
@@ -106,7 +106,7 @@ public class EventCommon {
     final RWClient cl = (RWClient)request.getClient();
     EventInfo ei = null;
 
-    final BwCalendar cal = cl.getCollection(event.getColPath());
+    final BwCollection cal = cl.getCollection(event.getColPath());
 
     if (cal == null) {
       // Assume no access
@@ -189,7 +189,7 @@ public class EventCommon {
       evcopy.removeXproperties(BwXproperty.bedeworkSuggestedTo);
       final BwPrincipal<?> p = cl.getPrincipal(
               globals.getCurrentCalSuite().getGroup().getOwnerHref());
-      final BwCalendar col = cl.getHome(p, false);
+      final BwCollection col = cl.getHome(p, false);
 
       if (col == null) {
         request.error("No calendar home");
@@ -250,7 +250,7 @@ public class EventCommon {
       form.retrieveLocId().reset(uid, SelectId.AHasPrecedence);
     }
 
-    final BwCalendar c = cl.getCollection(event.getColPath());
+    final BwCollection c = cl.getCollection(event.getColPath());
     String path = null;
     if (c != null) {
       path = c.getPath();

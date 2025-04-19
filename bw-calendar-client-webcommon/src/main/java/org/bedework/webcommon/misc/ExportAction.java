@@ -21,7 +21,7 @@ package org.bedework.webcommon.misc;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.base.exc.BedeworkException;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwDuration;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
@@ -101,7 +101,7 @@ public class ExportAction extends BwAbstractAction {
         return forwardNotFound;
       }
 
-      final BwCalendar col = cl.getCollection(calPath);
+      final BwCollection col = cl.getCollection(calPath);
       if (col == null) {
         return forwardNotFound;
       }

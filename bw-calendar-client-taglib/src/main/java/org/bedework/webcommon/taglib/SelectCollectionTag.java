@@ -19,7 +19,7 @@
 
 package org.bedework.webcommon.taglib;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.webcommon.tagcommon.BwFormTagUtils;
 
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class SelectCollectionTag extends NameScopePropertyTag {
     try {
       /* Try to retrieve the value */
       final var val = getString(false);
-      final var cols = (Collection<BwCalendar>)getObject(
+      final var cols = (Collection<BwCollection>)getObject(
               getCols(), getScope(), null, true);
 
       final JspWriter out = pageContext.getOut();

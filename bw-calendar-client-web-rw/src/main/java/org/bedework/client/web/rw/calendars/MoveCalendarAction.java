@@ -21,7 +21,7 @@ package org.bedework.client.web.rw.calendars;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.base.exc.BedeworkException;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
@@ -53,8 +53,8 @@ public class MoveCalendarAction extends RWActionBase {
                       final RWClient cl) {
     final boolean contents = request.present("contents");
 
-    final BwCalendar cal = request.getCalendar(true);
-    final BwCalendar newCal = request.getNewCal(true);
+    final BwCollection cal = request.getCalendar(true);
+    final BwCollection newCal = request.getNewCal(true);
 
     if (cal == null) {
       return forwardNotFound;
@@ -83,8 +83,8 @@ public class MoveCalendarAction extends RWActionBase {
   }
 
   private int moveCollection(final RWClient cl,
-                             final BwCalendar cal,
-                             final BwCalendar newCal,
+                             final BwCollection cal,
+                             final BwCollection newCal,
                              final BwRequest request) {
     /* Check for references in views. For user extra simple mode only we will
      * automatically remove the subscription. For others we list the references

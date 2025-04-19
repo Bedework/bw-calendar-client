@@ -21,7 +21,7 @@ package org.bedework.client.web.rw.calendars;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.base.exc.BedeworkException;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
@@ -46,7 +46,7 @@ public class DeleteCalendarAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl) {
     final String calPath = getRwForm().getCalendarPath();
-    final BwCalendar cal = cl.getCollection(calPath);
+    final BwCollection cal = cl.getCollection(calPath);
     if (cal == null) {
       request.error(ClientError.unknownCalendar, calPath);
       return forwardNotFound;

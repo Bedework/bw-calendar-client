@@ -3,7 +3,7 @@
 */
 package org.bedework.webcommon.tagcommon;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.util.misc.Util;
@@ -231,7 +231,7 @@ public class BwFormTagUtils extends BwTagUtilCommon {
           final String indent,
           final String name,
           final String curval,
-          final Collection<BwCalendar> cols)
+          final Collection<BwCollection> cols)
           throws IOException {
     final String[] labels = new String[cols.size()];
     int i = 0;

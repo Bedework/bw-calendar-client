@@ -21,7 +21,7 @@ package org.bedework.client.web.rw.pref;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.base.exc.BedeworkException;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwPreferences.CategoryMappings;
@@ -132,7 +132,7 @@ public class UpdatePrefsAction extends RWActionBase {
 
       str = request.getReqPar("defaultImageDirectory");
       if (str != null) {
-        final BwCalendar cal = cl.getCollection(str);
+        final BwCollection cal = cl.getCollection(str);
         if (cal == null) {
           request.error(ClientError.unknownCalendar, str);
           return forwardNotFound;
@@ -231,7 +231,7 @@ public class UpdatePrefsAction extends RWActionBase {
 
     str = request.getReqPar("newCalPath");
     if (str != null) {
-      final BwCalendar cal = cl.getCollection(str);
+      final BwCollection cal = cl.getCollection(str);
       if (cal == null) {
         request.error(ClientError.unknownCalendar, str);
         return forwardNotFound;

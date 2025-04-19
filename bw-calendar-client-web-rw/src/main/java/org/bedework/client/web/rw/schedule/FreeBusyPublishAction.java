@@ -19,7 +19,7 @@
 package org.bedework.client.web.rw.schedule;
 
 import org.bedework.base.exc.BedeworkAccessException;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwOrganizer;
 import org.bedework.calfacade.BwPrincipal;
@@ -95,7 +95,7 @@ public class FreeBusyPublishAction extends RWActionBase {
       return forwardNull;
     }
 
-    BwCalendar cal = null;
+    BwCollection cal = null;
 
     final String calPath = request.getReqPar("calPath");
     if (calPath != null) {
@@ -135,7 +135,7 @@ public class FreeBusyPublishAction extends RWActionBase {
                  " end = " + tr.getEnd());
       }
 
-      Collection<BwCalendar> cals = null;
+      Collection<BwCollection> cals = null;
       if (cal != null) {
         cals = new ArrayList<>();
         cals.add(cal);

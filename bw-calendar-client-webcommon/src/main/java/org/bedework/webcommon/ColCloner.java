@@ -4,7 +4,7 @@
 package org.bedework.webcommon;
 
 import org.bedework.appcommon.client.Client;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwProperty;
 import org.bedework.base.response.Response;
@@ -27,7 +27,7 @@ import static org.bedework.base.response.Response.Status.ok;
  * User: mike Date: 3/17/16 Time: 22:49
  */
 public class ColCloner implements Logged {
-  private final Map<String, BwCalendar> clonedCols = new HashMap<>();
+  private final Map<String, BwCollection> clonedCols = new HashMap<>();
 
   private final Map<String, BwCategory> clonedCats = new HashMap<>();
 
@@ -47,19 +47,19 @@ public class ColCloner implements Logged {
     /* true if we found it in the map */
     boolean alreadyCloned;
 
-    private BwCalendar col;
+    private BwCollection col;
 
     CloneResult() {
     }
     
-    CloneResult(final BwCalendar col,
+    CloneResult(final BwCollection col,
                 final boolean alreadyCloned) {
       setStatus(ok);
       this.col = col;
       this.alreadyCloned = alreadyCloned;
     }
     
-    public BwCalendar getCol() {
+    public BwCollection getCol() {
       return col;
     }
   }
@@ -73,7 +73,7 @@ public class ColCloner implements Logged {
   private static class CloneStatus {
     Deque<String> virtualPath = new ArrayDeque<>();
     
-    void pushVp(final BwCalendar col) {
+    void pushVp(final BwCollection col) {
       if (virtualPath.isEmpty()) {
         virtualPath.push(Util.buildPath(true, "/", col.getName()));
         return;
@@ -98,7 +98,7 @@ public class ColCloner implements Logged {
    * @param fromCopy true if copying previously cloned tree
    * @return response containing root of cloned tree
    */
-  CloneResult deepClone(final BwCalendar val,
+  CloneResult deepClone(final BwCollection val,
                         final boolean fromCopy) {
     final long start = System.currentTimeMillis();
     if (debug()) {
@@ -123,7 +123,7 @@ public class ColCloner implements Logged {
   }
 
   private CloneResult deepClone(final CloneStatus status, 
-                                final BwCalendar val,
+                                final BwCollection val,
                                 final boolean fromCopy) {
     try {
       status.pushVp(val);
@@ -136,7 +136,7 @@ public class ColCloner implements Logged {
       
       cr.getCol().setVirtualPath(status.getVp());
       
-      if (val.getCalType() != BwCalendar.calTypeExtSub) {
+      if (val.getCalType() != BwCollection.calTypeExtSub) {
         final CloneResult gccr = getChildren(status, cr.col, fromCopy);
         if (!gccr.isOk()) {
           return gccr;
@@ -158,10 +158,10 @@ public class ColCloner implements Logged {
    * 
    */
   private CloneResult cloneOne(final CloneStatus status,
-                               final BwCalendar val,
+                               final BwCollection val,
                                final boolean fromCopy) {
     numNodes++;
-    BwCalendar clCol;
+    BwCollection clCol;
     
     if (fromCopy) {
       numCopied++;
@@ -199,9 +199,9 @@ public class ColCloner implements Logged {
 
     clonedCols.put(val.getPath(), clCol);
 
-    if ((val.getCalType() == BwCalendar.calTypeAlias) &&
+    if ((val.getCalType() == BwCollection.calTypeAlias) &&
             (val.getAliasUri() != null)) {
-      BwCalendar aliased;
+      BwCollection aliased;
       try {
         numAliasResolve++;
         aliased = cl.resolveAlias(val, false, false);
@@ -222,7 +222,7 @@ public class ColCloner implements Logged {
           return resp;
         }
           
-        final BwCalendar clonedAlias = resp.getCol();
+        final BwCollection clonedAlias = resp.getCol();
         
         clCol.setAliasCalType(clonedAlias.getCalType());
         clCol.setAliasTarget(clonedAlias);
@@ -237,11 +237,11 @@ public class ColCloner implements Logged {
    *
    */
   private CloneResult getChildren(final CloneStatus status,
-                                  final BwCalendar col,
+                                  final BwCollection col,
                                   final boolean fromCopy) {
-    Collection<BwCalendar> children = col.getChildren();
+    Collection<BwCollection> children = col.getChildren();
 
-    if (Util.isEmpty(children) && (col.getCalType() == BwCalendar.calTypeAlias)) {
+    if (Util.isEmpty(children) && (col.getCalType() == BwCollection.calTypeAlias)) {
       // The alias target will already have been resolved and cloned
       if (col.getAliasTarget() != null) {
         children = col.getAliasTarget().getChildren();
@@ -268,14 +268,14 @@ public class ColCloner implements Logged {
       size = children.size();
     }
     
-    final Collection<BwCalendar> cloned = new ArrayList<>(size);
+    final Collection<BwCollection> cloned = new ArrayList<>(size);
     col.setChildren(cloned);
 
     if (Util.isEmpty(children)) {
       return okReturn();
     }
     
-    for (final BwCalendar c:children) {
+    for (final BwCollection c:children) {
       final CloneResult cr = deepClone(status, c, fromCopy);
       if (!cr.isOk()) {
         return cr;
@@ -294,7 +294,7 @@ public class ColCloner implements Logged {
     return cr;
   }
   
-  private Set<BwCategory> cloneCategories(final BwCalendar val) {
+  private Set<BwCategory> cloneCategories(final BwCollection val) {
     if (val.getNumCategories() == 0) {
       return null;
     }
@@ -312,7 +312,7 @@ public class ColCloner implements Logged {
     return ts;
   }
 
-  private Set<BwProperty> cloneProperties(final BwCalendar val) {
+  private Set<BwProperty> cloneProperties(final BwCollection val) {
     if (val.getNumProperties() == 0) {
       return null;
     }

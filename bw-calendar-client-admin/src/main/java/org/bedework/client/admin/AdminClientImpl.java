@@ -29,7 +29,7 @@ import org.bedework.appcommon.client.Client;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.caldav.util.notifications.NotificationType;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwFilterDef;
 import org.bedework.calfacade.BwGroup;
 import org.bedework.calfacade.BwPrincipal;
@@ -378,14 +378,14 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public BwCalendar getSpecial(final int calType,
-                               final boolean create) {
+  public BwCollection getSpecial(final int calType,
+                                 final boolean create) {
     checkUpdate();
 
     final BwCalSuite cs = getCalSuite();
 
     if (cs != null) {
-      return svci.getCalendarsHandler().
+      return svci.getCollectionsHandler().
               getSpecial(cs.getGroup().getOwnerHref(), calType,
                          create);
     }
@@ -551,7 +551,7 @@ public class AdminClientImpl extends RWClientImpl
      * collection is writable to the calsuite owner.
      */
 
-    BwCalendar resCol = new BwCalendar();
+    BwCollection resCol = new BwCollection();
 
     resCol.setName(Util.buildPath(false,
                                   path.substring(path.lastIndexOf(
@@ -654,13 +654,13 @@ public class AdminClientImpl extends RWClientImpl
       return defaultFilterContext;
     }
 
-    final Collection<BwCalendar> cols =
+    final Collection<BwCollection> cols =
             getAddContentCollections();
 
     final StringBuilder fexpr = new StringBuilder();
     String conj = "";
 
-    for (final BwCalendar col: cols) {
+    for (final BwCollection col: cols) {
       fexpr.append(conj);
       conj = " or ";
       fexpr.append("colPath=\"");
@@ -684,10 +684,10 @@ public class AdminClientImpl extends RWClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public Collection<BwCalendar> getAddContentCollections() {
+  public Collection<BwCollection> getAddContentCollections() {
     checkUpdate();
     return getCalendarCollator().getCollatedCollection(
-            svci.getCalendarsHandler()
+            svci.getCollectionsHandler()
                 .getAddContentCollections(getWebUser(),
                                           isApprover()));
   }

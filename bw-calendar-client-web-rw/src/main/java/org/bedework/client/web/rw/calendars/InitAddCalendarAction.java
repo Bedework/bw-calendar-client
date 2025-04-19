@@ -19,9 +19,8 @@
 
 package org.bedework.client.web.rw.calendars;
 
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
@@ -46,7 +45,7 @@ public class InitAddCalendarAction extends RWActionBase {
                       final RWClient cl) {
     final var form = getRwForm();
     final BwSession sess = request.getSess();
-    final BwCalendar cal = request.getCalendar(true);
+    final BwCollection cal = request.getCalendar(true);
 
     if ((cal == null) || !cal.getCollectionInfo().childrenAllowed) {
       return forwardNotAllowed;

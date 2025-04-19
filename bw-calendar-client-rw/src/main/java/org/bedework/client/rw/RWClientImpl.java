@@ -30,7 +30,7 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.caldav.util.sharing.ShareResultType;
 import org.bedework.caldav.util.sharing.ShareType;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
@@ -163,21 +163,21 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public BwCalendar getCollection(final String path) {
+  public BwCollection getCollection(final String path) {
     checkUpdate();
-    BwCalendar col = svci.getCalendarsHandler().get(path);
+    BwCollection col = svci.getCollectionsHandler().get(path);
     if (col != null) {
-      col = (BwCalendar)svci.merge(col);
+      col = (BwCollection)svci.merge(col);
     }
 
     return col;
   }
 
   @Override
-  public BwCalendar addCollection(final BwCalendar val,
-                                  final String parentPath) {
+  public BwCollection addCollection(final BwCollection val,
+                                    final String parentPath) {
     try {
-      return update(svci.getCalendarsHandler().add(val, parentPath));
+      return update(svci.getCollectionsHandler().add(val, parentPath));
     } finally {
       if (val.getPublick()) {
         flushCached();
@@ -186,8 +186,8 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public void updateCollection(final BwCalendar col) {
-    svci.getCalendarsHandler().update(col);
+  public void updateCollection(final BwCollection col) {
+    svci.getCollectionsHandler().update(col);
     updated();
 
     if (col.getPublick()) {
@@ -196,11 +196,11 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public boolean deleteCollection(final BwCalendar val,
+  public boolean deleteCollection(final BwCollection val,
                                   final boolean emptyIt) {
     try {
-      return update(svci.getCalendarsHandler().delete(val, emptyIt,
-                                                      true));
+      return update(svci.getCollectionsHandler().delete(val, emptyIt,
+                                                        true));
     } finally {
       if (val.getPublick()) {
         flushCached();
@@ -209,9 +209,9 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public void moveCollection(final BwCalendar val,
-                             final BwCalendar newParent) {
-    svci.getCalendarsHandler().move(val, newParent);
+  public void moveCollection(final BwCollection val,
+                             final BwCollection newParent) {
+    svci.getCollectionsHandler().move(val, newParent);
     updated();
     if (val.getPublick()) {
       flushCached();
@@ -219,8 +219,8 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public Response<?> refreshSubscription(final BwCalendar val) {
-    final var resp = svci.getCalendarsHandler()
+  public Response<?> refreshSubscription(final BwCollection val) {
+    final var resp = svci.getCollectionsHandler()
                          .refreshSubscription(val);
     updated();
     if (val.getPublick()) {
@@ -231,10 +231,10 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public Collection<BwCalendar> getAddContentCollections() {
+  public Collection<BwCollection> getAddContentCollections() {
     checkUpdate();
     return getCalendarCollator().getCollatedCollection(
-            svci.getCalendarsHandler()
+            svci.getCollectionsHandler()
                 .getAddContentCollections(getWebUser(),
                                           false));
   }
@@ -673,7 +673,7 @@ public class RWClientImpl extends ROClientImpl
   }
 
   @Override
-  public BwEvent getFreeBusy(final Collection<BwCalendar> fbset,
+  public BwEvent getFreeBusy(final Collection<BwCollection> fbset,
                              final BwPrincipal<?> who,
                              final BwDateTime start,
                              final BwDateTime end,
@@ -722,20 +722,20 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public ShareResultType share(final String principalHref,
-                               final BwCalendar col,
+                               final BwCollection col,
                                final ShareType share) {
     return update(svci.getSharingHandler().share(principalHref, col,
                                                  share));
   }
 
   @Override
-  public void publish(final BwCalendar col) {
+  public void publish(final BwCollection col) {
     svci.getSharingHandler().publish(col);
     updated();
   }
 
   @Override
-  public void unpublish(final BwCalendar col) {
+  public void unpublish(final BwCollection col) {
     svci.getSharingHandler().unpublish(col);
     updated();
   }
@@ -807,8 +807,8 @@ public class RWClientImpl extends ROClientImpl
    * ------------------------------------------------------------ */
 
   @Override
-  public void moveContents(final BwCalendar cal,
-                           final BwCalendar newCal) {
+  public void moveContents(final BwCollection cal,
+                           final BwCollection newCal) {
     // TODO - getResource a set of keys then move each - or bulk mod?
 
     final Collection<EventInfo> eis = svci.getEventsHandler().
@@ -829,11 +829,11 @@ public class RWClientImpl extends ROClientImpl
                                      false); // autocreate
     }
 
-    final Collection<BwCalendar> cals =
-            svci.getCalendarsHandler().getChildren(cal);
+    final Collection<BwCollection> cals =
+            svci.getCollectionsHandler().getChildren(cal);
 
-    for (final BwCalendar c: cals) {
-      svci.getCalendarsHandler().move(c, newCal);
+    for (final BwCollection c: cals) {
+      svci.getCollectionsHandler().move(c, newCal);
     }
 
     updated();

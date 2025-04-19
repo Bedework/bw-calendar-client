@@ -28,7 +28,7 @@ import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.base.response.GetEntityResponse;
 import org.bedework.base.response.Response;
 import org.bedework.caldav.util.filter.FilterBase;
-import org.bedework.calfacade.BwCalendar;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
@@ -59,7 +59,7 @@ import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.calsvci.CalSvcFactoryDefault;
 import org.bedework.calsvci.CalSvcI;
-import org.bedework.calsvci.CalendarsI.SynchStatusResponse;
+import org.bedework.calsvci.CollectionsI.SynchStatusResponse;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.sysevents.events.HttpEvent;
 import org.bedework.sysevents.events.HttpOutEvent;
@@ -118,7 +118,7 @@ public class ROClientImpl implements Logged, Client {
 
   private SearchParams searchParams;
 
-  private transient CollectionCollator<BwCalendar> calendarCollator;
+  private transient CollectionCollator<BwCollection> calendarCollator;
   protected ClientType clientType;
 
   private final Map<String, BwIndexer> publicIndexers = new HashMap<>();
@@ -424,7 +424,7 @@ public class ROClientImpl implements Logged, Client {
   public String getPrimaryPublicPath() {
     synchronized (primaryPublicPathLocker) {
       if (primaryPublicPath == null) {
-        final var primaryCal = svci.getCalendarsHandler()
+        final var primaryCal = svci.getCollectionsHandler()
                                    .getPrimaryPublicPath();
         if (primaryCal == null) {
           throw new BedeworkException("No primary calendar set");
@@ -560,7 +560,7 @@ public class ROClientImpl implements Logged, Client {
   @Override
   public String getPreferredCollectionPath(final String compName)
           {
-    return svci.getCalendarsHandler().getPreferred(compName);
+    return svci.getCollectionsHandler().getPreferred(compName);
   }
 
   /** Set false to inhibit lastLocale stuff */
@@ -666,14 +666,14 @@ public class ROClientImpl implements Logged, Client {
    * ------------------------------------------------------------ */
 
   @Override
-  public BwCalendar getHome() {
-    return svci.getCalendarsHandler().getHome();
+  public BwCollection getHome() {
+    return svci.getCollectionsHandler().getHome();
   }
 
   @Override
-  public BwCalendar getCollection(final String path) {
+  public BwCollection getCollection(final String path) {
     checkUpdate();
-    return svci.getCalendarsHandler().get(path);
+    return svci.getCollectionsHandler().get(path);
   }
 
   @Override
@@ -684,36 +684,36 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwCalendar getSpecial(final int calType,
-                               final boolean create)
+  public BwCollection getSpecial(final int calType,
+                                 final boolean create)
           {
     checkUpdate();
 
-    return svci.getCalendarsHandler().getSpecial(calType, create);
+    return svci.getCollectionsHandler().getSpecial(calType, create);
   }
 
   @Override
-  public BwCalendar resolveAlias(final BwCalendar val,
-                                 final boolean resolveSubAlias,
-                                 final boolean freeBusy)
+  public BwCollection resolveAlias(final BwCollection val,
+                                   final boolean resolveSubAlias,
+                                   final boolean freeBusy)
           {
     checkUpdate();
-    return svci.getCalendarsHandler().resolveAliasIdx(val,
-                                                      resolveSubAlias,
-                                                      freeBusy);
+    return svci.getCollectionsHandler().resolveAliasIdx(val,
+                                                        resolveSubAlias,
+                                                        freeBusy);
   }
 
   @Override
-  public Collection<BwCalendar> getChildren(final BwCalendar col)
+  public Collection<BwCollection> getChildren(final BwCollection col)
           {
     checkUpdate();
 
     if (!col.getPublick()) {
-      return svci.getCalendarsHandler().getChildrenIdx(col);
+      return svci.getCollectionsHandler().getChildrenIdx(col);
     }
 
     // This and its children need to be cached
-    BwCalendar ourCopy;
+    BwCollection ourCopy;
 
     synchronized (publicCloned) {
       if (!col.unsaved()) {
@@ -727,7 +727,7 @@ public class ROClientImpl implements Logged, Client {
         ourCopy = col;
       }
 
-      Collection<BwCalendar> children = ourCopy.getChildren();
+      Collection<BwCollection> children = ourCopy.getChildren();
       if (children != null) {
         // Assume ok
         return children;
@@ -736,15 +736,15 @@ public class ROClientImpl implements Logged, Client {
       children = col.getChildren();
       if (children == null) {
         // Have to retrieve
-        children = svci.getCalendarsHandler().getChildrenIdx(col);
+        children = svci.getCollectionsHandler().getChildrenIdx(col);
       }
 
       // Assume we have to clone
 
-      final Collection<BwCalendar> ourChildren = new ArrayList<>();
+      final Collection<BwCollection> ourChildren = new ArrayList<>();
 
-      for (final BwCalendar ch: children) {
-        BwCalendar ourCh = ch;
+      for (final BwCollection ch: children) {
+        BwCollection ourCh = ch;
         if (!ch.unsaved()) {
           ourCh = publicCloned.get(ch.getPath());
 
@@ -764,34 +764,34 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public SynchStatusResponse getSynchStatus(final BwCalendar val) {
-    return svci.getCalendarsHandler().getSynchStatus(val);
+  public SynchStatusResponse getSynchStatus(final BwCollection val) {
+    return svci.getCollectionsHandler().getSynchStatus(val);
   }
 
   @Override
-  public Collection<BwCalendar> decomposeVirtualPath(final String vpath)
+  public Collection<BwCollection> decomposeVirtualPath(final String vpath)
           {
-    return svci.getCalendarsHandler().decomposeVirtualPath(vpath);
+    return svci.getCollectionsHandler().decomposeVirtualPath(vpath);
   }
 
   @Override
   public String getPublicCalendarsRootPath() {
-    return svci.getCalendarsHandler().getPublicCalendarsRootPath();
+    return svci.getCollectionsHandler().getPublicCollectionsRootPath();
   }
 
   @Override
-  public BwCalendar getPublicCalendars() {
+  public BwCollection getPublicCalendars() {
     checkUpdate();
 
-    final String path = svci.getCalendarsHandler().getPublicCalendarsRootPath();
+    final String path = svci.getCollectionsHandler().getPublicCollectionsRootPath();
 
-    BwCalendar res = publicCloned.get(path);
+    BwCollection res = publicCloned.get(path);
 
     if (res != null) {
       return res;
     }
 
-    res = svci.getCalendarsHandler().getPublicCalendars();
+    res = svci.getCollectionsHandler().getPublicCollections();
     
     if (res == null) {
       warn("*****************************************************" +
@@ -813,10 +813,10 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
-  public BwCalendar getHome(final BwPrincipal<?> principal,
-                            final boolean freeBusy)
+  public BwCollection getHome(final BwPrincipal<?> principal,
+                              final boolean freeBusy)
           {
-    return svci.getCalendarsHandler().getHome(principal, freeBusy);
+    return svci.getCollectionsHandler().getHome(principal, freeBusy);
   }
 
   public void flushCached() {
@@ -825,7 +825,7 @@ public class ROClientImpl implements Logged, Client {
     }
   }
 
-  private final static Map<String, BwCalendar> publicCloned =
+  private final static Map<String, BwCollection> publicCloned =
       new HashMap<>();
 
   /* ------------------------------------------------------------
@@ -1463,7 +1463,7 @@ public class ROClientImpl implements Logged, Client {
   }
   */
 
-  protected CollectionCollator<BwCalendar> getCalendarCollator() {
+  protected CollectionCollator<BwCollection> getCalendarCollator() {
     if (calendarCollator == null) {
       calendarCollator = new CollectionCollator<>();
     }
@@ -1595,13 +1595,13 @@ public class ROClientImpl implements Logged, Client {
    * ------------------------------------------------------------ */
 
   private FilterBase makeDefaultView() {
-    final Collection<BwCalendar> cols = new ArrayList<>();
+    final Collection<BwCollection> cols = new ArrayList<>();
 
     findCollections(getHome(), cols);
 
     FilterBase flt = null;
 
-    for (final BwCalendar col: cols) {
+    for (final BwCollection col: cols) {
       flt = FilterBase.addOrChild(flt,
                                   new BwCollectionFilter(col.getName(),
                                                          col));
@@ -1610,15 +1610,15 @@ public class ROClientImpl implements Logged, Client {
     return flt;
   }
 
-  private void findCollections(final BwCalendar root,
-                               final Collection<BwCalendar> cols)
+  private void findCollections(final BwCollection root,
+                               final Collection<BwCollection> cols)
           {
     if (root.getCalendarCollection()) {
       cols.add(root);
       return;
     }
 
-    for (final var ch: svci.getCalendarsHandler().getChildren(root)) {
+    for (final var ch: svci.getCollectionsHandler().getChildren(root)) {
       findCollections(ch, cols);
     }
   }

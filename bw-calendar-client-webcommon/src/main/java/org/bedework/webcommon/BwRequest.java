@@ -88,9 +88,6 @@ public class BwRequest extends Request {
   /** client stored in request */
   public final static String embeddedClientName = "bw_embedded_client";
 
-  /** event state stored in request */
-  public final static String eventStateName = "bw_event_state";
-
   /** module state stored in request */
   public final static String moduleStateName = "bw_module_state";
 

@@ -32,8 +32,9 @@ import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
 import org.bedework.util.struts.UtilActionForm;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Collection;
 import java.util.Set;
@@ -361,8 +362,10 @@ public class BwActionFormBase extends UtilActionForm
 
    public EventState getEventState() {
     if (eventState == null){
-      eventState = new EventState(this);
+      eventState = new EventState();
     }
+
+    eventState.reset(getEventDates().getNowTimeComponents());
     return eventState;
   }
 

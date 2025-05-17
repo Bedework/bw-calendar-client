@@ -27,17 +27,9 @@ import java.io.Serializable;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class EventState implements Serializable {
-  private final BwActionFormBase form;
-
-  /* When I manage to figure out request scopeforms this will be embedded i
-     in the module state - not the global action form.
-
-  private BwModuleState mstate;
-  */
-
-  /* ....................................................................
+  /* ..............................................................
    *                   Alarm fields
-   * .................................................................... */
+   * .............................................................. */
 
   /* The trigger is a date/time or a duration.
    */
@@ -66,22 +58,18 @@ public class EventState implements Serializable {
     this.mstate = mstate;
   }
   */
-  public EventState(final BwActionFormBase form) {
-    this.form = form;
+  public void reset(final TimeDateComponents now) {
+    triggerDateTime = now;
   }
 
-  /* ====================================================================
+  /* ============================================================
    *                   Alarm fields
-   * ==================================================================== */
+   * ============================================================ */
 
   /**
    * @return time date
    */
   public TimeDateComponents getTriggerDateTime() {
-    if (triggerDateTime == null) {
-      triggerDateTime = form.getEventDates().getNowTimeComponents();
-    }
-
     return triggerDateTime;
   }
 
@@ -164,7 +152,7 @@ public class EventState implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val email address
    */
   public void setEmail(final String val) {
     email = val;
@@ -178,7 +166,7 @@ public class EventState implements Serializable {
   }
 
   /**
-   * @param val
+   * @param val subject
    */
   public void setSubject(final String val) {
     subject = val;

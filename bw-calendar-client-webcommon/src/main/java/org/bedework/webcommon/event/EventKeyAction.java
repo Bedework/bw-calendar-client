@@ -46,9 +46,6 @@ public class EventKeyAction extends BwAbstractAction {
       return forwardNoAction;
     }
 
-    request.setRequestAttr(BwRequest.eventStateName,
-                           request.getBwForm().getEventState());
-
     return forwardSuccess;
   }
 }

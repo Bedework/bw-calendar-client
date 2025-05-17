@@ -127,9 +127,6 @@ public class SetAlarmAction extends RWActionBase {
 
     request.message(ClientMessage.setAlarm);
 
-    request.setRequestAttr(BwRequest.eventStateName,
-                           evstate);
-
     return forwardSuccess;
   }
 }

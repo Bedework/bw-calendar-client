@@ -262,10 +262,12 @@ public class BwSessionImpl implements Logged, BwSession {
           debug("After embed prefs");
         }
 
-        form.assignEventRegAdminToken(
+        globals.setEventRegAdminToken(
                 cl.getSystemProperties().getEventregAdminToken());
-        form.assignEventRegWsUrl(
+        globals.setEventRegWsUrl(
                 cl.getSystemProperties().getEventregWSUrl());
+        globals.setEventRegAdminUrl(
+                cl.getSystemProperties().getEventregAdminUrl());
 
         globals.setCurrentGroups(cl.getCurrentPrincipal().getGroups());
 

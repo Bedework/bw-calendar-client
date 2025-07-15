@@ -89,13 +89,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   private boolean listAllEvents;
 
-  /* ..............................................................
-   *                       Uploads and exports
-   * .............................................................. */
-
-  private String eventRegAdminToken;
-  private String eventRegWsUrl;
-
   /* ....................................................................
    *                       Calendars
    * .................................................................... */
@@ -189,28 +182,6 @@ public class BwActionFormBase extends UtilActionForm
   /* ====================================================================
    *                   Admin groups
    * ==================================================================== */
-
-  /**
-   * @param val token for event registration
-   */
-  public void assignEventRegAdminToken(final String val) {
-    eventRegAdminToken = val;
-  }
-
-  /**
-   * @return token for event registration
-   */
-  public String getEventRegAdminToken() {
-    return eventRegAdminToken;
-  }
-
-  public void assignEventRegWsUrl(final String val) {
-    eventRegWsUrl = val;
-  }
-
-  public String getEventRegWsUrl() {
-    return eventRegWsUrl;
-  }
 
   public void assignMarkDeleted(final boolean val) {
     markDeleted = val;

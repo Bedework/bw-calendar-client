@@ -48,6 +48,10 @@ public class BwWebGlobals extends WebGlobals {
 
   private String calSuiteName;
 
+  private String eventRegAdminToken;
+  private String eventRegWsUrl;
+  private String eventRegAdminUrl;
+
   public void reset(final BwRequest req) {
     super.reset(req);
     setLocale(req);
@@ -200,6 +204,36 @@ public class BwWebGlobals extends WebGlobals {
    */
   public String getCalSuiteName() {
     return calSuiteName;
+  }
+
+  /**
+   * @param val token for event registration
+   */
+  public void setEventRegAdminToken(final String val) {
+    eventRegAdminToken = val;
+  }
+
+  /**
+   * @return token for event registration
+   */
+  public String getEventRegAdminToken() {
+    return eventRegAdminToken;
+  }
+
+  public void setEventRegWsUrl(final String val) {
+    eventRegWsUrl = val;
+  }
+
+  public String getEventRegWsUrl() {
+    return eventRegWsUrl;
+  }
+
+  public void setEventRegAdminUrl(final String val) {
+    eventRegAdminUrl = val;
+  }
+
+  public String getEventRegAdminUrl() {
+    return eventRegAdminUrl;
   }
 
   public void reset(final Client cl) {

@@ -1,0 +1,69 @@
+= Bedework Calendar Client modules.
+:title: The Bedework Calendar Client modules.
+:safe-mode-unsafe:
+:docinfo: shared
+:docinfodir: ./docinfo
+:docinfo2:
+:scriptsdir: ./tocbot-3.0.2
+:imagesdir: ./resources/
+:toc: left
+:toclevels: 4
+:sectnumlevels: 4
+//
+:reports-dir: reports/
+:admin-dir: client/admin
+:appcommon-dir: client/appcommon
+:rw-dir: client/rw
+
+:struts2-dir: web/struts2
+:taglib-dir: web/taglib
+:util-dir: web/util
+:web-admin-dir: web/web-admin
+:web-rw-dir: web/web-rw
+:webcommon-dir: web/webcommon
+//
+:sectnums!:
+
+include::introduction.adoc[]
+
+:sectnums:
+
+== Client modules
+include::{admin-dir}/overview.adoc[]
+include::{admin-dir}/using.adoc[]
+
+include::{appcommon-dir}/overview.adoc[]
+include::{appcommon-dir}/using.adoc[]
+
+include::{rw-dir}/overview.adoc[]
+include::{rw-dir}/using.adoc[]
+
+== Web modules
+
+include::{struts2-dir}/overview.adoc[]
+
+include::{struts2-dir}/using.adoc[]
+
+include::{taglib-dir}/overview.adoc[]
+
+include::{taglib-dir}/using.adoc[]
+
+include::{util-dir}/overview.adoc[]
+
+include::{util-dir}/using.adoc[]
+
+include::{web-admin-dir}/overview.adoc[]
+
+include::{web-admin-dir}/using.adoc[]
+
+include::{web-rw-dir}/overview.adoc[]
+
+include::{web-rw-dir}/using.adoc[]
+
+include::{webcommon-dir}/overview.adoc[]
+
+include::{webcommon-dir}/using.adoc[]
+
+[[reports]]
+== Reports
+link:reports/dependency-check-report.html[Dependency check]

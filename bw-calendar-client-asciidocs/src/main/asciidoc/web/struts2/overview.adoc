@@ -1,0 +1,3 @@
+[[struts2]]
+=== struts2
+This provides support for the struts2 based web clients.

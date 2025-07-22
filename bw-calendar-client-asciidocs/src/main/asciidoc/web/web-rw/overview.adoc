@@ -1,0 +1,3 @@
+[[web-rw]]
+=== web-rw
+Extends the web read-only classes to provide an read-write client (user client).

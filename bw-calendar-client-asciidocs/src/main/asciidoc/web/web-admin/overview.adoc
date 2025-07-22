@@ -1,0 +1,3 @@
+[[web-admin]]
+=== web-admin
+Extends the web read-write classes to provide an administrative client.

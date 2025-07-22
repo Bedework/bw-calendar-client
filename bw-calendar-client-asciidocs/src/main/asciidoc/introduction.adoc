@@ -1,0 +1,9 @@
+[[introduction]]
+== Introduction
+The calendar client code for bedework.
+
+This documentation is mostly a place-holder.
+
+The code currently provides 2 main functions: clients which interact with the engine and web clients which use those clients and provide a web based service for users and departmental sites.
+
+Work is underway to create a low-level client and a high-level client which will provide better support for different kinds of web and command-line client.

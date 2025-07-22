@@ -1,0 +1,3 @@
+[[webcommon]]
+=== webcommon
+Provide a read-only web client plus supporting code used by all web clients.

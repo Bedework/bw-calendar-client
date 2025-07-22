@@ -1,0 +1,3 @@
+[[rw]]
+=== rw
+Code which provides the read-write support and is extended by the admin code.

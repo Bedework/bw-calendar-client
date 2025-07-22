@@ -5,29 +5,18 @@ The calendar web clients for
 
 ## Requirements
 
-1. JDK 17
+1. JDK 21
 2. Maven 3
 
-## Building Locally
+## Using this project
+See documentation at [github pages for this project](https://bedework.github.io/bw-calendar-client/)
 
-> mvn clean install
+## Reporting Issues
+Please report issues via the github issues tab at
+> https://github.com/Bedework/bw-calendar-client/issues
 
-## Releasing
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Releases of this fork are published to Maven Central via Sonatype.
-
-To create a release, you must have:
-
-1. Permissions to publish to the `org.bedework` groupId.
-2. `gpg` installed with a published key (release artifacts are signed).
-
-To perform a new release use the release script:
-
-> ./bedework/build/quickstart/linux/util-scripts/release.sh <module-name> "<release-version>" "<new-version>-SNAPSHOT"
-
-When prompted, indicate all updates are committed
-
-For full details, see [Sonatype's documentation for using Maven to publish releases](http://central.sonatype.org/pages/apache-maven.html).
-
-## Release Notes
-See [Release Notes](http://bedework.github.io/bedework/#release-notes) for the full release which covers the details.
+## Security - Vulnerability reporting
+See [SECURITY.md](SECURITY.md).

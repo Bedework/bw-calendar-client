@@ -1,0 +1,3 @@
+[[admin]]
+=== admin
+This extends the read-write code to provide the administrative functions.

@@ -1,0 +1,3 @@
+[[appcommon]]
+=== appcommon
+Code which provides the read-only support and is extended by the read-write code.

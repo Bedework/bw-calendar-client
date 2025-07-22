@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.bedework</groupId>
     <artifactId>bedework-parent</artifactId>
-    <version>214</version>
+    <version>224</version>
   </parent>
 
   <groupId>org.bedework.bwwebcl</groupId>
@@ -25,6 +25,7 @@
     <module>bw-calendar-client-web-rw</module>
     <module>bw-calendar-client-taglib</module>
     <module>bw-calendar-client-struts2</module>
+    <module>bw-calendar-client-asciidocs</module>
   </modules>
 
   <scm>

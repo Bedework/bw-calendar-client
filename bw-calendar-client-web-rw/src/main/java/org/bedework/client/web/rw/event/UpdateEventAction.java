@@ -1339,7 +1339,7 @@ public class UpdateEventAction extends RWActionBase {
           throw new BedeworkException(e);
         }
       } else if (!DateTimeUtil.isISODateTimeUTC(until)) {
-        request.error(ValidationError.invalidRecurUntil, "until");
+        request.error(ValidationError.invalidRecurUntil, until);
         return null;
       }
 

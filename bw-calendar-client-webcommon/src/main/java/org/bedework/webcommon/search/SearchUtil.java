@@ -165,8 +165,10 @@ public class SearchUtil {
       count = 20;
     }
 
-    if (count > 250) {
-      count = 250;
+    final var maxCount = cl.getAuthProperties().getMaxPageSize();
+
+    if ((maxCount > 0) && (count > maxCount)) {
+      count = maxCount;
     }
 
     params.setPageSize(count);

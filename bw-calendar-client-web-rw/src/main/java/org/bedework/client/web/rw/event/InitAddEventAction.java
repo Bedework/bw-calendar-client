@@ -32,7 +32,6 @@ import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.calendar.ScheduleMethods;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwSession;
 import org.bedework.webcommon.DurationBean;
 import org.bedework.webcommon.EventDates;
 
@@ -148,15 +147,7 @@ public class InitAddEventAction extends RWActionBase {
       setEventCollection(cl, ev, changes);
     }
 
-    final BwSession sess = request.getSess();
-
-    sess.embedAddContentCalendarCollections(request);
-    sess.embedUserCollections(request);
-
-    sess.embedContactCollection(request, BwSession.ownersEntity);
-
-    sess.embedCategories(request, false, BwSession.ownersEntity);
-    sess.embedLocations(request, BwSession.ownersEntity);
+    request.initialiseSess();
 
     //if (!request.setEventCalendar(ev)) {
     //  return forwardValidationError;

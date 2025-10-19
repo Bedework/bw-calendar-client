@@ -23,6 +23,7 @@ import org.bedework.appcommon.DateTimeFormatter;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwLocation;
@@ -36,16 +37,14 @@ import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.webcommon.BwRequest;
-import org.bedework.webcommon.BwSession;
 
 import java.util.Collection;
 import java.util.TreeSet;
 
+import static org.bedework.base.response.Response.Status.notFound;
 import static org.bedework.client.web.rw.EventCommon.copyEvent;
 import static org.bedework.client.web.rw.EventCommon.resetEvent;
-import static org.bedework.base.response.Response.Status.notFound;
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /** This action fetches events for editing
@@ -64,7 +63,7 @@ public class FetchEventAction extends RWActionBase {
   public int doAction(final BwRequest request,
                       final RWClient cl) {
     if (cl.getPublicAdmin()) {
-      // Handled by overide
+      // Handled by override
       return forwardNoAccess;
     }
 
@@ -85,20 +84,17 @@ public class FetchEventAction extends RWActionBase {
 
     final EventInfo einf = findEvent(request, mode, getLogger());
 
+    if (einf == null) {
+      request.error(ClientError.unknownEvent);
+      return forwardNotFound;
+    }
+
     final int fwd = refreshEvent(request, einf);
     form.setAttendees(new Attendees());
     form.setFbResponses(null);
     form.setFormattedFreeBusy(null);
 
-    final BwSession sess = request.getSess();
-
-    sess.embedAddContentCalendarCollections(request);
-    sess.embedUserCollections(request);
-
-    sess.embedContactCollection(request, BwSession.ownersEntity);
-    sess.embedCategories(request, false, BwSession.ownersEntity);
-
-    sess.embedLocations(request, BwSession.ownersEntity);
+    request.initialiseSess();
 
     if (fwd == forwardContinue) {
       if (request.hasCopy()) {
@@ -119,14 +115,9 @@ public class FetchEventAction extends RWActionBase {
    * @param ei      event info
    * @return int forward.
    */
-  protected int refreshEvent(final BwRequest request,
-                             final EventInfo ei) {
+  private int refreshEvent(final BwRequest request,
+                           final EventInfo ei) {
     final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
-
-    if (ei == null) {
-      request.error(ClientError.unknownEvent);
-      return forwardNotFound;
-    }
 
     final Client cl = request.getClient();
     final BwEvent ev = ei.getEvent();

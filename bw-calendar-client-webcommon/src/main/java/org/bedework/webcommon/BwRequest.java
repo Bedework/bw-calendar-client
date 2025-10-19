@@ -277,6 +277,18 @@ public class BwRequest extends Request {
     return sess;
   }
 
+  /** initialise session for response
+   */
+  public void initialiseSess() {
+    sess.embedAddContentCalendarCollections(this);
+    sess.embedUserCollections(this);
+
+    sess.embedContactCollection(this, BwSession.ownersEntity);
+    sess.embedCategories(this, false, BwSession.ownersEntity);
+
+    sess.embedLocations(this, BwSession.ownersEntity);
+  }
+
   public boolean isNewSession() {
     return (sess == null) || (sess.isNewSession());
   }
@@ -805,6 +817,51 @@ public class BwRequest extends Request {
 
     getErr().emit(ValidationError.invalidSchedMethod, schedStr);
     return ScheduleMethods.methodTypeNone;
+  }
+
+  /** Check that the event we have matches the uid and recurrenceid
+   * in the request. Can get a mismatch is someone uses multiple
+   * browser tabs.
+   *
+   * @param ev to match
+   * @param adding if we are adding - should be no uid
+   * @return false for wrong event.
+   */
+  public boolean ensureSameEvent(final BwEvent ev,
+                                 final boolean adding) {
+    final var reqGuid = getReqPar("guid");
+
+    if (adding) {
+      // Expect a null guid in request and event.
+      if ((reqGuid != null) || (ev.getUid() != null)) {
+        error(ClientError.eventMismatch, "guid");
+        return false;
+      }
+
+      return true;
+    }
+
+    /* Check request guid and recurrenceId match */
+    if (reqGuid == null) {
+      error(ClientError.missingRequestPar, "guid");
+      return false;
+    }
+
+    if (!reqGuid.equals(ev.getUid())) {
+      error(ClientError.eventMismatch, "guid");
+      return false;
+    }
+
+    final var reqRid = getReqPar("recurrenceId");
+    final var evRid = ev.getRecurrenceId();
+
+    if (((reqRid != null) && !reqRid.equals(evRid)) ||
+            ((reqRid == null) && (evRid != null))) {
+      error(ClientError.eventMismatch, "recurrenceId");
+      return false;
+    }
+
+    return true;
   }
 
   /**

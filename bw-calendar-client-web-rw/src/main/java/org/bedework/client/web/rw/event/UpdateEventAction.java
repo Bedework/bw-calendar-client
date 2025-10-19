@@ -148,43 +148,13 @@ public class UpdateEventAction extends RWActionBase {
       return forwardNoAction;
     }
 
-    final var reqGuid = request.getReqPar("guid");
-    final var reqAdding = request.notNull("addEvent");
+    final var adding =
+            request.notNull("addEvent") || pars.adding;
     final var globals = request.getBwGlobals();
     final var form = (BwRWActionForm)request.getBwForm();
-    // pars value and request for adding may be
-    // inconsistent with multiple tabs.
 
-    if (pars.adding || reqAdding) {
-      // Expect a null guid in request and event.
-      if ((reqGuid != null) || (ev.getUid() != null)) {
-        request.error(
-                ClientError.eventMismatch, "guid");
-        return forwardError;
-      }
-    } else {
-      /* Check request guid and recurrenceId match */
-      if (reqGuid == null) {
-        request.error(
-                ClientError.missingRequestPar, "guid");
-        return forwardError;
-      }
-
-      if (!reqGuid.equals(ev.getUid())) {
-        request.error(
-                ClientError.eventMismatch, "guid");
-        return forwardError;
-      }
-
-      final var reqRid = request.getReqPar("recurrenceId");
-      final var evRid = ev.getRecurrenceId();
-
-      if (((reqRid != null) && !reqRid.equals(evRid)) ||
-              ((reqRid == null) && (evRid != null))) {
-        request.error(
-                ClientError.eventMismatch, "recurrenceId");
-        return forwardError;
-      }
+    if (!request.ensureSameEvent(ev, adding)) {
+      return forwardError;
     }
 
     if (request.hasCopy()) {
@@ -829,7 +799,7 @@ public class UpdateEventAction extends RWActionBase {
       evxprops.addAll(pars.ev.getXproperties());
     }
 
-    /* When the xproperties get emitted we don't emit the set marked for skipping
+    /* When the xproperties get emitted, we don't emit the set marked for skipping.
      * We have to preserve those now.
      */
 
@@ -854,7 +824,7 @@ public class UpdateEventAction extends RWActionBase {
         return forwardNoAction;
       }
 
-      for (final BwXproperty xp:  evxprops) {
+      for (final BwXproperty xp: evxprops) {
         if (xp.getSkipJsp()) {
           if (!xp.getName().equals(BwXproperty.bedeworkIcal) ||
                   (xp.getValue() == null)) {

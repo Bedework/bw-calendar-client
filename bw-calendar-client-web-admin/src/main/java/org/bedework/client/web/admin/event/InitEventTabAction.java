@@ -14,11 +14,15 @@ import org.apache.struts2.interceptor.parameter.StrutsParameter;
  */
 public class InitEventTabAction extends SearchParamsAction {
   private String currentTab;
+  private boolean searchDone;
 
   @Override
   public int doAction(final BwRequest request) {
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();
     globals.assignCurrentTab(currentTab);
+    if (searchDone) {
+      globals.setSearchDone(true);
+    }
 
     return super.doAction(request);
   }
@@ -26,5 +30,10 @@ public class InitEventTabAction extends SearchParamsAction {
   @StrutsParameter
   public void setCurrentTab(final String val) {
     currentTab = val;
+  }
+
+  @StrutsParameter
+  public void setSearchDone(final boolean val) {
+    searchDone = val;
   }
 }

@@ -52,6 +52,8 @@ public class BwWebGlobals extends WebGlobals {
   private String eventRegWsUrl;
   private String eventRegAdminUrl;
 
+  private boolean searchDone;
+
   public void reset(final BwRequest req) {
     super.reset(req);
     setLocale(req);
@@ -234,6 +236,22 @@ public class BwWebGlobals extends WebGlobals {
 
   public String getEventRegAdminUrl() {
     return eventRegAdminUrl;
+  }
+
+  /**
+   * @param searchDone true if an explicit search took place
+   *                  some time this session
+   */
+  public void setSearchDone(final boolean searchDone) {
+    this.searchDone = searchDone;
+  }
+
+  /**
+   * @return true if an explicit search took place some
+   *  time this session
+   */
+  public boolean isSearchDone() {
+    return searchDone;
   }
 
   public void reset(final Client cl) {

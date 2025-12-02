@@ -21,7 +21,6 @@ public class ShowCurrentTabAction extends RenderMainAction {
   private final static Map<String, Integer> forwardsTab =
           new HashMap<>();
   static {
-    forwardsTab.put("main", forwardMainTab);
     forwardsTab.put("events", forwardEventsTab);
     forwardsTab.put("approvalQueue", forwardApprovalQTab);
     forwardsTab.put("pending", forwardPendingQTab);
@@ -30,11 +29,13 @@ public class ShowCurrentTabAction extends RenderMainAction {
     forwardsTab.put("users", forwardUsersTab);
     forwardsTab.put("calsuite", forwardCalsuiteTab);
     forwardsTab.put("system", forwardSystemTab);
+    forwardsTab.put("contacts", forwardContactsTab);
+    forwardsTab.put("locations", forwardLocationsTab);
+    forwardsTab.put("categories", forwardCategoriesTab);
   }
 
   private final List<Integer> eventSearchTab =
-          Arrays.asList(forwardMainTab,
-                        forwardEventsTab,
+          Arrays.asList(forwardEventsTab,
                         forwardApprovalQTab,
                         forwardPendingQTab,
                         forwardSuggestionQTab,

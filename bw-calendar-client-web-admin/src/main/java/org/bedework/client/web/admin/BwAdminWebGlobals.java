@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 public class BwAdminWebGlobals extends BwRWWebGlobals {
   private boolean superUser;
 
-  private String currentTab = "main";
+  private String currentTab = "events";
 
   private boolean suggestionEnabled;
   private boolean workflowEnabled;

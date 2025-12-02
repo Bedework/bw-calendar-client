@@ -30,7 +30,7 @@ public class MainAction extends AdminActionBase {
   public int doAction(final BwRequest request,
                       final AdminClient cl) {
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();
-    globals.assignCurrentTab("main");
+    globals.assignCurrentTab("events");
 
     return forwardSuccess;
   }

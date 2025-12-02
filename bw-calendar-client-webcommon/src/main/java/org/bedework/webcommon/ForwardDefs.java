@@ -169,19 +169,22 @@ public interface ForwardDefs {
   public static final int forwardMainTab = 48;
 
   /** */
-  public static final int forwardApprovalQTab = 49;
+  public static final int forwardEventsTab = 49;
 
   /** */
-  public static final int forwardPendingQTab = 50;
+  public static final int forwardApprovalQTab = 50;
 
   /** */
-  public static final int forwardSuggestionQTab = 51;
+  public static final int forwardPendingQTab = 51;
 
   /** */
-  public static final int forwardSearchResultTab = 52;
+  public static final int forwardSuggestionQTab = 52;
 
   /** */
-  public static final int forwardUsersTab = 53;
+  public static final int forwardSearchResultTab = 53;
+
+  /** */
+  public static final int forwardUsersTab = 54;
 
   /** */
   public static final int forwardCalsuiteTab = 54;

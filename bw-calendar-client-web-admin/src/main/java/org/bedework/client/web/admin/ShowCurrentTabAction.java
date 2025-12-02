@@ -22,6 +22,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
           new HashMap<>();
   static {
     forwardsTab.put("main", forwardMainTab);
+    forwardsTab.put("events", forwardEventsTab);
     forwardsTab.put("approvalQueue", forwardApprovalQTab);
     forwardsTab.put("pending", forwardPendingQTab);
     forwardsTab.put("suggestionQueue", forwardSuggestionQTab);
@@ -33,6 +34,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
 
   private final List<Integer> eventSearchTab =
           Arrays.asList(forwardMainTab,
+                        forwardEventsTab,
                         forwardApprovalQTab,
                         forwardPendingQTab,
                         forwardSuggestionQTab,
@@ -53,10 +55,10 @@ public class ShowCurrentTabAction extends RenderMainAction {
       globals.assignCurrentTab("approvalQueue");
     }
 
-    if ("searchResult".equals(globals.getCurrentTab())) {
-      // Force to main
-      globals.assignCurrentTab("main");
-    }
+//    if ("searchResult".equals(globals.getCurrentTab())) {
+  //    // Force to main
+    //  globals.assignCurrentTab("main");
+    //}
 
     final var fwd = forwardsTab.get(globals.getCurrentTab());
     if (fwd == null) {

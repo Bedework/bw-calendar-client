@@ -23,6 +23,7 @@ import org.bedework.access.CurrentAccess;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
+import org.bedework.calfacade.svc.BwAdminGroup;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.convert.EventTimeZonesRegistry;
@@ -40,6 +41,8 @@ import java.io.Serializable;
  */
 public class EventFormatter extends EventTimeZonesRegistry
   implements Logged, TimeZoneRegistry, Serializable {
+  private final Client cl;
+
   /** The event
    */
   private EventInfo eventInfo;
@@ -64,8 +67,8 @@ public class EventFormatter extends EventTimeZonesRegistry
   public EventFormatter(final Client cl,
                         final IcalTranslator trans,
                         final EventInfo eventInfo) {
-    super(trans,
-          eventInfo.getEvent());
+    super(trans, eventInfo.getEvent());
+    this.cl = cl;
     this.eventInfo = eventInfo;
 
     try {
@@ -174,6 +177,21 @@ public class EventFormatter extends EventTimeZonesRegistry
   @SuppressWarnings("unused")
   public String getXmlAccess() {
     return xmlAccess;
+  }
+
+  public BwAdminGroup getAdminGroup() {
+    final var creator = getEvent().getCreatorHref();
+    if (creator == null) {
+      return null;
+    }
+    for (final var group: cl.getAdminGroups()) {
+      if (group instanceof final BwAdminGroup adg) {
+        if (creator.equals(adg.getOwnerHref())) {
+          return adg;
+        }
+      }
+    }
+    return null;
   }
 
   /* ========================================================

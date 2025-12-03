@@ -26,6 +26,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
     forwardsTab.put("pending", forwardPendingQTab);
     forwardsTab.put("suggestionQueue", forwardSuggestionQTab);
     forwardsTab.put("searchResult", forwardSearchResultTab);
+    forwardsTab.put("homePage", forwardHomePage);
     forwardsTab.put("users", forwardUsersTab);
     forwardsTab.put("calsuite", forwardCalsuiteTab);
     forwardsTab.put("system", forwardSystemTab);

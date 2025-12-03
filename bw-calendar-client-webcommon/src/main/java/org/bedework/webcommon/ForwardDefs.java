@@ -199,7 +199,10 @@ public interface ForwardDefs {
   public static final int forwardCategoriesTab = 58;
 
   /** */
-  public static final int forwardLoggedOut = 59;
+  public static final int forwardHomePage = 59;
+
+  /** */
+  public static final int forwardLoggedOut = 60;
 
   /** */
   public static final String[] forwards = {

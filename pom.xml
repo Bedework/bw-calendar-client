@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.bedework</groupId>
     <artifactId>bedework-parent</artifactId>
-    <version>249</version>
+    <version>251-SNAPSHOT</version>
   </parent>
 
   <groupId>org.bedework.bwwebcl</groupId>

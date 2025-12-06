@@ -178,31 +178,28 @@ public interface ForwardDefs {
   public static final int forwardSuggestionQTab = 51;
 
   /** */
-  public static final int forwardSearchResultTab = 52;
+  public static final int forwardUsersTab = 52;
 
   /** */
-  public static final int forwardUsersTab = 53;
+  public static final int forwardCalsuiteTab = 53;
 
   /** */
-  public static final int forwardCalsuiteTab = 54;
+  public static final int forwardSystemTab = 54;
 
   /** */
-  public static final int forwardSystemTab = 55;
+  public static final int forwardContactsTab = 55;
 
   /** */
-  public static final int forwardContactsTab = 56;
+  public static final int forwardLocationsTab = 56;
 
   /** */
-  public static final int forwardLocationsTab = 57;
+  public static final int forwardCategoriesTab = 57;
 
   /** */
-  public static final int forwardCategoriesTab = 58;
+  public static final int forwardHomePage = 58;
 
   /** */
-  public static final int forwardHomePage = 59;
-
-  /** */
-  public static final int forwardLoggedOut = 60;
+  public static final int forwardLoggedOut = 59;
 
   /** */
   public static final String[] forwards = {
@@ -260,13 +257,13 @@ public interface ForwardDefs {
     "approvalQueue",
     "pending",
     "suggestionQueue",
-    "searchResult",
     "users",
     "calsuite",
     "system",
     "contacts",
     "locations",
     "categories",
+    "homePage",
 
     "loggedOut"
   };

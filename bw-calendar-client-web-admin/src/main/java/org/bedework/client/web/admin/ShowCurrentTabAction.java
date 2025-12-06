@@ -25,7 +25,6 @@ public class ShowCurrentTabAction extends RenderMainAction {
     forwardsTab.put("approvalQueue", forwardApprovalQTab);
     forwardsTab.put("pending", forwardPendingQTab);
     forwardsTab.put("suggestionQueue", forwardSuggestionQTab);
-    forwardsTab.put("searchResult", forwardSearchResultTab);
     forwardsTab.put("homePage", forwardHomePage);
     forwardsTab.put("users", forwardUsersTab);
     forwardsTab.put("calsuite", forwardCalsuiteTab);
@@ -35,12 +34,11 @@ public class ShowCurrentTabAction extends RenderMainAction {
     forwardsTab.put("categories", forwardCategoriesTab);
   }
 
-  private final List<Integer> eventSearchTab =
+  private final List<Integer> eventSearches =
           Arrays.asList(forwardEventsTab,
                         forwardApprovalQTab,
                         forwardPendingQTab,
-                        forwardSuggestionQTab,
-                        forwardSearchResultTab);
+                        forwardSuggestionQTab);
 
   @Override
   public int doAction(final BwRequest request) {
@@ -57,25 +55,16 @@ public class ShowCurrentTabAction extends RenderMainAction {
       globals.assignCurrentTab("approvalQueue");
     }
 
-//    if ("searchResult".equals(globals.getCurrentTab())) {
-  //    // Force to main
-    //  globals.assignCurrentTab("main");
-    //}
-
     final var fwd = forwardsTab.get(globals.getCurrentTab());
     if (fwd == null) {
       throw new BedeworkException("No forward - tab not defined: " +
                                           globals.getCurrentTab());
     }
 
-    if (eventSearchTab.contains(fwd)) {
+    if (eventSearches.contains(fwd)) {
       final var sfwd = super.doAction(request);
       if (sfwd != forwardSuccess) {
         return sfwd;
-      }
-
-      if (fwd == forwardSearchResultTab) {
-        globals.setSearchDone(true);
       }
 
       request.setRequestAttr(BwRequest.bwSearchListName,

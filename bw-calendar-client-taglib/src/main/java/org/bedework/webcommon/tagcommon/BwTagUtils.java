@@ -11,10 +11,10 @@ import org.bedework.util.misc.Util;
 import org.bedework.util.webaction.ErrorEmitSvlt;
 import org.bedework.webcommon.BwModuleState;
 
+import jakarta.servlet.jsp.JspWriter;
+
 import java.io.IOException;
 import java.util.Collection;
-
-import jakarta.servlet.jsp.JspWriter;
 
 /**
  * User: mike Date: 4/2/22 Time: 11:52
@@ -42,7 +42,7 @@ public class BwTagUtils extends BwTagUtilCommon {
     final var fmtdate = date.getFormatted();
 
     outTagged(out, curIndent, "year", fmtdate.getYear());
-    outTagged(out, curIndent, "year", fmtdate.getFourDigitYear());
+    outTagged(out, curIndent, "year4", fmtdate.getFourDigitYear());
     outTagged(out, curIndent, "month", fmtdate.getMonth());
     outTagged(out, curIndent, "twodigitmonth", fmtdate.getTwoDigitMonth());
     outTagged(out, curIndent, "monthname", fmtdate.getMonthName());

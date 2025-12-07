@@ -67,6 +67,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
         return sfwd;
       }
 
+      request.embedAdminGroups();
       request.setRequestAttr(BwRequest.bwSearchListName,
                              cl.getSearchResult(BwIndexer.Position.current));
     }

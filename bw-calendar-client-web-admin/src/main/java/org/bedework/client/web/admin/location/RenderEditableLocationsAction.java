@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
 */
-package org.bedework.client.web.admin.contact;
+package org.bedework.client.web.admin.location;
 
 import org.bedework.client.web.admin.ShowTabAction;
 import org.bedework.webcommon.BwRequest;
@@ -26,11 +26,11 @@ import org.bedework.webcommon.BwSession;
  *
  * @author Mike Douglass  douglm - rpi.edu
  */
-public class RenderEditableContactsAction extends ShowTabAction {
+public class RenderEditableLocationsAction extends ShowTabAction {
   @Override
   public int doAction(final BwRequest request) {
-    request.getSess().embedContactCollection(request,
-                                             BwSession.editableEntity);
+    request.getSess().embedLocations(request,
+                                     BwSession.editableEntity);
 
     return forwardSuccess;
   }

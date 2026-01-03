@@ -21,6 +21,7 @@ public class ShowCurrentTabAction extends RenderMainAction {
   private final static Map<String, Integer> forwardsTab =
           new HashMap<>();
   static {
+    forwardsTab.put("addEvent", forwardAddEventTab);
     forwardsTab.put("events", forwardEventsTab);
     forwardsTab.put("approvalQueue", forwardApprovalQTab);
     forwardsTab.put("pending", forwardPendingQTab);
@@ -35,7 +36,8 @@ public class ShowCurrentTabAction extends RenderMainAction {
   }
 
   private final List<Integer> eventSearches =
-          Arrays.asList(forwardEventsTab,
+          Arrays.asList(forwardAddEventTab,
+                        forwardEventsTab,
                         forwardApprovalQTab,
                         forwardPendingQTab,
                         forwardSuggestionQTab);

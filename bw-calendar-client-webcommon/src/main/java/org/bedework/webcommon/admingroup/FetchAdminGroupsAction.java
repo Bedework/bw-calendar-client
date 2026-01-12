@@ -34,7 +34,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchAdminGroupsAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     request.setNocache(false);
 
     if (!request.contentChanged()) {

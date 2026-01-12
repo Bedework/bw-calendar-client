@@ -60,8 +60,8 @@ import static org.bedework.webcommon.DateViewUtil.gotoDateView;
  */
 public class FreeBusyAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     String uri = null;
     final BwModuleState mstate = request.getModule().getState();
 

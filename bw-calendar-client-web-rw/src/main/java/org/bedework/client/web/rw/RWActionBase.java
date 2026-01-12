@@ -9,18 +9,20 @@ import org.bedework.client.rw.RWClient;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.File;
 
 /**
  * User: mike Date: 3/9/21 Time: 22:37
  */
-public abstract class RWActionBase extends BwAbstractAction {
+public abstract class RWActionBase
+        extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
-    final RWClient cl = (RWClient)request.getClient();
+  public String doAction(final BwRequest request) {
+    final var cl = (RWClient)request.getClient();
 
     /* Check access
      */
@@ -47,11 +49,10 @@ public abstract class RWActionBase extends BwAbstractAction {
   /** This is the routine which does the work.
    *
    * @param request   For request pars and BwSession
-   * @param form       Admin action form
-   * @return int      forward index
+   * @return forward
    */
-  public abstract int doAction(BwRequest request,
-                               RWClient cl);
+  public abstract String doAction(BwRequest request,
+                                  RWClient cl);
 
   public BwRWActionForm getRwForm() {
     return (BwRWActionForm)form;

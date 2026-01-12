@@ -21,7 +21,6 @@ package org.bedework.client.web.rw.sharing;
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.svc.SubscribeResult;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -52,8 +51,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class SubscribeAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final String colName = request.getReqPar("colName");
     if (colName == null) {
       request.error(ClientError.badRequest, "Missing colName");

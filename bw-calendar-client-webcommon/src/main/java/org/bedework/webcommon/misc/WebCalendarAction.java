@@ -35,12 +35,12 @@ import org.bedework.webcommon.BwRequest;
 
 import org.apache.commons.text.StringEscapeUtils;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
@@ -69,16 +69,16 @@ import static org.bedework.webcommon.DateViewUtil.gotoDateView;
  */
 public class WebCalendarAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
-    final Client cl = request.getClient();
-    final BwModuleState mstate = request.getModule().getState();
+  public String doAction(final BwRequest request) {
+    final var cl = request.getClient();
+    final var mstate = request.getModule().getState();
 
     gotoDateView(request, mstate.getDate(), mstate.getViewType());
 
-    final Locale loc = BwLocale.getLocale();
-    final Calendar start = Calendar.getInstance(loc);
-    final Calendar end = Calendar.getInstance(loc);
-    String name = request.getReqPar("name");
+    final var loc = BwLocale.getLocale();
+    final var start = Calendar.getInstance(loc);
+    final var end = Calendar.getInstance(loc);
+    var name = request.getReqPar("name");
 
     if (name == null) {
       name = start.toString();

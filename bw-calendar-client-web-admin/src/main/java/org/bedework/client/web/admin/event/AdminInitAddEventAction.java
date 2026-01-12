@@ -18,7 +18,7 @@ public class AdminInitAddEventAction extends InitAddEventAction {
   private String currentTab;
 
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final var fwd = super.doAction(request);
     final var sess = request.getSess();
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();

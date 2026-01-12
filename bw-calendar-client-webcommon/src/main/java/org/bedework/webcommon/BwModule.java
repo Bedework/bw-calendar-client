@@ -345,15 +345,15 @@ public class BwModule implements Logged, Serializable {
   /** Called just before action.
    *
    * @param request wrapper
-   * @return int foward index
+   * @return foward
    */
-  protected int actionSetup(final BwRequest request) {
+  protected String actionSetup(final BwRequest request) {
     // Not public admin.
 
-    final ConfigCommon conf = request.getConfig();
+    final var conf = request.getConfig();
 
-    String refreshAction = request.getRefreshAction();
-    Integer refreshInt = request.getRefreshInt();
+    var refreshAction = request.getRefreshAction();
+    var refreshInt = request.getRefreshInt();
 
     if (refreshAction == null) {
       refreshAction = conf.getRefreshAction();

@@ -41,12 +41,12 @@ import org.bedework.webcommon.BwRequest;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.DateTime;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.TreeSet;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 
@@ -70,7 +70,7 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class ExportAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final String calPath = request.getReqPar("calPath");
     final Client cl = request.getClient();
 

@@ -84,6 +84,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static org.bedework.base.response.Response.Status.ok;
+import static org.bedework.calsvci.EventsI.SetEntityCategoriesResult.success;
 import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
 import static org.bedework.client.web.rw.EventCommon.initMeeting;
 import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
@@ -121,8 +122,8 @@ import static org.bedework.client.web.rw.EventCommon.validateEventDates;
  */
 public class UpdateEventAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     if (form.getEventInfo() == null) {
       // Session timed out and lost state?
@@ -133,9 +134,9 @@ public class UpdateEventAction extends RWActionBase {
                     new UpdatePars(request, cl));
   }
 
-  public int doUpdate(final BwRequest request,
-                      final RWClient cl,
-                      final UpdatePars pars) {
+  public String doUpdate(final BwRequest request,
+                         final RWClient cl,
+                         final UpdatePars pars) {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
       cl.rollback();
@@ -166,9 +167,9 @@ public class UpdateEventAction extends RWActionBase {
     /* ------------------- Change attendee list ------------------- */
 
     if (request.present("editEventAttendees")) {
-      final int res = initMeeting(request, true);
+      final var res = initMeeting(request, true);
 
-      if (res != forwardSuccess) {
+      if (!forwardSuccess.equals(res)) {
         return res;
       }
 
@@ -178,9 +179,9 @@ public class UpdateEventAction extends RWActionBase {
     /* ----------------- Turn event into meeting ------------------ */
 
     if (request.present("makeEventIntoMeeting")) {
-      final int res = initMeeting(request, true);
+      final var res = initMeeting(request, true);
 
-      if (res != forwardSuccess) {
+      if (!forwardSuccess.equals(res)) {
         return res;
       }
 
@@ -280,8 +281,8 @@ public class UpdateEventAction extends RWActionBase {
 
     /* ----------------------- X-properties ------------------------------ */
 
-    int res = processXprops(pars, extras);
-    if (res == forwardValidationError) {
+    var res = processXprops(pars, extras);
+    if (forwardValidationError.equals(res)) {
       cl.rollback();
       validationError = true;
     }
@@ -289,7 +290,7 @@ public class UpdateEventAction extends RWActionBase {
     /* -------------------------- Dates ------------------------------ */
 
     res = form.getEventDates().updateEvent(ei);
-    if (res == forwardValidationError) {
+    if (forwardValidationError.equals(res)) {
       cl.rollback();
       validationError = true;
     }
@@ -325,13 +326,13 @@ public class UpdateEventAction extends RWActionBase {
 
     /* -------------------------- Categories ------------------------------ */
 
-    final EventsI.SetEntityCategoriesResult secr =
+    final var secr =
             setEntityCategories(request,
                                 cats,
                                 ev, pars.changes);
-    if (secr.rcode != forwardSuccess) {
+    if (secr.rcode != success) {
       cl.rollback();
-      return secr.rcode;
+      return forwardError;
     }
 
     /* ------------------------- Link ---------------------------- */
@@ -531,7 +532,7 @@ public class UpdateEventAction extends RWActionBase {
     /* --------------------- Add or update the event ------------------------ */
 
     final var fwd = update(pars);
-    if (fwd != forwardSuccess) {
+    if (!forwardSuccess.equals(fwd)) {
       return fwd;
     }
 
@@ -607,9 +608,9 @@ public class UpdateEventAction extends RWActionBase {
     return true;
   }
 
-  protected int update(final UpdatePars pars) {
+  protected String update(final UpdatePars pars) {
     final var fwd = doUpdate(pars);
-    if (fwd != forwardSuccess) {
+    if (!forwardSuccess.equals(fwd)) {
       return fwd;
     }
 
@@ -618,7 +619,7 @@ public class UpdateEventAction extends RWActionBase {
     return forwardSuccess;
   }
 
-  protected int doUpdate(final UpdatePars pars) {
+  protected String doUpdate(final UpdatePars pars) {
     if (debug()) {
       debug(pars.changes.toString());
     }
@@ -781,11 +782,11 @@ public class UpdateEventAction extends RWActionBase {
   /* return forwardNoAction for no change
    * forward success for change otherwise error.
    */
-  protected int processXprops(final UpdatePars pars,
-                              final List<BwXproperty> extras)  {
-    final ChangeTableEntry cte =
+  protected String processXprops(final UpdatePars pars,
+                                 final List<BwXproperty> extras)  {
+    final var cte =
             pars.changes.getEntry(PropertyInfoIndex.XPROP);
-    final List<String> unparsedxps =
+    final var unparsedxps =
             pars.request.getReqPars("xproperty");
 
     final List<BwXproperty> added;

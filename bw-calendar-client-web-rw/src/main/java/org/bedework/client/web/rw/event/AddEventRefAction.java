@@ -52,14 +52,14 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class AddEventRefAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final int fwd = addEventRef(request, cl);
-    if (fwd != forwardSuccess) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var fwd = addEventRef(request, cl);
+    if (!forwardSuccess.equals(fwd)) {
       return fwd;
     }
 
-    final String start = getRwForm().getEvent().getDtstart().getDate().substring(0, 8);
+    final var start = getRwForm().getEvent().getDtstart().getDate().substring(0, 8);
     gotoDateView(request, start,
                  BedeworkDefs.vtDay);
 
@@ -74,8 +74,8 @@ public class AddEventRefAction extends RWActionBase {
    * @param request bedework request object
    * @return int forward index sucess for OK or an error index.
    */
-  private int addEventRef(final BwRequest request,
-                          final RWClient cl) {
+  private String addEventRef(final BwRequest request,
+                             final RWClient cl) {
 //    EventInfo ei = findEvent(request, Rmode.masterOnly);
 
     final var form = request.getBwForm();

@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.bedework.calsvci.EventsI.SetEntityCategoriesResult.success;
 import static org.bedework.client.web.rw.EventProps.validateContact;
 import static org.bedework.client.web.rw.EventProps.validateLocation;
 import static org.bedework.util.misc.Util.checkNull;
@@ -265,13 +266,13 @@ public class EventCommon {
    *
    * @param request bw request
    * @param freebusy - true to do the freebusy thing.
-   * @return int
+   * @return forward
    */
-  public static int initMeeting(final BwRequest request,
-                                final boolean freebusy) {
+  public static String initMeeting(final BwRequest request,
+                                   final boolean freebusy) {
     final var cl = (RWClient)request.getClient();
     final var form = (BwRWActionForm)request.getBwForm();
-    final BwEvent ev = form.getEvent();
+    final var ev = form.getEvent();
 
     if (ev.getScheduleMethod() == ScheduleMethods.methodTypeNone) {
       ev.setScheduleMethod(ScheduleMethods.methodTypeRequest);
@@ -306,19 +307,20 @@ public class EventCommon {
       // Add ourselves as an attendee
       final String uri = cl.getCurrentCalendarAddress();
 
-      final int res = doAttendee(request,
-                                 false, false, true, true,
-                                 true, // Initializing
-                                 IcalDefs.partstats[IcalDefs.partstatAccepted],
-                                 Role.CHAIR.getValue(),
-                                 uri,
-                                 null, // cn
-                                 null, // lang
-                                 null, // cutype
-                                 null  // dir
+      final var res = doAttendee(request,
+                                    false, false,
+                                    true, true,
+                                    true, // Initializing
+                                    IcalDefs.partstats[IcalDefs.partstatAccepted],
+                                    Role.CHAIR.getValue(),
+                                    uri,
+                                    null, // cn
+                                    null, // lang
+                                    null, // cutype
+                                    null  // dir
       );
 
-      if (res != forwardSuccess) {
+      if (!forwardSuccess.equals(res)) {
         return res;
       }
     }
@@ -338,14 +340,14 @@ public class EventCommon {
    * @param et end time
    * @param intunitStr interval unit as string
    * @param interval value
-   * @return int
+   * @return forward
    */
-  public static int doFreeBusy(final BwRequest request,
-                               final Attendees atts,
-                               final String st,
-                               final String et,
-                               final String intunitStr,
-                               final int interval) {
+  public static String doFreeBusy(final BwRequest request,
+                                  final Attendees atts,
+                                  final String st,
+                                  final String et,
+                                  final String intunitStr,
+                                  final int interval) {
     final var cl = (RWClient)request.getClient();
     final var mstate = request.getModule().getState();
 
@@ -718,21 +720,21 @@ public class EventCommon {
    * @param lang parameter
    * @param cutype cu type parameter
    * @param dir directory
-   * @return int
+   * @return forward
    */
-  public static int doAttendee(final BwRequest request,
-                               final boolean delete,
-                               final boolean update,
-                               final boolean recipient,
-                               final boolean attendee,
-                               final boolean initializing,
-                               final String partstat,
-                               final String role,
-                               final String uri,
-                               final String cn,
-                               final String lang,
-                               final String cutype,
-                               final String dir) {
+  public static String doAttendee(final BwRequest request,
+                                  final boolean delete,
+                                  final boolean update,
+                                  final boolean recipient,
+                                  final boolean attendee,
+                                  final boolean initializing,
+                                  final String partstat,
+                                  final String role,
+                                  final String uri,
+                                  final String cn,
+                                  final String lang,
+                                  final String cutype,
+                                  final String dir) {
     final var cl = (RWClient)request.getClient();
     final var form = (BwRWActionForm)request.getBwForm();
 
@@ -1214,7 +1216,7 @@ public class EventCommon {
         secr.numRemoved = evcats.size();
         evcats.clear();
       }
-      secr.rcode = forwardSuccess;
+      secr.rcode = success;
       return secr;
     }
 
@@ -1359,7 +1361,7 @@ public class EventCommon {
       cte.setAddedValues(cats);
     }
 
-    secr.rcode = forwardSuccess;
+    secr.rcode = success;
 
     if (secr.numCreated > 0) {
       request.message(ClientMessage.addedCategories, secr.numCreated);

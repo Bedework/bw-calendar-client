@@ -67,8 +67,8 @@ import java.util.TreeSet;
  */
 public class RequestFreeBusy extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     try {
       final Collection<String> attendees = request.getReqPars("attendeeUri");
       final Set<String> attendeeUris = new TreeSet<>();

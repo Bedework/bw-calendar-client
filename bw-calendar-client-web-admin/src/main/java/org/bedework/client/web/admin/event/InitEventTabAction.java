@@ -16,7 +16,7 @@ public class InitEventTabAction extends SearchParamsAction {
   private String currentTab;
 
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();
     globals.assignCurrentTab(currentTab);
     request.embedAdminGroups();

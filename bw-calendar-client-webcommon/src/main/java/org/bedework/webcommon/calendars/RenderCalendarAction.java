@@ -35,7 +35,7 @@ import org.bedework.webcommon.BwSession;
  */
 public class RenderCalendarAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     /* User requested a calendar from the list. Retrieve it, embed it in
      * the form so we can display the page
      */

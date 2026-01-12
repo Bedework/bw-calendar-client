@@ -24,7 +24,6 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -46,8 +45,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class DeleteViewAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     /* Check access
      */
     if (request.isGuest()) {

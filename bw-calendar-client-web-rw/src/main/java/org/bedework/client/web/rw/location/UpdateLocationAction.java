@@ -24,7 +24,6 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.EventProps.ValidateResult;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
@@ -43,9 +42,9 @@ import static org.bedework.client.web.rw.EventProps.validateLocation;
  */
 public class UpdateLocationAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
+  public String doAction(final BwRequest request,
                       final RWClient cl) {
-    if (request.getReqPar("delete") != null) {
+    if (request.present("delete")) {
       return forwardDelete;
     }
 

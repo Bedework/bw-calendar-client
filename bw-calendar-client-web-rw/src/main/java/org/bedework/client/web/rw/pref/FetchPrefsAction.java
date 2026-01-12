@@ -21,7 +21,6 @@ package org.bedework.client.web.rw.pref;
 
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
@@ -43,8 +42,8 @@ import org.bedework.webcommon.BwSession;
  */
 public class FetchPrefsAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final BwSession sess = request.getSess();
 
     sess.embedCategories(request, false,

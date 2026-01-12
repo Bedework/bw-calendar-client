@@ -20,7 +20,6 @@ package org.bedework.client.web.admin.authuser;
 
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** Store auth users in session
@@ -30,8 +29,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class AuthUserListRenderAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     request.setSessionAttr(BwRequest.bwAuthUsersListName,
                            cl.getAllAuthUsers());
 

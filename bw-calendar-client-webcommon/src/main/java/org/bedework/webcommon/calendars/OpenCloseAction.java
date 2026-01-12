@@ -42,7 +42,7 @@ import java.util.Set;
  */
 public class OpenCloseAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final var cl = request.getClient();
     if (cl.isGuest()) {
       return forwardNoAccess; // First line of defense

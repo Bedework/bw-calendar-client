@@ -28,7 +28,7 @@ import org.bedework.webcommon.BwSession;
  */
 public class RenderEditableContactsAction extends ShowTabAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     request.getSess().embedContactCollection(request,
                                              BwSession.editableEntity);
 

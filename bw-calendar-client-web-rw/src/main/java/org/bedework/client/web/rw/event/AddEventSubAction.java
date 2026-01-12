@@ -49,10 +49,10 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class AddEventSubAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final int fwd = addEventSub(request, cl);
-    if (fwd != forwardSuccess) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var fwd = addEventSub(request, cl);
+    if (!forwardSuccess.equals(fwd)) {
       return fwd;
     }
 
@@ -68,11 +68,11 @@ public class AddEventSubAction extends RWActionBase {
   /* Add an event subscription. The collection to add it to is defined by the request
    * parameter newColPath.
    *
-   * returns int forward index sucess for OK or an error index.
+   * returns forward success for OK or an error.
    */
-  private int addEventSub(final BwRequest request,
-                          final RWClient cl) {
-    final EventKey ekey = getRwForm().getEventKey();
+  private String addEventSub(final BwRequest request,
+                             final RWClient cl) {
+    final var ekey = getRwForm().getEventKey();
 
     if (ekey == null) {
       return forwardNoAction;

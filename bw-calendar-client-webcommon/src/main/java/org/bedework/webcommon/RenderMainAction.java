@@ -31,13 +31,13 @@ import static org.bedework.webcommon.search.SearchUtil.setSearchParams;
  */
 public class RenderMainAction extends RenderAction {
   @Override
-  public int doAction(final BwRequest request) {
-    final BwModuleState mstate = request.getModule().getState();
-    final Client cl = request.getClient();
-    final TimeView tv = mstate.getCurTimeView();
-    boolean fetch = mstate.getRefresh();
+  public String doAction(final BwRequest request) {
+    final var mstate = request.getModule().getState();
+    final var cl = request.getClient();
+    final var tv = mstate.getCurTimeView();
+    var fetch = mstate.getRefresh();
 
-    SearchParams params = cl.getSearchParams();
+    var params = cl.getSearchParams();
 
     if (params == null) {
       /* Set up the search parameters */
@@ -49,11 +49,11 @@ public class RenderMainAction extends RenderAction {
         params.setToDate(tv.getViewEnd());
       }
 
-      final int forward =
+      final var forward =
               setSearchParams(request, params,
                               Client.gridViewMode.equals(cl.getViewMode()));
 
-      if (forward != forwardSuccess) {
+      if (!forwardSuccess.equals(forward)) {
         return forward;
       }
 

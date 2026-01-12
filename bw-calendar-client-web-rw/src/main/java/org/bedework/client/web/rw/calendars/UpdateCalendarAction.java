@@ -37,6 +37,7 @@ import org.bedework.util.xml.tagdefs.WebdavTags;
 import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 
+import static org.bedework.calsvci.EventsI.SetEntityCategoriesResult.success;
 import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
 
 /** This action updates a calendar.
@@ -66,16 +67,14 @@ import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
  */
 public class UpdateCalendarAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access
       return forwardNoAccess;
     }
 
-    final String reqpar = request.getReqPar("delete");
-
-    if (reqpar != null) {
+    if (request.present("delete")) {
       return forwardDelete;
     }
 
@@ -172,8 +171,8 @@ public class UpdateCalendarAction extends RWActionBase {
     final EventsI.SetEntityCategoriesResult secr =
             setEntityCategories(request, null,
                                 cal, null);
-    if (secr.rcode != forwardSuccess) {
-      return secr.rcode;
+    if (secr.rcode != success) {
+      return forwardError;
     }
 
     typeAndAlias(request, add);

@@ -57,13 +57,13 @@ public class MonitorAction extends BwAbstractAction {
   public static QName valueTag = new QName("value");
 
   @Override
-  public int doAction(final BwRequest request) {
-    final List<MonitorStat> stats = getMonitor().getStats();
+  public String doAction(final BwRequest request) {
+    final var stats = getMonitor().getStats();
 
     request.getResponse().setContentType("text/xml; charset=UTF-8");
 
-    try (final Writer wtr = request.getWriter()) {
-      final XmlEmit xml = new XmlEmit();
+    try (final var wtr = request.getWriter()) {
+      final var xml = new XmlEmit();
 
       xml.startEmit(wtr);
 

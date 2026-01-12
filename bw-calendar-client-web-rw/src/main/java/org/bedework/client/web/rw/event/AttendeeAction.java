@@ -60,13 +60,13 @@ import static org.bedework.webcommon.DateViewUtil.gotoDateView;
  */
 public class AttendeeAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final BwModuleState mstate = request.getModule().getState();
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var mstate = request.getModule().getState();
 
-    final boolean listResponseOnly =
+    final var listResponseOnly =
             "yes".equals(request.getReqPar("list"));
-    final boolean noFb = "no".equals(request.getReqPar("getfb"));
+    final var noFb = "no".equals(request.getReqPar("getfb"));
 
     if (!listResponseOnly && !noFb) {
       /* Select appropriate view for freebusy display */
@@ -75,14 +75,13 @@ public class AttendeeAction extends RWActionBase {
 
     /* If we were sent a bunch of json use that */
 
-    int res = forwardSuccess;
+    var res = forwardSuccess;
 
-    final Collection<String> attjson =
-            request.getReqPars("attjson");
+    final var attjson = request.getReqPars("attjson");
     if (attjson != null) {
       final ObjectMapper mapper = new ObjectMapper();
 
-      for (final String s: attjson) {
+      for (final var s: attjson) {
         if (debug()) {
           debug("json=" + s);
         }
@@ -108,7 +107,7 @@ public class AttendeeAction extends RWActionBase {
                            att.getCutype(),
                            null);             // dir
 
-          if (res != forwardSuccess) {
+          if (!forwardSuccess.equals(res)) {
             return res;
           }
         } catch (final Throwable t) {
@@ -137,7 +136,7 @@ public class AttendeeAction extends RWActionBase {
       }
     }
 
-    if ((res != forwardSuccess) || noFb) {
+    if (!forwardSuccess.equals(res) || noFb) {
       return res;
     }
 

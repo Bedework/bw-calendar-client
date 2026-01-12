@@ -49,12 +49,12 @@ import java.util.List;
  */
 public class MoveCalendarAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final boolean contents = request.present("contents");
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var contents = request.present("contents");
 
-    final BwCollection cal = request.getCalendar(true);
-    final BwCollection newCal = request.getNewCal(true);
+    final var cal = request.getCalendar(true);
+    final var newCal = request.getNewCal(true);
 
     if (cal == null) {
       return forwardNotFound;
@@ -82,19 +82,20 @@ public class MoveCalendarAction extends RWActionBase {
     return forwardContinue;
   }
 
-  private int moveCollection(final RWClient cl,
-                             final BwCollection cal,
-                             final BwCollection newCal,
-                             final BwRequest request) {
+  private String moveCollection(final RWClient cl,
+                                final BwCollection cal,
+                                final BwCollection newCal,
+                                final BwRequest request) {
     /* Check for references in views. For user extra simple mode only we will
-     * automatically remove the subscription. For others we list the references
+     * automatically remove the subscription. For others,
+     * we list the references
      */
 
     boolean reffed = false;
-    final boolean autoRemove = !cl.getPublicAdmin() &&
+    final var autoRemove = !cl.getPublicAdmin() &&
       (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
 
-    for (final BwView v:  cl.getAllViews()) {
+    for (final var v:  cl.getAllViews()) {
       final List<String> paths = v.getCollectionPaths();
 
       if ((paths != null) && paths.contains(cal.getPath())) {

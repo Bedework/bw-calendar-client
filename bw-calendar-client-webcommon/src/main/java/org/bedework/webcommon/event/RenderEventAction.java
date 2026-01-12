@@ -46,7 +46,7 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class RenderEventAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     /*
     if (request.isNewSession()) {
       request.refresh();

@@ -47,10 +47,10 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class RemoveAllAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var globals = (BwRWWebGlobals)request.getGlobals();
-    final HttpServletResponse response = request.getResponse();
+    final var response = request.getResponse();
 
     int status;
     final String principalHref;

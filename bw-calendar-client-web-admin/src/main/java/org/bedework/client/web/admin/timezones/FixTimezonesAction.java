@@ -21,7 +21,6 @@ package org.bedework.client.web.admin.timezones;
 import org.bedework.calfacade.base.UpdateFromTimeZonesInfo;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fixes the system after uploading system timezone definitions.
@@ -36,8 +35,8 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm@rpi.edu
  */
 public class FixTimezonesAction extends AdminActionBase {
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     final boolean checkOnly = request.present("check") ;
 
     final UpdateFromTimeZonesInfo info = null;

@@ -22,7 +22,6 @@ import org.bedework.caldav.util.sharing.AccessType;
 import org.bedework.caldav.util.sharing.RemoveType;
 import org.bedework.caldav.util.sharing.SetType;
 import org.bedework.caldav.util.sharing.ShareType;
-import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
@@ -67,29 +66,29 @@ import org.bedework.webcommon.BwRequest;
  */
 public class ShareCollectionAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final BwCollection col = request.getCollection(false);
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;
     }
 
-    final String cua = request.getCua();
+    final var cua = request.getCua();
     if (cua == null) {
       request.error(ValidationError.missingRecipients);
       return forwardRetry;
     }
 
-    final String calAddr = cl.uriToCaladdr(cua);
+    final var calAddr = cl.uriToCaladdr(cua);
     if (calAddr == null) {
       request.error(ValidationError.invalidUser, cua);
       return forwardRetry;
     }
 
-    final ShareType share = new ShareType();
+    final var share = new ShareType();
 
     if (request.present("remove")) {
-      final RemoveType rem = new RemoveType();
+      final var rem = new RemoveType();
 
       rem.setHref(calAddr);
 

@@ -41,8 +41,8 @@ import org.bedework.webcommon.BwSession;
  */
 public class InitAddCalendarAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     final BwSession sess = request.getSess();
     final BwCollection cal = request.getCalendar(true);

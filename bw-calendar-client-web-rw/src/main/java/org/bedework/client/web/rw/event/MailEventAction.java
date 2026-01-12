@@ -46,8 +46,8 @@ import net.fortuna.ical4j.model.Calendar;
  */
 public class MailEventAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var globals = (BwRWWebGlobals)request.getBwGlobals();
     final var form = getRwForm();
     final var ei = form.getEventInfo();

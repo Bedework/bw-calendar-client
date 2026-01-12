@@ -23,7 +23,6 @@ import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.wrappers.BwCalSuiteWrapper;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** Fetch a calendar suite for update/display/delete. Name is in form
@@ -41,8 +40,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class RenderCalSuiteAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     final String name = getAdminForm().getEditCalSuiteName();
 
     if (name == null) {

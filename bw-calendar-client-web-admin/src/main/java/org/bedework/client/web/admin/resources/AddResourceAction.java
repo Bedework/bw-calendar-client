@@ -26,7 +26,6 @@ import org.bedework.calfacade.BwResourceContent;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** Add a new resource for a calendar suite.
@@ -51,8 +50,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class AddResourceAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     final var globals = request.getBwGlobals();
     final var form = getAdminForm();
     String rclass = request.getReqPar("class");

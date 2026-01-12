@@ -43,8 +43,8 @@ import java.util.List;
  */
 public class DeleteCalendarAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final String calPath = getRwForm().getCalendarPath();
     final BwCollection cal = cl.getCollection(calPath);
     if (cal == null) {

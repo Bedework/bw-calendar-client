@@ -23,7 +23,6 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.rw.RWClient.DeleteReffedEntityResult;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -40,8 +39,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class DeleteLocationAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     final String uid = form.getLocationUid();
 

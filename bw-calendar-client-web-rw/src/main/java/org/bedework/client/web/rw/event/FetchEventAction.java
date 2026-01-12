@@ -60,8 +60,8 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class FetchEventAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     if (cl.getPublicAdmin()) {
       // Handled by override
       return forwardNoAccess;
@@ -70,8 +70,8 @@ public class FetchEventAction extends RWActionBase {
     return doTheAction(request, cl);
   }
 
-  protected int doTheAction(final BwRequest request,
-                            final RWClient cl) {
+  protected String doTheAction(final BwRequest request,
+                               final RWClient cl) {
     final var form = getRwForm();
     form.assignAddingEvent(false);
 
@@ -89,14 +89,14 @@ public class FetchEventAction extends RWActionBase {
       return forwardNotFound;
     }
 
-    final int fwd = refreshEvent(request, einf);
+    final var fwd = refreshEvent(request, einf);
     form.setAttendees(new Attendees());
     form.setFbResponses(null);
     form.setFormattedFreeBusy(null);
 
     request.initialiseSess();
 
-    if (fwd == forwardContinue) {
+    if (forwardContinue.equals(fwd)) {
       if (request.hasCopy()) {
         copyEvent(request, einf.getEvent());
 
@@ -113,14 +113,13 @@ public class FetchEventAction extends RWActionBase {
    *
    * @param request bw request object
    * @param ei      event info
-   * @return int forward.
+   * @return forward.
    */
-  private int refreshEvent(final BwRequest request,
-                           final EventInfo ei) {
-    final BwRWActionForm form = (BwRWActionForm)request.getBwForm();
-
-    final Client cl = request.getClient();
-    final BwEvent ev = ei.getEvent();
+  private String refreshEvent(final BwRequest request,
+                              final EventInfo ei) {
+    final var form = (BwRWActionForm)request.getBwForm();
+    final var cl = request.getClient();
+    final var ev = ei.getEvent();
 
     form.setEventInfo(ei, false);
     form.assignAddingEvent(false);

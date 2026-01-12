@@ -30,16 +30,17 @@ import static org.bedework.webcommon.ForwardDefs.forwardSuccess;
  * User: mike Date: 8/5/24 Time: 23:12
  */
 public class SearchUtil {
-  public static int setSearchParams(final BwRequest request,
-                             final SearchParams params,
-                             final boolean gridMode) {
-    final BwModuleState mstate = request.getModule().getState();
-    final Client cl = request.getClient();
+  public static String setSearchParams(
+          final BwRequest request,
+          final SearchParams params,
+          final boolean gridMode) {
+    final var mstate = request.getModule().getState();
+    final var cl = request.getClient();
 
     params.setPublicIndexRequested(request.present("public"));
 
-    String icalStart = XcalUtil.getIcalFormatDateTime(request.getReqPar("start"));
-    String endStr = request.getReqPar("end");
+    var icalStart = XcalUtil.getIcalFormatDateTime(request.getReqPar("start"));
+    var endStr = request.getReqPar("end");
 
     filterAndQuery(request, params);
 

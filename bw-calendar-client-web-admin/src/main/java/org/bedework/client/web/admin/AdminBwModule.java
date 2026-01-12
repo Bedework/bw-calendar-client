@@ -195,7 +195,7 @@ public class AdminBwModule extends RwBwModule {
    * @param request wrapper
    * @return int foward index
    */
-  protected int actionSetup(final BwRequest request) {
+  protected String actionSetup(final BwRequest request) {
     final var globals = (BwAdminWebGlobals)request.getGlobals();
     final var cl = (AdminClient)request.getClient();
 
@@ -222,9 +222,9 @@ public class AdminBwModule extends RwBwModule {
       info("-------- isSuperUser: " + cl.isSuperUser());
     }
 
-    final int temp = checkGroup(request, true);
+    final var temp = checkGroup(request, true);
 
-    if (temp != forwardNoAction) {
+    if (!forwardNoAction.equals(temp)) {
       if (debug()) {
         info("form.getGroupSet()=" + cl.getGroupSet());
       }
@@ -246,11 +246,11 @@ public class AdminBwModule extends RwBwModule {
    * @param request   for pars
    * @param initCheck true if this is a check to see if we're initialised,
    *                  otherwise this is an explicit request to change group.
-   * @return int   forward index
+   * @return forward
    */
-  public int checkGroup(final BwRequest request,
+  public String checkGroup(final BwRequest request,
                         final boolean initCheck) {
-    final BwAdminActionForm form = (BwAdminActionForm)request.getBwForm();
+    final var form = (BwAdminActionForm)request.getBwForm();
 
     final var cl = (AdminClient)request.getClient();
 
@@ -348,9 +348,9 @@ public class AdminBwModule extends RwBwModule {
     }
   }
 
-  private int setGroup(final BwRequest request,
-                       final BwAdminGroup adg) {
-    final AdminClient cl = (AdminClient)request.getClient();
+  private String setGroup(final BwRequest request,
+                          final BwAdminGroup adg) {
+    final var cl = (AdminClient)request.getClient();
 
     cl.getMembers(adg);
 

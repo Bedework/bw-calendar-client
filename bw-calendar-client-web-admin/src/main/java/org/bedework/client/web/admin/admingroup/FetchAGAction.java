@@ -37,8 +37,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchAGAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {

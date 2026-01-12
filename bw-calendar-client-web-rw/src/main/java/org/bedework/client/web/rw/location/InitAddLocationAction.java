@@ -20,7 +20,6 @@ package org.bedework.client.web.rw.location;
 
 import org.bedework.calfacade.BwLocation;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -35,8 +34,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class InitAddLocationAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     /* Set the objects to null so we get new ones.
      */

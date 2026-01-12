@@ -24,7 +24,6 @@ import org.bedework.caldav.util.notifications.NotificationType;
 import org.bedework.caldav.util.sharing.InviteNotificationType;
 import org.bedework.caldav.util.sharing.InviteReplyType;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
@@ -51,22 +50,20 @@ import org.bedework.webcommon.BwRequest;
  */
 public class ShareReplyAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var globals = (BwRWWebGlobals)request.getGlobals();
-    final NotificationType note = cl.findNotification(request.getReqPar("name"));
+    final var note = cl.findNotification(request.getReqPar("name"));
 
     if (note == null) {
       return forwardNotFound;
     }
 
-    if (!(note.getNotification() instanceof InviteNotificationType)) {
+    if (!(note.getNotification() instanceof
+                  final InviteNotificationType invite)) {
       request.error(ClientError.badRequest, "Not an invite");
       return forwardError;
     }
-
-    final InviteNotificationType invite =
-            (InviteNotificationType)note.getNotification();
 
     final Boolean accept = request.getBooleanReqPar("accept");
     if (accept == null) {

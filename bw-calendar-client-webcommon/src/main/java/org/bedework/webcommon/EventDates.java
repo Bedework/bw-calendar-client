@@ -38,7 +38,8 @@ import org.bedework.util.timezones.DateTimeUtil;
  * stored in objects which allow manipulation of indiviual date and time
  * components.
  */
-public class EventDates extends EntityDates implements ForwardDefs {
+public class EventDates extends EntityDates
+        implements ForwardDefs {
   /** Starting values or date to go to
    */
   private TimeDateComponents startDate;
@@ -146,14 +147,14 @@ public class EventDates extends EntityDates implements ForwardDefs {
    * day to take account of accepted practice.
    *
    * @param ei the event to update
-   * @return int forwardValidationError for an error
-   *             forwardUpdated if something changed
-   *             forwardNoAction if nothing changed.
+   * @return forwardValidationError for an error
+   *         forwardUpdated if something changed
+   *         forwardNoAction if nothing changed.
    */
-  public int updateEvent(final EventInfo ei) {
-    final BwEvent ev = ei.getEvent();
-    final ChangeTable changes = ei.getChangeset(principalHref);
-    int res = forwardNoAction;
+  public String updateEvent(final EventInfo ei) {
+    final var ev = ei.getEvent();
+    final var changes = ei.getChangeset(principalHref);
+    String res = forwardNoAction;
 
     final PropertyInfoIndex endPi;
     if (ev.getEntityType() != IcalDefs.entityTypeTodo) {

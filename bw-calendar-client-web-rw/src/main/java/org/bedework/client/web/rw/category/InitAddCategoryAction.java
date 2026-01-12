@@ -19,7 +19,6 @@
 package org.bedework.client.web.rw.category;
 
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -33,8 +32,8 @@ import org.bedework.webcommon.BwRequest;
  * @author Mike Douglass   douglm  rpi.edu
  */
 public class InitAddCategoryAction extends RWActionBase {
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     /* Set the objects to null so we get new ones.
      */

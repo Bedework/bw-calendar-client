@@ -138,7 +138,7 @@ public class BwAdminWebGlobals extends BwRWWebGlobals {
    * @return boolean
    */
   public boolean getCurUserApproverUser() {
-    return curUserApproverUser;
+    return superUser || curUserApproverUser;
   }
 
   public void reset(final Client cl) {

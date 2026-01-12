@@ -12,14 +12,14 @@ public class ShowSearchTabAction extends RenderMainAction {
   private String currentTab;
 
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final var globals = (BwAdminWebGlobals)request.getBwGlobals();
     final var cl = (AdminClient)request.getClient();
     globals.assignCurrentTab(currentTab);
     request.refresh();
 
     final var fwd = super.doAction(request);
-    if (fwd == forwardSuccess) {
+    if (forwardSuccess.equals(fwd)) {
       request.setRequestAttr(BwRequest.bwSearchListName,
                              cl.getSearchResult(BwIndexer.Position.current));
     }

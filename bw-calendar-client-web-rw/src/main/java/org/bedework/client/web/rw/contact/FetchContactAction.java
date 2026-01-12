@@ -22,7 +22,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwString;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -38,8 +37,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchContactAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     /* User requested a contact from the list. Retrieve it, embed it in
      * the form so we can display the page

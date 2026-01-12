@@ -24,7 +24,7 @@ package org.bedework.webcommon;
  */
 public class NoopAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     return forwardSuccess;
   }
 }

@@ -19,7 +19,6 @@
 package org.bedework.client.web.rw.schedule;
 
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -48,8 +47,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class AttendeeReply extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     return forwardEdit;
   }
 

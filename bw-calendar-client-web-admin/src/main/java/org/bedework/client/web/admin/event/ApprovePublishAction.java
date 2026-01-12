@@ -31,8 +31,8 @@ import static org.bedework.client.web.rw.EventCommon.notifySubmitter;
  */
 public class ApprovePublishAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     if (getBwForm().getEventInfo() == null) {
       // Session timed out and lost state?
       return forwardError;
@@ -47,6 +47,7 @@ public class ApprovePublishAction extends AdminActionBase {
     if (pars.approveEvent) {
       if (!globals.getCurUserApproverUser()) {
         cl.rollback();
+        error("Not an approver");
         return forwardNoAccess;
       }
     } else if (pars.publishEvent) {
@@ -56,7 +57,7 @@ public class ApprovePublishAction extends AdminActionBase {
               ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
 
       if (!Util.isEmpty(xps)) {
-        pars.submitterEmail = xps.get(0).getValue();
+        pars.submitterEmail = xps.getFirst().getValue();
       }
     } else {
       // Must be approve or publish.

@@ -67,8 +67,8 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
   protected abstract EventPropertiesResponse makeResponse(Collection<T> eprops);
 
   @Override
-  public int doAction(final BwRequest request) {
-    final String fexpr = request.getReqPar("fexpr");
+  public String doAction(final BwRequest request) {
+    final var fexpr = request.getReqPar("fexpr");
 
     if (fexpr != null) {
       doSearch(request, fexpr);

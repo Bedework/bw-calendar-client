@@ -19,7 +19,6 @@
 package org.bedework.client.web.rw.notifications;
 
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
@@ -44,10 +43,10 @@ import org.bedework.webcommon.BwRequest;
  */
 public class RemoveAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var globals = (BwRWWebGlobals)request.getGlobals();
-    int forward;
+    String forward;
 
     try {
       cl.removeNotification(request.getReqPar("name"));

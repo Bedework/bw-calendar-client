@@ -36,10 +36,10 @@ import org.bedework.util.calendar.PropertyIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.List;
 import java.util.Set;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 
@@ -59,8 +59,8 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class SuggestAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     final var globals = (BwAdminWebGlobals)request.getGlobals();
     final HttpServletResponse response = request.getResponse();
 

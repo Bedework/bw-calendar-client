@@ -42,14 +42,14 @@ import static org.bedework.client.web.rw.EventCommon.resetEvent;
  */
 public class AdminUpdateEventAction extends UpdateEventAction {
   @Override
-  public int doAction(final BwRequest request,
+  public String doAction(final BwRequest request,
                       final RWClient cl) {
     if (getRwForm().getEventInfo() == null) {
       // Session timed out and lost state?
       return forwardError;
     }
 
-    final AdminUpdatePars pars = new AdminUpdatePars(request, cl);
+    final var pars = new AdminUpdatePars(request, cl);
 
     if (pars.publishEvent || pars.approveEvent) {
       // Cannot publish/approve while updating.
@@ -57,7 +57,7 @@ public class AdminUpdateEventAction extends UpdateEventAction {
       return forwardError;
     }
 
-    final int fwd = super.doUpdate(request, cl, pars);
+    final var fwd = super.doUpdate(request, cl, pars);
 
     pars.ev.setPublick(true);
 
@@ -115,8 +115,8 @@ public class AdminUpdateEventAction extends UpdateEventAction {
    * forward success for change otherwise error.
    */
   @Override
-  protected int processXprops(final UpdatePars pars,
-                            final List<BwXproperty> extras) {
+  protected String processXprops(final UpdatePars pars,
+                                 final List<BwXproperty> extras) {
     final AdminUpdatePars adPars = (AdminUpdatePars)pars;
 
     if (adPars.updateSubmitEvent) {
@@ -134,14 +134,14 @@ public class AdminUpdateEventAction extends UpdateEventAction {
   }
 
   @Override
-  protected int update(final UpdatePars pars) {
+  protected String update(final UpdatePars pars) {
     final var adPars = (AdminUpdatePars)pars;
     final var ev = pars.ev;
     final var adcl = (AdminClient)pars.cl;
     final var form = (BwAdminActionForm)pars.request.getBwForm();
 
     final var fwd = super.doUpdate(pars);
-    if (fwd != forwardSuccess) {
+    if (!forwardSuccess.equals(fwd)) {
       return fwd;
     }
 

@@ -48,8 +48,8 @@ import net.fortuna.ical4j.model.property.Trigger;
  */
 public class SetAlarmAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var globals = (BwRWWebGlobals)request.getBwGlobals();
     final var form = getRwForm();
     final BwEvent ev = form.getEvent();

@@ -22,7 +22,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.client.web.admin.AdminBwModule;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.client.web.rw.BwRWWebGlobals;
 import org.bedework.webcommon.BwRequest;
 
@@ -33,8 +32,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class SwitchAGAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     /* ============================================================
      *              Selecting a group - any access if no group set
      * ============================================================ */
@@ -49,9 +48,9 @@ public class SwitchAGAction extends AdminActionBase {
 
     // Back to main menu. Abstract action will do the rest.
 
-    final int temp = ((AdminBwModule)request.getModule())
+    final var temp = ((AdminBwModule)request.getModule())
             .checkGroup(request, false);
-    if (temp == forwardNoAction) {
+    if (forwardNoAction.equals(temp)) {
       request.error(ClientError.chooseGroupSuppressed);
       return forwardError;
     }

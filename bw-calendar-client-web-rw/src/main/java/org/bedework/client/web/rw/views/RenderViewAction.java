@@ -36,8 +36,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class RenderViewAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     final String name = form.getViewName();
 

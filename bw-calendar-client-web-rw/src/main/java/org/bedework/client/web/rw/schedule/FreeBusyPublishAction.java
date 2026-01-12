@@ -37,11 +37,11 @@ import org.bedework.webcommon.BwRequest;
 
 import net.fortuna.ical4j.model.component.VFreeBusy;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
@@ -67,7 +67,7 @@ import static org.bedework.webcommon.DateViewUtil.gotoDateView;
  */
 public class FreeBusyPublishAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
+  public String doAction(final BwRequest request,
                       final RWClient cl) {
     BwPrincipal<?> principal = null;
 

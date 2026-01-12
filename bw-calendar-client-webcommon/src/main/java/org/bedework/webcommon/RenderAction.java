@@ -26,7 +26,7 @@ import org.bedework.util.webaction.Request;
  */
 public class RenderAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     if (request.isNewSession()) {
       request.refresh();
 //      return forwardGotomain;
@@ -44,7 +44,7 @@ public class RenderAction extends BwAbstractAction {
     }
 
     contentName = req.getReqPar("contentName");
-    req.setContentName(null);  // It's a one shot and we're about to render
+    req.setContentName(null);  // It's a one shot, and we're about to render
 
     return contentName;
   }

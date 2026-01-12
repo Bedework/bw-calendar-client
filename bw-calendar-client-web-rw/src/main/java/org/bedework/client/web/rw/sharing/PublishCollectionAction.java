@@ -46,8 +46,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class PublishCollectionAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final BwCollection col = request.getCollection(false);
     if (col == null) {
       return forwardNotFound;

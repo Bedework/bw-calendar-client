@@ -57,8 +57,8 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class DeleteEventAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     final var publicAdmin = cl.getPublicAdmin();
     final var publicEvents = publicAdmin || cl.getWebSubmit();
@@ -83,14 +83,14 @@ public class DeleteEventAction extends RWActionBase {
       final List<BwXproperty> xps = ev.getXproperties(BwXproperty.bedeworkSubmitterEmail);
 
       if (!Util.isEmpty(xps)) {
-        submitterEmail = xps.get(0).getValue();
+        submitterEmail = xps.getFirst().getValue();
       }
     }
 
     boolean deleted = false;
 
     if (!soft) {
-        final Response resp = cl.deleteEvent(ei, !publicEvents);
+        final var resp = cl.deleteEvent(ei, !publicEvents);
 
         if (resp.getStatus() == Response.Status.notFound) {
           request.error(ClientError.unknownEvent);

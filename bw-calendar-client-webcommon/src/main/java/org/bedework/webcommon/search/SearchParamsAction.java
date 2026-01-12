@@ -42,9 +42,10 @@ import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
-import jakarta.servlet.http.HttpServletResponse;
 import net.fortuna.ical4j.model.Calendar;
 import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -78,11 +79,11 @@ public class SearchParamsAction extends BwAbstractAction {
   private boolean listMode;
 
   @Override
-  public int doAction(final BwRequest request) {
-    final BwModuleState mstate = request.getModule().getState();
-    final SearchParams params = new SearchParams();
-    final Client cl = request.getClient();
-    final boolean forFeederOneShot =
+  public String doAction(final BwRequest request) {
+    final var mstate = request.getModule().getState();
+    final var params = new SearchParams();
+    final var cl = request.getClient();
+    final var forFeederOneShot =
             "y".equals(request.getReqPar("f")) ||
                     "y".equals(request.getStringActionPar("f"));
 
@@ -100,17 +101,18 @@ public class SearchParamsAction extends BwAbstractAction {
       debug("Client mode is " + cl.getViewMode());
     }
 
-    final int forward = setSearchParams(request, params,
-                                        gridMode);
-    if (forward != forwardSuccess) {
+    final var forward =
+            setSearchParams(request, params,
+                            gridMode);
+    if (!forwardSuccess.equals(forward)) {
       return forward;
     }
 
-    final String outFormat = params.getFormat();
-    boolean generateCalendarContent = false;
-    boolean generateIcal = false;
-    boolean generateJscal = false;
-    boolean generateXcal = false;
+    final var outFormat = params.getFormat();
+    var generateCalendarContent = false;
+    var generateIcal = false;
+    var generateJscal = false;
+    var generateXcal = false;
 
     if (outFormat != null) {
       switch (outFormat) {

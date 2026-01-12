@@ -38,7 +38,7 @@ public class GoToAction extends BwAbstractAction {
   private String date;
 
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final Client cl = request.getClient();
 
     cl.setViewMode(Client.gridViewMode);

@@ -58,8 +58,8 @@ import static org.bedework.util.misc.Util.checkNull;
  */
 public class UpdateAGAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {
@@ -215,7 +215,7 @@ public class UpdateAGAction extends AdminActionBase {
   }
 
   /**
-   * @param val Admin group group owner
+   * @param val Admin group, group owner
    */
   @SuppressWarnings("UnusedDeclaration")
   @StrutsParameter

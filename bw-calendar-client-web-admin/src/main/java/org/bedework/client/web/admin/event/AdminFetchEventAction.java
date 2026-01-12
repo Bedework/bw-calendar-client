@@ -6,7 +6,6 @@ package org.bedework.client.web.admin.event;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.admin.AdminUtil;
 import org.bedework.client.web.admin.BwAdminWebGlobals;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.event.FetchEventAction;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
@@ -16,16 +15,16 @@ import org.bedework.webcommon.BwSession;
  */
 public class AdminFetchEventAction extends FetchEventAction {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final int fwd = doTheAction(request, cl);
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var fwd = doTheAction(request, cl);
 
     if (((BwAdminWebGlobals)request.getBwGlobals()).getSuggestionEnabled()) {
       AdminUtil.embedPreferredAdminGroups(request);
       AdminUtil.embedCalsuiteAdminGroups(request);
     }
 
-    final BwSession sess = request.getSess();
+    final var sess = request.getSess();
 
     sess.embedContactCollection(request, BwSession.preferredEntity);
     sess.embedLocations(request, BwSession.preferredEntity);

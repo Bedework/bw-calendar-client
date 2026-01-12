@@ -26,249 +26,188 @@ package org.bedework.webcommon;
 public interface ForwardDefs {
   // ENUM
   /** */
-  public static final int forwardSuccess = 0;
-  /** */
-  public static final int forwardContinue = 1;
-  /** */
-  public static final int forwardRetry = 2;
+  String forwardSuccess = "success";
 
   /** */
-  public static final int forwardError = 3;
-  /** */
-  public static final int forwardNoAccess = 4;
+  String forwardContinue = "continue";
 
   /** */
-  public static final int forwardNotFound = 5;
+  String forwardRetry = "retry";
 
   /** */
-  public static final int forwardNoSuchView = 6;
+  String forwardError = "error";
 
   /** */
-  public static final int forwardNoViewDefined = 7;
+  String forwardNoAccess = "noAccess";
 
-  /** Set when an optional parameter is not found */
-  public static final int forwardNoParameter = 8;
+  /** */
+  String forwardNotFound = "notFound";
+
+  /**
+  String forwardNoSuchView = 6;
+
+  /**
+  String forwardNoViewDefined = 7;
+
+  /** Set when an optional parameter is not found
+  String forwardNoParameter = 8;
 
   /** Set when no action was taken */
-  public static final int forwardNoAction = 9;
+  String forwardNoAction = "noAction";
 
   /** Something is referenced and cannot be removed */
-  public static final int forwardReffed = 10;
+  String forwardReffed = "reffed";
 
-  /** an object was added/updated */
-  public static final int forwardAdded = 11;
-  /** */
-  public static final int forwardUpdated = 12;
+  /** an object was added/updated
+  String forwardAdded = 11;
 
   /** */
-  public static final int forwardChooseGroup = 13;
+  String forwardUpdated = "updated";
 
   /** */
-  public static final int forwardNoGroupAssigned = 14;
+  String forwardChooseGroup = "chooseGroup";
 
   /** */
-  public static final int forwardEdit = 15;
+  String forwardNoGroupAssigned = "noGroupAssigned";
 
   /** */
-  public static final int forwardDuplicate = 16;
+  String forwardEdit = "edit";
 
   /** */
-  public static final int forwardValidationError = 17;
+  String forwardDuplicate = "duplicate";
 
   /** */
-  public static final int forwardDelete = 18;
+  String forwardValidationError = "validationError";
 
   /** */
-  public static final int forwardCopy = 19;
+  String forwardDelete = "delete";
 
   /** */
-  public static final int forwardFailed = 20;
+  String forwardCopy = "copy";
+
+  /**
+  String forwardFailed = 20;
 
   /** */
-  public static final int forwardGotomain = 21;
+  String forwardGotomain = "gotomain";
 
   /** */
-  public static final int forwardBadValue = 22;
+  String forwardBadValue = "badValue";
+
+  /**
+  String forwardCalendarNotFound = 23;
 
   /** */
-  public static final int forwardCalendarNotFound = 23;
+  String forwardEventNotFound = "eventNotFound";
+
+  /**
+  String forwardBadDate = 25;
 
   /** */
-  public static final int forwardEventNotFound = 24;
+  String forwardNotAllowed = "notAllowed";
 
   /** */
-  public static final int forwardBadDate = 25;
+  String forwardInUse = "inUse";
 
   /** */
-  public static final int forwardNotAllowed = 26;
+  String forwardNotAdded = "notAdded";
 
   /** */
-  public static final int forwardInUse = 27;
+  String forwardBadData = "baddata";
 
   /** */
-  public static final int forwardNotAdded = 28;
+  String forwardReferenced = "referenced";
 
   /** */
-  public static final int forwardBadData = 29;
+  String forwardBadPref = "retry";
 
   /** */
-  public static final int forwardReferenced = 30;
+  String forwardCancelled = "cancelled";
 
   /** */
-  public static final int forwardBadPref = 31;
+  String forwardBadRequest = "badRequest";
+
+  /**
+  String forwardNochange = 34;
 
   /** */
-  public static final int forwardCancelled = 32;
+  String forwardDone = "done";
+
+  /**
+  String forwardExport = 36;
+
+  /**
+  String forwardStateSaved = 37;
+
+  /**
+  String forwardUpdateEventAccess = 38;
 
   /** */
-  public static final int forwardBadRequest = 33;
+  String forwardEditEventAttendees = "editEventAttendees";
 
   /** */
-  public static final int forwardNochange = 34;
+  String forwardEventIntoMeeting = "makeEventIntoMeeting";
 
   /** */
-  public static final int forwardDone = 35;
+  String forwardEventDatesInited = "eventDatesInited";
+
+  /**
+  String forwardDeclined = 42;
 
   /** */
-  public static final int forwardExport = 36;
+  String forwardNoMeeting = "noMeeting";
 
   /** */
-  public static final int forwardStateSaved = 37;
+  String forwardListAttendees = "listAttendees";
 
   /** */
-  public static final int forwardUpdateEventAccess = 38;
+  String forwardListEvents = "listEvents";
+
+  /**
+  String forwardList = 46;
 
   /** */
-  public static final int forwardEditEventAttendees = 39;
+  String forwardNull = "FORWARD-NULL";
 
   /** */
-  public static final int forwardEventIntoMeeting = 40;
+  String forwardAddEventTab = "addEvent";
 
   /** */
-  public static final int forwardEventDatesInited = 41;
+  String forwardEventsTab = "events";
 
   /** */
-  public static final int forwardDeclined = 42;
+  String forwardApprovalQTab = "approvalQueue";
 
   /** */
-  public static final int forwardNoMeeting = 43;
+  String forwardPendingQTab = "pending";
 
   /** */
-  public static final int forwardListAttendees = 44;
+  String forwardSuggestionQTab = "suggestionQueue";
 
   /** */
-  public static final int forwardListEvents = 45;
+  String forwardUsersTab = "users";
 
   /** */
-  public static final int forwardList = 46;
+  String forwardCalsuiteTab = "calsuite";
 
   /** */
-  public static final int forwardNull = 47;
+  String forwardSystemTab = "system";
 
   /** */
-  public static final int forwardAddEventTab = 48;
+  String forwardContactsTab = "contacts";
 
   /** */
-  public static final int forwardEventsTab = 49;
+  String forwardLocationsTab = "locations";
 
   /** */
-  public static final int forwardApprovalQTab = 50;
+  String forwardCategoriesTab = "categories";
 
   /** */
-  public static final int forwardPendingQTab = 51;
+  String forwardHomePage = "homePage";
 
   /** */
-  public static final int forwardSuggestionQTab = 52;
+  String forwardHelpPage = "helpPage";
 
   /** */
-  public static final int forwardUsersTab = 53;
-
-  /** */
-  public static final int forwardCalsuiteTab = 54;
-
-  /** */
-  public static final int forwardSystemTab = 55;
-
-  /** */
-  public static final int forwardContactsTab = 56;
-
-  /** */
-  public static final int forwardLocationsTab = 57;
-
-  /** */
-  public static final int forwardCategoriesTab = 58;
-
-  /** */
-  public static final int forwardHomePage = 59;
-
-  /** */
-  public static final int forwardLoggedOut = 60;
-
-  /** */
-  public static final String[] forwards = {
-    "success",
-    "continue",
-    "retry",
-    "error",
-    "noAccess",
-    "notFound",  // 5
-    "noSuchView",
-    "noViewDef",
-    "noParameter",
-    "noAction",
-    "reffed", // 10
-    "added",
-    "updated",
-    "chooseGroup",
-    "noGroupAssigned",
-    "edit", //15
-    "duplicate",
-    "validationError",
-    "delete",
-    "copy",
-    "failed",  //20
-    "gotomain",
-    "badValue",
-    "calendarNotFound",
-    "eventNotFound",
-    "badDate", // 25
-    "notAllowed",
-    "inUse",
-    "notAdded",
-    "baddata",
-    "referenced", //30
-    "retry",   // was badPref
-    "cancelled",
-    "badRequest",
-    "nochange",
-    "done",       //35
-    "export",
-    "stateSaved",
-    "updateEventAccess",
-    "editEventAttendees",
-    "makeEventIntoMeeting",  //40
-    "eventDatesInited",
-    "declined",
-    "noMeeting",
-    "listAttendees",
-    "listEvents",     //45
-    "list",
-    "FORWARD-NULL",
-
-    // Admin tabs
-    "addEvent",
-    "events",
-    "approvalQueue",  // 50
-    "pending",
-    "suggestionQueue",
-    "users",
-    "calsuite",
-    "system",   //55
-    "contacts",
-    "locations",
-    "categories",
-    "homePage",
-
-    "loggedOut"  //60
-  };
+  String forwardLoggedOut = "loggedOut";
 }

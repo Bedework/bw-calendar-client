@@ -18,11 +18,9 @@
 */
 package org.bedework.client.web.rw.filter;
 
-import org.bedework.calfacade.responses.GetFilterDefResponse;
-import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
-import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.base.response.Response;
+import org.bedework.client.rw.RWClient;
+import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
 /** Set the current filter.
@@ -43,8 +41,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class SetFilterAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var gfdr = request.getFilterDef();
 
     if (gfdr.getStatus() == Response.Status.notFound) {

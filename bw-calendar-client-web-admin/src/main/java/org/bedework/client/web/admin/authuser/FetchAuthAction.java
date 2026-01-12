@@ -22,7 +22,6 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.svc.BwAuthUser;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /** This action fetches an authorised user
@@ -38,8 +37,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchAuthAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {

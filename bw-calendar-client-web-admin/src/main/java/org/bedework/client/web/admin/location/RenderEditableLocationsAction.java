@@ -28,7 +28,7 @@ import org.bedework.webcommon.BwSession;
  */
 public class RenderEditableLocationsAction extends ShowTabAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     request.getSess().embedLocations(request,
                                      BwSession.editableEntity);
 

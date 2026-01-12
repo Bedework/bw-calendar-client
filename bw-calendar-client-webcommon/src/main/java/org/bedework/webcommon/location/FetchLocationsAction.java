@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class FetchLocationsAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final String fexpr = request.getReqPar("fexpr");
 
     if (fexpr != null) {

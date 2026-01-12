@@ -25,9 +25,9 @@ import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.util.misc.Util;
 import org.bedework.webcommon.BwRequest;
 
-import java.util.List;
-
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.List;
 
 /**
  * Ajax action to subscribe for email notifications
@@ -38,12 +38,12 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class SubscribeAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final HttpServletResponse response = request.getResponse();
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var response = request.getResponse();
 
-    final boolean add = request.present("add");
-    final boolean remove = request.present("remove");
+    final var add = request.present("add");
+    final var remove = request.present("remove");
 
     if (add && remove) {
       request.error(ClientError.badRequest);

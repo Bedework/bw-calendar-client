@@ -65,9 +65,9 @@ import static org.bedework.client.web.rw.EventCommon.checkTransparency;
 public class UploadAction extends RWActionBase {
   @SuppressWarnings("rawtypes")
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
-    final String transparency = request.getReqPar("transparency");
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
+    final var transparency = request.getReqPar("transparency");
     if (!checkTransparency(transparency)) {
       request.error(ValidationError.invalidTransparency, transparency);
       return forwardRetry;
@@ -246,10 +246,11 @@ public class UploadAction extends RWActionBase {
     return forwardSuccess;
   }
 
-  private int importScheduleMessage(final BwRequest request,
-                                    final Icalendar ic,
-                                    final BwCollection cal,
-                                    final boolean stripAlarms) {
+  private String importScheduleMessage(
+          final BwRequest request,
+          final Icalendar ic,
+          final BwCollection cal,
+          final boolean stripAlarms) {
     final RWClient cl = (RWClient)request.getClient();
 
     // Scheduling method - should contain a single entity
@@ -263,9 +264,7 @@ public class UploadAction extends RWActionBase {
     final Iterator it = ic.iterator();
     final Object o = it.next();
 
-    if (o instanceof EventInfo) {
-      EventInfo ei = (EventInfo)o;
-
+    if (o instanceof EventInfo ei) {
       /* Clone it because we may have an updated version of the event in the
        * default calendar.
        */

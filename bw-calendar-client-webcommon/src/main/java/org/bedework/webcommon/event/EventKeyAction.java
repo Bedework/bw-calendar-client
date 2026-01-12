@@ -38,7 +38,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class EventKeyAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final EventKey ekey = request.makeEventKey(false);
     request.getBwForm().setEventKey(ekey);
 

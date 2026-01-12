@@ -71,8 +71,8 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class ProcessInboxEvent extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     if (!request.present("calPath")) {
       // Just continue
 

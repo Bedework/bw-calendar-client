@@ -25,7 +25,6 @@ import org.bedework.calfacade.BwResource;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.webcommon.BwRequest;
 
@@ -47,8 +46,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class UpdateResourceAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     final var globals = request.getBwGlobals();
     final var form = getAdminForm();
     final String cancel = request.getReqPar("cancel");

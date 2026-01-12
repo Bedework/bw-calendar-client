@@ -74,8 +74,8 @@ import java.util.TreeSet;
  */
 public class UpdatePrefsAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var globals = request.getBwGlobals();
     final BwPreferences prefs;
     boolean tzChanged = false;
@@ -357,9 +357,7 @@ public class UpdatePrefsAction extends RWActionBase {
     final String ls = s.toLowerCase();
 
     return switch (ls) {
-      case "list" -> ls;
-      case "daily" -> ls;
-      case "grid" -> ls;
+      case "list", "daily", "grid" -> ls;
       default -> null;
     };
 

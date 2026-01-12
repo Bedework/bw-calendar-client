@@ -51,8 +51,8 @@ import static org.bedework.webcommon.event.EventUtil.findEvent;
  */
 public class StatusEventAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     final var publicAdmin = cl.getPublicAdmin();
     final var publicEvents = publicAdmin || cl.getWebSubmit();

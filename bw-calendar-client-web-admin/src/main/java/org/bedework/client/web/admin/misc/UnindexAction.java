@@ -20,7 +20,6 @@ package org.bedework.client.web.admin.misc;
 
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
-import org.bedework.client.web.admin.BwAdminActionForm;
 import org.bedework.webcommon.BwRequest;
 
 /**
@@ -29,8 +28,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class UnindexAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     /* Check access
      */
     if (!cl.isSuperUser()) {

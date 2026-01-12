@@ -30,7 +30,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class RenderFetchedEventAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     if (request.isNewSession() || (getBwForm().getEventInfo() == null)) {
       // Assume logged out - could be someone messing around.
       request.refresh();

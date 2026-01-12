@@ -45,7 +45,7 @@ import static org.bedework.util.misc.Util.escapeJava;
  */
 public class FetchCollectionsAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     final BwSession sess = request.getSess();
     final CollectionsResponse cols = sess.getCollections(request);
     final HttpServletResponse resp = request.getResponse();

@@ -40,7 +40,7 @@ import static org.bedework.base.response.Response.Status.ok;
  */
 public class FetchCalSuitesAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
+  public String doAction(final BwRequest request) {
     // Return as json list for widgets
     final Collection<BwCalSuite> vals =
             request.getClient().getContextCalSuites();

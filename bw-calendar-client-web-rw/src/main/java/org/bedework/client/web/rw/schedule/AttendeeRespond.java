@@ -40,6 +40,7 @@ import org.bedework.webcommon.BwSession;
 
 import java.util.Collection;
 
+import static org.bedework.calsvci.EventsI.SetEntityCategoriesResult.success;
 import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
 import static org.bedework.client.web.rw.EventCommon.refetchEvent;
 import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
@@ -95,8 +96,8 @@ import static org.bedework.client.web.rw.EventCommon.validateEvent;
  */
 public class AttendeeRespond extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
 
     if (request.present("initUpdate")) {
@@ -122,11 +123,12 @@ public class AttendeeRespond extends RWActionBase {
 
     final BwEvent ev = ei.getEvent();
 
-    final String methStr = request.getReqPar("method");
+    final var methStr = request.getReqPar("method");
 
     if ("REFRESH".equals(methStr)) {
-      final ScheduleResult sr = cl.requestRefresh(ei,
-                                                  request.getReqPar("comment"));
+      final var sr =
+              cl.requestRefresh(ei,
+                                request.getReqPar("comment"));
       emitScheduleStatus(request, sr, false);
 
       initSession(request);
@@ -151,8 +153,8 @@ public class AttendeeRespond extends RWActionBase {
       setEventText(request, ev, true, null);
 
       /* -------------------------- Dates ------------------------------ */
-      final int res = form.getEventDates().updateEvent(ei);
-      if (res == forwardValidationError) {
+      final var res = form.getEventDates().updateEvent(ei);
+      if (forwardValidationError.equals(res)) {
         return res;
       }
 
@@ -174,11 +176,11 @@ public class AttendeeRespond extends RWActionBase {
       }
 
       /* -------------------------- Categories ------------------------------ */
-      final EventsI.SetEntityCategoriesResult secr =
+      final var secr =
               setEntityCategories(request, null,
                                   ev, null);
-      if (secr.rcode != forwardSuccess) {
-        return secr.rcode;
+      if (secr.rcode != success) {
+        return forwardError;
       }
     }
 

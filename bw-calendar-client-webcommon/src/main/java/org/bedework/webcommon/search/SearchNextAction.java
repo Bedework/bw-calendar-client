@@ -21,7 +21,6 @@ package org.bedework.webcommon.search;
 import org.bedework.appcommon.client.Client;
 import org.bedework.calfacade.indexing.BwIndexer.Position;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwActionFormBase;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
@@ -42,10 +41,10 @@ import org.bedework.webcommon.BwSession;
  */
 public class SearchNextAction extends BwAbstractAction {
   @Override
-  public int doAction(final BwRequest request) {
-    final Client cl = request.getClient();
+  public String doAction(final BwRequest request) {
+    final var cl = request.getClient();
 
-    final int offset = request.getIntReqPar("offset", -1);
+    final var offset = request.getIntReqPar("offset", -1);
 
     if (offset > 0) {
       request.setRequestAttr(BwRequest.bwSearchListName,

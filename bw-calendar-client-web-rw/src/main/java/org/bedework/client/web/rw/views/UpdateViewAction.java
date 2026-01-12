@@ -47,8 +47,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class UpdateViewAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     /* Check access
      */
     if (request.isGuest()) {

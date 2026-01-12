@@ -43,8 +43,8 @@ import org.bedework.webcommon.BwSession;
  */
 public class UpdateCategoryAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     final var reqpar = request.getReqPar("delete");
 

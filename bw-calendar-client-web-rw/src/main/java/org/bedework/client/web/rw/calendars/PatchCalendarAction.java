@@ -44,7 +44,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class PatchCalendarAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
+  public String doAction(final BwRequest request,
                       final RWClient cl) {
     if (request.present("access")) {
       // Fail this to stop someone screwing around with the access

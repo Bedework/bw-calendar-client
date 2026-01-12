@@ -23,7 +23,6 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.rw.RWClient.DeleteReffedEntityResult;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -39,8 +38,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class DeleteCategoryAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     form.setPropRefs(null);
 

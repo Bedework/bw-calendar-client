@@ -56,8 +56,8 @@ import static org.bedework.client.web.rw.EventCommon.initMeeting;
  */
 public class InitAddEventAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final RWClient cl) {
+  public String doAction(final BwRequest request,
+                         final RWClient cl) {
     final var form = getRwForm();
     request.refresh();
 
@@ -94,9 +94,9 @@ public class InitAddEventAction extends RWActionBase {
     }
 
     if (sched == ScheduleMethods.methodTypeRequest) {
-      final int res = initMeeting(request, true);
+      final var res = initMeeting(request, true);
 
-      if (res != forwardSuccess) {
+      if (!forwardSuccess.equals(res)) {
         return res;
       }
     }

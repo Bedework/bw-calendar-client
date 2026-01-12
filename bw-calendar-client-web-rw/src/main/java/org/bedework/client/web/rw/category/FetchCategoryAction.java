@@ -21,7 +21,6 @@ package org.bedework.client.web.rw.category;
 import org.bedework.appcommon.ClientError;
 import org.bedework.calfacade.BwCategory;
 import org.bedework.client.rw.RWClient;
-import org.bedework.client.web.rw.BwRWActionForm;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
 
@@ -41,7 +40,7 @@ import org.bedework.webcommon.BwRequest;
  */
 public class FetchCategoryAction extends RWActionBase {
   @Override
-  public int doAction(final BwRequest request,
+  public String doAction(final BwRequest request,
                       final RWClient cl) {
     final var form = getRwForm();
     /* User requested a category from the list. Retrieve it, embed it in

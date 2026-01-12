@@ -38,11 +38,12 @@ import org.bedework.util.webaction.WebActionForm;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
+
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -57,8 +58,9 @@ import static org.bedework.webcommon.DateViewUtil.gotoDateView;
  *
  * @author  Mike Douglass  douglm@rpi.edu
  */
-public abstract class BwAbstractAction extends UtilAbstractAction
-                                       implements ForwardDefs {
+public abstract class BwAbstractAction
+        extends UtilAbstractAction
+        implements ForwardDefs {
   /** Name of the init parameter holding our name */
   private static final String appNameInitParameter = "bwappname";
 
@@ -84,7 +86,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
    * @param request   For request pars and BwSession
    * @return int      forward index
    */
-  public abstract int doAction(BwRequest request);
+  public abstract String doAction(BwRequest request);
 
   @Override
   public String performAction(final Request request)  {
@@ -95,7 +97,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     } catch (final Throwable t) {
       error(t);
       invalidateSession(request);
-      return forwards[forwardError];
+      return forwardError;
     }
 
     if (status != HttpServletResponse.SC_OK) {
@@ -104,7 +106,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       // Try not invalidating. There are multiple requests and this may
       // cause errors in the one that got through
       //invalidateSession(request);
-      return forwards[forwardError];
+      return forwardError;
     }
 
     final BwRequest bwreq = (BwRequest)request;
@@ -256,15 +258,15 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       /* Set the objects to null so we get new ones.
        */
       request.message(ClientMessage.cancelled);
-      return forwards[forwardCancelled];
+      return forwardCancelled;
     }
 
     /* Set up ready for the action - may reset svci */
     final BwModule mdl = bwreq.getModule();
 
-    final int temp = mdl.actionSetup(bwreq);
-    if (temp != forwardNoAction) {
-      return forwards[temp];
+    final var temp = mdl.actionSetup(bwreq);
+    if (!forwardNoAction.equals(temp)) {
+      return temp;
     }
 
     // May have changed (again)
@@ -274,7 +276,7 @@ public abstract class BwAbstractAction extends UtilAbstractAction
     String forward;
 
     try {
-      forward = forwards[doAction(bwreq)];
+      forward = doAction(bwreq);
 
 //      bsess.prepareRender(bwreq);
     } catch (final BedeworkAccessException bae) {
@@ -282,12 +284,12 @@ public abstract class BwAbstractAction extends UtilAbstractAction
       if (debug()) {
         error(bae);
       }
-      forward = forwards[forwardNoAccess];
+      forward = forwardNoAccess;
       cl.rollback();
     } catch (final BedeworkClosed ignored) {
       request.warn(ClientError.closed);
       warn("Interface closed");
-      forward = forwards[forwardGotomain];
+      forward = forwardGotomain;
     } catch (final BedeworkException be) {
       request.error(be.getMessage(), be.getExtra());
       request.error(be);
@@ -295,14 +297,14 @@ public abstract class BwAbstractAction extends UtilAbstractAction
         error(be);
       }
 
-      forward = forwards[forwardError];
+      forward = forwardError;
       cl.rollback();
     } catch (final Throwable t) {
       request.error(t);
       if (debug()) {
         error(t);
       }
-      forward = forwards[forwardError];
+      forward = forwardError;
       cl.rollback();
     }
 

@@ -50,8 +50,8 @@ import org.bedework.webcommon.BwRequest;
  */
 public class UpdateCalSuiteAction extends AdminActionBase {
   @Override
-  public int doAction(final BwRequest request,
-                      final AdminClient cl) {
+  public String doAction(final BwRequest request,
+                         final AdminClient cl) {
     final BwCalSuiteWrapper csw = getAdminForm().getCalSuite();
 
     if (csw == null) {

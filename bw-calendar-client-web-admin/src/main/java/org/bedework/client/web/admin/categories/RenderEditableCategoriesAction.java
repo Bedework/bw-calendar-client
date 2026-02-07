@@ -32,7 +32,7 @@ public class RenderEditableCategoriesAction extends ShowTabAction {
     request.getSess().embedCategories(request, true,
                                       BwSession.editableEntity);
 
-    return forwardSuccess;
+    return super.doAction(request);
   }
 }
 

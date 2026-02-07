@@ -32,7 +32,7 @@ public class RenderEditableContactsAction extends ShowTabAction {
     request.getSess().embedContactCollection(request,
                                              BwSession.editableEntity);
 
-    return forwardSuccess;
+    return super.doAction(request);
   }
 }
 

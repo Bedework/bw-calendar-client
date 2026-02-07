@@ -32,7 +32,7 @@ public class RenderEditableLocationsAction extends ShowTabAction {
     request.getSess().embedLocations(request,
                                      BwSession.editableEntity);
 
-    return forwardSuccess;
+    return super.doAction(request);
   }
 }
 

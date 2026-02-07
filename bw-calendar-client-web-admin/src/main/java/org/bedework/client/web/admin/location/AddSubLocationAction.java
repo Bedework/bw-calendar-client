@@ -20,7 +20,6 @@
 package org.bedework.client.web.admin.location;
 
 import org.bedework.calfacade.BwLocation;
-import org.bedework.calfacade.BwString;
 import org.bedework.client.admin.AdminClient;
 import org.bedework.client.web.admin.AdminActionBase;
 import org.bedework.util.misc.Uid;
@@ -81,39 +80,10 @@ public class AddSubLocationAction extends AdminActionBase {
 
     final String subaddr = request.getReqPar("sub");
 
-    final BwLocation newloc = new BwLocation();
+    final var newloc = (BwLocation)location.clone();
 
     newloc.setUid(Uid.getUid());
-    newloc.setCreatorHref(location.getCreatorHref());
-    newloc.setOwnerHref(location.getOwnerHref());
-    newloc.setPublick(location.getPublick());
-
-    if (location.getAddress() != null) {
-      newloc.setAddress((BwString)location.getAddress().clone());
-
-    } else {
-      newloc.setAddress(new BwString(null, ""));
-    }
-
-    final BwString addr = newloc.getAddress();
-
-    // Strip off any old room
-    if (addr.getValue().contains(BwLocation.fieldDelimiter)) {
-      final int pos = addr.getValue().lastIndexOf(BwLocation.fieldDelimiter);
-
-      addr.setValue(addr.getValue().substring(0, pos));
-    }
-
-    // Add new room
-    addr.setValue(
-            addr.getValue() + BwLocation.fieldDelimiter + subaddr);
-
-    if (location.getSubaddress() != null) {
-      newloc.setSubaddress(
-              (BwString)location.getSubaddress().clone());
-    }
-
-    newloc.setLink(location.getLink());
+    newloc.setRoomField(subaddr);
 
     try {
       cl.addLocation(newloc);

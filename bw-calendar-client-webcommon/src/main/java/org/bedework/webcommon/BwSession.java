@@ -195,12 +195,14 @@ public interface BwSession extends Serializable {
   /**
    * @param request - current request
    * @param kind of entity
+   * @param includeDeleted true to add deleted entities
    * @param forEventUpdate if we are updating an event
    * @return the locations
    */
   Collection<BwLocation> getLocations(
           BwRequest request,
           int kind,
+          boolean includeDeleted,
           boolean forEventUpdate);
 
   /** Called by jsp when editing an event

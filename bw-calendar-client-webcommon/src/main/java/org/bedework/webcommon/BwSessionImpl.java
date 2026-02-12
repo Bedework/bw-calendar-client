@@ -778,11 +778,11 @@ public class BwSessionImpl implements Logged, BwSession {
 
     if (kind == ownersEntity) {
       attrName = BwRequest.bwLocationsListName;
-      vals = getLocations(request, ownersEntity, true);
+      vals = getLocations(request, ownersEntity, false, true);
     } else if (kind == editableEntity) {
       attrName = BwRequest.bwEditableLocationsListName;
 
-      vals = getLocations(request, editableEntity, false);
+      vals = getLocations(request, editableEntity, false, false);
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredLocationsListName;
 
@@ -863,6 +863,7 @@ public class BwSessionImpl implements Logged, BwSession {
   public Collection<BwLocation> getLocations(
           final BwRequest request,
           final int kind,
+          final boolean includeDeleted,
           final boolean forEventUpdate) {
     try {
       final BwActionFormBase form = request.getBwForm();
@@ -899,7 +900,10 @@ public class BwSessionImpl implements Logged, BwSession {
         throw new Exception("Software error - bad kind " + kind);
       }
 
-      return getLocationCollator().getCollatedCollection(vals);
+      return getLocationCollator().getCollatedCollection(
+              vals.stream().filter(
+                      loc -> includeDeleted || !loc.getDeleted())
+                  .toList());
     } catch (final Throwable t) {
       request.error(t);
       return new ArrayList<>();

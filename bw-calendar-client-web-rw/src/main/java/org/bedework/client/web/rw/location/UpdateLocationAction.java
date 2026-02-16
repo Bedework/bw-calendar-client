@@ -21,7 +21,6 @@ package org.bedework.client.web.rw.location;
 
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
-import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwLocation;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.EventProps.ValidateResult;
@@ -87,11 +86,7 @@ public class UpdateLocationAction extends RWActionBase {
     }
 
     if (cl.isSuperUser()) {
-      final String deleted = request.getReqPar("deleted");
-
-      if ("true".equals(deleted)) {
-        location.setStatus(BwEventProperty.statusDeleted);
-      }
+      location.setArchived(request.getBooleanReqPar("archived", false));
     }
 
     if (add) {

@@ -87,6 +87,8 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
     final Collection<T> vals;
 
     final String kind = request.getReqPar("kind", "owners");
+    final var includeArchived = request.getBooleanReqPar(
+            "includeArchived", false);
 
     switch (kind) {
       case "owners":
@@ -105,10 +107,12 @@ public abstract class FetchEventPropertiesAction<T extends BwEventProperty<?>>
     }
 
     final EventPropertiesResponse epresp = makeResponse(vals);
+    epresp.setIncludeArchived(includeArchived);
+
     final var cl = request.getClient();
 
     if (cl.getPublicAdmin()) {
-      // Add the preferred locations
+      // Add the preferred entities
       final Collection<T> prefs =
               getEProps(request, BwSession.preferredEntity);
 

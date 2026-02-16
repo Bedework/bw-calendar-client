@@ -106,8 +106,9 @@ public class BwTagUtils extends BwTagUtilCommon {
           throws IOException {
     final var curIndent = pushIndent(indent);
 
-    // Assume indented for first
-    openTag(out, null, tagName, true);
+    if (tagName != null) {
+      openTag(out, null, tagName, true);
+    }
 
     if (!Util.isEmpty(cats)) {
       for (final var category: cats) {
@@ -115,7 +116,9 @@ public class BwTagUtils extends BwTagUtilCommon {
       }
     }
 
-    closeTag(out, curIndent, tagName);
+    if (tagName != null) {
+      closeTag(out, curIndent, tagName);
+    }
   }
 
   /** Output with surrounding tag
@@ -150,6 +153,7 @@ public class BwTagUtils extends BwTagUtilCommon {
       outTagged(out, curIndent, "colPath", category.getColPath());
       outTagged(out, curIndent, "name", category.getName());
       outTagged(out, curIndent, "status", category.getStatus());
+      outTagged(out, curIndent, "archived", category.getArchived());
       outTagged(out, curIndent, "creator", category.getCreatorHref());
     }
 

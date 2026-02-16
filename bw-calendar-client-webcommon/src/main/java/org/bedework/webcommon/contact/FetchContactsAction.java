@@ -51,9 +51,11 @@ public class FetchContactsAction
   protected Collection<BwContact> getEProps(final BwRequest request,
                                          final int kind) {
     final BwSession sess = request.getSess();
+    final var includeArchived =
+            request.getBooleanReqPar("includeArchived", false);
 
     return sess.getContacts(request, BwSession.ownersEntity,
-                            false);
+                            includeArchived, false);
   }
 
   @Override
@@ -67,11 +69,8 @@ public class FetchContactsAction
   }
 
   @Override
-  protected EventPropertiesResponse makeResponse(final Collection<BwContact> eprops) {
-    final ContactsResponse resp = new ContactsResponse();
-
-    resp.setContacts(eprops);
-
-    return resp;
+  protected EventPropertiesResponse makeResponse(
+          final Collection<BwContact> eprops) {
+    return new ContactsResponse().setContacts(eprops);
   }
 }

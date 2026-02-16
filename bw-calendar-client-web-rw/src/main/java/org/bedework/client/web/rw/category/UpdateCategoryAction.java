@@ -21,7 +21,6 @@ package org.bedework.client.web.rw.category;
 import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.calfacade.BwCategory;
-import org.bedework.calfacade.BwEventProperty;
 import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.client.rw.RWClient;
@@ -71,11 +70,7 @@ public class UpdateCategoryAction extends RWActionBase {
     final BwCategory cat = form.getCategory();
 
     if (cl.isSuperUser()) {
-      final String deleted = request.getReqPar("deleted");
-
-      if ("true".equals(deleted)) {
-        cat.setStatus(BwEventProperty.statusDeleted);
-      }
+      cat.setArchived(request.getBooleanReqPar("archived", false));
     }
 
     if (add) {

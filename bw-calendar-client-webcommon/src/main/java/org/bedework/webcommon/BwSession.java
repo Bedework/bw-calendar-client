@@ -160,6 +160,7 @@ public interface BwSession extends Serializable {
   Collection<BwCategory> getCategoryCollection(
           BwRequest request,
           int kind,
+          final boolean includeArchived,
           boolean forEventUpdate);
 
   /* Kind of entity we are referring to */
@@ -177,6 +178,7 @@ public interface BwSession extends Serializable {
    */
   Collection<BwContact> getContacts(BwRequest request,
                                     int kind,
+                                    final boolean includeArchived,
                                     boolean forEventUpdate);
 
   /**
@@ -195,14 +197,14 @@ public interface BwSession extends Serializable {
   /**
    * @param request - current request
    * @param kind of entity
-   * @param includeDeleted true to add deleted entities
+   * @param includeArchived true to add deleted entities
    * @param forEventUpdate if we are updating an event
    * @return the locations
    */
   Collection<BwLocation> getLocations(
           BwRequest request,
           int kind,
-          boolean includeDeleted,
+          boolean includeArchived,
           boolean forEventUpdate);
 
   /** Called by jsp when editing an event

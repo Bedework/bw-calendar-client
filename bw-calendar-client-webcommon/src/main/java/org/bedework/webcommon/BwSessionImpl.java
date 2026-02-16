@@ -585,6 +585,8 @@ public class BwSessionImpl implements Logged, BwSession {
           final int kind) {
     final String attrName;
     Collection <BwCategory> vals;
+    final var includeArchived =
+            request.getBooleanReqPar("includeArchived", false);
 
     if (kind == ownersEntity) {
       attrName = BwRequest.bwCategoriesListName;
@@ -595,7 +597,8 @@ public class BwSessionImpl implements Logged, BwSession {
         return vals;
       }
 
-      vals = getCategoryCollection(request, ownersEntity, true);
+      vals = getCategoryCollection(request, ownersEntity,
+                                   includeArchived, true);
     } else if (kind == editableEntity) {
       attrName = BwRequest.bwEditableCategoriesListName;
 
@@ -605,7 +608,8 @@ public class BwSessionImpl implements Logged, BwSession {
         return vals;
       }
 
-      vals = getCategoryCollection(request, editableEntity, false);
+      vals = getCategoryCollection(request, editableEntity,
+                                   includeArchived, false);
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredCategoriesListName;
 
@@ -633,7 +637,8 @@ public class BwSessionImpl implements Logged, BwSession {
         }
       }
     } else {
-      throw new RuntimeException("Software error - bad kind " + kind);
+      throw new BedeworkException("Software error - bad kind " +
+                                          kind);
     }
 
     request.setSessionAttr(attrName, vals);
@@ -644,6 +649,7 @@ public class BwSessionImpl implements Logged, BwSession {
   public Collection<BwCategory> getCategoryCollection(
           final BwRequest request,
           final int kind,
+          final boolean includeArchived,
           final boolean forEventUpdate) {
     final BwActionFormBase form = request.getBwForm();
     final Client cl = request.getClient();
@@ -680,7 +686,11 @@ public class BwSessionImpl implements Logged, BwSession {
       return null;
     }
 
-    return getCategoryCollator().getCollatedCollection(vals);
+    return getCategoryCollator()
+            .getCollatedCollection(vals.stream()
+                                       .filter(
+                                               cat -> includeArchived || !cat.getArchived())
+                                       .toList());
   }
 
   /* ==============================================================
@@ -688,12 +698,14 @@ public class BwSessionImpl implements Logged, BwSession {
    * ============================================================== */
 
   @Override
-  public Collection<BwContact> getContacts(final BwRequest request,
-                                           final int kind,
-                                           final boolean forEventUpdate) {
+  public Collection<BwContact> getContacts(
+          final BwRequest request,
+          final int kind,
+          final boolean includeArchived,
+          final boolean forEventUpdate) {
     try {
-      final BwActionFormBase form = request.getBwForm();
-      final Client cl = request.getClient();
+      final var form = request.getBwForm();
+      final var cl = request.getClient();
       Collection<BwContact> vals = null;
 
       if (kind == ownersEntity) {
@@ -726,7 +738,11 @@ public class BwSessionImpl implements Logged, BwSession {
         throw new RuntimeException("Software error - bad kind " + kind);
       }
 
-      return getContactCollator().getCollatedCollection(vals);
+      return getContactCollator()
+              .getCollatedCollection(
+                      vals.stream().filter(
+                                  c -> includeArchived || !c.getArchived())
+                          .toList());
     } catch (final BedeworkException be) {
       request.error(be);
       return new ArrayList<>();
@@ -739,6 +755,8 @@ public class BwSessionImpl implements Logged, BwSession {
     final Client cl = request.getClient();
     final Collection<BwContact> vals;
     final String attrName;
+    final var includeArchived =
+            request.getBooleanReqPar("includeArchived", false);
 
     if (kind == ownersEntity) {
       attrName = BwRequest.bwContactsListName;
@@ -759,11 +777,14 @@ public class BwSessionImpl implements Logged, BwSession {
 
       vals = curAuthUserPrefs.getContactPrefs().getPreferred();
     } else {
-      throw new RuntimeException("Software error - bad kind " + kind);
+      throw new BedeworkException("Software error - bad kind " +
+                                          kind);
     }
 
     request.setSessionAttr(attrName,
-                           getContactCollator().getCollatedCollection(vals));
+                           getContactCollator().getCollatedCollection(vals.stream().filter(
+                                                                                  c -> includeArchived || !c.getArchived())
+                                                                          .toList()));
   }
 
   /* ==============================================================
@@ -775,14 +796,17 @@ public class BwSessionImpl implements Logged, BwSession {
                              final int kind) {
     final Collection<BwLocation> vals;
     final String attrName;
+    final var includeArchived =
+            request.getBooleanReqPar("includeArchived", false);
 
     if (kind == ownersEntity) {
       attrName = BwRequest.bwLocationsListName;
-      vals = getLocations(request, ownersEntity, false, true);
+      vals = getLocations(request, ownersEntity, includeArchived, true);
     } else if (kind == editableEntity) {
       attrName = BwRequest.bwEditableLocationsListName;
 
-      vals = getLocations(request, editableEntity, false, false);
+      vals = getLocations(request, editableEntity,
+                          includeArchived, false);
     } else if (kind == preferredEntity) {
       attrName = BwRequest.bwPreferredLocationsListName;
 
@@ -863,7 +887,7 @@ public class BwSessionImpl implements Logged, BwSession {
   public Collection<BwLocation> getLocations(
           final BwRequest request,
           final int kind,
-          final boolean includeDeleted,
+          final boolean includeArchived,
           final boolean forEventUpdate) {
     try {
       final BwActionFormBase form = request.getBwForm();
@@ -902,7 +926,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
       return getLocationCollator().getCollatedCollection(
               vals.stream().filter(
-                      loc -> includeDeleted || !loc.getDeleted())
+                      loc -> includeArchived || !loc.getArchived())
                   .toList());
     } catch (final Throwable t) {
       request.error(t);

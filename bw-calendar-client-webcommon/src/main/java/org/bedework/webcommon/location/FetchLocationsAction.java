@@ -73,17 +73,17 @@ public class FetchLocationsAction extends BwAbstractAction {
     final Collection<BwLocation> vals;
 
     final var kind = request.getReqPar("kind", "owners");
-    final var includeDeleted = request.getBooleanReqPar(
-            "includeDeleted", false);
+    final var includeArchived = request.getBooleanReqPar(
+            "includeArchived", false);
 
     switch (kind) {
       case "owners":
         vals = sess.getLocations(request, BwSession.ownersEntity,
-                                 includeDeleted, true);
+                                 includeArchived, true);
         break;
       case "editable":
         vals = sess.getLocations(request, BwSession.editableEntity,
-                                 includeDeleted, false);
+                                 includeArchived, false);
 //    } else if (kind.equals("preferred")) {
 //      attrName = BwRequest.bwPreferredLocationsListName;
 //
@@ -96,13 +96,14 @@ public class FetchLocationsAction extends BwAbstractAction {
 
     final var locs = new LocationsResponse()
             .setLocations(vals).ok();
+    locs.setIncludeArchived(includeArchived);
 
     if (cl.getPublicAdmin()) {
       // Add the preferred locations
       final var prefs =
               sess.getLocations(request,
                                 BwSession.preferredEntity,
-                                includeDeleted, false);
+                                includeArchived, false);
 
       final List<String> preferred = new ArrayList<>();
 

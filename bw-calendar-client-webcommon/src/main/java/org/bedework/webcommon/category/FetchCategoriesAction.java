@@ -48,8 +48,13 @@ public class FetchCategoriesAction extends BwAbstractAction {
     }
 
     // Return as json list for widgets
-    final Collection<BwCategory> vals = request.getSess().getCategoryCollection(
-            request, BwSession.ownersEntity, true);
+    final var includeArchived = request.getBooleanReqPar(
+            "includeArchived", false);
+    final Collection<BwCategory> vals =
+            request.getSess()
+                   .getCategoryCollection(
+                           request, BwSession.ownersEntity,
+                           includeArchived, true);
 
     final String[] header;
     if (!"true".equals(request.getStringActionPar("catnofile"))) {
@@ -62,6 +67,7 @@ public class FetchCategoriesAction extends BwAbstractAction {
     final HttpServletResponse resp = request.getResponse();
 
     final var cats = new CategoriesResponse().setCategories(vals).ok();
+    cats.setIncludeArchived(includeArchived);
 
     outputJson(resp, null, header, cats);
 

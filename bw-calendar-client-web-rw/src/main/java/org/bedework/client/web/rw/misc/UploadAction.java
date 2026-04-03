@@ -85,7 +85,7 @@ public class UploadAction extends RWActionBase {
 
     final String newCalPath = request.getReqPar("newCalPath");
 
-    final var upFile = form.getUploadFileInfo();
+    final var upFile = form.getUploadFileInfo("uploadFile");
 
     if (upFile == null) {
       // Just forget it

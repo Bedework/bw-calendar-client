@@ -37,6 +37,11 @@ public class UploadFileInfoImpl implements UploadFileInfo {
   }
 
   @Override
+  public File getContent() {
+    return file;
+  }
+
+  @Override
   public InputStream getContentStream() {
     try {
       return new FileInputStream(file);

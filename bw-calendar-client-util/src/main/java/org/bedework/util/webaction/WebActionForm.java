@@ -12,15 +12,8 @@ public interface WebActionForm {
 
   /**
    *
-   * @return null if no request parameter named imageUpload otherwise
-   *               an UploadFileInfo object
+   * @return null if no request parameter with given name,
+   * otherwise an UploadFileInfo object
    */
-  UploadFileInfo getImageUploadInfo();
-
-  /**
-   *
-   * @return null if no request parameter named uploadFile otherwise
-   *               an UploadFileInfo object
-   */
-  UploadFileInfo getUploadFileInfo();
+  UploadFileInfo getUploadFileInfo(String name);
 }

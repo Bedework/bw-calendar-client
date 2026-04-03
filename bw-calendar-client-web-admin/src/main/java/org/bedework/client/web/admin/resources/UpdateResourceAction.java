@@ -87,7 +87,7 @@ public class UpdateResourceAction extends AdminActionBase {
 
     // Update the resource content
     final String content = request.getReqPar("content");
-    final UploadFileInfo formFile = form.getUploadFileInfo();
+    final UploadFileInfo formFile = form.getUploadFileInfo("uploadFile");
 
     if (content != null) {
       cl.setResourceValue(r, content);

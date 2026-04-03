@@ -31,7 +31,9 @@ import org.apache.struts2.ActionSupport;
 import org.apache.struts2.action.ServletRequestAware;
 import org.apache.struts2.action.ServletResponseAware;
 import org.apache.struts2.action.SessionAware;
+import org.apache.struts2.action.UploadedFilesAware;
 import org.apache.struts2.config.entities.Parameterizable;
+import org.apache.struts2.dispatcher.multipart.UploadedFile;
 import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
 import jakarta.servlet.ServletContext;
@@ -39,6 +41,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -130,7 +133,7 @@ import static java.lang.String.format;
  * <br /><em>contentType=text/text&amp;noxslt=yes</em>
  */
 public abstract class UtilAbstractAction extends ActionSupport
-         implements Parameterizable,
+         implements Parameterizable, UploadedFilesAware,
                     ServletRequestAware, ServletResponseAware,
                     SessionAware, HttpAppLogger, Logged {
   private transient String logPrefix;
@@ -422,6 +425,11 @@ public abstract class UtilAbstractAction extends ActionSupport
   @StrutsParameter
   public void setRefaction(final String val) {
     // Handled by Request class.
+  }
+
+  @Override
+  public void withUploadedFiles(final List<UploadedFile> uploads) {
+    form.setUploadFiles(uploads);
   }
 
   /* ============================================================

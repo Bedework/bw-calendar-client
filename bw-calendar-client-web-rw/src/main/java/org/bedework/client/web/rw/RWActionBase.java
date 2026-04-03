@@ -13,8 +13,6 @@ import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.File;
-
 /**
  * User: mike Date: 3/9/21 Time: 22:37
  */
@@ -58,79 +56,7 @@ public abstract class RWActionBase
     return (BwRWActionForm)form;
   }
 
-  /**
-   * @param val FormFile
-   */
-  @SuppressWarnings("UnusedDeclaration")
-  @StrutsParameter
-  public void setImageUpload(final File val) {
-    getForm().setImageUpload(val);
-  }
-
-  /**
-   * @return FormFile
-   */
-  @SuppressWarnings("UnusedDeclaration")
-  public File getImageUpload() {
-    return getForm().getImageUpload();
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  @StrutsParameter
-  public void setImageUploadFileName(final String val) {
-    getForm().setImageUploadFileName(val);
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  public String getImageUploadFileName() {
-    return getForm().getImageUploadFileName();
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  @StrutsParameter
-  public void setImageUploadContentType(final String val) {
-    getForm().setImageUploadContentType(val);
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  public String getImageUploadContentType() {
-    return getForm().getImageUploadContentType();
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  @StrutsParameter
-  public void setUploadFileFileName(final String val) {
-    getForm().setUploadFileFileName(val);
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  public String getUploadFileFileName() {
-    return getForm().getUploadFileFileName();
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  @StrutsParameter
-  public void setUploadFile(final File val) {
-    getForm().setUploadFile(val);
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  public File getUploadFile() {
-    return getForm().getUploadFile();
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  @StrutsParameter
-  public void setUploadFileContentType(final String val) {
-    getForm().setUploadFileContentType(val);
-  }
-
-  @SuppressWarnings("UnusedDeclaration")
-  public String getUploadFileContentType() {
-    return getForm().getUploadFileContentType();
-  }
-
-  // ================== contact form elements ===================
+  // =============== contact form elements ================
 
   @SuppressWarnings("UnusedDeclaration")
   @StrutsParameter

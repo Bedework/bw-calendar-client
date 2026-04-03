@@ -21,10 +21,13 @@ package org.bedework.util.struts;
 import org.bedework.util.webaction.UploadFileInfo;
 import org.bedework.util.webaction.WebActionForm;
 
+import org.apache.struts2.dispatcher.multipart.UploadedFile;
+
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
 import java.io.File;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This class provides some convenience methods for use by Action objects.
@@ -40,13 +43,7 @@ public class UtilActionForm implements WebActionForm {
    *                       Uploads and exports
    * ........................................................... */
 
-  private File imageUpload;
-  private String imageUploadFileName;
-  private String imageUploadContentType;
-
-  private File uploadFile;
-  private String uploadFileFileName;
-  private String uploadFileContentType;
+  private List<UploadedFile> uploadFiles;
 
   /* ==========================================================
    *                          Methods
@@ -64,91 +61,44 @@ public class UtilActionForm implements WebActionForm {
    * ========================================================== */
 
   /**
-   * @param val FormFile
+   * @param val Form files
    */
-  @StrutsParameter
-  public void setImageUpload(final File val) {
-    imageUpload = val;
+  public void setUploadFiles(final List<UploadedFile> val) {
+    uploadFiles = val;
   }
 
   /**
    * @return FormFile
    */
-  public File getImageUpload() {
-    return imageUpload;
-  }
-
-  @StrutsParameter
-  public void setImageUploadFileName(final String val) {
-    imageUploadFileName = val;
-  }
-
-  public String getImageUploadFileName() {
-    return imageUploadFileName;
-  }
-
-  @StrutsParameter
-  public void setImageUploadContentType(final String val) {
-    imageUploadContentType = val;
-  }
-
-  public String getImageUploadContentType() {
-    return imageUploadContentType;
+  public List<UploadedFile> getUploadedFiles() {
+    return uploadFiles;
   }
 
   @Override
-  public UploadFileInfo getImageUploadInfo() {
-    if (imageUpload == null) {
+  public UploadFileInfo getUploadFileInfo(final String name) {
+    if (uploadFiles == null) {
       return null;
     }
 
-    return new UploadFileInfoImpl(imageUpload,
-                                  imageUploadFileName,
-                                  imageUploadContentType);
-  }
+    final AtomicReference<UploadFileInfo> info = new AtomicReference<>();
 
-  @StrutsParameter
-  public void setUploadFileFileName(final String val) {
-    uploadFileFileName = val;
-  }
+    uploadFiles
+        .stream()
+        .filter(uf -> uf.getInputName().equals(name))
+        .findFirst()
+        .ifPresent(uf -> {
+          final File theFile;
+          if (uf.getContent() instanceof final File file) {
+            theFile = file;
+          } else {
+            theFile = new File(uf.getAbsolutePath());
+          }
+          info.set(new UploadFileInfoImpl(theFile,
+                                          uf.getName(),
+                                          uf.getContentType()));
+        });
 
-  public String getUploadFileFileName() {
-    return uploadFileFileName;
-  }
-
-  /**
-   * @param val the form file
-   */
-  @StrutsParameter
-  public void setUploadFile(final File val) {
-    uploadFile = val;
-  }
-
-  /**
-   * @return FormFile
-   */
-  public File getUploadFile() {
-    return uploadFile;
-  }
-
-  @StrutsParameter
-  public void setUploadFileContentType(final String val) {
-    uploadFileContentType = val;
-  }
-
-  public String getUploadFileContentType() {
-    return uploadFileContentType;
-  }
-
-  @Override
-  public UploadFileInfo getUploadFileInfo() {
-    if (uploadFile == null) {
-      return null;
-    }
-
-    return new UploadFileInfoImpl(uploadFile,
-                                  uploadFileFileName,
-                                  uploadFileContentType);
+    return info.get();
   }
 }
 

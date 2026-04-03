@@ -32,8 +32,8 @@ import org.bedework.base.exc.BedeworkException;
 import org.bedework.base.response.GetEntityResponse;
 import org.bedework.calfacade.BwAttachment;
 import org.bedework.calfacade.BwAttendee;
-import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventObj;
@@ -47,7 +47,6 @@ import org.bedework.calfacade.svc.EventInfo.UpdateResult;
 import org.bedework.calfacade.svc.RealiasResult;
 import org.bedework.calfacade.util.CalFacadeUtil;
 import org.bedework.calfacade.util.ChangeTableEntry;
-import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.Attendees;
 import org.bedework.client.web.rw.BwRWActionForm;
@@ -229,7 +228,7 @@ public class UpdateEventAction extends RWActionBase {
     boolean retry = false;
     boolean validationError = false;
 
-    final UploadFileInfo attachInfo = form.getUploadFileInfo();
+    final UploadFileInfo attachInfo = form.getUploadFileInfo("uploadFile");
     if (attachInfo != null) {
       final var attach = new BwAttachment();
 
@@ -251,7 +250,7 @@ public class UpdateEventAction extends RWActionBase {
     /* ---------------------- Uploaded image ----------------------------- */
 
     final List<BwXproperty> extras = new ArrayList<>();
-    final UploadFileInfo ff = form.getImageUploadInfo();
+    final UploadFileInfo ff = form.getUploadFileInfo("imageUpload");
 
     if ((ff != null) && (ff.getLength() > 0)) {
       final ProcessedImage pi = processImage(request, ff);

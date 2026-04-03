@@ -3,6 +3,7 @@
 */
 package org.bedework.util.webaction;
 
+import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -12,6 +13,8 @@ public interface UploadFileInfo {
   String getFileName();
 
   String getContentType();
+
+  File getContent();
 
   InputStream getContentStream();
 

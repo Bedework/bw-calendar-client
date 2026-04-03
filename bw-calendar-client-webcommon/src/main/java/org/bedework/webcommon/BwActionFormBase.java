@@ -34,8 +34,6 @@ import org.bedework.util.struts.UtilActionForm;
 
 import org.apache.struts2.interceptor.parameter.StrutsParameter;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.Collection;
 import java.util.Set;
 
@@ -123,7 +121,7 @@ public class BwActionFormBase extends UtilActionForm
   /** This allows us to add "calForm." to form fields. For Struts 1
    * the actual form is specified in the action mapping. In struts 2
    * every action is the bean.
-   *
+   * <br/>
    * This allows modifying the jsp and xsl ahead of switching to
    * struts 2.
    *
@@ -135,7 +133,7 @@ public class BwActionFormBase extends UtilActionForm
 
   /** One shot from a request.
    *
-   * @param val
+   * @param val a uid
    */
   @StrutsParameter
   public void setRequestedUid(final String val) {
@@ -152,7 +150,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val filter def
    */
   public void setCurrentFilter(final BwFilterDef val) {
     currentFilter = val;
@@ -215,7 +213,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param i
+   * @param i view index
    * @return view name
    */
   public String getViewTypeName(final int i) {
@@ -289,7 +287,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val calendar collection
    */
   public void setCalendar(final BwCollection val) {
     calendar = val;
@@ -341,7 +339,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val event formatter
    */
   public void setCurEventFmt(final EventFormatter val) {
     curEventFmt = val;
@@ -355,7 +353,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val true to list all
    */
   public void setListAllEvents(final boolean val) {
     listAllEvents = val;
@@ -386,7 +384,7 @@ public class BwActionFormBase extends UtilActionForm
 
   /** Event key for next action
    *
-   * @param val
+   * @param val the event key
    */
   public void setEventKey(final EventKey val) {
     eventKey = val;
@@ -400,7 +398,8 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val event info
+   * @param newEvent true for a new event
    */
   public void setEventInfo(final EventInfo val,
                            final boolean newEvent) {
@@ -435,7 +434,7 @@ public class BwActionFormBase extends UtilActionForm
   }
 
   /**
-   * @param val
+   * @param val sttaus for event
    */
   @StrutsParameter
   public void setEventStatus(final String val) {
@@ -515,10 +514,6 @@ public class BwActionFormBase extends UtilActionForm
    */
   public String getEventEndType() {
     return getEventDates().getEndType();
-  }
-
-  @Override
-  public void reset(final HttpServletRequest request) {
   }
 
   /* ====================================================================

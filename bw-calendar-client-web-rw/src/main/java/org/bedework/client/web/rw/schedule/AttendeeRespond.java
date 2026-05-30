@@ -24,12 +24,10 @@ import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.BwEventProxy;
 import org.bedework.calfacade.Participant;
-import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.calfacade.svc.EventInfo.UpdateResult;
-import org.bedework.calsvci.EventsI;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.Icalendar;
@@ -44,8 +42,6 @@ import static org.bedework.calsvci.EventsI.SetEntityCategoriesResult.success;
 import static org.bedework.client.web.rw.EventCommon.emitScheduleStatus;
 import static org.bedework.client.web.rw.EventCommon.refetchEvent;
 import static org.bedework.client.web.rw.EventCommon.setEntityCategories;
-import static org.bedework.client.web.rw.EventCommon.setEventContact;
-import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
 import static org.bedework.client.web.rw.EventCommon.validateEvent;
 
@@ -147,12 +143,11 @@ public class AttendeeRespond extends RWActionBase {
 
     if ("COUNTER".equals(methStr)) {
       /* Update the event from the incoming request parameters */
-      final boolean publicAdmin = cl.getPublicAdmin();
 
-      /* ------------------------ Text fields ------------------------------ */
+      /* -------------- Text fields -------------------- */
       setEventText(request, ev, true, null);
 
-      /* -------------------------- Dates ------------------------------ */
+      /* ---------------- Dates -------------------- */
       final var res = form.getEventDates().updateEvent(ei);
       if (forwardValidationError.equals(res)) {
         return res;
@@ -162,20 +157,15 @@ public class AttendeeRespond extends RWActionBase {
       //  incSequence = true;
      // }
 
-      /* -------------------------- Location ------------------------------ */
-      if (setEventLocation(request, ei, false)) {
+      /* ---------------- Location -------------------- */
+      // if (setEventLocation(request, ei, false)) {
         // RFC says maybe for this.
         //incSequence = true;
-      }
+      //}
 
-      /* -------------------------- Contact ------------------------------ */
-      if (publicAdmin) {
-        if (!setEventContact(request, false)) {
-          return forwardValidationError;
-        }
-      }
+      /* --------------- Contact -------------------- */
 
-      /* -------------------------- Categories ------------------------------ */
+      /* -------------- Categories ------------------ */
       final var secr =
               setEntityCategories(request, null,
                                   ev, null);
@@ -184,7 +174,7 @@ public class AttendeeRespond extends RWActionBase {
       }
     }
 
-    /* ------------------ final validation -------------------------- */
+    /* ---------- final validation ------------------ */
 
     final Collection<ValidationError>  ves =
             validateEvent(cl,

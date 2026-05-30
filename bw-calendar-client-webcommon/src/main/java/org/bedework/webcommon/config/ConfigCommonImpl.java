@@ -83,16 +83,6 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
   }
 
   @Override
-  public void setLogPrefix(final String val) {
-    logPrefix = val;
-  }
-
-  @Override
-  public String getLogPrefix() {
-    return logPrefix;
-  }
-
-  @Override
   public void setAppType(final String val) {
     appType = val;
   }
@@ -100,16 +90,6 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
   @Override
   public String getAppType() {
     return appType;
-  }
-
-  @Override
-  public void setPublicAdmin(final boolean val) {
-    publicAdmin = val;
-  }
-
-  @Override
-  public boolean getPublicAdmin() {
-    return publicAdmin;
   }
 
   @Override
@@ -295,12 +275,10 @@ public class ConfigCommonImpl extends ConfigBase<ConfigCommonImpl>
 
   /** Copy this object to val.
    *
-   * @param val
+   * @param val destination
    */
   public void copyTo(final ConfigCommonImpl val) {
-    val.setLogPrefix(getLogPrefix());
     val.setAppType(getAppType());
-    val.setPublicAdmin(getPublicAdmin());
     val.setGuestMode(getGuestMode());
     val.setPublicAdminUri(getPublicAdminUri());
     val.setPublicCalendarUri(getPublicCalendarUri());

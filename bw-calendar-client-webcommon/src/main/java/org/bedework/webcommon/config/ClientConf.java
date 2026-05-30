@@ -60,16 +60,6 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
   }
 
   @Override
-  public void setLogPrefix(final String val) {
-    getConfig().setLogPrefix(val);
-  }
-
-  @Override
-  public String getLogPrefix() {
-    return getConfig().getLogPrefix();
-  }
-
-  @Override
   public void setAppType(final String val) {
     getConfig().setAppType(val);
   }
@@ -77,16 +67,6 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
   @Override
   public String getAppType() {
     return getConfig().getAppType();
-  }
-
-  @Override
-  public void setPublicAdmin(final boolean val) {
-    getConfig().setPublicAdmin(val);
-  }
-
-  @Override
-  public boolean getPublicAdmin() {
-    return getConfig().getPublicAdmin();
   }
 
   @Override
@@ -258,17 +238,6 @@ public class ClientConf<X extends ConfigCommonImpl> extends ConfBase<X>
   public String getCalSuite() {
     return getConfig().getCalSuite();
   }
-
-  /*
-  @Override
-  public void setPortalPlatform(final String val) {
-    getConfig().setPortalPlatform(val);
-  }
-
-  @Override
-  public String getPortalPlatform() {
-    return getConfig().getPortalPlatform();
-  }*/
 
   @Override
   public String loadConfig() {

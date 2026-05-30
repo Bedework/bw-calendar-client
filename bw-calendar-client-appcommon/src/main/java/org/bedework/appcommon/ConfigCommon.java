@@ -41,16 +41,6 @@ public interface ConfigCommon extends Serializable {
  @MBeanInfo("The mbean class.")
  String getMbeanClassName();
 
- /**
-   * @param val
-   */
-  void setLogPrefix(String val);
-
-  /**
-   * @return String
-   */
-  String getLogPrefix();
-
   /**
    * @param val
    */
@@ -60,17 +50,6 @@ public interface ConfigCommon extends Serializable {
    * @return String
    */
   String getAppType();
-
-  /**
-   *
-   * @param val True for a public admin client.
-   */
-  void setPublicAdmin(boolean val);
-
-  /**
-   * @return boolean True for a public admin client.
-   */
-  boolean getPublicAdmin();
 
   /**
    *

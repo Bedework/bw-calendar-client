@@ -43,10 +43,6 @@ public class AdminBwModule extends RwBwModule {
                              final String requestedUser,
                              boolean canSwitch,
                              final ConfigCommon conf) {
-    if (!conf.getPublicAdmin()) {
-      throw new BedeworkException("Admin client called for non admin app");
-    }
-
     final var globals = (BwAdminWebGlobals)request.getGlobals();
     final BwModuleState mstate = getState();
     AdminClient client = (AdminClient)getClient();
@@ -54,6 +50,9 @@ public class AdminBwModule extends RwBwModule {
     String calSuiteName = null;
 
     if (client != null) {
+      if (!client.getPublicAdmin()) {
+        throw new BedeworkException("Admin client called for non admin app");
+      }
       /* Calendar suite we are administering is the one we find attached to a
        * group as we proceed up the tree
        */

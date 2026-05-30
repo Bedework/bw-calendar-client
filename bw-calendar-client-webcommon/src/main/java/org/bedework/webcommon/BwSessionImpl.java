@@ -85,8 +85,6 @@ public class BwSessionImpl implements Logged, BwSession {
 
   private final ConfigCommon config;
 
-  private final boolean publicAdmin;
-
   private boolean newSession = true;
 
   private BwAuthUserPrefs curAuthUserPrefs;
@@ -118,7 +116,6 @@ public class BwSessionImpl implements Logged, BwSession {
     super();
     
     this.config = config;
-    publicAdmin = config.getPublicAdmin();
     setSessionNum(appName);
   }
 
@@ -488,7 +485,7 @@ public class BwSessionImpl implements Logged, BwSession {
     final BwCollection col;
     final var globals = request.getBwGlobals();
     final var cl = request.getClient();
-    final boolean publicAdmin = cl.getPublicAdmin(); //form.getConfig().getPublicAdmin();
+    final boolean publicAdmin = cl.getPublicAdmin();
 
     final BwPrincipal<?> p;
 
@@ -668,7 +665,7 @@ public class BwSessionImpl implements Logged, BwSession {
 
         final BwEvent ev = form.getEvent();
 
-        if (!publicAdmin && forEventUpdate &&
+        if (!cl.getPublicAdmin() && forEventUpdate &&
                 (ev != null) &&
                 (ev.getCategories() != null)) {
           for (final BwCategory cat: ev.getCategories()) {
@@ -718,7 +715,9 @@ public class BwSessionImpl implements Logged, BwSession {
 
           final BwEvent ev = form.getEvent();
 
-          if (!publicAdmin && forEventUpdate && (ev != null)) {
+          if (!cl.getPublicAdmin() &&
+              forEventUpdate &&
+              (ev != null)) {
             final BwContact ent = ev.getContact();
 
             if ((ent != null) &&
@@ -904,8 +903,10 @@ public class BwSessionImpl implements Logged, BwSession {
 
           final BwEvent ev = form.getEvent();
 
-          if (!publicAdmin && forEventUpdate && (ev != null)) {
-            final BwLocation loc = ev.getLocation();
+          if (!cl.getPublicAdmin() &&
+              forEventUpdate &&
+              (ev != null)) {
+            final var loc = ev.getLocation();
 
             if ((loc != null) &&
                     (!loc.getOwnerHref().equals(cl.getCurrentPrincipalHref()))) {

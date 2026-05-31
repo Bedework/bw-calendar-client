@@ -105,8 +105,6 @@ public class ROClientImpl implements Logged, Client {
 
   protected boolean superUser;
 
-  protected boolean publicAdmin;
-
   protected BwPrincipal<?> currentPrincipal;
   private String currentCalendarAddress;
 
@@ -134,7 +132,7 @@ public class ROClientImpl implements Logged, Client {
      updated.
    */
   protected long requestEnd;
-  private String viewMode;
+  protected String viewMode;
 
   /* The list of cloned admin groups for the use of the user client
    */
@@ -352,7 +350,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public boolean getPublicAdmin() {
-    return publicAdmin;
+    return false;
   }
 
   @Override
@@ -398,7 +396,7 @@ public class ROClientImpl implements Logged, Client {
 
   @Override
   public boolean isDefaultIndexPublic() {
-    return getWebSubmit() || getPublicAdmin() || isGuest();
+    return getWebSubmit() || isGuest();
   }
 
   @Override
@@ -540,6 +538,30 @@ public class ROClientImpl implements Logged, Client {
     }
 
     return svci.getPrefsHandler().get();
+  }
+
+  @Override
+  public boolean autoRemoveViewCollection() {
+    return getPreferences().getUserMode() == BwPreferences.basicMode;
+  }
+
+  @Override
+  public boolean getHour24() {
+    if (!getWebSubmit() &&
+        !isGuest()) {
+      return getPreferences().getHour24();
+    }
+
+    return getConf().getHour24();
+  }
+
+  @Override
+  public String getEndType() {
+    if (!isGuest()) {
+      return getPreferences().getPreferredEndType();
+    }
+
+    return BwPreferences.preferredEndTypeDuration;
   }
 
   public BwPreferences getCalsuitePreferences() {
@@ -1100,11 +1122,7 @@ public class ROClientImpl implements Logged, Client {
 
     viewMode = getPreferences().getDefaultViewMode();
     if (viewMode == null) {
-      if (getPublicAdmin()) {
-        viewMode = listViewMode;
-      } else {
-        viewMode = gridViewMode;
-      }
+      viewMode = gridViewMode;
     }
 
     return viewMode;
@@ -1148,6 +1166,11 @@ public class ROClientImpl implements Logged, Client {
   }
 
   @Override
+  public boolean includeDeletedInSearch() {
+    return false;
+  }
+
+  @Override
   public SearchResult search(final SearchParams params) {
     checkUpdate();
     searchParams = params;
@@ -1173,7 +1196,7 @@ public class ROClientImpl implements Logged, Client {
 
     final DeletedState delState;
 
-    if (getPublicAdmin() && isSuperUser()) {
+    if (includeDeletedInSearch()) {
       delState = includeDeleted;
     } else {
       delState = noDeleted;

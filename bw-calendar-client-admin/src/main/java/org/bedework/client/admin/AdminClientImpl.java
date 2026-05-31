@@ -115,7 +115,6 @@ public class AdminClientImpl extends RWClientImpl
     svci = new CalSvcFactoryDefault().getSvc(pars);
 
     superUser = svci.getSuperUser();
-    publicAdmin = true;
     publicView = false;
     resetIndexers();
   }
@@ -127,7 +126,6 @@ public class AdminClientImpl extends RWClientImpl
     copyCommon(id, cl);
 
     cl.superUser = svci.getSuperUser();
-    cl.publicAdmin = true;
 
     cl.setGroupSet(getGroupSet());
     cl.setChoosingGroup(getChoosingGroup());
@@ -142,9 +140,19 @@ public class AdminClientImpl extends RWClientImpl
     svci.endTransaction();
   }
 
-  /* ------------------------------------------------------------
+  @Override
+  public boolean getPublicAdmin() {
+    return true;
+  }
+
+  @Override
+  public boolean isDefaultIndexPublic() {
+    return true;
+  }
+
+  /* -----------------------------------------------------
    *                     Principals
-   * ------------------------------------------------------------ */
+   * ----------------------------------------------------- */
 
   @Override
   public boolean getAdminGroupMaintOK() {
@@ -246,9 +254,18 @@ public class AdminClientImpl extends RWClientImpl
     return authUsers;
   }
 
-  /* ------------------------------------------------------------
+  /* ------------------------------------------------------
+   *                     Search
+   * ------------------------------------------------------ */
+
+  @Override
+  public boolean includeDeletedInSearch() {
+    return isSuperUser();
+  }
+
+  /* ------------------------------------------------------
    *                     Admin Groups
-   * ------------------------------------------------------------ */
+   * ------------------------------------------------------ */
 
   @Override
   public String getAdminGroupsIdPrefix() {
@@ -360,6 +377,21 @@ public class AdminClientImpl extends RWClientImpl
   }
 
   @Override
+  public boolean autoRemoveViewCollection() {
+    return false;
+  }
+
+  @Override
+  public boolean getHour24() {
+    return getConf().getHour24();
+  }
+
+  @Override
+  public String getEndType() {
+    return BwPreferences.preferredEndTypeDuration;
+  }
+
+  @Override
   public BwPreferences getPreferences(final String user) {
     if (!superUser) {
       return null;
@@ -391,6 +423,24 @@ public class AdminClientImpl extends RWClientImpl
     }
 
     return super.getSpecial(calType, create);
+  }
+
+  /* ------------------------------------------------------
+   *                     Views
+   * ------------------------------------------------------ */
+
+  @Override
+  public String getViewMode() {
+    if (viewMode != null) {
+      return viewMode;
+    }
+
+    viewMode = getPreferences().getDefaultViewMode();
+    if (viewMode == null) {
+      viewMode = listViewMode;
+    }
+
+    return viewMode;
   }
 
   /* ------------------------------------------------------------

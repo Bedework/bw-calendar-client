@@ -665,10 +665,11 @@ public class BwSessionImpl implements Logged, BwSession {
 
         final BwEvent ev = form.getEvent();
 
-        if (!cl.getPublicAdmin() && forEventUpdate &&
-                (ev != null) &&
-                (ev.getCategories() != null)) {
-          for (final BwCategory cat: ev.getCategories()) {
+        if (!cl.getPublicAdmin() &&
+            forEventUpdate &&
+            (ev != null) &&
+            (ev.getCategories() != null)) {
+          for (final var cat: ev.getCategories()) {
             if (!cat.getOwnerHref().equals(cl.getCurrentPrincipalHref())) {
               vals.add(cat);
             }
@@ -690,9 +691,9 @@ public class BwSessionImpl implements Logged, BwSession {
                                        .toList());
   }
 
-  /* ==============================================================
+  /* =========================================================
    *                   Contacts
-   * ============================================================== */
+   * ======================================================== */
 
   @Override
   public Collection<BwContact> getContacts(
@@ -786,9 +787,9 @@ public class BwSessionImpl implements Logged, BwSession {
                                                                           .toList()));
   }
 
-  /* ==============================================================
+  /* ========================================================
    *                   Locations
-   * ============================================================== */
+   * ======================================================== */
 
   @Override
   public void embedLocations(final BwRequest request,

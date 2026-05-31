@@ -23,7 +23,6 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
@@ -68,9 +67,8 @@ public class DeleteCalendarAction extends RWActionBase {
      * automatically remove the subscription. For others we list the references
      */
 
-    boolean reffed = false;
-    final boolean autoRemove = !cl.getPublicAdmin() &&
-      (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
+    var reffed = false;
+    final var autoRemove = cl.autoRemoveViewCollection();
 
     for (final BwView v: cl.getAllViews()) {
       final List<String> paths = v.getCollectionPaths();

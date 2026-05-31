@@ -23,8 +23,6 @@ import org.bedework.appcommon.ClientMessage;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
-import org.bedework.calfacade.svc.BwPreferences;
-import org.bedework.calfacade.svc.BwView;
 import org.bedework.client.rw.RWClient;
 import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.webcommon.BwRequest;
@@ -92,8 +90,7 @@ public class MoveCalendarAction extends RWActionBase {
      */
 
     boolean reffed = false;
-    final var autoRemove = !cl.getPublicAdmin() &&
-      (cl.getPreferences().getUserMode() == BwPreferences.basicMode);
+    final var autoRemove = cl.autoRemoveViewCollection();
 
     for (final var v:  cl.getAllViews()) {
       final List<String> paths = v.getCollectionPaths();

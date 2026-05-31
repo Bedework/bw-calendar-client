@@ -50,9 +50,6 @@ public class AdminBwModule extends RwBwModule {
     String calSuiteName = null;
 
     if (client != null) {
-      if (!client.getPublicAdmin()) {
-        throw new BedeworkException("Admin client called for non admin app");
-      }
       /* Calendar suite we are administering is the one we find attached to a
        * group as we proceed up the tree
        */

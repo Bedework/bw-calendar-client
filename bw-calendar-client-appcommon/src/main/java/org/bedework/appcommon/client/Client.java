@@ -352,6 +352,13 @@ public interface Client extends Serializable {
    */
   BwPreferences getPreferences();
 
+  /**
+   *
+   * @return true if we should auto remove deleted
+   *              collections from view
+   */
+  boolean autoRemoveViewCollection();
+
   /** Returns the current calsuite preferences.
    *
    * @return BwPreferences   prefs for the current calsuite
@@ -370,6 +377,20 @@ public interface Client extends Serializable {
    * @param  val     BwPreferences prefs for a user
    */
   void updatePreferences(BwPreferences val);
+
+  /**
+   *
+   * @return May come from config or prefs depending on
+   *         client type;
+   */
+  boolean getHour24();
+
+  /**
+   *
+   * @return May come from config or prefs depending on
+   *         client type;
+   */
+  String getEndType();
 
   /** Get the default calendar path for the current user.
    *
@@ -825,9 +846,9 @@ public interface Client extends Serializable {
    */
   void flushState();
 
-  /* ------------------------------------------------------------
+  /* ------------------------------------------------------
    *                     Search
-   * ------------------------------------------------------------ */
+   * ------------------------------------------------------ */
 
   /** Called to reset any search. Signals to the application it needs
    * to rebuild the search
@@ -839,6 +860,12 @@ public interface Client extends Serializable {
    *
    */
   void clearSearchEntries();
+
+  /**
+   *
+   * @return depends on admin/user
+   */
+  boolean includeDeletedInSearch();
 
   /** Called to search an index. If params.publick is false use the
    * current principal to identify the index.

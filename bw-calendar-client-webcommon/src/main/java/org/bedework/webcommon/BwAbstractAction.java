@@ -167,27 +167,15 @@ public abstract class BwAbstractAction
         info(loginMsg);
       }
 
-      globals.setHour24(conf.getHour24());
-      if (!cl.getPublicAdmin() &&
-              !cl.getWebSubmit() &&
-              !cl.isGuest()) {
-        globals.setHour24(prefs.getHour24());
-      }
+      globals.setHour24(cl.getHour24());
 
-      final String endDateType;
-      if (!cl.getPublicAdmin() && !cl.isGuest()) {
-        endDateType = prefs.getPreferredEndType();
-      } else {
-        endDateType = BwPreferences.preferredEndTypeDuration;
-      }
       form.assignEventDates(
               new EventDates(cl.getCurrentPrincipalHref(),
                              mstate.getCalInfo(),
                              globals.getHour24(),
-                             endDateType,
+                             cl.getEndType(),
                              conf.getMinIncrement(),
                              request.getErr()));
-
 
       bsess.embedFilters(bwreq);
 

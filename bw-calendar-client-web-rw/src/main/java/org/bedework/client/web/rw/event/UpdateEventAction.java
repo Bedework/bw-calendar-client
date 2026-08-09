@@ -56,7 +56,6 @@ import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
 import org.bedework.util.webaction.UploadFileInfo;
@@ -91,6 +90,9 @@ import static org.bedework.client.web.rw.EventCommon.setEventContact;
 import static org.bedework.client.web.rw.EventCommon.setEventLocation;
 import static org.bedework.client.web.rw.EventCommon.setEventText;
 import static org.bedework.client.web.rw.EventCommon.validateEventDates;
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
+import static org.bedework.util.dates.DateFormatter.icalDateTimeFormat;
+import static org.bedework.util.dates.DateFormatter.icalDateTimeUTCFormat;
 
 /** Action to add or modify an Event. The form has an addingEvent property to
  * distinguish.
@@ -1295,20 +1297,20 @@ public class UpdateEventAction extends RWActionBase {
        */
       final TimeDateComponents start = form.getEventDates().getStartDate();
 
-      if (DateTimeUtil.isISODate(until)) {
+      if (icalDateFormat.matches(until)) {
         if (!start.getDateOnly()) {
           // Append start time.
           until += "T" + start.getDateTime().getDtval().substring(8);
         }
       }
-      if (DateTimeUtil.isISODateTime(until)) {
+      if (icalDateTimeFormat.matches(until)) {
         // Floating - convert to UTC using start timezone.
         try {
           until = Timezones.getUtc(until, start.getTzid());
         } catch (final TimezonesException e) {
           throw new BedeworkException(e);
         }
-      } else if (!DateTimeUtil.isISODateTimeUTC(until)) {
+      } else if (!icalDateTimeUTCFormat.matches(until)) {
         request.error(ValidationError.invalidRecurUntil, until);
         return null;
       }

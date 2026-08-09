@@ -21,22 +21,20 @@ package org.bedework.appcommon;
 
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.locale.BwLocale;
-import org.bedework.util.timezones.DateTimeUtil;
+import org.bedework.util.dates.LocalizedDatesUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
 
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.FieldPosition;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-/** Representation of the MyCalendar uwcal class.
- *<br/>
- * This object is intended to allow applications to interact with the
- * calendar back end. It does not represent the internal stored structure of a
- * MyCalendar object.
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
+
+/** This object is intended to allow applications to interact with the
+ * calendar back end.
  *
  *   @author Mike Douglass douglm rpi.edu
  *  @version 1.0
@@ -47,7 +45,7 @@ public class CalendarFormatter implements Serializable {
    */
   private final Calendar calendar;
 
-  private static final DateFormat isoformat = new SimpleDateFormat("yyyyMMdd");
+  private final LocalizedDatesUtil dates;
 
   /** Create a CalendarFormatter object representing a particular date and time
    * in the current locale.
@@ -65,6 +63,7 @@ public class CalendarFormatter implements Serializable {
     }
 
     calendar.setTime(date);
+    dates = new LocalizedDatesUtil().setLocale(BwLocale.getLocale());
   }
 
   /** Create a CalendarFormatter object representing a particular date and time.
@@ -74,6 +73,7 @@ public class CalendarFormatter implements Serializable {
    */
   private CalendarFormatter(final Calendar calendar) {
     this.calendar = calendar;
+    dates = new LocalizedDatesUtil().setLocale(BwLocale.getLocale());
   }
 
   /** Return Calendar object representing this object
@@ -245,60 +245,9 @@ public class CalendarFormatter implements Serializable {
     return getTwoDigit(getHour());
   }
 
-  /* * Get a two-digit representation of the minutes
-   *
-   *   @return String   two-digit representation of the minutes for this object.
-   * /
-  public String getTwoDigitMinute() {
-    return getTwoDigit(getMinute());
-  }
-
-  /** ===================================================================
+  /* ==============================================================
    *                Get various representations of date/time
-   *  =================================================================== */
-
-  /**  Get a short String representation of the time of day
-   *
-   * @return String        Short representation of the time of day
-   *            represented by this object.
-   */
-  public String getTimeString() {
-    return getTimeString(DateFormat.getTimeInstance(DateFormat.SHORT));
-  }
-
-  /** Get a <code>String</code> representation of the time of day
-   *
-   * @param df      DateFormat format for the result
-   * @return String  time of day, formatted per df
-   */
-  public String getTimeString(final DateFormat df) {
-    synchronized (df) {
-      try {
-        df.setTimeZone(Timezones.getDefaultTz());
-        return df.format(getTime());
-      } catch (final TimezonesException tze) {
-        throw new BedeworkException(tze);
-      }
-    }
-  }
-
-  /**  Get an ISO String representation of the date
-   *
-   * @return String        ISO representation of the date
-   *            represented by this object.
-   */
-  public String getISODateString() {
-    return DateTimeUtil.isoDate(getTime());
-  }
-
-  /**  Get an ISO String representation of the date/time
-   *
-   * @return String        ISO representation of the date/time
-   *            represented by this object.
-   */
-  public String getISODateTimeString() {
-    return DateTimeUtil.isoDateTime(getTime());
-  }
+   * ============================================================== */
 
   /**  Get a short String representation of the date
    *
@@ -306,7 +255,7 @@ public class CalendarFormatter implements Serializable {
    *            represented by this object.
    */
   public String getDateString() {
-    return getFormattedDateString(DateFormat.SHORT);
+    return dates.getShortDateFormat().fromDate(getTime());
   }
 
   /**  Get a long String representation of the date
@@ -315,58 +264,16 @@ public class CalendarFormatter implements Serializable {
    *            represented by this object.
    */
   public String getLongDateString() {
-    return getFormattedDateString(DateFormat.LONG);
+    return dates.getLongDateFormat().fromDate(getTime());
   }
 
-  /**  Get a full String representation of the date
+  /**  Get a short String representation of the time of day
    *
-   * @return String        full representation of the date
+   * @return String        Short representation of the time of day
    *            represented by this object.
    */
-  public String getFullDateString() {
-    return getFormattedDateString(DateFormat.FULL);
-  }
-
-  /** Get a <code>String</code> representation of the date
-   *
-   * @param style       int DateFormat style for the result
-   * @return String  date formatted per df
-   */
-  public String getFormattedDateString(final int style) {
-    return getFormattedDateString(DateFormat.getDateInstance(style));
-  }
-
-  /** Get a <code>String</code> representation of the date
-   *
-   * @param df      DateFormat format for the result
-   * @return String  date formatted per df
-   */
-  public String getFormattedDateString(final DateFormat df) {
-    synchronized (df) {
-      try {
-        df.setTimeZone(Timezones.getDefaultTz());
-        return df.format(getTime());
-      } catch (final TimezonesException tze) {
-        throw new BedeworkException(tze);
-      }
-    }
-  }
-
-  /** Get a <code>String</code> representation of the given date
-   *
-   * @param df      DateFormat format for the result
-   * @param date    Date value
-   * @return String  date formatted per df
-   */
-  public String getFormattedDateString(final DateFormat df, final Date date) {
-    synchronized (df) {
-      try {
-        df.setTimeZone(Timezones.getDefaultTz());
-        return df.format(date.getTime());
-      } catch (final TimezonesException tze) {
-        throw new BedeworkException(tze);
-      }
-    }
+  public String getTimeString() {
+    return dates.getShortTimeFormat().fromDate(getTime());
   }
 
   /** Get an eight-digit String representation of the date
@@ -374,9 +281,7 @@ public class CalendarFormatter implements Serializable {
    * @return String  date in the form <code>YYYYMMDD</code>
    */
   public String getDateDigits() {
-    synchronized (isoformat) {
-      return getFormattedDateString(isoformat);
-    }
+    return icalDateFormat.fromDate(getTime());
   }
 
   /* =======================================================
@@ -460,23 +365,21 @@ public class CalendarFormatter implements Serializable {
     return addTime(Calendar.YEAR, 1);
   }
 
-  /* ====================================================================
+  /* ============================================================
    *                Comparisons
-   * ==================================================================== */
+   * ============================================================ */
 
   /**
    * @return boolean true if this alendar represents today.
    */
   public boolean isToday() {
-    synchronized (isoformat) {
-      return getFormattedDateString(isoformat).equals(
-            getFormattedDateString(isoformat, new Date()));
-    }
+    return icalDateFormat.fromDate(getTime())
+                         .equals(icalDateFormat.fromDate(new Date()));
   }
 
-  /* ====================================================================
+  /* ===========================================================
    *                Object methods
-   * ==================================================================== */
+   * =========================================================== */
 
   @Override
   public boolean equals(final Object val) {

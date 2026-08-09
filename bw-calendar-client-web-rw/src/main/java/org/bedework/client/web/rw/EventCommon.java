@@ -11,8 +11,8 @@ import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwAttendee;
-import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwCategory;
+import org.bedework.calfacade.BwCollection;
 import org.bedework.calfacade.BwContact;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.BwDuration;
@@ -26,8 +26,8 @@ import org.bedework.calfacade.BwString;
 import org.bedework.calfacade.BwXproperty;
 import org.bedework.calfacade.CalFacadeDefs;
 import org.bedework.calfacade.RecurringRetrievalMode;
-import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.ScheduleRecipientResult;
+import org.bedework.calfacade.ScheduleResult;
 import org.bedework.calfacade.base.BwStringBase;
 import org.bedework.calfacade.base.CategorisedEntity;
 import org.bedework.calfacade.base.StartEndComponent;
@@ -49,7 +49,6 @@ import org.bedework.util.calendar.ScheduleStates;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.HttpServletUtils;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.util.timezones.TimezonesException;
 import org.bedework.webcommon.BwRequest;
@@ -70,6 +69,7 @@ import java.util.TreeSet;
 import static org.bedework.calsvci.EventsI.SetEntityCategoriesResult.success;
 import static org.bedework.client.web.rw.EventProps.validateContact;
 import static org.bedework.client.web.rw.EventProps.validateLocation;
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
 import static org.bedework.util.misc.Util.checkNull;
 import static org.bedework.webcommon.ForwardDefs.forwardBadRequest;
 import static org.bedework.webcommon.ForwardDefs.forwardError;
@@ -368,7 +368,7 @@ public class EventCommon {
       try {
         start = mstate.getCalInfo().getFirstDayOfThisWeek(
                 Timezones.getDefaultTz(),
-                DateTimeUtil.fromISODate(st));
+                icalDateFormat.toDate(st));
       } catch (final TimezonesException e) {
         throw new BedeworkException(e);
       }

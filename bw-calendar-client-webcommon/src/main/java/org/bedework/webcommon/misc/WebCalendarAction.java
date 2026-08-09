@@ -18,7 +18,6 @@
 */
 package org.bedework.webcommon.misc;
 
-import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
 import org.bedework.base.exc.BedeworkAccessException;
 import org.bedework.calfacade.BwDateTime;
@@ -28,9 +27,7 @@ import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.Icalendar;
 import org.bedework.util.calendar.IcalendarUtil;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
-import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -39,9 +36,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
 
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 
 /**
@@ -95,8 +91,7 @@ public class WebCalendarAction extends BwAbstractAction {
       if (days != -32767) {
         start.add(Calendar.DATE, days);
       } else {
-        final Date jdt = DateTimeUtil.fromISODate(st);
-        start.setTime(jdt);
+        start.setTime(icalDateFormat.toDate(st));
       }
     }
 
@@ -110,8 +105,7 @@ public class WebCalendarAction extends BwAbstractAction {
       if (days != -32767) {
         end.add(Calendar.DATE, days);
       } else {
-        final Date jdt = DateTimeUtil.fromISODate(et);
-        end.setTime(jdt);
+        end.setTime(icalDateFormat.toDate(et));
       }
     }
 
@@ -135,11 +129,11 @@ public class WebCalendarAction extends BwAbstractAction {
 
     try {
       final BwDateTime sdt = BwDateTimeUtil.getDateTime(
-              DateTimeUtil.isoDate(start.getTime()),
-              true, false, null);
+          icalDateFormat.fromDate(start.getTime()),
+          true, false, null);
       final BwDateTime edt = BwDateTimeUtil.getDateTime(
-              DateTimeUtil.isoDate(end.getTime()),
-              true, false, null);
+          icalDateFormat.fromDate(end.getTime()),
+          true, false, null);
 
       if (debug()) {
         debug("getEvents for start = " + sdt +

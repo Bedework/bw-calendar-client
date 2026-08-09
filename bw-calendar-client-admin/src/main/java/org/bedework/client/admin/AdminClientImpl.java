@@ -150,9 +150,14 @@ public class AdminClientImpl extends RWClientImpl
     return true;
   }
 
-  /* -----------------------------------------------------
+  /* ------------------------------------------------------------
    *                     Principals
-   * ----------------------------------------------------- */
+   * ------------------------------------------------------------ */
+
+  @Override
+  public BwPrincipal<?> getOwner() {
+    return svci.getUsersHandler().getPublicUser();
+  }
 
   @Override
   public boolean getAdminGroupMaintOK() {

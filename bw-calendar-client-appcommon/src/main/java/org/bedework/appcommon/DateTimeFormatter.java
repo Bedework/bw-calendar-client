@@ -21,7 +21,6 @@ package org.bedework.appcommon;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.locale.BwLocale;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 
 import com.ibm.icu.text.DateFormat;
@@ -36,6 +35,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+
+import static org.bedework.util.dates.DateFormatter.icalDateTimeFormat;
 
 /** Class to format and provide segments of dates and times.
  *
@@ -576,15 +577,15 @@ public class DateTimeFormatter
       if (tzIsLocal) {
         formatted = tzFormatted;
       } else {
-        final String localIso =
-                DateTimeUtil.isoDateTime(dt, Timezones.getDefaultTz());
-        formatted = new FormattedDate(dt, localIso, date.getDateType(),
+        formatted = new FormattedDate(dt,
+                                      icalDateTimeFormat.fromDate(dt),
+                                      date.getDateType(),
                                       tz);
       }
     } catch (final Throwable t) {
       error = true;
-      tzFormatted = new FormattedDate(error);
-      formatted = new FormattedDate(error);
+      tzFormatted = new FormattedDate(true);
+      formatted = new FormattedDate(true);
     }
   }
 

@@ -23,14 +23,16 @@ import org.bedework.base.exc.BedeworkException;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.exc.CalFacadeErrorCode;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.util.timezones.DateTimeUtil;
-import org.bedework.util.timezones.TimeZoneName;
+import org.bedework.util.timezones
+    .TimeZoneName;
 import org.bedework.util.timezones.Timezones;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import java.util.TreeSet;
+
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
+import static org.bedework.util.dates.DateFormatter.icalDateTimeFormat;
 
 /** A wrapper around date/time objects that is used to generate form elements
 
@@ -294,7 +296,7 @@ public class TimeDateComponents implements Serializable {
    *
    */
   public void setNow() {
-    setDateTime(DateTimeUtil.isoDateTime(new Date(System.currentTimeMillis())));
+    setDateTime(icalDateTimeFormat.fromDate());
   }
 
   /** Set this object's date.
@@ -302,9 +304,9 @@ public class TimeDateComponents implements Serializable {
    * @param val   String date to use as yyyyMMdd or yyyyMMddThhmmss
    */
   public void setDateTime(final String val) {
-      if (DateTimeUtil.isISODateTime(val)) {
+      if (icalDateTimeFormat.matches(val)) {
         setDateOnly(false);
-      } else if (DateTimeUtil.isISODate(val)) {
+      } else if (icalDateFormat.matches(val)) {
         setDateOnly(true);
       } else {
         throw new BedeworkException(CalFacadeErrorCode.badDate +

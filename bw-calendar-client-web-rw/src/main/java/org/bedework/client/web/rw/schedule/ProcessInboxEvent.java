@@ -21,6 +21,7 @@ package org.bedework.client.web.rw.schedule;
 import org.bedework.appcommon.ClientMessage;
 import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.RecurringRetrievalMode.Rmode;
 import org.bedework.calfacade.svc.EventInfo;
@@ -29,15 +30,15 @@ import org.bedework.client.web.rw.RWActionBase;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.IcalDefs;
-import org.bedework.base.response.GetEntitiesResponse;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwRequest;
 import org.bedework.webcommon.BwSession;
 
 import java.util.Date;
 
-import static org.bedework.client.web.rw.EventCommon.copyEvent;
 import static org.bedework.base.response.Response.Status.notFound;
+import static org.bedework.client.web.rw.EventCommon.copyEvent;
+import static org.bedework.util.dates.DateFormatter.icalDateTimeFormat;
+import static org.bedework.util.dates.DateFormatter.icalDateTimeUTCFormat;
 import static org.bedework.webcommon.DateViewUtil.setViewDate;
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 
@@ -161,10 +162,10 @@ public class ProcessInboxEvent extends RWActionBase {
 
     form.setCurEventFmt(ef);
 
-    final Date evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtstart().getDate());
+    final Date evdt = icalDateTimeUTCFormat.toDate(ev.getDtstart().getDate());
 
     /* Set the date using the current user timezone */
-    setViewDate(request, DateTimeUtil.isoDate(evdt).substring(0, 8));
+    setViewDate(request, icalDateTimeFormat.fromDate(evdt).substring(0, 8));
 
     // Assume we need the collection containing the meeting
     form.setMeetingCal(cl.getCollection(ev.getColPath()));

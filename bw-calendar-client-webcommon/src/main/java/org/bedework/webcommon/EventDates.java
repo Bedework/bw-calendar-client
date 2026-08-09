@@ -27,12 +27,12 @@ import org.bedework.calfacade.base.StartEndComponent;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.svc.BwPreferences;
 import org.bedework.calfacade.svc.EventInfo;
-import org.bedework.calfacade.util.ChangeTable;
 import org.bedework.util.calendar.IcalDefs;
 import org.bedework.util.calendar.PropertyIndex.PropertyInfoIndex;
 import org.bedework.util.misc.Util;
 import org.bedework.util.servlet.MessageEmit;
-import org.bedework.util.timezones.DateTimeUtil;
+
+import static org.bedework.util.dates.DateFormatter.icalDateTimeFormat;
 
 /** The dates and/or duration which define when an event happens. These are
  * stored in objects which allow manipulation of indiviual date and time
@@ -127,9 +127,7 @@ public class EventDates extends EntityDates
    */
   public void setNewEvent(final BwEvent val) {
     try {
-      final java.util.Date now = new java.util.Date(System.currentTimeMillis());
-
-      getStartDate().setDateTime(DateTimeUtil.isoDateTime(now));
+      getStartDate().setDateTime(icalDateTimeFormat.fromDate());
 
       duration = DurationBean.makeOneHour();
 

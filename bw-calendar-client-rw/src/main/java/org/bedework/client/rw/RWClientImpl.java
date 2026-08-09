@@ -142,10 +142,6 @@ public class RWClientImpl extends ROClientImpl
 
   @Override
   public BwPrincipal<?> getOwner() {
-    if (publicAdmin) {
-      return svci.getUsersHandler().getPublicUser();
-    }
-
     return getCurrentPrincipal();
   }
 

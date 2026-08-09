@@ -34,7 +34,6 @@ import org.bedework.convert.Icalendar;
 import org.bedework.convert.jscal.JSCalTranslator;
 import org.bedework.jsforj.model.JSGroup;
 import org.bedework.util.calendar.IcalendarUtil;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
 
@@ -48,6 +47,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 
 /**
@@ -117,7 +117,7 @@ public class ExportAction extends BwAbstractAction {
       if (dl != null) {
         if (dl.equals("active")) {
           tr = new BwTimeRange(
-                  BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
+                  BwDateTimeUtil.getDateTime(icalDateFormat.fromDate(),
                                              true, false,
                                              null),   // tzid
                   null);

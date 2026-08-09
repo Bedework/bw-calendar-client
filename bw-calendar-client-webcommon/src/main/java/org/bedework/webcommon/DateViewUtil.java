@@ -8,10 +8,11 @@ import org.bedework.appcommon.CalendarFormatter;
 import org.bedework.appcommon.TimeView;
 import org.bedework.calfacade.exc.ValidationError;
 import org.bedework.calfacade.util.BwDateTimeUtil;
-import org.bedework.util.timezones.DateTimeUtil;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
 
 /**
  * User: mike Date: 8/5/24 Time: 23:17
@@ -59,7 +60,7 @@ public class DateViewUtil {
         }
       }
     } else {
-      Date jdt = DateTimeUtil.fromISODate(date);
+      Date jdt = icalDateFormat.toDate(date);
       dt = new CalendarFormatter(jdt);
       if (!checkDateInRange(request, dt.getYear())) {
         // Set it to today
@@ -102,8 +103,7 @@ public class DateViewUtil {
         if (!(vsdate.equals(request.getSess().getCurTimeView(request).getFirstDayFmt().getDateDigits()))) {
           newView = true;
           newViewType = mstate.getViewType();
-          final Date jdt = DateTimeUtil.fromISODate(vsdate);
-          dt = new CalendarFormatter(jdt);
+          dt = new CalendarFormatter(icalDateFormat.toDate(vsdate));
         }
       }
     }
@@ -139,7 +139,7 @@ public class DateViewUtil {
   public static void setViewDate(final BwRequest request,
                              final String date) {
     final BwModuleState mstate = request.getModule().getState();
-    Date jdt = DateTimeUtil.fromISODate(date);
+    Date jdt = icalDateFormat.toDate(date);
     CalendarFormatter dt = new CalendarFormatter(jdt);
 
     if (!checkDateInRange(request, dt.getYear())) {

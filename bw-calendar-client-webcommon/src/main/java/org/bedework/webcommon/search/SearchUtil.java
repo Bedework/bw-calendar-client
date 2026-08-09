@@ -7,6 +7,7 @@ import org.bedework.appcommon.ClientError;
 import org.bedework.appcommon.TimeView;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.SearchParams;
+import org.bedework.base.response.Response;
 import org.bedework.caldav.util.filter.FilterBase;
 import org.bedework.calfacade.BwDateTime;
 import org.bedework.calfacade.RecurringRetrievalMode;
@@ -17,11 +18,12 @@ import org.bedework.calfacade.filter.SimpleFilterParser;
 import org.bedework.calfacade.responses.GetFilterDefResponse;
 import org.bedework.calfacade.util.BwDateTimeUtil;
 import org.bedework.util.calendar.XcalUtil;
-import org.bedework.base.response.Response;
-import org.bedework.util.timezones.DateTimeUtil;
-import org.bedework.webcommon.BwModuleState;
 import org.bedework.webcommon.BwRequest;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
 import static org.bedework.webcommon.DateViewUtil.gotoDateView;
 import static org.bedework.webcommon.ForwardDefs.forwardNoAction;
 import static org.bedework.webcommon.ForwardDefs.forwardSuccess;
@@ -80,9 +82,9 @@ public class SearchUtil {
       final String lim = mstate.getSearchLimits();
       if ((lim != null) && (!"none".equals(lim))) {  // there are limits
         if ("beforeToday".equals(lim)) {
-          endStr = DateTimeUtil.isoDate(DateTimeUtil.yesterday());
+          endStr = icalDateFormat.fromDate(yesterday());
         } else if ("fromToday".equals(lim)) {
-          icalStart = DateTimeUtil.isoDate(new java.util.Date());
+          icalStart = icalDateFormat.fromDate();
         }
       }
     }
@@ -183,6 +185,16 @@ public class SearchUtil {
     return forwardSuccess;
   }
 
+  /**
+   * @return Date value for yesterday.
+   */
+  private static Date yesterday() {
+    final Calendar cal = Calendar.getInstance();
+    cal.add(Calendar.DATE, -1);
+
+    return cal.getTime();
+  }
+
   private static boolean filterAndQuery(final BwRequest request,
                                  final SearchParams params) {
     final Client cl = request.getClient();
@@ -245,7 +257,7 @@ public class SearchUtil {
   }
 
   private static BwDateTime todaysDateTime() {
-    return BwDateTimeUtil.getDateTime(DateTimeUtil.isoDate(),
+    return BwDateTimeUtil.getDateTime(icalDateFormat.fromDate(),
                                       true,
                                       false,   // floating
                                       null);   // tzid

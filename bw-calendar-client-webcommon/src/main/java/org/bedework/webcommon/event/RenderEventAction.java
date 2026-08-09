@@ -23,13 +23,12 @@ import org.bedework.appcommon.EventFormatter;
 import org.bedework.appcommon.EventKey;
 import org.bedework.appcommon.client.Client;
 import org.bedework.appcommon.client.IcalCallbackcb;
+import org.bedework.base.response.GetEntitiesResponse;
 import org.bedework.calfacade.BwEvent;
 import org.bedework.calfacade.svc.EventInfo;
 import org.bedework.convert.IcalTranslator;
 import org.bedework.convert.RecurRuleComponents;
 import org.bedework.util.calendar.ScheduleMethods;
-import org.bedework.base.response.GetEntitiesResponse;
-import org.bedework.util.timezones.DateTimeUtil;
 import org.bedework.util.timezones.Timezones;
 import org.bedework.webcommon.BwAbstractAction;
 import org.bedework.webcommon.BwRequest;
@@ -37,6 +36,8 @@ import org.bedework.webcommon.BwRequest;
 import java.util.Date;
 
 import static org.bedework.base.response.Response.Status.notFound;
+import static org.bedework.util.dates.DateFormatter.icalDateFormat;
+import static org.bedework.util.dates.DateFormatter.icalDateTimeUTCFormat;
 import static org.bedework.webcommon.DateViewUtil.setViewDate;
 import static org.bedework.webcommon.event.EventUtil.findEvent;
 
@@ -106,22 +107,22 @@ public class RenderEventAction extends BwAbstractAction {
       // Replies have all sorts of missing fields
       /* Only change date if current date is outside range of event. */
 
-      final String cur = mstate.getViewMcDate().getDateDigits();
+      final var cur = mstate.getViewMcDate().getDateDigits();
 
       /* Get start date in current locale */
 
-      Date evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtstart().getDate());
+      Date evdt = icalDateTimeUTCFormat.toDate(ev.getDtstart().getDate());
 
       /* Get the date in the current user timezone */
-      final String evst = DateTimeUtil.isoDate(evdt).substring(0, 8);
+      final var evst = icalDateFormat.fromDate(evdt);
 
       if (debug()) {
         debug("******* evdt=" + evdt + " evst=" + evst +
                  " default tz=" + Timezones.getThreadDefaultTzid());
       }
 
-      evdt = DateTimeUtil.fromISODateTimeUTC(ev.getDtend().getDate());
-      final String evend = DateTimeUtil.isoDate(evdt).substring(0, 8);
+      evdt = icalDateTimeUTCFormat.toDate(ev.getDtend().getDate());
+      final var evend = icalDateFormat.fromDate(evdt);
 
       /* This doesn't seem altogether correct */
       if ((cur.compareTo(evst) < 0) ||
